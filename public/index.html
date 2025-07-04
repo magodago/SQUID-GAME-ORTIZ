@@ -641,6 +641,38 @@
       text-shadow: 0 0 20px #e60073, 0 0 40px #fff;
       font-family: 'Orbitron', Arial, sans-serif;
       letter-spacing: 0.2em;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      line-height: 1.2;
+    }
+    
+    .clickable-letter {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .clickable-letter:hover {
+      text-shadow: 0 0 30px #00FFFF, 0 0 60px #00FFFF;
+      transform: scale(1.2);
+      color: #00FFFF;
+    }
+    
+    .clickable-letter.clicked {
+      color: #00FFFF;
+      text-shadow: 0 0 30px #00FFFF, 0 0 60px #00FFFF, 0 0 90px #00FFFF;
+      animation: letterGlow 1s ease-in-out;
+    }
+    
+    @keyframes letterGlow {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); text-shadow: 0 0 50px #00FFFF, 0 0 100px #00FFFF; }
+      100% { transform: scale(1); }
     }
     
     .description {
@@ -1945,7 +1977,14 @@
           font-size: 0.9rem;
         }
         .welcome-text {
-          font-size: 2rem;
+          font-size: 1.8rem;
+          letter-spacing: 0.1em;
+          flex-wrap: wrap;
+          text-align: center;
+        }
+        
+        .clickable-letter {
+          font-size: 1.8rem;
         }
         .envelopes-container {
           gap: 0.8rem;

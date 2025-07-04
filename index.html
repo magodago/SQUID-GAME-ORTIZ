@@ -1852,7 +1852,6 @@
     <div class="easter-egg-modal" id="easterEggModal">
       <div class="easter-egg-content">
         <div class="easter-egg-header">
-          <h2>🎉 ¡HUEVO DE PASCUA ENCONTRADO!</h2>
           <div class="easter-egg-subtitle">¡Has descubierto el secreto del sistema!</div>
         </div>
         
@@ -2867,18 +2866,35 @@
     
     // Close easter egg modal
     closeEasterEggBtn.addEventListener('click', () => {
+      closeEasterEggModal();
+    });
+    
+    // Close modal when clicking anywhere on the modal
+    easterEggModal.addEventListener('click', (e) => {
+      // Only close if clicking on the modal background, not on content
+      if (e.target === easterEggModal) {
+        closeEasterEggModal();
+      }
+    });
+    
+    function closeEasterEggModal() {
       easterEggModal.classList.remove('active');
       document.body.style.overflow = 'auto';
       
       // Clear coin animations
       document.getElementById('coinsRain').innerHTML = '';
       document.getElementById('coinsExplosion').innerHTML = '';
-    });
+      
+      // Redirect to home after a short delay
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 300);
+    }
     
     // Add ESC key functionality to close easter egg modal
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && easterEggModal.classList.contains('active')) {
-        closeEasterEggBtn.click();
+        closeEasterEggModal();
       }
     });
   </script>

@@ -924,18 +924,20 @@
       background: linear-gradient(145deg, #000000 0%, #1a1a1a 50%, #000000 100%);
       border: 3px solid #FFD700;
       border-radius: 20px;
-      padding: 3rem 2rem;
+      padding: 2rem 1.5rem;
       box-shadow: 0 0 60px #FFD700, inset 0 0 40px rgba(255, 215, 0, 0.1);
       text-align: center;
-      max-width: 90%;
+      max-width: 85%;
+      max-height: 85vh;
       position: relative;
       z-index: 2001;
+      overflow-y: auto;
     }
     
     .easter-egg-header h2 {
       color: #FFD700;
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
+      font-size: 2rem;
+      margin-bottom: 0.8rem;
       text-shadow: 0 0 40px #FFD700, 0 0 80px #FFD700;
       font-weight: bold;
       letter-spacing: 0.1em;
@@ -953,16 +955,16 @@
     
     .easter-egg-subtitle {
       color: #FFA500;
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
       text-shadow: 0 0 20px #FFA500;
       font-weight: bold;
     }
     
     .coins-animation-container {
       position: relative;
-      height: 200px;
-      margin: 2rem 0;
+      height: 150px;
+      margin: 1.5rem 0;
       overflow: hidden;
     }
     
@@ -1011,6 +1013,29 @@
       pointer-events: none;
     }
     
+    .center-coin {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3rem;
+      color: #FFD700;
+      text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+      animation: centerCoinGlow 2s infinite alternate;
+      z-index: 10;
+    }
+    
+    @keyframes centerCoinGlow {
+      0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+        text-shadow: 0 0 50px #FFD700, 0 0 100px #FFD700, 0 0 150px #FFD700;
+      }
+    }
+    
     .explosion-coin {
       position: absolute;
       width: 25px;
@@ -1042,14 +1067,14 @@
     }
     
     .easter-egg-message {
-      margin: 2rem 0;
+      margin: 1.5rem 0;
     }
     
     .reward-text {
       color: #00FF00;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: bold;
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
       text-shadow: 0 0 30px #00FF00;
       animation: rewardPulse 1.5s infinite;
     }
@@ -1065,9 +1090,9 @@
     
     .coins-reward {
       color: #FFD700;
-      font-size: 2.5rem;
+      font-size: 2rem;
       font-weight: bold;
-      margin-bottom: 1rem;
+      margin-bottom: 0.8rem;
       text-shadow: 0 0 40px #FFD700, 0 0 80px #FFD700;
       animation: coinsRewardGlow 2s infinite;
     }
@@ -1083,7 +1108,7 @@
     
     .congrats-text {
       color: #FFA500;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: bold;
       text-shadow: 0 0 20px #FFA500;
     }
@@ -1092,15 +1117,15 @@
       background: linear-gradient(45deg, #FFD700, #FFA500);
       color: #000;
       border: 3px solid #FFD700;
-      padding: 1.2rem 3rem;
-      font-size: 1.3rem;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
       font-weight: bold;
       border-radius: 15px;
       cursor: pointer;
       transition: all 0.3s;
       box-shadow: 0 0 40px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
       text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      margin-top: 1rem;
+      margin-top: 0.8rem;
       animation: easterEggBtnPulse 2s infinite;
     }
     
@@ -1834,6 +1859,7 @@
         <div class="coins-animation-container">
           <div class="coins-rain" id="coinsRain"></div>
           <div class="coins-explosion" id="coinsExplosion"></div>
+          <div class="center-coin">💰</div>
         </div>
         
         <div class="easter-egg-message">

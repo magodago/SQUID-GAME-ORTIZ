@@ -1,0 +1,16 @@
+{
+  "name": "squid-game-ortiz",
+  "version": "1.0.0",
+  "description": "Squid Game Ortiz Project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+} 

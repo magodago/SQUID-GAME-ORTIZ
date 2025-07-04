@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <title>SQUID GAME ORTIZ</title>
+  <!-- Fuente similar a la de Squid Game -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      box-sizing: border-box;
+    }
+    body {
+      background: radial-gradient(circle at 60% 40%, #e60073 0%, #1a1a1a 80%);
+      min-height: 100vh;
+      width: 100%;
+      max-width: 100vw;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      font-family: 'Orbitron', Arial, sans-serif;
+      overflow-x: hidden;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .lights {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .light {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.25;
+    }
+    .light1 { width: 60vw; height: 60vw; background: #e60073; top: 10%; left: 10%; }
+    .light2 { width: 40vw; height: 40vw; background: #fff; top: 60%; left: 70%; opacity: 0.12; }
+    .light3 { width: 30vw; height: 30vw; background: #e60073; top: 80%; left: 20%; opacity: 0.18; }
+    
+    /* Floating Shapes Background */
+    .floating-shapes {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    
+    .floating-shape {
+      position: absolute;
+      opacity: 0.4;
+      animation-duration: 20s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+      max-width: 100vw;
+      max-height: 100vh;
+    }
+    
+    .floating-circle {
+      width: 15vw;
+      height: 15vw;
+      border: 4px solid #e60073;
+      border-radius: 50%;
+      background: rgba(230, 0, 115, 0.2);
+      box-shadow: 0 0 40px #e60073, 0 0 80px #e60073;
+      animation-name: floatCircle;
+      top: 10%;
+      left: 5%;
+    }
+    
+    .floating-triangle {
+      width: 12vw;
+      height: 12vw;
+      animation-name: floatTriangle;
+      top: 70%;
+      left: 80%;
+    }
+    
+    .floating-triangle::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 6vw solid transparent;
+      border-right: 6vw solid transparent;
+      border-bottom: 10vw solid #fff;
+      filter: drop-shadow(0 0 30px #e60073), drop-shadow(0 0 60px #fff);
+    }
+    
+    .floating-square {
+      width: 13vw;
+      height: 13vw;
+      border: 4px solid #fff;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 40px #fff, 0 0 80px #fff;
+      animation-name: floatSquare;
+      top: 30%;
+      left: 70%;
+    }
+    
+    .floating-circle-2 {
+      width: 10vw;
+      height: 10vw;
+      border: 3px solid #e60073;
+      border-radius: 50%;
+      background: rgba(230, 0, 115, 0.15);
+      box-shadow: 0 0 30px #e60073, 0 0 60px #e60073;
+      animation-name: floatCircle2;
+      top: 60%;
+      left: 15%;
+      animation-duration: 25s;
+    }
+    
+    .floating-triangle-2 {
+      width: 8vw;
+      height: 8vw;
+      animation-name: floatTriangle2;
+      top: 20%;
+      left: 60%;
+      animation-duration: 30s;
+    }
+    
+    .floating-triangle-2::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 4vw solid transparent;
+      border-right: 4vw solid transparent;
+      border-bottom: 7vw solid #e60073;
+      filter: drop-shadow(0 0 20px #fff), drop-shadow(0 0 40px #e60073);
+    }
+    
+    .floating-square-2 {
+      width: 11vw;
+      height: 11vw;
+      border: 3px solid #fff;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 30px #fff, 0 0 60px #fff;
+      animation-name: floatSquare2;
+      top: 80%;
+      left: 40%;
+      animation-duration: 35s;
+    }
+    
+    /* Floating Animations */
+    @keyframes floatCircle {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(15vw, 15vh) rotate(90deg); }
+      50% { transform: translate(30vw, 5vh) rotate(180deg); }
+      75% { transform: translate(45vw, 25vh) rotate(270deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+    
+    @keyframes floatTriangle {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(-20vw, -15vh) rotate(120deg); }
+      66% { transform: translate(-40vw, 10vh) rotate(240deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+    
+    @keyframes floatSquare {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(20vw, -15vh) rotate(72deg); }
+      40% { transform: translate(40vw, 20vh) rotate(144deg); }
+      60% { transform: translate(20vw, 35vh) rotate(216deg); }
+      80% { transform: translate(-10vw, 15vh) rotate(288deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+    
+    @keyframes floatCircle2 {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      30% { transform: translate(25vw, -20vh) rotate(108deg); }
+      60% { transform: translate(50vw, 15vh) rotate(216deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+    
+    @keyframes floatTriangle2 {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      40% { transform: translate(-30vw, 25vh) rotate(144deg); }
+      80% { transform: translate(-60vw, -10vh) rotate(288deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+    
+    @keyframes floatSquare2 {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(25vw, -20vh) rotate(90deg); }
+      50% { transform: translate(50vw, 25vh) rotate(180deg); }
+      75% { transform: translate(25vw, 50vh) rotate(270deg); }
+      100% { transform: translate(0, 0) rotate(360deg); }
+    }
+    
+    /* Particles */
+    .particles {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #e60073;
+      border-radius: 50%;
+      animation: particleFloat 8s infinite linear;
+      opacity: 0.6;
+    }
+    
+    /* Text Particles */
+    .text-particles {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .text-particle {
+      position: absolute;
+      color: #e60073;
+      font-size: 0.8rem;
+      font-weight: bold;
+      text-shadow: 0 0 8px #e60073, 0 0 16px #e60073;
+      opacity: 0.6;
+      white-space: nowrap;
+      font-family: 'Orbitron', Arial, sans-serif;
+      letter-spacing: 0.1em;
+    }
+    
+    .text-particle.ortiz {
+      animation: ortizMove 20s infinite ease-in-out;
+    }
+    
+    .text-particle.familia {
+      animation: familiaMove 18s infinite ease-in-out;
+    }
+    
+    .text-particle.unidad {
+      animation: unidadMove 22s infinite ease-in-out;
+    }
+    
+    .text-particle.diversion {
+      animation: diversionMove 25s infinite ease-in-out;
+    }
+    
+
+    
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 6s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 7s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 8s; }
+    .particle:nth-child(10) { left: 15%; animation-delay: 0.5s; }
+    .particle:nth-child(11) { left: 25%; animation-delay: 1.5s; }
+    .particle:nth-child(12) { left: 35%; animation-delay: 2.5s; }
+    .particle:nth-child(13) { left: 45%; animation-delay: 3.5s; }
+    .particle:nth-child(14) { left: 55%; animation-delay: 4.5s; }
+    .particle:nth-child(15) { left: 65%; animation-delay: 5.5s; }
+    .particle:nth-child(16) { left: 75%; animation-delay: 6.5s; }
+    .particle:nth-child(17) { left: 85%; animation-delay: 7.5s; }
+    .particle:nth-child(18) { left: 95%; animation-delay: 8.5s; }
+    .particle:nth-child(19) { left: 5%; animation-delay: 0.25s; }
+    .particle:nth-child(20) { left: 85%; animation-delay: 0.75s; }
+    
+    @keyframes particleFloat {
+      0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.6;
+        transform: translateY(90vh) scale(1);
+      }
+      90% {
+        opacity: 0.6;
+        transform: translateY(10vh) scale(1);
+      }
+      100% {
+        transform: translateY(0vh) scale(0);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes ortizMove {
+      0% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(75vw, 15vh) scale(1.1); }
+      50% { transform: translate(15vw, 75vh) scale(0.9); }
+      75% { transform: translate(85vw, 55vh) scale(1.05); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    
+    @keyframes familiaMove {
+      0% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(-85vw, 75vh) scale(1.1); }
+      50% { transform: translate(-70vw, 5vh) scale(0.9); }
+      75% { transform: translate(-65vw, 85vh) scale(1.05); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    
+    @keyframes unidadMove {
+      0% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(85vw, -65vh) scale(1.1); }
+      50% { transform: translate(5vw, -75vh) scale(0.9); }
+      75% { transform: translate(65vw, -15vh) scale(1.05); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    
+    @keyframes diversionMove {
+      0% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(-75vw, -85vh) scale(1.1); }
+      50% { transform: translate(-35vw, -5vh) scale(0.9); }
+      75% { transform: translate(-55vw, -55vh) scale(1.05); }
+      100% { transform: translate(0, 0) scale(1); }
+    }
+    
+    /* Matrix Rain Effect */
+    .matrix-rain {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .matrix-column {
+      position: absolute;
+      top: -100%;
+      width: 2px;
+      height: 100vh;
+      background: linear-gradient(to bottom, transparent, #e60073, transparent);
+      animation: matrixFall 3s infinite linear;
+    }
+    
+    @keyframes matrixFall {
+      0% { top: -100%; }
+      100% { top: 100%; }
+    }
+    
+    /* Click Light Effect */
+    .click-effects {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+    
+    .click-light {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: clickExpand 1.5s ease-out forwards;
+    }
+    
+    @keyframes clickExpand {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0;
+      }
+    }
+    
+    /* Scan Lines */
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 2px,
+        rgba(0, 0, 0, 0.1) 4px
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+    
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      max-width: 100vw;
+      height: 100vh;
+      padding-top: 5vh;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    
+    /* Title with Glitch Effect */
+    .squid-title {
+      color: #fff;
+      font-size: 4rem;
+      font-weight: 900;
+      text-shadow: 0 0 20px #e60073, 0 0 40px #fff;
+      margin-bottom: 1rem;
+      letter-spacing: 0.2em;
+      position: relative;
+      animation: glitch 3s infinite;
+      text-align: center;
+      width: 100%;
+    }
+    
+    .ortiz-text {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      background: rgba(230, 0, 115, 0.1);
+      border: 2px solid transparent;
+    }
+    
+    .ortiz-text:hover {
+      background: rgba(230, 0, 115, 0.3);
+      border-color: #e60073;
+      box-shadow: 0 0 20px #e60073;
+      transform: scale(1.05);
+    }
+    
+    @keyframes glitch {
+      0%, 90%, 100% {
+        transform: translate(0);
+        text-shadow: 0 0 20px #e60073, 0 0 40px #fff;
+      }
+      10% {
+        transform: translate(-2px, 2px);
+        text-shadow: 2px 2px 20px #ff0000, -2px -2px 40px #00ff00;
+      }
+      20% {
+        transform: translate(2px, -2px);
+        text-shadow: -2px -2px 20px #0000ff, 2px 2px 40px #ffff00;
+      }
+      30% {
+        transform: translate(-2px, -2px);
+        text-shadow: 2px -2px 20px #ff00ff, -2px 2px 40px #00ffff;
+      }
+    }
+    
+    /* Shapes */
+    .shapes {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+      position: relative;
+      justify-content: center;
+      width: 100%;
+    }
+    
+    .shape {
+      width: 1.5rem;
+      height: 1.5rem;
+      min-width: 1.5rem;
+      min-height: 1.5rem;
+      max-width: 1.5rem;
+      max-height: 1.5rem;
+      border: 3px solid #fff;
+      box-shadow: 0 0 15px #e60073;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .circle-shape {
+      border-radius: 50%;
+      background: rgba(230, 0, 115, 0.3);
+    }
+    
+    .triangle-shape {
+      background: transparent;
+      border: none;
+      position: relative;
+    }
+    
+    .triangle-shape svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 10px #e60073);
+    }
+    
+    .square-shape {
+      background: rgba(255, 255, 255, 0.3);
+      position: relative;
+    }
+    
+    .square-shape::after {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .square-shape:hover::after {
+      border-color: #e60073;
+      box-shadow: 0 0 15px #e60073;
+    }
+    
+    .shape:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 25px #e60073;
+    }
+    
+    /* Typewriter Effect */
+    .typewriter {
+      color: #fff;
+      font-size: 1.2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+      padding: 1.5rem 2rem;
+      border: 1.5px solid #e60073;
+      box-shadow: 0 0 10px #e60073;
+      width: 80%;
+      max-width: 600px;
+      box-sizing: border-box;
+      position: relative;
+    }
+    
+    /* Access Panel */
+    .access-panel {
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid #e60073;
+      border-radius: 15px;
+      padding: 1rem;
+      margin: 1rem 0;
+      box-shadow: 0 0 30px #e60073;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      width: 80%;
+      max-width: 600px;
+    }
+    
+    .access-title {
+      color: #fff;
+      font-size: 0.9rem;
+      margin-bottom: 0.8rem;
+      text-shadow: 0 0 10px #e60073;
+      font-weight: bold;
+    }
+    
+    .code-input-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+    
+    .code-inputs {
+      display: flex;
+      gap: 0.3rem;
+    }
+    
+    .code-input {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: 2px solid #e60073;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      outline: none;
+      transition: all 0.3s;
+    }
+    
+    .code-input:focus {
+      border-color: #fff;
+      box-shadow: 0 0 15px #e60073;
+    }
+    
+    .lock-icon {
+      font-size: 1.2rem;
+      color: #e60073;
+      text-shadow: 0 0 10px #e60073;
+    }
+    
+    .access-status {
+      color: #fff;
+      font-size: 0.7rem;
+      margin-top: 0.6rem;
+      min-height: 1rem;
+    }
+    
+    /* Main Content */
+    .main-content {
+      text-align: center;
+      margin-top: 2rem;
+      z-index: 10;
+      position: relative;
+    }
+    
+    .welcome-text {
+      color: #fff;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px #e60073, 0 0 40px #fff;
+      font-family: 'Orbitron', Arial, sans-serif;
+      letter-spacing: 0.2em;
+    }
+    
+    .description {
+      color: #fff;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 10px #e60073;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #e60073;
+      border-radius: 10px;
+      padding: 1rem 2rem;
+      box-shadow: 0 0 20px #e60073;
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      background: #00ff7f;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 10px #00ff7f;
+    }
+    
+    .status-text {
+      color: #00ff7f;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #00ff7f;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    
+    /* Secret Screen */
+    .secret-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      border: 3px solid #FFD700;
+      box-shadow: 0 0 50px #FFD700, inset 0 0 50px rgba(255, 215, 0, 0.1);
+      padding: 2rem;
+      box-sizing: border-box;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    
+    .secret-screen.active {
+      display: flex;
+      animation: secretEntrance 0.8s ease-out;
+    }
+    
+    @keyframes secretEntrance {
+      0% {
+        opacity: 0;
+        transform: scale(0.8) rotate(-5deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+    
+    .secret-title {
+      color: #FFD700;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+      font-weight: bold;
+      letter-spacing: 0.2em;
+      animation: goldPulse 2s infinite;
+    }
+    
+    @keyframes goldPulse {
+      0%, 100% {
+        text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+      }
+      50% {
+        text-shadow: 0 0 50px #FFD700, 0 0 100px #FFD700, 0 0 150px #FFD700;
+      }
+    }
+    
+    .coordinates-container {
+      background: linear-gradient(145deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+      border: 3px solid #FFD700;
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 40px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.1);
+      display: none;
+      animation: coordinatesReveal 1s ease-out;
+      max-width: 90%;
+    }
+    
+    .coordinates-container.show {
+      display: block;
+    }
+    
+    @keyframes coordinatesReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .coordinate-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    
+    .coord-label {
+      color: #FFD700;
+      font-weight: bold;
+      margin-right: 1rem;
+      text-shadow: 0 0 15px #FFD700;
+    }
+    
+    .coord-value {
+      color: #FFD700;
+      font-weight: bold;
+      text-shadow: 0 0 15px #FFD700;
+      animation: valueGlow 3s infinite;
+    }
+    
+    @keyframes valueGlow {
+      0%, 100% {
+        text-shadow: 0 0 15px #FFD700;
+      }
+      50% {
+        text-shadow: 0 0 25px #FFD700, 0 0 35px #FFD700;
+      }
+    }
+    
+    .secret-message {
+      color: #FFD700;
+      font-size: 0.9rem;
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      font-weight: bold;
+      text-shadow: 0 0 15px #FFD700;
+      display: none;
+      max-width: 90%;
+    }
+    
+    .secret-message.show {
+      display: block;
+      animation: messageReveal 1s ease-out;
+    }
+    
+    @keyframes messageReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .secret-btn {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      color: #000;
+      border: 2px solid #FFD700;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1001;
+    }
+    
+    #closeSecretBtn {
+      background: linear-gradient(45deg, #ff4757, #ff3742);
+      border-color: #ff4757;
+      box-shadow: 0 0 30px #ff4757, inset 0 0 20px rgba(255, 71, 87, 0.3);
+      margin-top: 1rem;
+      animation: closeBtnPulse 2s infinite;
+      font-size: 1.2rem;
+      padding: 1.2rem 2.5rem;
+      position: sticky;
+      bottom: 2rem;
+    }
+    
+    #closeSecretBtn:hover {
+      background: linear-gradient(45deg, #ff3742, #ff4757);
+      box-shadow: 0 0 50px #ff4757, inset 0 0 30px rgba(255, 71, 87, 0.5);
+      transform: scale(1.05);
+    }
+    
+    @keyframes closeBtnPulse {
+      0%, 100% {
+        box-shadow: 0 0 30px #ff4757, inset 0 0 20px rgba(255, 71, 87, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 50px #ff4757, inset 0 0 30px rgba(255, 71, 87, 0.5);
+      }
+    }
+    
+    .help-text {
+      color: #FFD700;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      opacity: 0.8;
+      text-shadow: 0 0 10px #FFD700;
+      font-style: italic;
+    }
+    
+    /* Ortiz Coins Counter */
+    .coins-counter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 1rem 0;
+      padding: 0.8rem 1.5rem;
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #FFD700;
+      backdrop-filter: blur(5px);
+    }
+    
+    .coin-icon {
+      font-size: 1.5rem;
+      color: #FFD700;
+      text-shadow: 0 0 10px #FFD700;
+      animation: coinGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes coinGlow {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.1) rotate(5deg); }
+    }
+    
+    .coins-text {
+      color: #FFD700;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #FFD700;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    
+    /* Soldier Name Display */
+    .soldier-name {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 0.5rem 0;
+      padding: 0.6rem 1.2rem;
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #e60073;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #e60073;
+      backdrop-filter: blur(5px);
+    }
+    
+    .soldier-icon {
+      font-size: 1.2rem;
+      color: #e60073;
+      text-shadow: 0 0 10px #e60073;
+      animation: soldierGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes soldierGlow {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.1) rotate(5deg); }
+    }
+    
+    .soldier-text {
+      color: #e60073;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #e60073;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    
+    /* Soldier Name Modal */
+    .soldier-name-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(10px);
+      margin: 0;
+      padding: 0;
+    }
+    
+    .soldier-name-content {
+      background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+      border: 3px solid #e60073;
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      max-width: 280px;
+      width: 70%;
+      margin: 0 auto;
+      box-shadow: 0 0 50px #e60073, inset 0 0 50px rgba(230, 0, 115, 0.1);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    .soldier-name-content h3 {
+      color: #e60073;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px #e60073;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    
+    .soldier-name-content p {
+      color: #fff;
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+    }
+    
+    .soldier-name-content input {
+      width: 80%;
+      padding: 0.8rem;
+      margin-bottom: 1.5rem;
+      border: 2px solid #e60073;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-size: 0.9rem;
+      text-align: center;
+      font-family: 'Orbitron', Arial, sans-serif;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+    
+    .soldier-name-content input:focus {
+      outline: none;
+      box-shadow: 0 0 15px #e60073;
+    }
+    
+    .soldier-name-btn {
+      background: linear-gradient(45deg, #e60073, #ff1493);
+      color: #fff;
+      border: 2px solid #e60073;
+      padding: 0.8rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px #e60073;
+      font-family: 'Orbitron', Arial, sans-serif;
+      margin: 0 auto;
+      display: block;
+    }
+    
+    .soldier-name-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #e60073;
+    }
+    
+    /* Squid Game Envelopes */
+    .envelopes-container {
+      display: flex;
+      gap: 1.5rem;
+      margin: 2rem 0;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 600px;
+    }
+    
+    .envelope-btn {
+      position: relative;
+      width: 120px;
+      height: 80px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+    }
+    
+    .envelope-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: inherit;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transition: all 0.3s ease;
+      z-index: 5;
+    }
+    
+    .envelope-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: inherit;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transform: rotateX(180deg);
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+    
+    .envelope-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+      text-align: center;
+      width: 100%;
+      pointer-events: none;
+    }
+    
+    .envelope-text {
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.9);
+      letter-spacing: 0.1em;
+      position: relative;
+      z-index: 25;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      backdrop-filter: blur(2px);
+    }
+    
+    .soldier-btn {
+      background: linear-gradient(45deg, #e60073, #ff1493);
+      box-shadow: 0 0 30px #e60073, inset 0 0 20px rgba(230, 0, 115, 0.3);
+    }
+    
+    .soldier-btn:hover {
+      transform: scale(1.1) rotateY(10deg);
+      box-shadow: 0 0 50px #e60073, inset 0 0 30px rgba(230, 0, 115, 0.5);
+    }
+    
+    .player-btn {
+      background: linear-gradient(45deg, #0066cc, #0099ff);
+      box-shadow: 0 0 30px #0066cc, inset 0 0 20px rgba(0, 102, 204, 0.3);
+    }
+    
+    .player-btn:hover {
+      transform: scale(1.1) rotateY(-10deg);
+      box-shadow: 0 0 50px #0066cc, inset 0 0 30px rgba(0, 102, 204, 0.5);
+    }
+    
+    .vip-btn {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    
+    .vip-btn:hover {
+      transform: scale(1.1) rotateY(10deg);
+      box-shadow: 0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
+    }
+    
+    .frontman-btn {
+      background: linear-gradient(45deg, #000000, #333333);
+      box-shadow: 0 0 30px #000000, inset 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .frontman-btn:hover {
+      transform: scale(1.1) rotateY(-10deg);
+      box-shadow: 0 0 50px #000000, inset 0 0 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    .envelope-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .secret-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
+      background: linear-gradient(45deg, #FFA500, #FFD700);
+    }
+    
+    .secret-btn:active {
+      transform: scale(0.98);
+    }
+    
+    /* Responsive Design */
+          @media (max-width: 768px) {
+        .squid-title {
+          font-size: 2.5rem;
+          letter-spacing: 0.1em;
+        }
+        .shapes {
+          gap: 1rem;
+        }
+        .shape {
+          width: 1.2rem;
+          height: 1.2rem;
+          min-width: 1.2rem;
+          min-height: 1.2rem;
+          max-width: 1.2rem;
+          max-height: 1.2rem;
+        }
+        .typewriter {
+          font-size: 1rem;
+          padding: 1rem 1.5rem;
+          width: 90%;
+        }
+        .access-panel {
+          width: 85%;
+          padding: 0.8rem;
+          max-width: 500px;
+        }
+        .code-input {
+          width: 32px;
+          height: 32px;
+          font-size: 0.9rem;
+        }
+        .welcome-text {
+          font-size: 2rem;
+        }
+        .envelopes-container {
+          gap: 0.8rem;
+          margin: 1.5rem 0;
+          max-width: 400px;
+        }
+        .envelope-btn {
+          width: 100px;
+          height: 70px;
+        }
+        .envelope-text {
+          font-size: 0.7rem;
+        }
+        .coins-counter {
+          padding: 0.6rem 1rem;
+          margin: 0.8rem 0;
+        }
+        .coin-icon {
+          font-size: 1.2rem;
+        }
+        .coins-text {
+          font-size: 1rem;
+        }
+        .description {
+          font-size: 1rem;
+        }
+        .container {
+          padding-top: 3vh;
+        }
+      }
+    
+          @media (min-width: 600px) {
+        .squid-title { 
+          font-size: 3.5rem; 
+          letter-spacing: 0.15em;
+        }
+        .shapes {
+          gap: 2rem;
+        }
+        .shape {
+          width: 2rem;
+          height: 2rem;
+          min-width: 2rem;
+          min-height: 2rem;
+          max-width: 2rem;
+          max-height: 2rem;
+        }
+        .typewriter { 
+          font-size: 1.3rem; 
+          width: 80%;
+          max-width: 800px;
+          padding: 2rem 1.5rem;
+        }
+        .welcome-text {
+          font-size: 3rem;
+        }
+        .description {
+          font-size: 1.2rem;
+        }
+        .container {
+          padding-top: 5vh;
+        }
+      }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    /* Animación para revelación de dígitos */
+    @keyframes revealPulse {
+      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+      50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+    
+    .reveal-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .reveal-icon {
+      font-size: 3rem;
+      animation: iconGlow 1s ease-in-out infinite alternate;
+    }
+    
+    .reveal-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #e60073;
+      text-shadow: 0 0 15px #e60073;
+    }
+    
+    .reveal-digit {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #00ff7f;
+      text-shadow: 0 0 20px #00ff7f;
+      background: linear-gradient(135deg, #00ff7f 0%, #00cc66 100%);
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid #fff;
+    }
+    
+    .reveal-position {
+      font-size: 1rem;
+      color: #ccc;
+    }
+    
+    @keyframes iconGlow {
+      from { text-shadow: 0 0 20px #e60073; }
+      to { text-shadow: 0 0 40px #e60073, 0 0 60px #e60073; }
+    }
+    
+    /* Modal de Vida Extra */
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    @keyframes modalFadeOut {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0; transform: scale(0.8); }
+    }
+    
+    .extra-life-content {
+      background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+      border: 3px solid #ffd700;
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      color: #fff;
+      font-family: 'Orbitron', Arial, sans-serif;
+      box-shadow: 0 0 50px #ffd700, inset 0 0 30px rgba(255, 215, 0, 0.2);
+      max-width: 450px;
+      width: 85%;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: modalPulse 2s ease-in-out infinite;
+      margin: 20px;
+    }
+    
+    @keyframes modalPulse {
+      0%, 100% { box-shadow: 0 0 50px #ffd700, inset 0 0 30px rgba(255, 215, 0, 0.2); }
+      50% { box-shadow: 0 0 80px #ffd700, inset 0 0 50px rgba(255, 215, 0, 0.4); }
+    }
+    
+    .extra-life-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      animation: diamondGlow 1.5s ease-in-out infinite alternate;
+    }
+    
+    @keyframes diamondGlow {
+      from { text-shadow: 0 0 20px #ffd700; transform: scale(1); }
+      to { text-shadow: 0 0 40px #ffd700, 0 0 60px #ffd700; transform: scale(1.1); }
+    }
+    
+    .extra-life-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 0 0 20px #ffd700;
+      margin-bottom: 15px;
+      letter-spacing: 0.1em;
+    }
+    
+    .extra-life-message {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    
+    .highlight {
+      color: #00ff7f;
+      font-weight: bold;
+      text-shadow: 0 0 10px #00ff7f;
+    }
+    
+    .warning {
+      color: #ff4757;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ff4757;
+    }
+    
+    .consequence {
+      color: #ff6b35;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ff6b35;
+      font-size: 0.95rem;
+      display: block;
+      margin-top: 15px;
+      padding: 10px;
+      border: 2px solid #ff6b35;
+      border-radius: 8px;
+      background: rgba(255, 107, 53, 0.1);
+    }
+    
+    .severe {
+      color: #ff0000;
+      font-weight: bold;
+      text-shadow: 0 0 15px #ff0000;
+      animation: severeBlink 1s ease-in-out infinite alternate;
+    }
+    
+    @keyframes severeBlink {
+      from { opacity: 1; }
+      to { opacity: 0.7; }
+    }
+    
+    .extra-life-btn {
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      border: none;
+      border-radius: 10px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      font-family: 'Orbitron', Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      box-shadow: 0 0 20px #ffd700;
+      transition: all 0.3s ease;
+    }
+    
+    .extra-life-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #ffd700;
+    }
+    
+    .extra-life-btn:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+  <div class="lights">
+    <div class="light light1"></div>
+    <div class="light light2"></div>
+    <div class="light light3"></div>
+  </div>
+  <div class="floating-shapes">
+    <div class="floating-shape floating-circle"></div>
+    <div class="floating-shape floating-triangle"></div>
+    <div class="floating-shape floating-square"></div>
+    <div class="floating-shape floating-circle-2"></div>
+    <div class="floating-shape floating-triangle-2"></div>
+    <div class="floating-shape floating-square-2"></div>
+  </div>
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+  <div class="text-particles">
+    <div class="text-particle ortiz" style="left: 5%; top: 5%;">ORTIZ</div>
+    <div class="text-particle familia" style="right: 5%; top: 5%;">FAMILIA</div>
+    <div class="text-particle unidad" style="left: 5%; bottom: 5%;">UNIDAD</div>
+    <div class="text-particle diversion" style="right: 5%; bottom: 5%;">DIVERSION</div>
+  </div>
+  <div class="matrix-rain">
+    <div class="matrix-column" style="left: 5%"></div>
+    <div class="matrix-column" style="left: 15%"></div>
+    <div class="matrix-column" style="left: 25%"></div>
+    <div class="matrix-column" style="left: 35%"></div>
+    <div class="matrix-column" style="left: 45%"></div>
+    <div class="matrix-column" style="left: 55%"></div>
+    <div class="matrix-column" style="left: 65%"></div>
+    <div class="matrix-column" style="left: 75%"></div>
+    <div class="matrix-column" style="left: 85%"></div>
+    <div class="matrix-column" style="left: 95%"></div>
+  </div>
+  <div class="click-effects" id="clickEffects"></div>
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="squid-title">
+      SQUID GAME <span class="ortiz-text" id="ortizText">ORTIZ</span>
+    </div>
+    <div class="shapes">
+      <span class="shape circle-shape"></span>
+      <span class="shape triangle-shape">
+        <svg viewBox="0 0 100 100">
+          <polygon points="50,10 10,90 90,90" style="fill:none;stroke:white;stroke-width:8" />
+        </svg>
+      </span>
+      <span class="shape square-shape" id="secretSquare"></span>
+    </div>
+    <div class="typewriter" id="typewriter"><span></span></div>
+    
+    <!-- Soldier Name Display -->
+    <div class="soldier-name" id="soldierNameDisplay" style="display: none;">
+      <span class="soldier-icon">🎖️</span>
+      <span class="soldier-text">JUGADOR: <span id="soldierNameText">Jugador</span></span>
+    </div>
+    
+    <!-- Ortiz Coins Counter -->
+    <div class="coins-counter" id="coinsCounter">
+      <span class="coin-icon">🪙</span>
+      <span class="coins-text">ORTIZ COINS: <span id="totalCoins">0</span></span>
+    </div>
+    
+    <!-- Soldier Name Modal -->
+    <div class="soldier-name-modal" id="soldierNameModal">
+      <div class="soldier-name-content">
+        <h3>🎖️ ¡BIENVENIDO, JUGADOR!</h3>
+        <p>Dime tu nombre, jugador:</p>
+        <input type="text" id="soldierNameInput" placeholder="Tu nombre" maxlength="15">
+        <button class="soldier-name-btn" id="saveSoldierNameBtn">CONFIRMAR</button>
+      </div>
+    </div>
+    
+    <!-- Squid Game Envelopes -->
+    <div class="envelopes-container">
+      <button class="envelope-btn soldier-btn" id="soldierBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">SOLDADO</span>
+        </div>
+      </button>
+      <button class="envelope-btn player-btn" id="playerBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">JUGADOR</span>
+        </div>
+      </button>
+      <button class="envelope-btn vip-btn" id="vipBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">VIP</span>
+        </div>
+      </button>
+      <button class="envelope-btn frontman-btn" id="frontmanBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">FRONT MAN</span>
+        </div>
+      </button>
+    </div>
+    
+    <!-- Access Panel -->
+    <div class="access-panel" id="accessPanel">
+      <div class="access-title">ACCESO A DATOS PRIVILEGIADOS</div>
+      <div class="code-input-container">
+        <div class="code-inputs">
+          <input type="text" class="code-input" maxlength="1" data-index="0">
+          <input type="text" class="code-input" maxlength="1" data-index="1">
+          <input type="text" class="code-input" maxlength="1" data-index="2">
+          <input type="text" class="code-input" maxlength="1" data-index="3">
+        </div>
+        <div class="lock-icon">🔒</div>
+      </div>
+      <div class="access-status" id="accessStatus"></div>
+    </div>
+    
+    <div class="main-content">
+      <h2 class="welcome-text">BIENVENIDO AL SISTEMA</h2>
+      <p class="description">Squid Game Ortiz - Sistema de Control Principal</p>
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span class="status-text">SISTEMA ACTIVO</span>
+      </div>
+    </div>
+    
+    <!-- Secret Coordinates Screen -->
+    <div class="secret-screen" id="secretScreen">
+      <div class="secret-title">ACCESO SOLO PARA VIPs</div>
+      <button class="secret-btn" id="locationBtn">UBICACIÓN SECRETA DEL JUEGO</button>
+      <div class="coordinates-container" id="coordinatesContainer">
+        <div class="coordinate-item">
+          <span class="coord-label">LATITUD:</span>
+          <span class="coord-value">33° 25' 18.7" N</span>
+        </div>
+        <div class="coordinate-item">
+          <span class="coord-label">LONGITUD:</span>
+          <span class="coord-value">126° 33' 42.1" E</span>
+        </div>
+        <div class="coordinate-item">
+          <span class="coord-label">ALTITUD:</span>
+          <span class="coord-value">1,947 m</span>
+        </div>
+        <div class="coordinate-item">
+          <span class="coord-label">CÓDIGO:</span>
+          <span class="coord-value">SG-VIP-789</span>
+        </div>
+        <div class="coordinate-item">
+          <span class="coord-label">NIVEL:</span>
+          <span class="coord-value">MÁXIMO</span>
+        </div>
+      </div>
+      <div class="secret-message" id="secretMessage">
+        🏝️ UBICACIÓN: ISLA JEJU, COREA DEL SUR<br>
+        🎯 ESTADO: ACTIVO Y OPERATIVO<br>
+        🔐 ACCESO: SOLO INVITADOS VIP<br>
+        ⏰ ÚLTIMA ACTUALIZACIÓN: 15/12/2024<br>
+        💎 NIVEL DE SEGURIDAD: MÁXIMO
+      </div>
+      <div class="help-text" style="display: none;">Presiona ESC o haz clic en CERRAR para volver</div>
+      <button class="secret-btn" id="closeSecretBtn" style="display: none;">CERRAR</button>
+    </div>
+  </div>
+  <script>
+    // Typewriter effect
+    const text = "Sistema de Control Squid Game Ortiz - Inicializando...";
+    const speed = 35;
+    let i = 0;
+    function typeWriter() {
+      if (i <= text.length) {
+        document.querySelector('#typewriter span').textContent = text.slice(0, i);
+        i++;
+        setTimeout(typeWriter, speed);
+      }
+    }
+    typeWriter();
+
+    // Click Light Effect
+    const clickEffects = document.getElementById('clickEffects');
+    
+    function createClickLight(x, y) {
+      const light = document.createElement('div');
+      light.className = 'click-light';
+      light.style.left = x + 'px';
+      light.style.top = y + 'px';
+      
+      clickEffects.appendChild(light);
+      
+      // Remove the element after animation completes
+      setTimeout(() => {
+        if (light.parentNode) {
+          light.parentNode.removeChild(light);
+        }
+      }, 1500);
+    }
+    
+    // Handle clicks and touches
+    document.addEventListener('click', (e) => {
+      createClickLight(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      createClickLight(touch.clientX, touch.clientY);
+    });
+
+    // Easter Egg - Secret Pattern Detection
+    let ortizClicks = 0;
+    let squareClicks = 0;
+    let lastOrtizClick = 0;
+    let lastSquareClick = 0;
+    const secretScreen = document.getElementById('secretScreen');
+    const closeSecretBtn = document.getElementById('closeSecretBtn');
+    
+    // Detect clicks on "ORTIZ" in the title
+    document.addEventListener('click', (e) => {
+      const target = e.target;
+      
+      // Check if clicked on "ORTIZ" text specifically
+      if (target.id === 'ortizText' || target.classList.contains('ortiz-text')) {
+        console.log('ORTIZ clicked!');
+        const now = Date.now();
+        if (now - lastOrtizClick < 2000) { // Within 2 seconds
+          ortizClicks++;
+          lastOrtizClick = now;
+        } else {
+          ortizClicks = 1;
+          lastOrtizClick = now;
+        }
+        console.log('ORTIZ clicks:', ortizClicks);
+      }
+      
+      // Check if clicked on square shape
+      if (target.id === 'secretSquare' || target.classList.contains('square-shape') || 
+          target.closest('.square-shape')) {
+        console.log('Square clicked!');
+        const now = Date.now();
+        if (now - lastSquareClick < 2000) { // Within 2 seconds
+          squareClicks++;
+          lastSquareClick = now;
+        } else {
+          squareClicks = 1;
+          lastSquareClick = now;
+        }
+        console.log('Square clicks:', squareClicks);
+      }
+      
+      // Check for secret pattern: 1 click on ORTIZ + 3 clicks on square
+      if (ortizClicks >= 1 && squareClicks >= 3) {
+        console.log('Secret pattern detected!');
+        showSecretScreen();
+        // Reset counters
+        ortizClicks = 0;
+        squareClicks = 0;
+      }
+    });
+    
+    function showSecretScreen() {
+      secretScreen.classList.add('active');
+      // Add dramatic effect
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Location button functionality
+    const locationBtn = document.getElementById('locationBtn');
+    const coordinatesContainer = document.getElementById('coordinatesContainer');
+    const secretMessage = document.getElementById('secretMessage');
+    
+    locationBtn.addEventListener('click', () => {
+      // Hide the location button
+      locationBtn.style.display = 'none';
+      
+      // Show coordinates with animation
+      setTimeout(() => {
+        coordinatesContainer.classList.add('show');
+      }, 300);
+      
+      // Show secret message after coordinates
+      setTimeout(() => {
+        secretMessage.classList.add('show');
+      }, 1500);
+      
+      // Show help text and close button after coordinates
+      setTimeout(() => {
+        document.querySelector('.help-text').style.display = 'block';
+        closeSecretBtn.style.display = 'block';
+      }, 2000);
+    });
+    
+    closeSecretBtn.addEventListener('click', () => {
+      closeSecretScreen();
+    });
+    
+    // Add ESC key functionality to close secret screen
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && secretScreen.classList.contains('active')) {
+        closeSecretScreen();
+      }
+    });
+    
+    function closeSecretScreen() {
+      secretScreen.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      
+      // Reset the screen for next time
+      setTimeout(() => {
+        locationBtn.style.display = 'block';
+        coordinatesContainer.classList.remove('show');
+        secretMessage.classList.remove('show');
+        document.querySelector('.help-text').style.display = 'none';
+        closeSecretBtn.style.display = 'none';
+      }, 500);
+    }
+
+    // Access Panel functionality
+    const accessPanel = document.getElementById('accessPanel');
+    const codeInputs = document.querySelectorAll('.code-input');
+    const accessStatus = document.getElementById('accessStatus');
+    const secretCode = '6791';
+    
+    // Sistema de revelación de dígitos por monedas
+    const digitsToReveal = [6, 7, 9, 1]; // Dígitos del código secreto
+    let revealedDigits = JSON.parse(localStorage.getItem('revealedDigits') || '[]');
+    let lastRevealThreshold = parseInt(localStorage.getItem('lastRevealThreshold') || '0');
+    
+    // Función para revelar dígitos basado en monedas
+    function checkDigitRevelation(totalCoins) {
+      const thresholds = [5000, 10000, 15000, 20000]; // Cada 5000 monedas
+      
+      thresholds.forEach((threshold, index) => {
+        if (totalCoins >= threshold && !revealedDigits.includes(index)) {
+          revealDigit(index, digitsToReveal[index]);
+          revealedDigits.push(index);
+          lastRevealThreshold = threshold;
+          localStorage.setItem('revealedDigits', JSON.stringify(revealedDigits));
+          localStorage.setItem('lastRevealThreshold', lastRevealThreshold.toString());
+        }
+      });
+    }
+    
+    // Función para revelar un dígito específico
+    function revealDigit(index, digit) {
+      // Mostrar notificación dramática
+      const notification = document.createElement('div');
+      notification.className = 'digit-reveal-notification';
+      notification.innerHTML = `
+        <div class="reveal-content">
+          <div class="reveal-icon">🔓</div>
+          <div class="reveal-text">¡DÍGITO REVELADO!</div>
+          <div class="reveal-digit">${digit}</div>
+          <div class="reveal-position">Posición ${index + 1}</div>
+        </div>
+      `;
+      
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+        border: 3px solid #e60073;
+        border-radius: 15px;
+        padding: 30px;
+        color: #fff;
+        font-family: 'Orbitron', Arial, sans-serif;
+        text-align: center;
+        z-index: 10000;
+        box-shadow: 0 0 50px #e60073, inset 0 0 20px rgba(230, 0, 115, 0.3);
+        animation: revealPulse 2s ease-in-out;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Aplicar el dígito revelado al input correspondiente
+      setTimeout(() => {
+        codeInputs[index].value = digit;
+        codeInputs[index].style.background = 'linear-gradient(135deg, #00ff7f 0%, #00cc66 100%)';
+        codeInputs[index].style.color = '#000';
+        codeInputs[index].style.fontWeight = 'bold';
+        codeInputs[index].style.boxShadow = '0 0 20px #00ff7f';
+        codeInputs[index].readOnly = true;
+      }, 1000);
+      
+      // Remover notificación después de 3 segundos
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
+    }
+    
+    // Aplicar dígitos ya revelados al cargar la página
+    function applyRevealedDigits() {
+      revealedDigits.forEach(index => {
+        if (index < codeInputs.length) {
+          codeInputs[index].value = digitsToReveal[index];
+          codeInputs[index].style.background = 'linear-gradient(135deg, #00ff7f 0%, #00cc66 100%)';
+          codeInputs[index].style.color = '#000';
+          codeInputs[index].style.fontWeight = 'bold';
+          codeInputs[index].style.boxShadow = '0 0 20px #00ff7f';
+          codeInputs[index].readOnly = true;
+        }
+      });
+    }
+
+    codeInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        const value = e.target.value;
+        
+        // Only allow numbers
+        if (!/^\d*$/.test(value)) {
+          e.target.value = '';
+          return;
+        }
+        
+        // Move to next input if value entered
+        if (value && index < codeInputs.length - 1) {
+          codeInputs[index + 1].focus();
+        }
+        
+        // Check if code is complete
+        checkCode();
+      });
+      
+      input.addEventListener('keydown', (e) => {
+        // Move to previous input on backspace if current is empty
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          codeInputs[index - 1].focus();
+        }
+      });
+    });
+
+    function checkCode() {
+      const enteredCode = Array.from(codeInputs).map(input => input.value).join('');
+      
+      if (enteredCode.length === 4) {
+        if (enteredCode === secretCode) {
+          accessStatus.textContent = '✅ CÓDIGO CORRECTO - ACCESO PERMITIDO';
+          accessStatus.style.color = '#00ff7f';
+          accessStatus.style.textShadow = '0 0 10px #00ff7f';
+          
+          // Mostrar ventana de vida extra
+          showExtraLifeModal();
+          
+          // Hide access panel after success
+          setTimeout(() => {
+            accessPanel.style.display = 'none';
+          }, 2000);
+        } else {
+          accessStatus.textContent = '❌ CÓDIGO INCORRECTO - ACCESO DENEGADO';
+          accessStatus.style.color = '#ff4757';
+          accessStatus.style.textShadow = '0 0 10px #ff4757';
+          
+          // Clear inputs after error
+          setTimeout(() => {
+            codeInputs.forEach(input => input.value = '');
+            codeInputs[0].focus();
+          }, 2000);
+        }
+      }
+    }
+    
+    // Función para mostrar la ventana de vida extra
+    function showExtraLifeModal() {
+      // Crear el modal
+      const modal = document.createElement('div');
+      modal.className = 'extra-life-modal';
+      modal.innerHTML = `
+        <div class="extra-life-content">
+          <div class="extra-life-icon">💎</div>
+          <div class="extra-life-title">¡ENHORABUENA!</div>
+          <div class="extra-life-message">
+            Acabas de ganar una <span class="highlight">VIDA EXTRA</span><br>
+            Podrás utilizarla en cualquier momento,<br>
+            <span class="warning">menos en el juego final</span><br><br>
+            <span class="consequence">⚠️ QUEDA PROHIBIDO DECIR EL CÓDIGO<br>
+            AL RESTO DE JUGADORES O TENDRÁS<br>
+            <span class="severe">CONSECUENCIAS</span></span>
+          </div>
+          <button class="extra-life-btn" onclick="closeExtraLifeModal()">ENTENDIDO</button>
+        </div>
+      `;
+      
+      // Estilos del modal
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: modalFadeIn 0.5s ease-out;
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Guardar la vida extra en localStorage
+      localStorage.setItem('extraLife', 'true');
+      
+      // Efecto de partículas doradas
+      createGoldenParticles();
+    }
+    
+    // Función para cerrar el modal
+    function closeExtraLifeModal() {
+      const modal = document.querySelector('.extra-life-modal');
+      if (modal) {
+        modal.style.animation = 'modalFadeOut 0.5s ease-out';
+        setTimeout(() => {
+          if (modal.parentNode) {
+            modal.parentNode.removeChild(modal);
+          }
+        }, 500);
+      }
+    }
+    
+    // Función para crear partículas doradas
+    function createGoldenParticles() {
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          background: linear-gradient(45deg, #ffd700, #ffed4e);
+          border-radius: 50%;
+          pointer-events: none;
+          z-index: 10001;
+          box-shadow: 0 0 10px #ffd700;
+        `;
+        
+        // Posición aleatoria
+        particle.style.left = Math.random() * window.innerWidth + 'px';
+        particle.style.top = Math.random() * window.innerHeight + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animación de partícula
+        particle.animate([
+          { 
+            transform: 'translate(0, 0) scale(1)', 
+            opacity: 1 
+          },
+          { 
+            transform: `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px) scale(0)`, 
+            opacity: 0 
+          }
+        ], {
+          duration: 2000 + Math.random() * 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remover partícula
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 3000);
+      }
+    }
+
+    
+    
+    soldierBtn.addEventListener('click', () => {
+      console.log('JUGADOR seleccionado');
+      
+      // Add dramatic effect
+      soldierBtn.style.transform = 'scale(0.9) rotateY(20deg)';
+      soldierBtn.style.boxShadow = '0 0 80px #e60073, inset 0 0 40px rgba(230, 0, 115, 0.7)';
+      
+      // Create simple explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#e60073';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = soldierBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        soldierBtn.style.transform = '';
+        soldierBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        // Create message element
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🎖️ ACCESO JUGADOR ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#e60073';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #e60073';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'soldier-game.html';
+        }, 2000);
+      }, 1000);
+    });
+    
+    playerBtn.addEventListener('click', () => {
+      console.log('JUGADOR seleccionado');
+      // Add dramatic effect
+      playerBtn.style.transform = 'scale(0.9)';
+      playerBtn.style.boxShadow = '0 0 80px #00bfff, inset 0 0 40px rgba(0,191,255,0.7)';
+      // Create simple explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#00bfff';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        const rect = playerBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        document.body.appendChild(particle);
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      setTimeout(() => {
+        playerBtn.style.transform = '';
+        playerBtn.style.boxShadow = '';
+      }, 1000);
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🎮 MODO JUGADOR ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#00bfff';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #00bfff';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        document.body.appendChild(messageEl);
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'player-game.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // VIP Button Event Listener
+    const vipBtn = document.getElementById('vipBtn');
+    vipBtn.addEventListener('click', () => {
+      console.log('VIP seleccionado');
+      
+      // Add dramatic effect
+      vipBtn.style.transform = 'scale(0.9) rotateY(10deg)';
+      vipBtn.style.boxShadow = '0 0 80px #FFD700, inset 0 0 40px rgba(255, 215, 0, 0.7)';
+      
+      // Create simple explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#FFD700';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = vipBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        vipBtn.style.transform = '';
+        vipBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '👑 ACCESO VIP ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#FFD700';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #FFD700';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'vip-game.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // FRONT MAN Button Event Listener
+    const frontmanBtn = document.getElementById('frontmanBtn');
+    frontmanBtn.addEventListener('click', () => {
+      console.log('FRONT MAN seleccionado');
+      
+      // Add dramatic effect
+      frontmanBtn.style.transform = 'scale(0.9) rotateY(-10deg)';
+      frontmanBtn.style.boxShadow = '0 0 80px #000000, inset 0 0 40px rgba(0, 0, 0, 0.7)';
+      
+      // Create simple explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#ffffff';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = frontmanBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        frontmanBtn.style.transform = '';
+        frontmanBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🎯 ACCESO FRONT MAN ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#ffffff';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #ffffff';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'frontman-game.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // Función para cargar y mostrar el total de monedas
+    function loadTotalCoins() {
+      const totalCoinsElement = document.getElementById('totalCoins');
+      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0', 10);
+      totalCoinsElement.textContent = totalCoins;
+      
+      // Verificar si se debe revelar algún dígito
+      checkDigitRevelation(totalCoins);
+    }
+
+    // Escuchar evento ortizCoinsUpdated y actualizar el contador
+    window.addEventListener('ortizCoinsUpdated', (event) => {
+      loadTotalCoins();
+    });
+
+    // Al cargar la página, mostrar el total correcto
+    window.addEventListener('DOMContentLoaded', loadTotalCoins);
+
+    // Soldier Name Modal functionality
+    const soldierNameModal = document.getElementById('soldierNameModal');
+    const soldierNameInput = document.getElementById('soldierNameInput');
+    const saveSoldierNameBtn = document.getElementById('saveSoldierNameBtn');
+    const soldierNameDisplay = document.getElementById('soldierNameDisplay');
+    const soldierNameText = document.getElementById('soldierNameText');
+    
+    // Check if soldier name exists in localStorage
+    function checkSoldierName() {
+      const savedName = localStorage.getItem('soldierName');
+      if (savedName) {
+        // Hide modal and show name display
+        soldierNameModal.style.display = 'none';
+        soldierNameText.textContent = savedName;
+        soldierNameDisplay.style.display = 'flex';
+      } else {
+        // Show modal to get name
+        soldierNameModal.style.display = 'flex';
+        soldierNameInput.focus();
+      }
+    }
+    
+    // Save soldier name
+    function saveSoldierName() {
+      const name = soldierNameInput.value.trim();
+      if (!name) {
+        alert('Por favor ingresa tu nombre, jugador');
+        return;
+      }
+      
+      // Save to localStorage
+      localStorage.setItem('soldierName', name);
+      
+      // Hide modal and show name display
+      soldierNameModal.style.display = 'none';
+      soldierNameText.textContent = name;
+      soldierNameDisplay.style.display = 'flex';
+      
+      // Clear input
+      soldierNameInput.value = '';
+    }
+    
+    // Event listeners
+    saveSoldierNameBtn.addEventListener('click', saveSoldierName);
+    soldierNameInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        saveSoldierName();
+      }
+    });
+    
+    // Load total coins when page loads
+    loadTotalCoins();
+    
+    // Aplicar dígitos ya revelados al cargar la página
+    applyRevealedDigits();
+    
+    // Check soldier name when page loads
+    checkSoldierName();
+  </script>
+</body>
+</html> 

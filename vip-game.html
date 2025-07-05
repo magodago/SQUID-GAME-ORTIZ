@@ -323,7 +323,7 @@
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="goBack()">← VOLVER</button>
+
     
     <div class="vip-header">
         <div class="vip-title">👑 VIP APUESTAS</div>
@@ -375,6 +375,7 @@
             
             <input type="number" class="bet-input" id="betAmount" min="1" max="1000" value="10" placeholder="Cantidad de Ortiz Coins">
             <button class="play-button" id="playButton">🎮 JUGAR</button>
+            <button onclick="window.location.href='index.html'" class="back-button" style="position: static; margin-top: 15px; width: 100%;">⬅️ VOLVER</button>
         </div>
     </div>
     
@@ -431,21 +432,9 @@
                 };
                 
                 console.log('✅ Play button event listeners added');
-                
-                // Test if button is clickable
-                setTimeout(() => {
-                    console.log('🧪 Testing play button...');
-                    console.log('Button element:', playButton);
-                    console.log('Button disabled:', playButton.disabled);
-                    console.log('Button style:', playButton.style.pointerEvents);
-                }, 1000);
-                
             } else {
                 console.error('❌ Play button not found');
             }
-            
-            // Add test button for debugging
-            addTestButton();
             
             console.log('✅ VIP Game initialized successfully');
         });
@@ -893,14 +882,7 @@
             console.log('✅ Result modal closed');
         }
 
-        function goBack() {
-            if (!gameInProgress) {
-                console.log('🏠 Going back to main page...');
-                window.location.href = 'index.html';
-            } else {
-                console.log('⚠️ Cannot go back during game');
-            }
-        }
+
 
         // Auto-sync function for VIP game
         function autoSyncVIPData() {
@@ -937,184 +919,6 @@
             console.log('🔄 Initial VIP sync...');
             autoSyncVIPData();
         }, 3000);
-
-        function addTestButton() {
-            const bettingSection = document.querySelector('.betting-section');
-            if (bettingSection) {
-                // Test button for auto-start
-                const testButton = document.createElement('button');
-                testButton.textContent = '🧪 TEST GAME';
-                testButton.style.cssText = `
-                    width: 100%;
-                    padding: 10px;
-                    margin: 10px 0;
-                    background: linear-gradient(135deg, #FF0000 0%, #FF6666 100%);
-                    border: none;
-                    border-radius: 10px;
-                    color: white;
-                    font-family: 'Orbitron', monospace;
-                    font-weight: bold;
-                    cursor: pointer;
-                `;
-                testButton.onclick = function() {
-                    console.log('🧪 Test button clicked');
-                    // Auto-select bet type and option for testing
-                    currentBetType = 'winner';
-                    currentBetOption = '001';
-                    console.log('🧪 Auto-selected: winner -> 001');
-                    
-                    // Set bet amount to 1
-                    const betInput = document.getElementById('betAmount');
-                    if (betInput) {
-                        betInput.value = '1';
-                    }
-                    
-                    // Start game immediately
-                    startGame();
-                };
-                bettingSection.appendChild(testButton);
-                console.log('✅ Test button added');
-                
-                // Debug button to test main play button
-                const debugButton = document.createElement('button');
-                debugButton.textContent = '🔧 DEBUG PLAY BUTTON';
-                debugButton.style.cssText = `
-                    width: 100%;
-                    padding: 10px;
-                    margin: 10px 0;
-                    background: linear-gradient(135deg, #0000FF 0%, #6666FF 100%);
-                    border: none;
-                    border-radius: 10px;
-                    color: white;
-                    font-family: 'Orbitron', monospace;
-                    font-weight: bold;
-                    cursor: pointer;
-                `;
-                debugButton.onclick = function() {
-                    console.log('🔧 Debug button clicked - testing main play button');
-                    
-                    // Check if bet type and option are selected
-                    if (!currentBetType || !currentBetOption) {
-                        console.log('⚠️ No bet selected, auto-selecting...');
-                        currentBetType = 'winner';
-                        currentBetOption = '001';
-                        
-                        // Update UI to show selection
-                        document.querySelectorAll('.bet-type').forEach(bt => bt.classList.remove('selected'));
-                        document.querySelectorAll('.bet-options').forEach(bo => bo.style.display = 'none');
-                        
-                        const winnerType = document.querySelector('.bet-type');
-                        if (winnerType) {
-                            winnerType.classList.add('selected');
-                            const winnerOptions = document.getElementById('winnerOptions');
-                            if (winnerOptions) {
-                                winnerOptions.style.display = 'block';
-                            }
-                        }
-                        
-                        const option001 = document.querySelector('.bet-option');
-                        if (option001) {
-                            option001.classList.add('selected');
-                        }
-                        
-                        const statusText = document.getElementById('statusText');
-                        if (statusText) {
-                            statusText.textContent = '✅ Opción: 001';
-                        }
-                    }
-                    
-                    // Set bet amount
-                    const betInput = document.getElementById('betAmount');
-                    if (betInput) {
-                        betInput.value = '1';
-                    }
-                    
-                    // Try to click the main play button programmatically
-                    const playButton = document.getElementById('playButton');
-                    if (playButton) {
-                        console.log('🔧 Programmatically clicking main play button...');
-                        playButton.click();
-                    } else {
-                        console.error('❌ Main play button not found');
-                    }
-                };
-                bettingSection.appendChild(debugButton);
-                console.log('✅ Debug button added');
-                
-                // Direct test button (bypasses all validations)
-                const directTestButton = document.createElement('button');
-                directTestButton.textContent = '⚡ DIRECT TEST (NO VALIDATIONS)';
-                directTestButton.style.cssText = `
-                    width: 100%;
-                    padding: 10px;
-                    margin: 10px 0;
-                    background: linear-gradient(135deg, #00FF00 0%, #66FF66 100%);
-                    border: none;
-                    border-radius: 10px;
-                    color: black;
-                    font-family: 'Orbitron', monospace;
-                    font-weight: bold;
-                    cursor: pointer;
-                `;
-                directTestButton.onclick = function() {
-                    console.log('⚡ Direct test button clicked - bypassing all validations');
-                    
-                    // Force game state
-                    gameInProgress = false;
-                    currentBetType = 'winner';
-                    currentBetOption = '001';
-                    vipCoins = Math.max(vipCoins, 100); // Ensure enough coins
-                    
-                    console.log('⚡ Forced game state:', {
-                        gameInProgress: false,
-                        currentBetType: 'winner',
-                        currentBetOption: '001',
-                        vipCoins: vipCoins
-                    });
-                    
-                    // Call startGame directly
-                    console.log('⚡ Calling startGame() directly...');
-                    startGame();
-                };
-                bettingSection.appendChild(directTestButton);
-                console.log('✅ Direct test button added');
-                
-                // Debug state button
-                const debugStateButton = document.createElement('button');
-                debugStateButton.textContent = '🔍 SHOW CURRENT STATE';
-                debugStateButton.style.cssText = `
-                    width: 100%;
-                    padding: 10px;
-                    margin: 10px 0;
-                    background: linear-gradient(135deg, #FF00FF 0%, #FF66FF 100%);
-                    border: none;
-                    border-radius: 10px;
-                    color: white;
-                    font-family: 'Orbitron', monospace;
-                    font-weight: bold;
-                    cursor: pointer;
-                `;
-                debugStateButton.onclick = function() {
-                    console.log('🔍 === CURRENT GAME STATE ===');
-                    console.log('🎯 Bet Type:', currentBetType);
-                    console.log('🎲 Bet Option:', currentBetOption);
-                    console.log('💰 Coins:', vipCoins);
-                    console.log('🎮 Game In Progress:', gameInProgress);
-                    console.log('👥 Players:', players);
-                    
-                    // Show in alert too
-                    const stateMessage = `
-🎯 Bet Type: ${currentBetType || 'NONE'}
-🎲 Bet Option: ${currentBetOption || 'NONE'}
-💰 Coins: ${vipCoins}
-🎮 Game In Progress: ${gameInProgress}
-                    `;
-                    alert('🔍 CURRENT STATE:\n' + stateMessage);
-                };
-                bettingSection.appendChild(debugStateButton);
-                console.log('✅ Debug state button added');
-            }
-        }
     </script>
 </body>
 </html> 

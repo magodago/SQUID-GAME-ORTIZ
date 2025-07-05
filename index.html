@@ -5736,19 +5736,17 @@
     }
     
     const forceSyncBtn = document.getElementById('forceSyncBtn');
-    forceSyncBtn.addEventListener('click', async () => {
+    forceSyncBtn.addEventListener('click', () => {
       console.log('🔄 Forzando sincronización con Firebase...');
       
       // First, load data from Firebase
       if (window.firebase && window.firebase.database) {
-        try {
-          const database = window.firebase.database();
-          const playersRef = database.ref('players');
-          
-          console.log('📥 Cargando datos de Firebase...');
-          const snapshot = await playersRef.once('value');
+        const database = window.firebase.database();
+        const playersRef = database.ref('players');
+        
+        console.log('📥 Cargando datos de Firebase...');
+        playersRef.once('value').then(snapshot => {
           const playersData = snapshot.val() || {};
-          
           console.log('📊 Datos cargados de Firebase:', playersData);
           
           // Update admin panel with Firebase data
@@ -5781,11 +5779,10 @@
               showDailyRewardMessage('❌ Error en sincronización');
             });
           }
-          
-        } catch (error) {
+        }).catch(error => {
           console.error('❌ Error cargando datos de Firebase:', error);
           showDailyRewardMessage('❌ Error cargando datos');
-        }
+        });
       } else {
         console.log('❌ Firebase no disponible');
         showDailyRewardMessage('❌ Firebase no disponible');

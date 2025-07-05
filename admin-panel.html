@@ -357,7 +357,18 @@
     <script>
         // Load admin data when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            loadAdminData();
+            console.log('📊 Admin panel loaded, getting data...');
+            
+            // Always load from localStorage first (faster and more reliable)
+            const fallbackData = loadFallbackData();
+            if (fallbackData.players.length > 0) {
+                console.log('✅ Using localStorage data:', fallbackData);
+                updateAdminUI(fallbackData.players, fallbackData.stats);
+                showRefreshMessage('✅ Datos cargados desde el dispositivo');
+            } else {
+                console.log('📭 No localStorage data found, trying Firebase...');
+                loadAdminData(); // Try Firebase as fallback
+            }
         });
 
         async function loadAdminData() {
@@ -510,7 +521,17 @@
         // Event listeners
         document.getElementById('refreshBtn').addEventListener('click', () => {
             console.log('🔄 Refreshing admin data...');
-            loadAdminData();
+            // Force refresh from localStorage
+            const fallbackData = loadFallbackData();
+            if (fallbackData.players.length > 0) {
+                console.log('✅ Using fresh localStorage data:', fallbackData);
+                updateAdminUI(fallbackData.players, fallbackData.stats);
+                
+                // Show success message
+                showRefreshMessage('✅ Datos actualizados desde el dispositivo');
+            } else {
+                showRefreshMessage('❌ No hay datos para mostrar');
+            }
         });
 
         document.getElementById('migrateBtn').addEventListener('click', () => {
@@ -533,11 +554,14 @@
             });
         });
 
-        // Auto-refresh every 30 seconds
+        // Auto-refresh every 10 seconds with localStorage data
         setInterval(() => {
-            console.log('🔄 Auto-refreshing admin data...');
-            loadAdminData();
-        }, 30000);
+            console.log('🔄 Auto-refreshing admin data from localStorage...');
+            const fallbackData = loadFallbackData();
+            if (fallbackData.players.length > 0) {
+                updateAdminUI(fallbackData.players, fallbackData.stats);
+            }
+        }, 10000);
 
         // Migration function for admin panel
         async function migrateOldDataFromAdmin() {
@@ -689,6 +713,56 @@
                 if (message.parentNode) {
                     message.parentNode.removeChild(message);
                 }
+            }, 3000);
+        }
+
+        // Show refresh message
+        function showRefreshMessage(messageText) {
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(45deg, #00ff00, #00cc00);
+                color: #000;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0, 255, 0, 0.3);
+                z-index: 10000;
+                font-family: 'Orbitron', Arial, sans-serif;
+                font-weight: bold;
+                max-width: 300px;
+                animation: slideInRight 0.5s ease-out;
+            `;
+            
+            message.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5rem;">🔄</span>
+                    <div style="font-size: 0.9rem;">
+                        ${messageText}
+                    </div>
+                </div>
+            `;
+            
+            // Add animation CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                message.style.animation = 'slideInRight 0.5s ease-out reverse';
+                setTimeout(() => {
+                    if (message.parentNode) {
+                        message.parentNode.removeChild(message);
+                    }
+                }, 500);
             }, 3000);
         }
     </script>

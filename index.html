@@ -2214,25 +2214,47 @@
     background: rgba(0, 0, 0, 0.3);
   }
   
-  .player-item {
+  .player-entry {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    margin: 5px 0;
+    padding: 15px;
+    margin: 8px 0;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     border-left: 3px solid #00ff00;
   }
   
+  .player-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
   .player-name {
     color: #ffffff;
     font-weight: bold;
+    font-size: 1.1rem;
   }
   
   .player-coins {
     color: #ffd700;
     font-weight: bold;
+    font-size: 1rem;
+  }
+  
+  .player-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 0.9rem;
+    color: #cccccc;
+  }
+  
+  .player-stats span {
+    background: rgba(0, 255, 0, 0.1);
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 255, 0, 0.3);
   }
   
   .admin-footer {
@@ -5698,10 +5720,17 @@
     console.log('🔍 Admin panel button element:', adminPanelBtn);
     
     if (adminPanelBtn) {
-          adminPanelBtn.addEventListener('click', () => {
-      console.log('🔐 Admin panel button clicked!');
-      window.location.href = 'admin-panel.html';
-    });
+      adminPanelBtn.addEventListener('click', () => {
+        console.log('🔐 Admin panel button clicked!');
+        const adminPanel = document.getElementById('adminPanel');
+        if (adminPanel) {
+          adminPanel.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+          loadAdminData();
+        } else {
+          console.error('❌ Admin panel element not found!');
+        }
+      });
     } else {
       console.error('❌ Admin panel button not found!');
     }
@@ -6662,6 +6691,39 @@
       
       // No automatic sync - only manual sync through admin panel
     });
+
+    function loadAdminData() {
+      console.log('📊 Loading admin data...');
+      
+      // Load data from localStorage first
+      const playerName = localStorage.getItem('soldierName') || 'Unknown';
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+      const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+      const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+      
+      // Update admin stats
+      document.getElementById('totalPlayers').textContent = '1';
+      document.getElementById('totalCoinsAdmin').textContent = totalCoins.toLocaleString();
+      
+      // Create player entry
+      const playersContainer = document.getElementById('playersContainer');
+      playersContainer.innerHTML = `
+        <div class="player-entry">
+          <div class="player-info">
+            <span class="player-name">${playerName}</span>
+            <span class="player-coins">🪙 ${totalCoins.toLocaleString()}</span>
+          </div>
+          <div class="player-stats">
+            <span>🎮 ${gamesPlayed} juegos</span>
+            <span>🏆 ${totalWins} victorias</span>
+            <span>🔍 ${cluesFound} pistas</span>
+          </div>
+        </div>
+      `;
+      
+      console.log('✅ Admin data loaded from localStorage');
+    }
 
     function checkFirebaseStatus() {
       console.log('🔍 Checking Firebase status...');

@@ -2485,6 +2485,72 @@
     box-shadow: 0 0 20px rgba(255, 102, 0, 0.4);
   }
 
+  /* Player Fight Button Styles */
+  .player-fight-container {
+    position: relative;
+    display: none;
+    margin: 15px 0;
+    animation: playerFightPulse 2s infinite;
+  }
+
+  .player-fight-container.visible {
+    display: block;
+  }
+
+  @keyframes playerFightPulse {
+    0%, 100% { 
+      transform: scale(1);
+      box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+    }
+    50% { 
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(255, 0, 255, 0.6);
+    }
+  }
+
+  .player-fight-btn {
+    background: linear-gradient(45deg, #ff00ff, #cc00cc);
+    border: 3px solid #ff00ff;
+    border-radius: 15px;
+    padding: 20px 30px;
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 10px #ffffff;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .player-fight-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+  }
+
+  .player-fight-btn:hover::before {
+    left: 100%;
+  }
+
+  .player-fight-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 50px rgba(255, 0, 255, 0.8);
+    background: linear-gradient(45deg, #ff33ff, #dd00dd);
+  }
+
+  .player-fight-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+  }
+
   /* Simple ALL IN Modal Styles */
   .simple-all-in-modal {
     position: fixed;
@@ -2688,6 +2754,118 @@
   .frontman-close-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 30px rgba(255, 102, 0, 0.8);
+  }
+
+  /* Player Fight Modal Styles */
+  .player-fight-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: modalFadeIn 0.3s ease-out;
+  }
+
+  .player-fight-content {
+    background: linear-gradient(135deg, #1a001a, #330033);
+    border: 3px solid #ff00ff;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 0 50px rgba(255, 0, 255, 0.5);
+    animation: modalSlideIn 0.3s ease-out;
+  }
+
+  .player-fight-content h2 {
+    color: #ff00ff;
+    font-size: 2.5rem;
+    margin: 0 0 20px 0;
+    text-shadow: 0 0 20px #ff00ff;
+  }
+
+  .player-fight-subtitle {
+    color: #ffffff;
+    font-size: 1.2rem;
+    margin: 20px 0;
+    line-height: 1.5;
+  }
+
+  .rps-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+  }
+
+  .rps-btn {
+    padding: 20px;
+    border: 3px solid #ff00ff;
+    border-radius: 15px;
+    font-size: 3rem;
+    background: linear-gradient(45deg, #ff00ff, #cc00cc);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+    text-shadow: 0 0 10px #ffffff;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+  }
+
+  .rps-btn:hover {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
+    background: linear-gradient(45deg, #ff33ff, #dd00dd);
+  }
+
+  .rps-btn:active {
+    transform: translateY(0) scale(1);
+  }
+
+  .fight-result {
+    margin: 30px 0;
+    padding: 20px;
+    border-radius: 15px;
+    font-size: 1.3rem;
+    font-weight: bold;
+  }
+
+  .fight-win {
+    background: linear-gradient(45deg, rgba(0, 255, 0, 0.2), rgba(0, 200, 0, 0.1));
+    border: 2px solid #00ff00;
+    color: #00ff00;
+  }
+
+  .fight-lose {
+    background: linear-gradient(45deg, rgba(255, 0, 0, 0.2), rgba(200, 0, 0, 0.1));
+    border: 2px solid #ff0000;
+    color: #ff0000;
+  }
+
+  .player-fight-close-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    background: linear-gradient(45deg, #ff00ff, #cc00cc);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+  }
+
+  .player-fight-close-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
   }
 
   .all-in-btn:hover {
@@ -3992,6 +4170,13 @@
     <div class="frontman-call-container" id="frontmanCallContainer">
       <button class="frontman-call-btn" id="frontmanCallBtn">
         📞 FRONT MAN TE LLAMA 📞
+      </button>
+    </div>
+
+    <!-- Player Fight Button (Only for players with 25000+ coins) -->
+    <div class="player-fight-container" id="playerFightContainer">
+      <button class="player-fight-btn" id="playerFightBtn">
+        ⚔️ PELEA ENTRE JUGADORES ⚔️
       </button>
     </div>
     
@@ -7407,6 +7592,168 @@
       }
     }
 
+    // PLAYER FIGHT FUNCTIONS (ROCK PAPER SCISSORS)
+    function initializePlayerFight() {
+      console.log('⚔️ Initializing Player Fight...');
+      
+      const playerFightContainer = document.getElementById('playerFightContainer');
+      const playerFightBtn = document.getElementById('playerFightBtn');
+      
+      // Check if player has 25000+ coins and show/hide button
+      function checkPlayerFightVisibility() {
+        const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        if (totalCoins >= 25000) {
+          playerFightContainer.classList.add('visible');
+          console.log('⚔️ Player Fight button visible - player has', totalCoins, 'coins');
+        } else {
+          playerFightContainer.classList.remove('visible');
+        }
+      }
+      
+      // Check visibility on page load
+      checkPlayerFightVisibility();
+      
+      // Check visibility when coins change
+      const originalLoadTotalCoins = window.loadTotalCoins;
+      window.loadTotalCoins = function() {
+        if (originalLoadTotalCoins) originalLoadTotalCoins();
+        checkPlayerFightVisibility();
+      };
+      
+      // Player Fight button click - show RPS modal
+      playerFightBtn.addEventListener('click', () => {
+        console.log('⚔️ Player Fight button clicked!');
+        const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        
+        if (totalCoins < 25000) {
+          console.log('❌ Player does not have enough coins for Player Fight');
+          return;
+        }
+        
+        showPlayerFightModal();
+      });
+    }
+    
+    function showPlayerFightModal() {
+      // Create modal HTML
+      const modalHTML = `
+        <div class="player-fight-modal" id="playerFightModal">
+          <div class="player-fight-content">
+            <h2>⚔️ PELEA ENTRE JUGADORES</h2>
+            <p class="player-fight-subtitle">¡Un grupo de jugadores te desafía!<br>Elige tu arma para defenderte:</p>
+            <div class="rps-buttons">
+              <button class="rps-btn" data-choice="rock">🪨</button>
+              <button class="rps-btn" data-choice="paper">📄</button>
+              <button class="rps-btn" data-choice="scissors">✂️</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add modal to page
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+      
+      // Add event listeners for RPS buttons
+      document.querySelectorAll('.rps-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const playerChoice = btn.dataset.choice;
+          playRockPaperScissors(playerChoice);
+        });
+      });
+      
+      // Close on outside click
+      document.getElementById('playerFightModal').addEventListener('click', (e) => {
+        if (e.target.id === 'playerFightModal') {
+          closePlayerFightModal();
+        }
+      });
+    }
+    
+    function playRockPaperScissors(playerChoice) {
+      console.log('⚔️ Player chose:', playerChoice);
+      
+      // Computer makes random choice
+      const choices = ['rock', 'paper', 'scissors'];
+      const computerChoice = choices[Math.floor(Math.random() * choices.length)];
+      
+      console.log('⚔️ Computer chose:', computerChoice);
+      
+      // Determine winner
+      let result;
+      let playerWins = false;
+      
+      if (playerChoice === computerChoice) {
+        result = 'empate';
+      } else if (
+        (playerChoice === 'rock' && computerChoice === 'scissors') ||
+        (playerChoice === 'paper' && computerChoice === 'rock') ||
+        (playerChoice === 'scissors' && computerChoice === 'paper')
+      ) {
+        result = 'victoria';
+        playerWins = true;
+      } else {
+        result = 'derrota';
+      }
+      
+      // Show result
+      showPlayerFightResult(playerChoice, computerChoice, result, playerWins);
+    }
+    
+    function showPlayerFightResult(playerChoice, computerChoice, result, playerWins) {
+      const choiceEmojis = {
+        rock: '🪨',
+        paper: '📄',
+        scissors: '✂️'
+      };
+      
+      const modal = document.getElementById('playerFightModal');
+      
+      if (playerWins) {
+        // Player wins - keep coins
+        modal.innerHTML = `
+          <div class="player-fight-content">
+            <h2 style="color: #00ff00;">🏆 ¡VICTORIA!</h2>
+            <div class="fight-result fight-win">
+              <p>Tu elección: ${choiceEmojis[playerChoice]}</p>
+              <p>Jugadores: ${choiceEmojis[computerChoice]}</p>
+              <p>¡Los has derrotado! Mantienes tus monedas.</p>
+            </div>
+            <button class="player-fight-close-btn" id="playerFightCloseBtn">🏆 ¡VENCEDOR!</button>
+          </div>
+        `;
+      } else {
+        // Player loses - lose all coins
+        const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        localStorage.setItem('totalOrtizCoins', '0');
+        loadTotalCoins();
+        
+        modal.innerHTML = `
+          <div class="player-fight-content">
+            <h2 style="color: #ff0000;">💀 ¡DERROTA!</h2>
+            <div class="fight-result fight-lose">
+              <p>Tu elección: ${choiceEmojis[playerChoice]}</p>
+              <p>Jugadores: ${choiceEmojis[computerChoice]}</p>
+              <p>¡Un grupo de jugadores te ha robado todo!</p>
+              <p>Perdiste ${currentCoins.toLocaleString()} monedas</p>
+            </div>
+            <button class="player-fight-close-btn" id="playerFightCloseBtn">💀 ¡ROBADO!</button>
+          </div>
+        `;
+      }
+      
+      // Add close button listener
+      document.getElementById('playerFightCloseBtn').addEventListener('click', () => {
+        closePlayerFightModal();
+      });
+    }
+    
+    function closePlayerFightModal() {
+      const modal = document.getElementById('playerFightModal');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
     // AUTOMATIC SYNC FUNCTIONS (NEW - DOESN'T AFFECT DAILY REWARD)
     function initializeAutomaticSync() {
       console.log('🔄 Initializing automatic sync every hour...');
@@ -7490,6 +7837,9 @@
       
       // Initialize Front Man call for players with 20000+ coins
       initializeFrontManCall();
+      
+      // Initialize Player Fight for players with 25000+ coins
+      initializePlayerFight();
       
       // Initialize admin set coins functionality
       initializeAdminSetCoins();

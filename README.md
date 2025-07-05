@@ -110,3 +110,34 @@ Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request.
 ---
 
 **¡Disfruta del juego y encuentra todos los secretos!** 🎮✨ 
+
+# SQUID GAME ORTIZ
+
+Sistema de juegos web inspirado en Squid Game con múltiples minijuegos, panel de administración y integración con Firebase.
+
+## Características
+
+- Múltiples minijuegos (Soldado, Jugador, VIP, Front Man, Joker Pistas)
+- Sistema de monedas y recompensas
+- Panel de administración
+- Integración con Firebase
+- Sistema de logros y rachas diarias
+- Easter Eggs y características especiales
+
+## Juegos Disponibles
+
+1. **Soldado**: Juego de puntería y precisión
+2. **Jugador**: Juego de timing y reflejos
+3. **VIP**: Juego de apuestas y estrategia
+4. **Front Man**: Juego de memoria y secuencias
+5. **Joker Pistas**: Juego de pistas y misterio
+
+## Tecnologías
+
+- HTML5, CSS3, JavaScript
+- Firebase (Firestore, Authentication)
+- GitHub Pages para hosting
+
+---
+
+*Actualizado: Sistema de logros y estadísticas completamente funcional* 

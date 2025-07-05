@@ -2047,6 +2047,203 @@
       background: linear-gradient(45deg, #00FFFF, #0080FF);
       color: #000;
       border: 3px solid #00FFFF;
+    }
+    
+    /* Fusion Power Modal Styles */
+    .fusion-power-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 4000;
+      backdrop-filter: blur(25px);
+      border: 4px solid #9933ff;
+      box-shadow: 0 0 120px #9933ff, inset 0 0 120px rgba(153, 51, 255, 0.3);
+      padding: 2rem;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    
+    .fusion-power-modal.active {
+      display: flex;
+      animation: fusionPowerEntrance 1.5s ease-out;
+    }
+    
+    @keyframes fusionPowerEntrance {
+      0% {
+        opacity: 0;
+        transform: scale(0.2) rotate(20deg);
+      }
+      50% {
+        opacity: 0.7;
+        transform: scale(1.3) rotate(-12deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+    
+    .fusion-power-content {
+      background: linear-gradient(145deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+      border: 4px solid #9933ff;
+      border-radius: 30px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 0 100px #9933ff, inset 0 0 80px rgba(153, 51, 255, 0.2);
+      text-align: center;
+      max-width: 85%;
+      max-height: 85vh;
+      position: relative;
+      z-index: 4001;
+      overflow-y: auto;
+    }
+    
+    .fusion-power-header h2 {
+      color: #9933ff;
+      font-size: 2.4rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 60px #9933ff, 0 0 120px #9933ff;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      animation: fusionPowerTitleGlow 2.5s infinite;
+    }
+    
+    @keyframes fusionPowerTitleGlow {
+      0%, 100% {
+        text-shadow: 0 0 60px #9933ff, 0 0 120px #9933ff;
+      }
+      50% {
+        text-shadow: 0 0 90px #9933ff, 0 0 180px #9933ff, 0 0 270px #9933ff;
+      }
+    }
+    
+    .fusion-power-subtitle {
+      color: #FFD700;
+      font-size: 1.2rem;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 0 30px #FFD700;
+      font-weight: bold;
+    }
+    
+    .fusion-animation-container {
+      position: relative;
+      height: 200px;
+      margin: 2.5rem 0;
+      overflow: hidden;
+    }
+    
+    .fusion-effects {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .fusion-particle {
+      position: absolute;
+      font-size: 1.5rem;
+      color: #9933ff;
+      text-shadow: 0 0 15px #9933ff;
+      animation: fusionParticleFloat 3s ease-out forwards;
+    }
+    
+    @keyframes fusionParticleFloat {
+      0% {
+        opacity: 0;
+        transform: translateY(100px) scale(0) rotate(0deg);
+      }
+      20% {
+        opacity: 1;
+        transform: translateY(80px) scale(1) rotate(10deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(1.5) rotate(360deg);
+      }
+    }
+    
+    .fusion-symbol {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5rem;
+      color: #9933ff;
+      text-shadow: 0 0 50px #9933ff, 0 0 100px #9933ff;
+      animation: fusionSymbolPulse 2s infinite alternate;
+      z-index: 10;
+    }
+    
+    @keyframes fusionSymbolPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        text-shadow: 0 0 50px #9933ff, 0 0 100px #9933ff;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.4) rotate(-20deg);
+        text-shadow: 0 0 70px #9933ff, 0 0 140px #9933ff, 0 0 210px #9933ff;
+      }
+    }
+    
+    .fusion-power-message {
+      margin: 2.5rem 0;
+    }
+    
+    .fusion-title {
+      color: #9933ff;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 0 50px #9933ff;
+      animation: fusionTitlePulse 2.5s infinite;
+    }
+    
+    @keyframes fusionTitlePulse {
+      0%, 100% {
+        text-shadow: 0 0 50px #9933ff;
+      }
+      50% {
+        text-shadow: 0 0 80px #9933ff, 0 0 140px #9933ff;
+      }
+    }
+    
+    .fusion-description {
+      color: #FFD700;
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 0 25px #FFD700;
+    }
+    
+    .fusion-warning {
+      color: #FF4757;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 20px #FF4757;
+      animation: fusionWarningBlink 1.2s infinite;
+    }
+    
+    @keyframes fusionWarningBlink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+    
+    .fusion-power-btn {
+      background: linear-gradient(45deg, #9933ff, #6600cc);
+      color: #fff;
+      border: 3px solid #9933ff;
       padding: 1.3rem 3.5rem;
       font-size: 1.3rem;
       font-weight: bold;
@@ -3045,6 +3242,31 @@
         
         <div class="lock-power-footer">
           <button class="lock-power-btn" id="closeLockPower">¡ACTIVAR INMUNIDAD!</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Fusion Power Modal -->
+    <div class="fusion-power-modal" id="fusionPowerModal">
+      <div class="fusion-power-content">
+        <div class="fusion-power-header">
+          <h2>🔗 EL PODER DE FUSIÓN</h2>
+          <div class="fusion-power-subtitle">¡Has desbloqueado el poder de unir destinos!</div>
+        </div>
+        
+        <div class="fusion-animation-container">
+          <div class="fusion-effects" id="fusionEffects"></div>
+          <div class="fusion-symbol">🔗</div>
+        </div>
+        
+        <div class="fusion-power-message">
+          <div class="fusion-title">PODER DE FUSIÓN</div>
+          <div class="fusion-description">Puedes elegir una sola vez en un juego que tu destino sea el mismo que el jugador que elijas</div>
+          <div class="fusion-warning">⚠️ Este poder solo se puede usar una vez por sesión</div>
+        </div>
+        
+        <div class="fusion-power-footer">
+          <button class="fusion-power-btn" id="closeFusionPower">¡ACTIVAR FUSIÓN!</button>
         </div>
       </div>
     </div>
@@ -4082,6 +4304,12 @@
     const godsPowerModal = document.getElementById('godsPowerModal');
     const closeGodsPowerBtn = document.getElementById('closeGodsPower');
     
+    // Fusion Power Easter Egg variables
+    let fusionSequence = [];
+    let fusionSequenceTimeout = null;
+    const fusionPowerModal = document.getElementById('fusionPowerModal');
+    const closeFusionPowerBtn = document.getElementById('closeFusionPower');
+    
     // Detect clicks on soldier name display
     document.addEventListener('click', (e) => {
       const target = e.target;
@@ -4153,7 +4381,82 @@
         soldierNameClicks = 0;
         coinsCounterClicks = 0;
       }
+      
+      // Check for fusion power sequence
+      checkFusionSequence(target);
     });
+    
+    function checkFusionSequence(target) {
+      const now = Date.now();
+      
+      // Clear previous timeout
+      if (fusionSequenceTimeout) {
+        clearTimeout(fusionSequenceTimeout);
+      }
+      
+      console.log('Checking fusion sequence for:', target.textContent, target.className, target.id);
+      
+      // Check for medal (soldier icon) - 🎖️
+      if (target.textContent === '🎖️' || target.classList.contains('soldier-icon')) {
+        console.log('Medal detected!');
+        addToFusionSequence('medal', now);
+      }
+      // Check for player (soldier name display container)
+      else if (target.closest('#soldierNameDisplay') || target.classList.contains('soldier-name')) {
+        console.log('Player container detected!');
+        addToFusionSequence('player', now);
+      }
+      // Check for player name (soldier name text)
+      else if (target.id === 'soldierNameText' || target.closest('#soldierNameText')) {
+        console.log('Player name detected!');
+        addToFusionSequence('playerName', now);
+      }
+      // Check for total coins number
+      else if (target.id === 'totalCoins' || target.closest('#totalCoins')) {
+        console.log('Total coins number detected!');
+        addToFusionSequence('totalCoins', now);
+      }
+      // Check for "COINS" text
+      else if (target.textContent.includes('COINS') || target.classList.contains('coins-text')) {
+        console.log('COINS text detected!');
+        addToFusionSequence('coins', now);
+      }
+      // Check for coin emoji - 🪙
+      else if (target.textContent === '🪙' || target.classList.contains('coin-icon')) {
+        console.log('Coin emoji detected!');
+        addToFusionSequence('coinEmoji', now);
+      }
+      
+      // Set timeout to reset sequence after 5 seconds
+      fusionSequenceTimeout = setTimeout(() => {
+        fusionSequence = [];
+        console.log('Fusion sequence reset due to timeout');
+      }, 5000);
+    }
+    
+    function addToFusionSequence(element, timestamp) {
+      // Only add if not already in sequence
+      if (!fusionSequence.find(item => item.element === element)) {
+        fusionSequence.push({ element, timestamp });
+        console.log('Added to fusion sequence:', element);
+        console.log('Current fusion sequence:', fusionSequence.map(item => item.element));
+        
+        // Check if sequence is complete
+        if (fusionSequence.length === 6) {
+          const expectedSequence = ['medal', 'player', 'playerName', 'totalCoins', 'coins', 'coinEmoji'];
+          const actualSequence = fusionSequence.map(item => item.element);
+          
+          if (JSON.stringify(expectedSequence) === JSON.stringify(actualSequence)) {
+            console.log('Fusion power sequence completed!');
+            activateFusionPower();
+            fusionSequence = []; // Reset sequence
+          } else {
+            console.log('Fusion sequence incorrect, resetting');
+            fusionSequence = [];
+          }
+                 }
+       }
+     }
     
     function activateGodsPower() {
       // Show gods power modal
@@ -4162,6 +4465,15 @@
       
       // Create lightning effects
       createLightningEffects();
+    }
+    
+    function activateFusionPower() {
+      // Show fusion power modal
+      fusionPowerModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Create fusion effects
+      createFusionEffects();
     }
     
     function addOneCoin() {
@@ -4373,6 +4685,29 @@
       }
     }
     
+    function createFusionEffects() {
+      const fusionEffects = document.getElementById('fusionEffects');
+      
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const fusion = document.createElement('div');
+          fusion.className = 'fusion-particle';
+          fusion.textContent = '🔗';
+          fusion.style.left = Math.random() * 100 + '%';
+          fusion.style.animationDelay = Math.random() * 2 + 's';
+          
+          fusionEffects.appendChild(fusion);
+          
+          // Remove fusion particle after animation
+          setTimeout(() => {
+            if (fusion.parentNode) {
+              fusion.parentNode.removeChild(fusion);
+            }
+          }, 3000);
+        }, i * 100);
+      }
+    }
+    
     // Close gods power modal
     closeGodsPowerBtn.addEventListener('click', () => {
       closeGodsPowerModal();
@@ -4403,6 +4738,39 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && godsPowerModal.classList.contains('active')) {
         closeGodsPowerModal();
+      }
+    });
+    
+    // Close fusion power modal
+    closeFusionPowerBtn.addEventListener('click', () => {
+      closeFusionPowerModal();
+    });
+    
+    // Close modal when clicking anywhere on the modal
+    fusionPowerModal.addEventListener('click', (e) => {
+      // Only close if clicking on the modal background, not on content
+      if (e.target === fusionPowerModal) {
+        closeFusionPowerModal();
+      }
+    });
+    
+    function closeFusionPowerModal() {
+      fusionPowerModal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      
+      // Clear fusion effects
+      document.getElementById('fusionEffects').innerHTML = '';
+      
+      // Redirect to home after a short delay
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 300);
+    }
+    
+    // Add ESC key functionality to close fusion power modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && fusionPowerModal.classList.contains('active')) {
+        closeFusionPowerModal();
       }
     });
     

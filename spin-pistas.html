@@ -15,7 +15,7 @@
         body {
             font-family: 'Orbitron', monospace;
             background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-            color: #FFD700;
+            color: #FFFFFF;
             overflow-y: auto;
             min-height: 100vh;
             position: relative;
@@ -28,8 +28,8 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, rgba(0, 100, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
             z-index: 1;
         }
 
@@ -42,29 +42,29 @@
             z-index: 100;
             background: rgba(0, 0, 0, 0.95);
             padding: 15px 20px;
-            border-bottom: 3px solid #FFD700;
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+            border-bottom: 3px solid #006400;
+            box-shadow: 0 4px 20px rgba(0, 100, 0, 0.3);
         }
 
         .slot-title {
             font-size: 2.5rem;
             font-weight: 900;
-            color: #FFD700;
-            text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+            color: #FFFFFF;
+            text-shadow: 0 0 30px #FFFFFF, 0 0 60px #006400;
             margin: 0;
             animation: slotGlow 2s ease-in-out infinite alternate;
         }
 
         @keyframes slotGlow {
-            from { text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700; }
-            to { text-shadow: 0 0 40px #FFD700, 0 0 80px #FFD700, 0 0 120px #FFD700; }
+            from { text-shadow: 0 0 30px #FFFFFF, 0 0 60px #006400; }
+            to { text-shadow: 0 0 40px #FFFFFF, 0 0 80px #006400, 0 0 120px #FFFFFF; }
         }
 
         .back-btn {
             position: fixed;
             top: 20px;
             left: 20px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            background: linear-gradient(135deg, #FFFFFF 0%, #006400 100%);
             border: none;
             border-radius: 10px;
             padding: 10px 20px;
@@ -78,7 +78,7 @@
 
         .back-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 20px #FFD700;
+            box-shadow: 0 0 20px #FFFFFF;
         }
 
         .slot-main {
@@ -92,11 +92,11 @@
 
         .slot-machine {
             background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
-            border: 4px solid #FFD700;
+            border: 4px solid #006400;
             border-radius: 20px;
             padding: 30px;
             text-align: center;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 30px rgba(0, 100, 0, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -108,7 +108,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.05), transparent);
+            background: linear-gradient(45deg, transparent, rgba(0, 100, 0, 0.05), transparent);
             transform: rotate(45deg);
             animation: slotShine 4s linear infinite;
             z-index: 1;
@@ -132,7 +132,7 @@
             width: 120px;
             height: 120px;
             background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
-            border: 3px solid #FFD700;
+            border: 3px solid #006400;
             border-radius: 15px;
             display: flex;
             align-items: center;
@@ -140,7 +140,7 @@
             font-size: 3rem;
             position: relative;
             overflow: hidden;
-            box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.2);
+            box-shadow: inset 0 0 20px rgba(0, 100, 0, 0.2);
         }
 
         .slot-reel::before {
@@ -150,7 +150,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, transparent 0%, rgba(255, 215, 0, 0.1) 50%, transparent 100%);
+            background: linear-gradient(180deg, transparent 0%, rgba(0, 100, 0, 0.1) 50%, transparent 100%);
             z-index: 1;
         }
 
@@ -180,7 +180,7 @@
         }
 
         .spin-btn {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            background: linear-gradient(135deg, #FFFFFF 0%, #006400 100%);
             border: none;
             border-radius: 15px;
             padding: 20px 40px;
@@ -197,7 +197,7 @@
 
         .spin-btn:hover:not(:disabled) {
             transform: scale(1.05);
-            box-shadow: 0 0 30px #FFD700;
+            box-shadow: 0 0 30px #FFFFFF;
         }
 
         .spin-btn:disabled {
@@ -208,7 +208,7 @@
 
         .cost-info {
             font-size: 1.2rem;
-            color: #FFA500;
+            color: #006400;
             margin: 10px 0;
             position: relative;
             z-index: 2;
@@ -216,7 +216,7 @@
 
         .coins-display {
             font-size: 1.3rem;
-            color: #FFD700;
+            color: #FFFFFF;
             margin: 15px 0;
             position: relative;
             z-index: 2;
@@ -228,14 +228,14 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
-            border: 3px solid #FFD700;
+            border: 3px solid #006400;
             border-radius: 20px;
             padding: 30px;
             text-align: center;
             z-index: 1000;
             min-width: 350px;
             max-width: 500px;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 50px rgba(0, 100, 0, 0.5);
             animation: modalAppear 0.5s ease-out;
         }
 
@@ -290,17 +290,17 @@
 
         .hint-text {
             font-size: 1.1rem;
-            color: #00FF00;
+            color: #FFFFFF;
             font-style: italic;
             margin: 15px 0;
             padding: 15px;
-            background: rgba(0, 255, 0, 0.1);
+            background: rgba(0, 100, 0, 0.2);
             border-radius: 10px;
-            border: 1px solid rgba(0, 255, 0, 0.3);
+            border: 1px solid rgba(0, 100, 0, 0.5);
         }
 
         .modal-btn {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            background: linear-gradient(135deg, #FFFFFF 0%, #006400 100%);
             border: none;
             border-radius: 10px;
             padding: 12px 25px;
@@ -314,7 +314,7 @@
 
         .modal-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 20px #FFD700;
+            box-shadow: 0 0 20px #FFFFFF;
         }
 
         .modal-overlay {
@@ -412,7 +412,7 @@
             <button class="spin-btn" id="spinBtn" onclick="spin()">🎰 GIRAR</button>
             
             <div class="back-box">
-                <button onclick="goBack()" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; border-radius: 10px; color: #000; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">← VOLVER AL MENÚ PRINCIPAL</button>
+                <button onclick="goBack()" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #FFFFFF 0%, #006400 100%); border: none; border-radius: 10px; color: #000; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">← VOLVER AL MENÚ PRINCIPAL</button>
             </div>
         </div>
     </div>
@@ -482,14 +482,25 @@
 
             document.getElementById('spinBtn').disabled = true;
             
-            // Animar los símbolos
+            // Animar los símbolos con cambios continuos
             const reels = ['reel1', 'reel2', 'reel3'];
+            const spinIntervals = [];
+            
             reels.forEach((reelId, index) => {
                 const reel = document.getElementById(reelId);
                 reel.classList.add('spinning');
                 
+                // Cambiar símbolos rápidamente durante la animación
+                const interval = setInterval(() => {
+                    const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    reel.textContent = randomSymbol.symbol;
+                }, 100); // Cambiar cada 100ms
+                
+                spinIntervals.push(interval);
+                
                 // Parar la animación después de un tiempo diferente para cada reel
                 setTimeout(() => {
+                    clearInterval(interval);
                     reel.classList.remove('spinning');
                 }, 1000 + (index * 500));
             });

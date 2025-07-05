@@ -2699,13 +2699,13 @@
     }
     
     .spin-btn {
-      background: linear-gradient(45deg, #FF69B4, #FF1493);
-      box-shadow: 0 0 30px #FF69B4, inset 0 0 20px rgba(255, 105, 180, 0.3);
+      background: linear-gradient(45deg, #006400, #228B22);
+      box-shadow: 0 0 30px #006400, inset 0 0 20px rgba(0, 100, 0, 0.3);
     }
     
     .spin-btn:hover {
       transform: scale(1.1) rotateY(5deg);
-      box-shadow: 0 0 50px #FF69B4, inset 0 0 30px rgba(255, 105, 180, 0.5);
+      box-shadow: 0 0 50px #006400, inset 0 0 30px rgba(0, 100, 0, 0.5);
     }
     
     .frontman-btn {
@@ -3125,12 +3125,16 @@
           <span class="envelope-text">VIP</span>
         </div>
       </button>
+      <button class="envelope-btn frontman-btn" id="frontmanBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">FRONT MAN</span>
+        </div>
+      </button>
       <button class="envelope-btn spin-btn" id="spinBtn">
         <div class="envelope-content">
           <span class="envelope-text">SPIN PISTAS</span>
         </div>
       </button>
-      <button class="envelope-btn frontman-btn" id="frontmanBtn">
         <div class="envelope-content">
           <span class="envelope-text">FRONT MAN</span>
         </div>
@@ -4021,7 +4025,7 @@
       
       // Add dramatic effect
       spinBtn.style.transform = 'scale(0.9) rotateY(5deg)';
-      spinBtn.style.boxShadow = '0 0 80px #FF69B4, inset 0 0 40px rgba(255, 105, 180, 0.7)';
+      spinBtn.style.boxShadow = '0 0 80px #006400, inset 0 0 40px rgba(0, 100, 0, 0.7)';
       
       // Create simple explosion effect
       for (let i = 0; i < 8; i++) {
@@ -4029,7 +4033,7 @@
         particle.style.position = 'absolute';
         particle.style.width = '4px';
         particle.style.height = '4px';
-        particle.style.background = '#FF69B4';
+        particle.style.background = '#006400';
         particle.style.borderRadius = '50%';
         particle.style.pointerEvents = 'none';
         particle.style.zIndex = '1000';
@@ -4079,10 +4083,10 @@
         messageEl.style.top = '50%';
         messageEl.style.left = '50%';
         messageEl.style.transform = 'translate(-50%, -50%)';
-        messageEl.style.color = '#FF69B4';
+        messageEl.style.color = '#006400';
         messageEl.style.fontSize = '1.5rem';
         messageEl.style.fontWeight = 'bold';
-        messageEl.style.textShadow = '0 0 20px #FF69B4';
+        messageEl.style.textShadow = '0 0 20px #006400';
         messageEl.style.zIndex = '2000';
         messageEl.style.pointerEvents = 'none';
         messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';

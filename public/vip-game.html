@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP Apuestas - Squid Game Ortiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            color: #FFD700;
+            overflow-y: auto;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .vip-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .vip-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            text-align: center;
+            z-index: 1000;
+            padding: 15px 0;
+            border-bottom: 2px solid #FFD700;
+            box-shadow: 0 2px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .vip-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #FFD700;
+            text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+            margin-bottom: 10px;
+            animation: vipGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes vipGlow {
+            from { text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700; }
+            to { text-shadow: 0 0 40px #FFD700, 0 0 80px #FFD700, 0 0 120px #FFD700; }
+        }
+
+        .back-btn {
+            display: block !important;
+            margin-top: 12px;
+            width: 100%;
+            padding: 16px 0;
+            background: linear-gradient(135deg, #333 0%, #FFD700 100%);
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px #FFD700;
+            transition: all 0.2s;
+            position: static;
+        }
+        .back-btn:hover {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #222;
+            box-shadow: 0 0 20px #FFD700;
+        }
+        @media (max-width: 768px) {
+            .back-btn {
+                display: block !important;
+                font-size: 1rem;
+                padding: 14px 0;
+            }
+        }
+
+        .vip-main {
+            position: relative;
+            margin: 120px auto 100px auto;
+            width: 90%;
+            max-width: 1200px;
+            min-height: 70vh;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .game-arena {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.95) 100%);
+            border: 3px solid #FFD700;
+            border-radius: 15px;
+            padding: 32px 20px 32px 20px;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.4), inset 0 0 30px rgba(255, 215, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 280px;
+        }
+        
+        .game-arena::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.1) 50%, transparent 70%);
+            animation: arenaShine 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        .game-arena::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.03) 0%, transparent 70%);
+            animation: arenaGlow 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes arenaShine {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+        
+        @keyframes arenaGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .betting-panel {
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid #FFD700;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .arena-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #FFD700;
+            text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+            animation: arenaTitleGlow 2s ease-in-out infinite alternate;
+            position: relative;
+            z-index: 5;
+        }
+        
+        @keyframes arenaTitleGlow {
+            from { text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700; }
+            to { text-shadow: 0 0 40px #FFD700, 0 0 80px #FFD700, 0 0 120px #FFD700; }
+        }
+
+        .players-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            height: calc(100% - 80px);
+        }
+
+        .player-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            animation: playerPulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes playerPulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.6; }
+        }
+
+        .player-card.winner {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            animation: winnerGlow 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes winnerGlow {
+            from { box-shadow: 0 0 30px #FFD700; }
+            to { box-shadow: 0 0 50px #FFD700, 0 0 70px #FFD700; }
+        }
+
+        .bet-type {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .bet-type:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #FFD700;
+        }
+        
+        .bet-type.selected {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border-color: #FFA500;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .bet-option {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-bottom: 10px;
+            position: relative;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bet-option:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #FFD700;
+        }
+
+        .bet-option.selected {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border-color: #FFA500;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .bet-option.selected::before {
+            content: "✅";
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border: 2px solid #FFD700;
+        }
+
+        .bet-options-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .place-bet-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .place-bet-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px #FFD700;
+        }
+
+        .game-status {
+            position: relative;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .instructions {
+            display: none;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #FFD700;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #FFA500;
+        }
+
+        .instructions h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .vip-title {
+                font-size: 1.2rem;
+            }
+            
+            .vip-subtitle {
+                font-size: 0.7rem;
+            }
+            
+            .vip-main {
+                width: 95%;
+                margin: 100px auto 80px auto;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+                gap: 15px;
+            }
+            
+            .game-arena {
+                padding: 10px;
+                max-height: 150px;
+            }
+            
+            .arena-title {
+                font-size: 1rem;
+                margin-bottom: 8px;
+            }
+            
+            .players-container {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 5px;
+                height: auto;
+            }
+            
+            .player-card {
+                padding: 5px;
+            }
+            
+            .player-card div {
+                font-size: 0.7rem;
+            }
+            
+            .betting-panel {
+                padding: 10px;
+                max-height: none;
+            }
+            
+            .bet-title {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+            
+            .bet-option {
+                padding: 8px;
+                margin-bottom: 5px;
+            }
+            
+            .bet-option div {
+                font-size: 0.8rem;
+            }
+            
+            .place-bet-btn {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .game-status {
+                margin: 15px auto;
+                padding: 10px;
+                width: 95%;
+            }
+            
+            .status-text {
+                font-size: 0.9rem;
+            }
+            
+            .instructions {
+                display: block !important;
+                margin-bottom: 10px;
+                padding: 8px;
+                font-size: 0.7rem;
+            }
+            
+            .back-btn {
+                display: block !important;
+                font-size: 1rem;
+                padding: 14px 0;
+            }
+        }
+
+    /* Modal de Resultados */
+    .result-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .result-content {
+        background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+        border: 3px solid #FFD700;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        max-width: 90%;
+        width: 400px;
+        animation: slideIn 0.5s ease;
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+    }
+
+    .result-btn {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 15px 30px;
+        color: #000;
+        font-family: 'Orbitron', monospace;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .result-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px #FFD700;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    </style>
+</head>
+<body>
+    <div class="vip-bg"></div>
+    
+    <button class="back-btn" onclick="goBack()">← VOLVER</button>
+    
+    <div class="vip-header" style="position: fixed; top: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.95); z-index: 100; padding: 15px 0; border-bottom: 2px solid #FFD700;">
+        <div class="vip-title">👑 VIP APUESTAS</div>
+    </div>
+    
+    <div class="vip-main">
+        <div class="game-arena">
+            <div class="arena-title">🎮 ARENA DE JUEGO</div>
+            <div class="players-container" id="playersContainer">
+                <!-- Fallback players in case JavaScript fails -->
+                <div class="player-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🎮</div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">Jugador A</div>
+                    <div>Puntos: <span class="score-value">0</span></div>
+                </div>
+                <div class="player-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🎯</div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">Jugador B</div>
+                    <div>Puntos: <span class="score-value">0</span></div>
+                </div>
+                <div class="player-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">⚡</div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">Jugador C</div>
+                    <div>Puntos: <span class="score-value">0</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="betting-panel">
+            <div class="instructions">
+                <h3>📋 INSTRUCCIONES VIP</h3>
+                <ol>
+                    <li><strong>Observa</strong> los 3 jugadores en la arena</li>
+                    <li><strong>Selecciona</strong> un tipo de apuesta:</li>
+                    <ul>
+                        <li>🏆 <strong>APUESTA GANADOR:</strong> Elige qué jugador ganará (2x ganancia)</li>
+                        <li>📊 <strong>APUESTA PUNTUACIÓN:</strong> Predice la puntuación total (1.5x ganancia)</li>
+                        <li>⚡ <strong>APUESTA DIFERENCIA:</strong> Predice si será reñido o dominante (3x ganancia)</li>
+                    </ul>
+                    <li><strong>Selecciona</strong> tu opción específica</li>
+                    <li><strong>Ingresa</strong> la cantidad de Ortiz Coins</li>
+                    <li><strong>Presiona JUGAR</strong> y observa la competencia</li>
+                    <li><strong>¡Gana Ortiz Coins</strong> si aciertas tu predicción!</li>
+                </ol>
+            </div>
+            <div style="text-align: center; font-size: 1.3rem; margin-bottom: 20px; color: #FFD700;">💰 APUESTA</div>
+            <div class="bet-types">
+                <div class="bet-type" onclick="selectBetType('winner', this)">
+                    <div style="font-weight: bold; margin-bottom: 5px;">🏆 APUESTA GANADOR</div>
+                    <div style="font-size: 0.8rem; color: #FFA500;">Selecciona qué jugador ganará (2x ganancia)</div>
+                    <div class="bet-options-container" id="winnerOptions" style="display: none;">
+                        <!-- Opciones específicas para ganador -->
+                    </div>
+                </div>
+                <div class="bet-type" onclick="selectBetType('score', this)">
+                    <div style="font-weight: bold; margin-bottom: 5px;">📊 APUESTA PUNTUACIÓN</div>
+                    <div style="font-size: 0.8rem; color: #FFA500;">Predice la puntuación total (1.5x ganancia)</div>
+                    <div class="bet-options-container" id="scoreOptions" style="display: none;">
+                        <!-- Opciones específicas para puntuación -->
+                    </div>
+                </div>
+                <div class="bet-type" onclick="selectBetType('difference', this)">
+                    <div style="font-weight: bold; margin-bottom: 5px;">⚡ APUESTA DIFERENCIA</div>
+                    <div style="font-size: 0.8rem; color: #FFA500;">Predice si será reñido o no (3x ganancia)</div>
+                    <div class="bet-options-container" id="differenceOptions" style="display: none;">
+                        <!-- Opciones específicas para diferencia -->
+                    </div>
+                </div>
+            </div>
+            <input type="number" id="betAmount" min="1" max="1000" value="10" style="width: 100%; padding: 10px; margin: 10px 0; background: #1a1a1a; border: 2px solid #FFD700; border-radius: 5px; color: #FFD700; font-family: 'Orbitron', monospace;">
+            <button class="place-bet-btn" id="placeBetBtn" onclick="placeBet()">JUGAR</button>
+            <button class="back-btn" onclick="goBack()">← VOLVER</button>
+        </div>
+    </div>
+    
+    <div class="game-status">
+        <div id="statusText">Esperando apuestas...</div>
+        <div id="coinsDisplay" style="font-size: 1.2rem; color: #FFD700; margin: 10px 0; font-weight: bold;">💰 Ortiz Coins: <span id="coinsValue">0</span></div>
+    </div>
+
+    <!-- Modal de Resultados -->
+    <div id="resultModal" class="result-modal" style="display: none;">
+        <div class="result-content">
+            <div id="resultIcon" style="font-size: 4rem; margin-bottom: 20px;"></div>
+            <div id="resultTitle" style="font-size: 2rem; font-weight: bold; margin-bottom: 15px;"></div>
+            <div id="resultMessage" style="font-size: 1.2rem; margin-bottom: 20px;"></div>
+            <div id="resultDetails" style="font-size: 1rem; color: #FFA500; margin-bottom: 25px;"></div>
+            <div id="coinsChange" style="font-size: 1.5rem; font-weight: bold; margin-bottom: 20px;"></div>
+            <div id="newTotal" style="font-size: 1.3rem; color: #FFD700; margin-bottom: 25px;"></div>
+            <button class="result-btn" onclick="closeResultModal()">CONTINUAR</button>
+        </div>
+    </div>
+
+    <script>
+        let vipCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        let currentBetType = null;
+        let currentBetOption = null;
+        let gameInProgress = false;
+        let players = [];
+
+        function initVIPGame() {
+            generatePlayers();
+            updateCoinsDisplay();
+        }
+        
+        function updateCoinsDisplay() {
+            document.getElementById('coinsValue').textContent = vipCoins;
+        }
+
+        function generatePlayers() {
+            const playersContainer = document.getElementById('playersContainer');
+            playersContainer.innerHTML = '';
+            
+            // Números aleatorios como en la serie (001, 456, etc.)
+            const playerNumbers = ['001', '456', '218'];
+            const playerEmojis = ['🎮', '🎯', '⚡'];
+            
+            players = playerNumbers.map((number, index) => ({
+                id: index,
+                name: `Jugador ${number}`,
+                number: number,
+                emoji: playerEmojis[index],
+                score: 0
+            }));
+
+            players.forEach(player => {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'player-card';
+                playerCard.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 10px;">${player.emoji}</div>
+                    <div style="font-weight: bold; margin-bottom: 5px; font-size: 1.2rem;">${player.number}</div>
+                    <div style="font-size: 0.9rem; color: #FFA500; margin-bottom: 5px;">Jugador</div>
+                    <div style="font-weight: bold;">Puntos: <span class="score-value">${player.score}</span></div>
+                `;
+                playersContainer.appendChild(playerCard);
+            });
+        }
+
+        function selectBetType(betType, element) {
+            // Remover selección anterior de tipos
+            document.querySelectorAll('.bet-type').forEach(opt => opt.classList.remove('selected'));
+            
+            // Ocultar todas las opciones de apuesta
+            document.querySelectorAll('.bet-options-container').forEach(container => {
+                container.style.display = 'none';
+            });
+            
+            // Seleccionar nuevo tipo
+            element.classList.add('selected');
+            currentBetType = betType;
+            currentBetOption = null;
+            
+            // Mostrar opciones específicas debajo del botón seleccionado
+            showBetOptions(betType, element);
+            
+            // Mostrar confirmación visual
+            const typeNames = {
+                'winner': '🏆 APUESTA GANADOR',
+                'score': '📊 APUESTA PUNTUACIÓN',
+                'difference': '⚡ APUESTA DIFERENCIA'
+            };
+            
+            document.getElementById('statusText').textContent = `✅ Seleccionado: ${typeNames[betType]}`;
+        }
+        
+        function showBetOptions(betType, parentElement) {
+            // Obtener el contenedor específico dentro del botón padre
+            const optionsContainer = parentElement.querySelector('.bet-options-container');
+            optionsContainer.innerHTML = '';
+            
+            let options = [];
+            
+            if (betType === 'winner') {
+                options = [
+                    { id: 'playerA', name: '🎮 Jugador 001', description: 'Apostar a que Jugador 001 ganará (2x ganancia)' },
+                    { id: 'playerB', name: '🎯 Jugador 456', description: 'Apostar a que Jugador 456 ganará (2x ganancia)' },
+                    { id: 'playerC', name: '⚡ Jugador 218', description: 'Apostar a que Jugador 218 ganará (2x ganancia)' }
+                ];
+            } else if (betType === 'score') {
+                options = [
+                    { id: 'high', name: '📈 Alta (>100)', description: 'Puntuación total será alta (1.5x ganancia)' },
+                    { id: 'medium', name: '📊 Media (50-100)', description: 'Puntuación total será media (1.5x ganancia)' },
+                    { id: 'low', name: '📉 Baja (<50)', description: 'Puntuación total será baja (1.5x ganancia)' }
+                ];
+            } else if (betType === 'difference') {
+                options = [
+                    { id: 'close', name: '⚡ Reñido (<20)', description: 'Diferencia pequeña entre ganadores (3x ganancia)' },
+                    { id: 'wide', name: '🏆 Dominante (>20)', description: 'Diferencia grande entre ganadores (3x ganancia)' }
+                ];
+            }
+
+            options.forEach(option => {
+                const betOption = document.createElement('div');
+                betOption.className = 'bet-option';
+                betOption.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 5px;">${option.name}</div>
+                    <div style="font-size: 0.8rem; color: #FFA500;">${option.description}</div>
+                `;
+                
+                // Asignar el evento click con prevención de propagación
+                betOption.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Click en opción:', option.id);
+                    selectBetOption(option.id, this);
+                });
+                
+                optionsContainer.appendChild(betOption);
+            });
+            
+            // Mostrar el contenedor con animación
+            optionsContainer.style.display = 'block';
+        }
+
+        function selectBetOption(betId, element) {
+            console.log('selectBetOption llamado con:', betId, element);
+            
+            // Remover selección anterior de opciones
+            document.querySelectorAll('.bet-option').forEach(opt => {
+                opt.classList.remove('selected');
+                console.log('Removiendo selección de:', opt);
+            });
+            
+            // Seleccionar nueva opción
+            element.classList.add('selected');
+            currentBetOption = betId;
+            console.log('currentBetOption establecido a:', currentBetOption);
+            
+            // Mostrar confirmación visual
+            const optionNames = {
+                'playerA': 'Jugador 001 🎮',
+                'playerB': 'Jugador 456 🎯', 
+                'playerC': 'Jugador 218 ⚡',
+                'high': 'Puntuación Alta 📈',
+                'medium': 'Puntuación Media 📊',
+                'low': 'Puntuación Baja 📉',
+                'close': 'Competencia Reñida ⚡',
+                'wide': 'Competencia Dominante 🏆'
+            };
+            
+            document.getElementById('statusText').textContent = `✅ Seleccionado: ${optionNames[betId]}`;
+            
+            // Hacer scroll suave hacia el botón de jugar
+            setTimeout(() => {
+                document.getElementById('placeBetBtn').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }, 300);
+        }
+
+        function placeBet() {
+            console.log('placeBet llamado');
+            console.log('currentBetType:', currentBetType);
+            console.log('currentBetOption:', currentBetOption);
+            
+            if (!currentBetType) {
+                alert('⚠️ ¡Selecciona un tipo de apuesta primero!');
+                return;
+            }
+            
+            if (!currentBetOption) {
+                alert('⚠️ ¡Selecciona una opción específica primero!');
+                return;
+            }
+
+            const betAmount = parseInt(document.getElementById('betAmount').value);
+            if (betAmount > vipCoins) {
+                alert('❌ No tienes suficientes Ortiz Coins');
+                return;
+            }
+
+            // Mostrar confirmación de apuesta
+            const typeNames = {
+                'winner': '🏆 APUESTA GANADOR',
+                'score': '📊 APUESTA PUNTUACIÓN',
+                'difference': '⚡ APUESTA DIFERENCIA'
+            };
+            
+            const optionNames = {
+                'playerA': 'Jugador 001 🎮',
+                'playerB': 'Jugador 456 🎯', 
+                'playerC': 'Jugador 218 ⚡',
+                'high': 'Puntuación Alta 📈',
+                'medium': 'Puntuación Media 📊',
+                'low': 'Puntuación Baja 📉',
+                'close': 'Competencia Reñida ⚡',
+                'wide': 'Competencia Dominante 🏆'
+            };
+            
+            const confirmMessage = `💰 ¿Confirmar apuesta?\n\n🎯 Tipo: ${typeNames[currentBetType]}\n🎲 Opción: ${optionNames[currentBetOption]}\n💎 Cantidad: ${betAmount} Ortiz Coins\n\n¿Continuar?`;
+            
+            if (confirm(confirmMessage)) {
+                // Bloquear todos los botones durante el juego
+                blockAllButtons();
+                
+                vipCoins -= betAmount;
+                localStorage.setItem('totalOrtizCoins', vipCoins.toString());
+                updateCoinsDisplay();
+                document.getElementById('statusText').textContent = `🎯 Apostando a ${optionNames[currentBetOption]}...`;
+                startGame(betAmount);
+            }
+        }
+        
+        function blockAllButtons() {
+            // Bloquear tipos de apuesta
+            document.querySelectorAll('.bet-type').forEach(btn => {
+                btn.style.pointerEvents = 'none';
+                btn.style.opacity = '0.5';
+            });
+            
+            // Bloquear opciones de apuesta
+            document.querySelectorAll('.bet-option').forEach(btn => {
+                btn.style.pointerEvents = 'none';
+                btn.style.opacity = '0.5';
+            });
+            
+            // Bloquear botón de jugar
+            document.getElementById('placeBetBtn').disabled = true;
+            document.getElementById('placeBetBtn').style.opacity = '0.5';
+            
+            // Bloquear input de cantidad
+            document.getElementById('betAmount').disabled = true;
+            document.getElementById('betAmount').style.opacity = '0.5';
+        }
+        
+        function unblockAllButtons() {
+            // Desbloquear tipos de apuesta
+            document.querySelectorAll('.bet-type').forEach(btn => {
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
+            });
+            
+            // Desbloquear opciones de apuesta
+            document.querySelectorAll('.bet-option').forEach(btn => {
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
+            });
+            
+            // Desbloquear botón de jugar
+            document.getElementById('placeBetBtn').disabled = false;
+            document.getElementById('placeBetBtn').style.opacity = '1';
+            
+            // Desbloquear input de cantidad
+            document.getElementById('betAmount').disabled = false;
+            document.getElementById('betAmount').style.opacity = '1';
+        }
+
+        function startGame(betAmount) {
+            gameInProgress = true;
+            document.getElementById('statusText').textContent = '🎮 ¡Juego en progreso!';
+            
+            let round = 0;
+            const maxRounds = 10;
+            
+            const gameTimer = setInterval(() => {
+                round++;
+                
+                players.forEach((player, index) => {
+                    // Hacer las puntuaciones más aleatorias y variadas
+                    const basePoints = Math.floor(Math.random() * 15) + 1; // 1-15 puntos base
+                    const bonusPoints = Math.random() > 0.7 ? Math.floor(Math.random() * 10) : 0; // 30% chance de bonus
+                    const points = basePoints + bonusPoints;
+                    
+                    player.score += points;
+                    document.querySelectorAll('.score-value')[index].textContent = player.score;
+                    
+                    // Efecto visual cuando gana puntos
+                    const playerCard = document.querySelectorAll('.player-card')[index];
+                    playerCard.style.transform = 'scale(1.05)';
+                    playerCard.style.boxShadow = '0 0 20px #FFD700';
+                    setTimeout(() => {
+                        playerCard.style.transform = 'scale(1)';
+                        playerCard.style.boxShadow = 'none';
+                    }, 300);
+                });
+
+                if (round >= maxRounds) {
+                    clearInterval(gameTimer);
+                    endGame(betAmount);
+                }
+            }, 1000);
+        }
+
+        function endGame(betAmount) {
+            // Find the winner
+            const winner = players.reduce((prev, current) => 
+                (prev.score > current.score) ? prev : current
+            );
+            
+            // Calculate total score and differences
+            const totalScore = players.reduce((sum, player) => sum + player.score, 0);
+            const scores = players.map(p => p.score).sort((a, b) => b - a);
+            const difference = scores[0] - scores[1];
+            
+            // Calculate winnings based on bet type and option
+            let winnings = 0;
+            let won = false;
+            let resultIcon = '';
+            let resultTitle = '';
+            let resultMessage = '';
+            let resultDetails = '';
+            let coinsChange = '';
+            
+            if (currentBetType === 'winner') {
+                // Winner bets
+                const playerNumbers = {
+                    'playerA': 'Jugador 001',
+                    'playerB': 'Jugador 456',
+                    'playerC': 'Jugador 218'
+                };
+                
+                if (winner.name === playerNumbers[currentBetOption]) {
+                    winnings = betAmount * 2;
+                    won = true;
+                    resultIcon = '🏆';
+                    resultTitle = '¡VICTORIA!';
+                    resultMessage = '¡Acertaste el ganador!';
+                    resultDetails = `${winner.number} ganó con ${winner.score} puntos`;
+                    coinsChange = `+${winnings} Ortiz Coins`;
+                } else {
+                    resultIcon = '❌';
+                    resultTitle = 'DERROTA';
+                    resultMessage = 'No acertaste el ganador';
+                    resultDetails = `Ganó ${winner.number} con ${winner.score} puntos`;
+                    coinsChange = `-${betAmount} Ortiz Coins`;
+                }
+            } else if (currentBetType === 'score') {
+                // Score bets
+                let predicted = false;
+                if (currentBetOption === 'high' && totalScore > 100) predicted = true;
+                if (currentBetOption === 'medium' && totalScore >= 50 && totalScore <= 100) predicted = true;
+                if (currentBetOption === 'low' && totalScore < 50) predicted = true;
+                
+                if (predicted) {
+                    winnings = Math.floor(betAmount * 1.5);
+                    won = true;
+                    resultIcon = '📊';
+                    resultTitle = '¡VICTORIA!';
+                    resultMessage = '¡Acertaste la puntuación!';
+                    resultDetails = `Puntuación total: ${totalScore} puntos`;
+                    coinsChange = `+${winnings} Ortiz Coins`;
+                } else {
+                    resultIcon = '❌';
+                    resultTitle = 'DERROTA';
+                    resultMessage = 'No acertaste la puntuación';
+                    resultDetails = `Puntuación total: ${totalScore} puntos`;
+                    coinsChange = `-${betAmount} Ortiz Coins`;
+                }
+            } else if (currentBetType === 'difference') {
+                // Difference bets
+                let predicted = false;
+                if (currentBetOption === 'close' && difference < 20) predicted = true;
+                if (currentBetOption === 'wide' && difference >= 20) predicted = true;
+                
+                if (predicted) {
+                    winnings = betAmount * 3;
+                    won = true;
+                    resultIcon = '⚡';
+                    resultTitle = '¡VICTORIA!';
+                    resultMessage = '¡Acertaste la diferencia!';
+                    resultDetails = `Diferencia: ${difference} puntos`;
+                    coinsChange = `+${winnings} Ortiz Coins`;
+                } else {
+                    resultIcon = '❌';
+                    resultTitle = 'DERROTA';
+                    resultMessage = 'No acertaste la diferencia';
+                    resultDetails = `Diferencia: ${difference} puntos`;
+                    coinsChange = `-${betAmount} Ortiz Coins`;
+                }
+            }
+            
+            if (won) {
+                vipCoins += winnings;
+                localStorage.setItem('totalOrtizCoins', vipCoins.toString());
+            }
+
+            // Mostrar modal de resultados
+            showResultModal(resultIcon, resultTitle, resultMessage, resultDetails, coinsChange);
+        }
+        
+        function showResultModal(icon, title, message, details, coinsChange) {
+            document.getElementById('resultIcon').textContent = icon;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('resultDetails').textContent = details;
+            document.getElementById('coinsChange').textContent = coinsChange;
+            document.getElementById('newTotal').textContent = `💰 Total: ${vipCoins} Ortiz Coins`;
+            
+            // Actualizar display de monedas
+            updateCoinsDisplay();
+            
+            // Mostrar modal
+            document.getElementById('resultModal').style.display = 'flex';
+        }
+        
+        function closeResultModal() {
+            document.getElementById('resultModal').style.display = 'none';
+            
+            // Desbloquear todos los botones
+            unblockAllButtons();
+            
+            // Resetear juego
+            document.getElementById('statusText').textContent = 'Esperando apuestas...';
+            currentBetType = null;
+            currentBetOption = null;
+            document.querySelectorAll('.bet-type').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.bet-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.bet-options-container').forEach(container => {
+                container.style.display = 'none';
+            });
+            
+            // Reset player scores for next game
+            players.forEach(player => player.score = 0);
+            generatePlayers();
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', initVIPGame);
+    </script>
+</body>
+</html> 

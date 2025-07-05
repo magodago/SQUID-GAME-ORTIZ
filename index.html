@@ -4325,14 +4325,8 @@
                           
                           alert(`✅ CONEXIÓN EXITOSA!\n\nJugadores encontrados: ${playerCount}\n\nDatos: ${JSON.stringify(data, null, 2)}`);
                           
-                          // Update the admin panel display
-                          const adminContent = document.getElementById('adminContent');
-                          if (adminContent) {
-                            adminContent.innerHTML = `
-                              <h3>Datos de Firebase (${playerCount} jugadores)</h3>
-                              <pre style="background: #f0f0f0; padding: 10px; border-radius: 5px; overflow: auto; max-height: 400px;">${JSON.stringify(data, null, 2)}</pre>
-                            `;
-                          }
+                                                     // Update the admin panel display
+                           updateAdminPanelWithFirebaseData(data);
                         })
                         .catch(function(error) {
                           alert(`❌ ERROR: ${error.message}`);

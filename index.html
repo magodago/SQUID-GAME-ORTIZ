@@ -5757,21 +5757,38 @@
     if (forceSyncBtn) {
       forceSyncBtn.addEventListener('click', () => {
         console.log('🔄 Forzando sincronización con Firebase...');
-        alert('🔄 Cargando datos de Firebase...');
+        alert('🔄 Botón pulsado - Iniciando sincronización...');
         
-        // First, load data from Firebase
-        if (window.firebase && window.firebase.database) {
+        // Check if Firebase is available
+        if (!window.firebase) {
+          alert('❌ Firebase no está cargado');
+          console.error('❌ Firebase not loaded');
+          return;
+        }
+        
+        if (!window.firebase.database) {
+          alert('❌ Firebase Database no está disponible');
+          console.error('❌ Firebase Database not available');
+          return;
+        }
+        
+        alert('✅ Firebase disponible - Conectando a la base de datos...');
+        console.log('✅ Firebase available, connecting to database...');
+        
+        try {
           const database = window.firebase.database();
           const playersRef = database.ref('players');
           
-          console.log('📥 Cargando datos de Firebase...');
+          alert('📥 Conectado - Cargando datos de Firebase...');
+          console.log('📥 Connected, loading data from Firebase...');
+          
           playersRef.once('value').then(snapshot => {
             const playersData = snapshot.val() || {};
             console.log('📊 Datos cargados de Firebase:', playersData);
             
             // Show data in alert for debugging
             const playerCount = Object.keys(playersData).length;
-            alert(`📊 Datos cargados: ${playerCount} jugadores encontrados`);
+            alert(`📊 Datos cargados: ${playerCount} jugadores encontrados\n\nDatos: ${JSON.stringify(playersData, null, 2)}`);
             
             // Update admin panel with Firebase data
             updateAdminPanelWithFirebaseData(playersData);
@@ -5783,6 +5800,8 @@
               const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
               const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
               const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+              
+              alert('🔄 Sincronizando datos del jugador actual...');
               
               PlayerDataManager.savePlayerData(playerName, totalCoins, {
                 gamesPlayed: gamesPlayed,
@@ -5805,20 +5824,22 @@
                 alert('❌ Error en sincronización: ' + error.message);
                 showDailyRewardMessage('❌ Error en sincronización');
               });
+            } else {
+              alert('⚠️ PlayerDataManager no disponible - solo cargando datos');
             }
           }).catch(error => {
             console.error('❌ Error cargando datos de Firebase:', error);
             alert('❌ Error cargando datos: ' + error.message);
             showDailyRewardMessage('❌ Error cargando datos');
           });
-        } else {
-          console.log('❌ Firebase no disponible');
-          alert('❌ Firebase no disponible');
-          showDailyRewardMessage('❌ Firebase no disponible');
+        } catch (error) {
+          console.error('❌ Error general:', error);
+          alert('❌ Error general: ' + error.message);
         }
       });
     } else {
       console.error('❌ Force sync button not found!');
+      alert('❌ Botón de sincronización no encontrado!');
     }
     
     if (closeAdminBtn) {

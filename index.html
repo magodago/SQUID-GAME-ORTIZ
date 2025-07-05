@@ -2708,6 +2708,16 @@
       box-shadow: 0 0 50px #006400, inset 0 0 30px rgba(0, 100, 0, 0.5);
     }
     
+    .joker-btn {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    
+    .joker-btn:hover {
+      transform: scale(1.1) rotateY(8deg);
+      box-shadow: 0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
+    }
+    
     .frontman-btn {
       background: linear-gradient(45deg, #000000, #333333);
       box-shadow: 0 0 30px #000000, inset 0 0 20px rgba(0, 0, 0, 0.3);
@@ -3133,6 +3143,11 @@
       <button class="envelope-btn spin-btn" id="spinBtn">
         <div class="envelope-content">
           <span class="envelope-text">SPIN PISTAS</span>
+        </div>
+      </button>
+      <button class="envelope-btn joker-btn" id="jokerBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">JOKER PISTAS</span>
         </div>
       </button>
         <div class="envelope-content">
@@ -4109,6 +4124,101 @@
             messageEl.parentNode.removeChild(messageEl);
           }
           window.location.href = 'spin-pistas.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // JOKER PISTAS Button Event Listener
+    const jokerBtn = document.getElementById('jokerBtn');
+    jokerBtn.addEventListener('click', () => {
+      console.log('JOKER PISTAS seleccionado');
+      
+      // Add dramatic effect
+      jokerBtn.style.transform = 'scale(0.9) rotateY(8deg)';
+      jokerBtn.style.boxShadow = '0 0 80px #FFD700, inset 0 0 40px rgba(255, 215, 0, 0.7)';
+      
+      // Create simple explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#FFD700';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = jokerBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        jokerBtn.style.transform = '';
+        jokerBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🎭 JOKER PISTAS ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#FFD700';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #FFD700';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'joker-pistas.html';
         }, 2000);
       }, 1000);
     });

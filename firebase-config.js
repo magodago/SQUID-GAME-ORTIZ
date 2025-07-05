@@ -133,6 +133,12 @@ const PlayerDataManager = {
       localStorage.setItem('totalOrtizCoins', newCoins.toString());
       console.log(`✅ Safe coin addition: ${currentCoins} + ${amount} = ${newCoins} (${gameType})`);
       
+      // Update achievements progress
+      if (typeof updateAchievementProgress === 'function') {
+        updateAchievementProgress('coins', amount);
+        updateAchievementProgress('games', 1);
+      }
+      
       // Auto-sync to Firebase
       this.savePlayerData(playerName, newCoins, {
         gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),

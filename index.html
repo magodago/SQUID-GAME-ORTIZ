@@ -3370,6 +3370,335 @@
         text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
       }
     }
+
+    /* Achievements Button Styles */
+    .achievements-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .achievements-btn {
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      border: 2px solid #FFD700;
+      box-shadow: 0 0 20px #FFD700;
+    }
+
+    .achievements-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #FFD700;
+    }
+
+    /* Achievements Modal Styles */
+    .achievements-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .achievements-content {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      border: 3px solid #FFD700;
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 0 50px #FFD700;
+    }
+
+    .achievements-header h2 {
+      color: #FFD700;
+      font-size: 1.4rem;
+      margin-bottom: 0.3rem;
+      text-shadow: 0 0 20px #FFD700;
+    }
+
+    .achievements-subtitle {
+      color: #FF6B35;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .achievements-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: linear-gradient(135deg, #333 0%, #555 100%);
+      color: #ccc;
+      border: 2px solid #666;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      border-color: #FFD700;
+      box-shadow: 0 0 15px #FFD700;
+    }
+
+    .tab-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Daily Achievements Grid */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .achievement-item {
+      background: linear-gradient(135deg, #333 0%, #444 100%);
+      border: 2px solid #666;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .achievement-item.completed {
+      border-color: #FFD700;
+      box-shadow: 0 0 15px #FFD700;
+    }
+
+    .achievement-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .achievement-title {
+      color: #FFD700;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+    }
+
+    .achievement-description {
+      color: #ccc;
+      font-size: 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .achievement-progress {
+      background: #333;
+      border-radius: 10px;
+      height: 8px;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+    }
+
+    .achievement-bar {
+      background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
+      height: 100%;
+      transition: width 0.5s;
+    }
+
+    .achievement-reward {
+      color: #FF6B35;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    /* Streaks Styles */
+    .streaks-container {
+      text-align: left;
+    }
+
+    .streak-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: linear-gradient(135deg, #333 0%, #444 100%);
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .streak-icon {
+      font-size: 2rem;
+      animation: streakPulse 2s infinite;
+    }
+
+    @keyframes streakPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .streak-info {
+      flex: 1;
+    }
+
+    .streak-title {
+      color: #FFD700;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 0.2rem;
+    }
+
+    .streak-days {
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .streak-reward {
+      color: #FF6B35;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .streak-milestones {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .milestone {
+      background: linear-gradient(135deg, #333 0%, #444 100%);
+      border: 2px solid #666;
+      border-radius: 8px;
+      padding: 0.8rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .milestone.reached {
+      border-color: #FFD700;
+      box-shadow: 0 0 15px #FFD700;
+    }
+
+    .milestone-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .milestone-text {
+      color: #FFD700;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: 0.2rem;
+    }
+
+    .milestone-reward {
+      color: #ccc;
+      font-size: 0.7rem;
+    }
+
+    /* Stats Styles */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: linear-gradient(135deg, #333 0%, #444 100%);
+      border: 2px solid #666;
+      border-radius: 10px;
+      padding: 1rem;
+      transition: all 0.3s;
+    }
+
+    .stat-item:hover {
+      border-color: #FFD700;
+      box-shadow: 0 0 15px #FFD700;
+    }
+
+    .stat-icon {
+      font-size: 1.8rem;
+    }
+
+    .stat-info {
+      flex: 1;
+    }
+
+    .stat-title {
+      color: #FFD700;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: 0.2rem;
+    }
+
+    .stat-value {
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .achievements-footer .achievements-btn {
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      border: 2px solid #FFD700;
+      padding: 0.6rem 1.5rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px #FFD700;
+    }
+
+    .achievements-footer .achievements-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #FFD700;
+    }
     
     /* Plus Twenty Coins Effect Styles */
     .plus-twenty-effect {
@@ -4159,6 +4488,15 @@
       </button>
     </div>
 
+    <!-- Achievements Button -->
+    <div class="achievements-container">
+      <button class="envelope-btn achievements-btn" id="achievementsBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🏆 LOGROS</span>
+        </div>
+      </button>
+    </div>
+
     <!-- ALL IN Game Button (Only for players with 15000+ coins) -->
     <div class="all-in-container" id="allInContainer">
       <button class="all-in-btn" id="allInBtn">
@@ -4404,6 +4742,109 @@
         
         <div class="daily-reward-footer">
           <button class="daily-reward-btn" id="closeDailyReward">¡COBRAR!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievements Modal -->
+    <div class="achievements-modal" id="achievementsModal">
+      <div class="achievements-content">
+        <div class="achievements-header">
+          <h2>🏆 LOGROS Y RACHAS</h2>
+          <div class="achievements-subtitle">¡Tu progreso en Squid Game Ortiz!</div>
+        </div>
+        
+        <div class="achievements-tabs">
+          <button class="tab-btn active" data-tab="daily">📅 LOGROS DIARIOS</button>
+          <button class="tab-btn" data-tab="streaks">🔥 RACHAS</button>
+          <button class="tab-btn" data-tab="stats">📊 ESTADÍSTICAS</button>
+        </div>
+        
+        <div class="achievements-body">
+          <!-- Daily Achievements Tab -->
+          <div class="tab-content active" id="daily-tab">
+            <div class="achievements-grid" id="dailyAchievementsGrid">
+              <!-- Los logros se cargarán dinámicamente -->
+            </div>
+          </div>
+          
+          <!-- Streaks Tab -->
+          <div class="tab-content" id="streaks-tab">
+            <div class="streaks-container">
+              <div class="streak-item">
+                <div class="streak-icon">🔥</div>
+                <div class="streak-info">
+                  <div class="streak-title">Racha Actual</div>
+                  <div class="streak-days" id="currentStreak">0 días</div>
+                </div>
+                <div class="streak-reward" id="streakReward">+0 monedas</div>
+              </div>
+              
+              <div class="streak-milestones">
+                <div class="milestone" data-days="3">
+                  <div class="milestone-icon">🥉</div>
+                  <div class="milestone-text">3 días</div>
+                  <div class="milestone-reward">+50 monedas</div>
+                </div>
+                <div class="milestone" data-days="7">
+                  <div class="milestone-icon">🥈</div>
+                  <div class="milestone-text">7 días</div>
+                  <div class="milestone-reward">+200 monedas</div>
+                </div>
+                <div class="milestone" data-days="30">
+                  <div class="milestone-icon">🥇</div>
+                  <div class="milestone-text">30 días</div>
+                  <div class="milestone-reward">+1000 monedas</div>
+                </div>
+                <div class="milestone" data-days="100">
+                  <div class="milestone-icon">👑</div>
+                  <div class="milestone-text">100 días</div>
+                  <div class="milestone-reward">Título "Leyenda"</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Stats Tab -->
+          <div class="tab-content" id="stats-tab">
+            <div class="stats-container">
+              <div class="stat-item">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                  <div class="stat-title">Monedas Totales</div>
+                  <div class="stat-value" id="totalCoinsStat">0</div>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <div class="stat-icon">🎮</div>
+                <div class="stat-info">
+                  <div class="stat-title">Juegos Jugados</div>
+                  <div class="stat-value" id="gamesPlayedStat">0</div>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <div class="stat-icon">🥚</div>
+                <div class="stat-info">
+                  <div class="stat-title">Easter Eggs</div>
+                  <div class="stat-value" id="easterEggsStat">0</div>
+                </div>
+              </div>
+              
+              <div class="stat-item">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                  <div class="stat-title">Días Activo</div>
+                  <div class="stat-value" id="daysActiveStat">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="achievements-footer">
+          <button class="achievements-btn" id="closeAchievements">CERRAR</button>
         </div>
       </div>
     </div>
@@ -5576,6 +6017,76 @@
     // Add event listeners to both container and button
     dailyRewardContainer.addEventListener('click', handleDailyRewardClick);
     dailyRewardBtn.addEventListener('click', handleDailyRewardClick);
+
+    // ACHIEVEMENTS Button Event Listener
+    const achievementsBtn = document.getElementById('achievementsBtn');
+    const achievementsContainer = document.querySelector('.achievements-container');
+    
+    function handleAchievementsClick() {
+      console.log('🏆 ACHIEVEMENTS seleccionado');
+      
+      // Add dramatic effect
+      achievementsContainer.style.transform = 'scale(0.9) rotateY(5deg)';
+      achievementsContainer.style.boxShadow = '0 0 80px #FFD700, inset 0 0 40px rgba(255, 215, 0, 0.7)';
+      
+      // Create achievement explosion effect
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '6px';
+        particle.style.height = '6px';
+        particle.style.background = '#FFD700';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        particle.style.boxShadow = '0 0 10px #FFD700';
+        
+        const rect = achievementsContainer.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 12) * Math.PI * 2;
+        const distance = 60;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1200,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1200);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        achievementsContainer.style.transform = '';
+        achievementsContainer.style.boxShadow = '';
+      }, 1200);
+      
+      // Show achievements modal
+      setTimeout(() => {
+        showAchievementsModal();
+      }, 1200);
+    }
+    
+    // Add event listeners to both container and button
+    achievementsContainer.addEventListener('click', handleAchievementsClick);
+    achievementsBtn.addEventListener('click', handleAchievementsClick);
 
     // FRONT MAN Button Event Listener
     const frontmanBtn = document.getElementById('frontmanBtn');
@@ -7240,6 +7751,9 @@
         console.log('🥚 Daily Reward tracked:', amount);
       }
       
+      // Update achievement progress
+      updateAchievementProgress('daily_reward', 1);
+      
       // Mark as claimed today IMMEDIATELY to prevent multiple claims
       localStorage.setItem('lastDailyRewardDate', new Date().toDateString());
       
@@ -7360,6 +7874,335 @@
         dailyRewardBtn.classList.add('disabled');
         dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
       }
+    }
+
+    // ACHIEVEMENTS SYSTEM
+    // Daily achievements data
+    const dailyAchievements = [
+      {
+        id: 'play_3_games',
+        icon: '🎮',
+        title: 'Jugador Activo',
+        description: 'Juega 3 juegos hoy',
+        target: 3,
+        reward: 25,
+        type: 'games'
+      },
+      {
+        id: 'win_2_games',
+        icon: '🏆',
+        title: 'Ganador',
+        description: 'Gana 2 juegos hoy',
+        target: 2,
+        reward: 50,
+        type: 'wins'
+      },
+      {
+        id: 'find_1_clue',
+        icon: '🔍',
+        title: 'Detective',
+        description: 'Encuentra 1 pista hoy',
+        target: 1,
+        reward: 30,
+        type: 'clues'
+      },
+      {
+        id: 'earn_100_coins',
+        icon: '💰',
+        title: 'Rico',
+        description: 'Gana 100 monedas hoy',
+        target: 100,
+        reward: 40,
+        type: 'coins'
+      },
+      {
+        id: 'use_daily_reward',
+        icon: '🎁',
+        title: 'Fiel',
+        description: 'Cobra tu recompensa diaria',
+        target: 1,
+        reward: 20,
+        type: 'daily_reward'
+      }
+    ];
+
+    // Streak milestones
+    const streakMilestones = [
+      { days: 3, reward: 50, icon: '🥉' },
+      { days: 7, reward: 200, icon: '🥈' },
+      { days: 30, reward: 1000, icon: '🥇' },
+      { days: 100, reward: 'Título "Leyenda"', icon: '👑' }
+    ];
+
+    function showAchievementsModal() {
+      const modal = document.getElementById('achievementsModal');
+      modal.style.display = 'flex';
+      
+      // Load current data
+      loadAchievementsData();
+      
+      // Add tab switching functionality
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabName = btn.getAttribute('data-tab');
+          
+          // Update active tab
+          tabBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          // Show corresponding content
+          tabContents.forEach(content => {
+            content.classList.remove('active');
+            if (content.id === `${tabName}-tab`) {
+              content.classList.add('active');
+            }
+          });
+        });
+      });
+      
+      // Add close button functionality
+      const closeBtn = document.getElementById('closeAchievements');
+      if (closeBtn) {
+        closeBtn.onclick = function() {
+          modal.style.display = 'none';
+        };
+      }
+    }
+
+    function loadAchievementsData() {
+      // Load daily achievements
+      loadDailyAchievements();
+      
+      // Load streaks
+      loadStreaks();
+      
+      // Load stats
+      loadStats();
+    }
+
+    function loadDailyAchievements() {
+      const grid = document.getElementById('dailyAchievementsGrid');
+      grid.innerHTML = '';
+      
+      const today = new Date().toDateString();
+      const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
+      
+      dailyAchievements.forEach(achievement => {
+        const progress = todayData[achievement.id] || 0;
+        const isCompleted = progress >= achievement.target;
+        
+        const achievementEl = document.createElement('div');
+        achievementEl.className = `achievement-item ${isCompleted ? 'completed' : ''}`;
+        
+        const progressPercent = Math.min((progress / achievement.target) * 100, 100);
+        
+        achievementEl.innerHTML = `
+          <div class="achievement-icon">${achievement.icon}</div>
+          <div class="achievement-title">${achievement.title}</div>
+          <div class="achievement-description">${achievement.description}</div>
+          <div class="achievement-progress">
+            <div class="achievement-bar" style="width: ${progressPercent}%"></div>
+          </div>
+          <div class="achievement-reward">+${achievement.reward} monedas</div>
+        `;
+        
+        grid.appendChild(achievementEl);
+      });
+    }
+
+    function loadStreaks() {
+      const currentStreakEl = document.getElementById('currentStreak');
+      const streakRewardEl = document.getElementById('streakReward');
+      
+      const streakData = JSON.parse(localStorage.getItem('streakData') || '{}');
+      const currentStreak = streakData.currentStreak || 0;
+      
+      currentStreakEl.textContent = `${currentStreak} días`;
+      
+      // Calculate streak reward
+      let reward = 0;
+      if (currentStreak >= 3) reward = 25;
+      if (currentStreak >= 7) reward = 50;
+      if (currentStreak >= 30) reward = 100;
+      
+      streakRewardEl.textContent = `+${reward} monedas`;
+      
+      // Update milestones
+      const milestones = document.querySelectorAll('.milestone');
+      milestones.forEach(milestone => {
+        const days = parseInt(milestone.getAttribute('data-days'));
+        if (currentStreak >= days) {
+          milestone.classList.add('reached');
+        } else {
+          milestone.classList.remove('reached');
+        }
+      });
+    }
+
+    function loadStats() {
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+      const easterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
+      const daysActive = parseInt(localStorage.getItem('daysActive') || '0');
+      
+      document.getElementById('totalCoinsStat').textContent = totalCoins.toLocaleString();
+      document.getElementById('gamesPlayedStat').textContent = gamesPlayed;
+      document.getElementById('easterEggsStat').textContent = easterEggs;
+      document.getElementById('daysActiveStat').textContent = daysActive;
+    }
+
+    function updateAchievementProgress(type, amount = 1) {
+      const today = new Date().toDateString();
+      const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
+      
+      dailyAchievements.forEach(achievement => {
+        if (achievement.type === type) {
+          const currentProgress = todayData[achievement.id] || 0;
+          const newProgress = currentProgress + amount;
+          todayData[achievement.id] = newProgress;
+          
+          // Check if achievement completed
+          if (newProgress >= achievement.target && currentProgress < achievement.target) {
+            // Achievement just completed
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const newCoins = currentCoins + achievement.reward;
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            
+            // Show achievement notification
+            showAchievementNotification(achievement);
+            
+            // Update display
+            loadTotalCoins();
+          }
+        }
+      });
+      
+      localStorage.setItem(`achievements_${today}`, JSON.stringify(todayData));
+    }
+
+    function showAchievementNotification(achievement) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        border: 2px solid #FFD700;
+        border-radius: 10px;
+        padding: 1rem;
+        color: #000;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 0 20px #FFD700;
+        animation: slideInRight 0.5s ease-out;
+      `;
+      
+      notification.innerHTML = `
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">${achievement.icon}</div>
+        <div style="font-size: 1rem; margin-bottom: 0.3rem;">¡${achievement.title}!</div>
+        <div style="font-size: 0.8rem;">+${achievement.reward} monedas</div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
+    }
+
+    function updateStreak() {
+      const today = new Date().toDateString();
+      const streakData = JSON.parse(localStorage.getItem('streakData') || '{}');
+      const lastPlayDate = streakData.lastPlayDate;
+      
+      if (lastPlayDate !== today) {
+        // Check if it's consecutive
+        if (lastPlayDate) {
+          const lastDate = new Date(lastPlayDate);
+          const todayDate = new Date(today);
+          const diffTime = Math.abs(todayDate - lastDate);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          if (diffDays === 1) {
+            // Consecutive day
+            streakData.currentStreak = (streakData.currentStreak || 0) + 1;
+          } else if (diffDays > 1) {
+            // Streak broken
+            streakData.currentStreak = 1;
+          }
+        } else {
+          // First time playing
+          streakData.currentStreak = 1;
+        }
+        
+        streakData.lastPlayDate = today;
+        localStorage.setItem('streakData', JSON.stringify(streakData));
+        
+        // Check for milestone rewards
+        checkStreakMilestones(streakData.currentStreak);
+      }
+    }
+
+    function checkStreakMilestones(currentStreak) {
+      streakMilestones.forEach(milestone => {
+        if (currentStreak === milestone.days) {
+          // Milestone reached
+          if (typeof milestone.reward === 'number') {
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const newCoins = currentCoins + milestone.reward;
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            
+            showStreakMilestoneNotification(milestone);
+            loadTotalCoins();
+          }
+        }
+      });
+    }
+
+    function showStreakMilestoneNotification(milestone) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        border: 3px solid #FFD700;
+        border-radius: 15px;
+        padding: 2rem;
+        color: #000;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 0 30px #FFD700;
+        text-align: center;
+        animation: scaleIn 0.5s ease-out;
+      `;
+      
+      notification.innerHTML = `
+        <div style="font-size: 3rem; margin-bottom: 1rem;">${milestone.icon}</div>
+        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">¡Racha de ${milestone.days} días!</div>
+        <div style="font-size: 1rem;">${typeof milestone.reward === 'number' ? `+${milestone.reward} monedas` : milestone.reward}</div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove after 4 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 4000);
+    }
+
+    // Initialize achievements system
+    function initializeAchievements() {
+      updateStreak();
     }
 
     // ALL IN GAME FUNCTIONS (SIMPLE VERSION)
@@ -7887,6 +8730,9 @@
       
       // Initialize daily reward
       initializeDailyReward();
+      
+      // Initialize achievements system
+      initializeAchievements();
       
       // Initialize ALL IN game for players with 15000+ coins
       initializeAllInGame();

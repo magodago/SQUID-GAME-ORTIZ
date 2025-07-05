@@ -705,6 +705,10 @@
                 if (!pista1Mostrada) {
                     localStorage.setItem('jokerPista1Mostrada', 'true');
                     hintsFound++;
+                    // Update achievement progress for finding clues
+                    if (typeof updateAchievementProgress === 'function') {
+                        updateAchievementProgress('clues', 1);
+                    }
                     return {
                         win: isActuallyWin,
                         message: isActuallyWin ? '¡JACKPOT! 🎉\nEncontraste los 3 Jokers' : '¡Buena suerte!\nAquí tienes una pista',
@@ -714,6 +718,10 @@
                 } else if (!pista2Mostrada) {
                     localStorage.setItem('jokerPista2Mostrada', 'true');
                     hintsFound++;
+                    // Update achievement progress for finding clues
+                    if (typeof updateAchievementProgress === 'function') {
+                        updateAchievementProgress('clues', 1);
+                    }
                     return {
                         win: isActuallyWin,
                         message: isActuallyWin ? '¡JACKPOT! 🎉\nEncontraste los 3 Jokers' : '¡Buena suerte!\nAquí tienes una pista',
@@ -723,6 +731,10 @@
                 } else if (!pista3Mostrada) {
                     localStorage.setItem('jokerPista3Mostrada', 'true');
                     hintsFound++;
+                    // Update achievement progress for finding clues
+                    if (typeof updateAchievementProgress === 'function') {
+                        updateAchievementProgress('clues', 1);
+                    }
                     return {
                         win: isActuallyWin,
                         message: isActuallyWin ? '¡JACKPOT! 🎉\nEncontraste los 3 Jokers' : '¡Buena suerte!\nAquí tienes una pista',
@@ -731,6 +743,10 @@
                     };
                 } else if (hintsFound < totalHints) {
                     hintsFound++;
+                    // Update achievement progress for finding clues
+                    if (typeof updateAchievementProgress === 'function') {
+                        updateAchievementProgress('clues', 1);
+                    }
                     return {
                         win: isActuallyWin,
                         message: isActuallyWin ? '¡JACKPOT! 🎉\nEncontraste los 3 Jokers' : '¡Buena suerte!\nAquí tienes una pista',
@@ -789,6 +805,11 @@
                 title.textContent = '¡GANASTE!';
                 title.className = 'result-title win';
                 messageEl.textContent = message;
+                
+                // Update achievement progress for winning
+                if (typeof updateAchievementProgress === 'function') {
+                    updateAchievementProgress('wins', 1);
+                }
                 
                 if (hint) {
                     hintEl.textContent = `💡 PISTA: ${hint}`;

@@ -858,22 +858,36 @@
         }
 
         function placeBet() {
-            if (gameInProgress) return;
+            console.log('🎯 placeBet() called');
+            console.log('gameInProgress:', gameInProgress);
+            console.log('currentBetType:', currentBetType);
+            
+            if (gameInProgress) {
+                console.log('❌ Game in progress, cannot place bet');
+                return;
+            }
             
             if (!currentBetType) {
+                console.log('❌ No bet type selected');
                 alert('⚠️ ¡Selecciona un tipo de apuesta primero!');
                 return;
             }
             
             // Verificar que se haya seleccionado una opción específica
             const selectedOption = document.querySelector('.bet-option.selected');
+            console.log('selectedOption:', selectedOption);
+            
             if (!selectedOption) {
+                console.log('❌ No option selected');
                 alert('⚠️ ¡Selecciona una opción específica primero!');
                 return;
             }
             
             currentBetOption = selectedOption.getAttribute('data-option');
+            console.log('currentBetOption:', currentBetOption);
+            
             if (!currentBetOption) {
+                console.log('❌ No data-option attribute found');
                 alert('⚠️ ¡Selecciona una opción específica primero!');
                 return;
             }
@@ -1178,6 +1192,7 @@
         // Override localStorage.setItem for VIP game
         const originalVIPSetItem = localStorage.setItem;
         localStorage.setItem = function(key, value) {
+            console.log('🔄 VIP localStorage.setItem called:', key, '=', value);
             originalVIPSetItem.apply(this, arguments);
             
             // Auto-sync when VIP game data changes

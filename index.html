@@ -7246,6 +7246,9 @@
       // Initialize ALL IN game for players with 5000+ coins
       initializeAllInGame();
       
+      // Initialize admin set coins functionality
+      initializeAdminSetCoins();
+      
       // Initialize automatic sync every hour
       initializeAutomaticSync();
     });
@@ -7444,6 +7447,37 @@
         console.log('❌ PlayerDataManager not available');
       }
     }
+
+    // Admin Set Coins Functionality
+    function initializeAdminSetCoins() {
+      const setCoinsInput = document.getElementById('adminSetCoinsInput');
+      const setCoinsBtn = document.getElementById('adminSetCoinsBtn');
+      const setCoinsMsg = document.getElementById('adminSetCoinsMsg');
+      
+      if (setCoinsInput && setCoinsBtn && setCoinsMsg) {
+        setCoinsBtn.addEventListener('click', function() {
+          const value = parseInt(setCoinsInput.value);
+          if (!isNaN(value) && value >= 0) {
+            localStorage.setItem('totalOrtizCoins', value.toString());
+            if (typeof loadTotalCoins === 'function') loadTotalCoins();
+            setCoinsMsg.textContent = `¡Monedas actualizadas a ${value.toLocaleString()}!`;
+            setCoinsMsg.style.color = '#00ff00';
+            setCoinsMsg.style.display = 'block';
+            setTimeout(() => { setCoinsMsg.style.display = 'none'; }, 3000);
+            console.log('🪙 Admin set coins to:', value);
+          } else {
+            setCoinsMsg.textContent = '❌ Valor no válido';
+            setCoinsMsg.style.color = '#ff3333';
+            setCoinsMsg.style.display = 'block';
+            setTimeout(() => {
+              setCoinsMsg.style.display = 'none';
+              setCoinsMsg.textContent = '¡Monedas actualizadas!';
+              setCoinsMsg.style.color = '#00ff00';
+            }, 2000);
+          }
+        });
+      }
+    }
   </script>
   
   <!-- Firebase Configuration -->
@@ -7488,6 +7522,14 @@
           <span class="stat-label">Total Victorias:</span>
           <span class="stat-value" id="totalWins">0</span>
         </div>
+      </div>
+      
+      <!-- Campo para asignar monedas al jugador actual -->
+      <div class="admin-set-coins" style="margin: 20px 0; text-align: center; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; border-radius: 10px;">
+        <label for="adminSetCoinsInput" style="color: #fff; font-size: 1rem; margin-right: 10px;">🪙 Asignar monedas a este jugador:</label>
+        <input type="number" id="adminSetCoinsInput" min="0" placeholder="0" style="width: 120px; padding: 8px 12px; border-radius: 6px; border: 1px solid #00ff00; font-size: 1rem; background: rgba(0, 0, 0, 0.3); color: #fff;">
+        <button id="adminSetCoinsBtn" style="margin-left: 10px; padding: 8px 18px; border-radius: 6px; background: linear-gradient(45deg, #00ff00, #00cc00); color: #000; font-weight: bold; border: none; cursor: pointer; font-size: 1rem;">Actualizar</button>
+        <div id="adminSetCoinsMsg" style="display:none; color:#00ff00; margin-top:10px; font-size:0.95rem; font-weight: bold;">¡Monedas actualizadas!</div>
       </div>
       
       <div class="players-list" id="playersList">

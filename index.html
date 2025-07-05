@@ -4802,8 +4802,8 @@
         console.log('Data revealed:', input.getAttribute('data-revealed'));
         console.log('Current value:', input.value);
         
-        // Solo si el dígito está disponible para revelar y no hay un timer activo
-        if (input.getAttribute('data-revealed') === 'true' && !input.value && !pressTimers[index]) {
+        // Solo si es el último dígito (posición 3) y está disponible para revelar y no hay un timer activo
+        if (index === 3 && input.getAttribute('data-revealed') === 'true' && !input.value && !pressTimers[index]) {
           console.log('Starting long press timer for digit:', digitsToReveal[index]);
           pressStartTimes[index] = Date.now();
           
@@ -4865,7 +4865,7 @@
         console.log('Current value:', input.value);
         
         // No prevenir el comportamiento por defecto para permitir el teclado
-        if (input.getAttribute('data-revealed') === 'true' && !input.value && !pressTimers[index]) {
+        if (index === 3 && input.getAttribute('data-revealed') === 'true' && !input.value && !pressTimers[index]) {
           console.log('Starting long press timer for digit:', digitsToReveal[index]);
           pressStartTimes[index] = Date.now();
           
@@ -8042,6 +8042,13 @@
           // Get rank emoji
           const rankEmoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅';
           
+          // Get Easter Eggs details
+          const easterEggsDetails = playerData.easterEggs ? Object.keys(playerData.easterEggs).map(type => {
+            const egg = playerData.easterEggs[type];
+            const timesFound = egg.timesFound || 1;
+            return `${type} (${timesFound}x)`;
+          }).join(', ') : 'Ninguno';
+          
           playersHTML += `
             <div class="player-entry" style="animation: playerEntrySlide 0.3s ease-out ${index * 0.1}s both;">
               <div class="player-info">
@@ -8055,6 +8062,9 @@
                 <span title="Easter Eggs encontrados">🥚 ${easterEggs}</span>
                 <span title="Tiempo total jugado">⏱️ ${formatPlayTime(playTime)}</span>
                 <span title="Porcentaje de victoria" style="background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.1)); border-color: rgba(255, 215, 0, 0.4);">📊 ${winRate}%</span>
+              </div>
+              <div class="player-easter-eggs" style="margin-top: 8px; font-size: 0.8rem; color: #ffd700; text-align: left;">
+                <span title="Easter Eggs específicos">🥚 ${easterEggsDetails}</span>
               </div>
             </div>
           `;

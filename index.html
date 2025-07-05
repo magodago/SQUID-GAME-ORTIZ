@@ -4302,6 +4302,97 @@
                 document.body.style.overflow = 'hidden';
                 loadAdminData();
                 console.log('✅ Admin panel opened');
+                
+                // Add event listener to force sync button when panel opens
+                const forceSyncBtn = document.getElementById('forceSyncBtn');
+                if (forceSyncBtn) {
+                  console.log('🔍 Force sync button found, adding event listener...');
+                  forceSyncBtn.addEventListener('click', () => {
+                    console.log('🔄 Forzando sincronización con Firebase...');
+                    alert('🔄 Botón pulsado - Iniciando sincronización...');
+                    
+                    // Check if Firebase is available
+                    if (!window.firebase) {
+                      alert('❌ Firebase no está cargado');
+                      console.error('❌ Firebase not loaded');
+                      return;
+                    }
+                    
+                    if (!window.firebase.database) {
+                      alert('❌ Firebase Database no está disponible');
+                      console.error('❌ Firebase Database not available');
+                      return;
+                    }
+                    
+                    alert('✅ Firebase disponible - Conectando a la base de datos...');
+                    console.log('✅ Firebase available, connecting to database...');
+                    
+                    try {
+                      const database = window.firebase.database();
+                      const playersRef = database.ref('players');
+                      
+                      alert('📥 Conectado - Cargando datos de Firebase...');
+                      console.log('📥 Connected, loading data from Firebase...');
+                      
+                      playersRef.once('value').then(snapshot => {
+                        const playersData = snapshot.val() || {};
+                        console.log('📊 Datos cargados de Firebase:', playersData);
+                        
+                        // Show data in alert for debugging
+                        const playerCount = Object.keys(playersData).length;
+                        alert(`📊 Datos cargados: ${playerCount} jugadores encontrados\n\nDatos: ${JSON.stringify(playersData, null, 2)}`);
+                        
+                        // Update admin panel with Firebase data
+                        updateAdminPanelWithFirebaseData(playersData);
+                        
+                        // Also sync current player data to Firebase
+                        if (window.PlayerDataManager) {
+                          const playerName = localStorage.getItem('soldierName') || 'Unknown';
+                          const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                          const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+                          const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+                          const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+                          
+                          alert('🔄 Sincronizando datos del jugador actual...');
+                          
+                          PlayerDataManager.savePlayerData(playerName, totalCoins, {
+                            gamesPlayed: gamesPlayed,
+                            totalWins: totalWins,
+                            cluesFound: cluesFound,
+                            forcedSync: true,
+                            syncTimestamp: new Date().toISOString()
+                          }).then(result => {
+                            if (result) {
+                              console.log('✅ Sincronización forzada exitosa');
+                              alert('✅ Datos cargados y sincronizados correctamente');
+                              showDailyRewardMessage('✅ Datos cargados y sincronizados');
+                            } else {
+                              console.log('❌ Sincronización forzada falló');
+                              alert('❌ Error al sincronizar datos');
+                              showDailyRewardMessage('❌ Error al sincronizar');
+                            }
+                          }).catch(error => {
+                            console.error('❌ Error en sincronización forzada:', error);
+                            alert('❌ Error en sincronización: ' + error.message);
+                            showDailyRewardMessage('❌ Error en sincronización');
+                          });
+                        } else {
+                          alert('⚠️ PlayerDataManager no disponible - solo cargando datos');
+                        }
+                      }).catch(error => {
+                        console.error('❌ Error cargando datos de Firebase:', error);
+                        alert('❌ Error cargando datos: ' + error.message);
+                        showDailyRewardMessage('❌ Error cargando datos');
+                      });
+                    } catch (error) {
+                      console.error('❌ Error general:', error);
+                      alert('❌ Error general: ' + error.message);
+                    }
+                  });
+                } else {
+                  console.error('❌ Force sync button not found when panel opened!');
+                  alert('❌ Botón de sincronización no encontrado!');
+                }
               } else {
                 console.error('❌ Admin panel element not found!');
               }
@@ -5754,93 +5845,7 @@
       console.error('❌ Admin panel button not found!');
     }
     
-    if (forceSyncBtn) {
-      forceSyncBtn.addEventListener('click', () => {
-        console.log('🔄 Forzando sincronización con Firebase...');
-        alert('🔄 Botón pulsado - Iniciando sincronización...');
-        
-        // Check if Firebase is available
-        if (!window.firebase) {
-          alert('❌ Firebase no está cargado');
-          console.error('❌ Firebase not loaded');
-          return;
-        }
-        
-        if (!window.firebase.database) {
-          alert('❌ Firebase Database no está disponible');
-          console.error('❌ Firebase Database not available');
-          return;
-        }
-        
-        alert('✅ Firebase disponible - Conectando a la base de datos...');
-        console.log('✅ Firebase available, connecting to database...');
-        
-        try {
-          const database = window.firebase.database();
-          const playersRef = database.ref('players');
-          
-          alert('📥 Conectado - Cargando datos de Firebase...');
-          console.log('📥 Connected, loading data from Firebase...');
-          
-          playersRef.once('value').then(snapshot => {
-            const playersData = snapshot.val() || {};
-            console.log('📊 Datos cargados de Firebase:', playersData);
-            
-            // Show data in alert for debugging
-            const playerCount = Object.keys(playersData).length;
-            alert(`📊 Datos cargados: ${playerCount} jugadores encontrados\n\nDatos: ${JSON.stringify(playersData, null, 2)}`);
-            
-            // Update admin panel with Firebase data
-            updateAdminPanelWithFirebaseData(playersData);
-            
-            // Also sync current player data to Firebase
-            if (window.PlayerDataManager) {
-              const playerName = localStorage.getItem('soldierName') || 'Unknown';
-              const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-              const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
-              const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
-              const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
-              
-              alert('🔄 Sincronizando datos del jugador actual...');
-              
-              PlayerDataManager.savePlayerData(playerName, totalCoins, {
-                gamesPlayed: gamesPlayed,
-                totalWins: totalWins,
-                cluesFound: cluesFound,
-                forcedSync: true,
-                syncTimestamp: new Date().toISOString()
-              }).then(result => {
-                if (result) {
-                  console.log('✅ Sincronización forzada exitosa');
-                  alert('✅ Datos cargados y sincronizados correctamente');
-                  showDailyRewardMessage('✅ Datos cargados y sincronizados');
-                } else {
-                  console.log('❌ Sincronización forzada falló');
-                  alert('❌ Error al sincronizar datos');
-                  showDailyRewardMessage('❌ Error al sincronizar');
-                }
-              }).catch(error => {
-                console.error('❌ Error en sincronización forzada:', error);
-                alert('❌ Error en sincronización: ' + error.message);
-                showDailyRewardMessage('❌ Error en sincronización');
-              });
-            } else {
-              alert('⚠️ PlayerDataManager no disponible - solo cargando datos');
-            }
-          }).catch(error => {
-            console.error('❌ Error cargando datos de Firebase:', error);
-            alert('❌ Error cargando datos: ' + error.message);
-            showDailyRewardMessage('❌ Error cargando datos');
-          });
-        } catch (error) {
-          console.error('❌ Error general:', error);
-          alert('❌ Error general: ' + error.message);
-        }
-      });
-    } else {
-      console.error('❌ Force sync button not found!');
-      alert('❌ Botón de sincronización no encontrado!');
-    }
+    // Force sync button event listener is now added when admin panel opens
     
     if (closeAdminBtn) {
       closeAdminBtn.addEventListener('click', () => {

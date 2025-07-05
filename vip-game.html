@@ -504,7 +504,11 @@
             // Select new type
             element.classList.add('selected');
             currentBetType = betType;
-            currentBetOption = null;
+            
+            // Don't reset currentBetOption if it's still valid for this bet type
+            if (currentBetOption) {
+                console.log('⚠️ Keeping existing bet option:', currentBetOption);
+            }
             
             // Show options
             const optionsId = betType + 'Options';
@@ -515,10 +519,14 @@
             
             const statusText = document.getElementById('statusText');
             if (statusText) {
-                statusText.textContent = `✅ Seleccionado: ${betType.toUpperCase()}`;
+                if (currentBetOption) {
+                    statusText.textContent = `✅ Seleccionado: ${betType.toUpperCase()} - Opción: ${currentBetOption}`;
+                } else {
+                    statusText.textContent = `✅ Seleccionado: ${betType.toUpperCase()}`;
+                }
             }
             
-            console.log('✅ Bet type selected:', betType);
+            console.log('✅ Bet type selected:', betType, 'Current option:', currentBetOption);
         }
 
         function selectBetOption(option, element) {
@@ -538,10 +546,21 @@
             
             const statusText = document.getElementById('statusText');
             if (statusText) {
-                statusText.textContent = `✅ Opción: ${option}`;
+                if (currentBetType) {
+                    statusText.textContent = `✅ Seleccionado: ${currentBetType.toUpperCase()} - Opción: ${option}`;
+                } else {
+                    statusText.textContent = `✅ Opción: ${option}`;
+                }
             }
             
-            console.log('✅ Bet option selected:', option);
+            console.log('✅ Bet option selected:', option, 'Current type:', currentBetType);
+            
+            // Debug: Show current state
+            console.log('🔍 Current game state:', {
+                betType: currentBetType,
+                betOption: currentBetOption,
+                gameInProgress: gameInProgress
+            });
         }
 
         function startGame() {
@@ -1059,6 +1078,41 @@
                 };
                 bettingSection.appendChild(directTestButton);
                 console.log('✅ Direct test button added');
+                
+                // Debug state button
+                const debugStateButton = document.createElement('button');
+                debugStateButton.textContent = '🔍 SHOW CURRENT STATE';
+                debugStateButton.style.cssText = `
+                    width: 100%;
+                    padding: 10px;
+                    margin: 10px 0;
+                    background: linear-gradient(135deg, #FF00FF 0%, #FF66FF 100%);
+                    border: none;
+                    border-radius: 10px;
+                    color: white;
+                    font-family: 'Orbitron', monospace;
+                    font-weight: bold;
+                    cursor: pointer;
+                `;
+                debugStateButton.onclick = function() {
+                    console.log('🔍 === CURRENT GAME STATE ===');
+                    console.log('🎯 Bet Type:', currentBetType);
+                    console.log('🎲 Bet Option:', currentBetOption);
+                    console.log('💰 Coins:', vipCoins);
+                    console.log('🎮 Game In Progress:', gameInProgress);
+                    console.log('👥 Players:', players);
+                    
+                    // Show in alert too
+                    const stateMessage = `
+🎯 Bet Type: ${currentBetType || 'NONE'}
+🎲 Bet Option: ${currentBetOption || 'NONE'}
+💰 Coins: ${vipCoins}
+🎮 Game In Progress: ${gameInProgress}
+                    `;
+                    alert('🔍 CURRENT STATE:\n' + stateMessage);
+                };
+                bettingSection.appendChild(debugStateButton);
+                console.log('✅ Debug state button added');
             }
         }
     </script>

@@ -371,32 +371,32 @@
         <div class="betting-section">
             <h3 style="text-align: center; margin-bottom: 20px;">💰 HACER APUESTA</h3>
             
-            <div class="bet-type" onclick="selectBetType('winner', this)">
+            <div class="bet-type" data-type="winner">
                 <div style="font-weight: bold;">🏆 APUESTA GANADOR (2x)</div>
                 <div style="font-size: 0.9rem; color: #FFA500;">¿Quién ganará?</div>
                 <div class="bet-options" id="winnerOptions">
-                    <div class="bet-option" onclick="selectBetOption('001', this)">🎮 001</div>
-                    <div class="bet-option" onclick="selectBetOption('002', this)">🎯 002</div>
-                    <div class="bet-option" onclick="selectBetOption('003', this)">⚡ 003</div>
+                    <div class="bet-option" data-option="001">🎮 001</div>
+                    <div class="bet-option" data-option="002">🎯 002</div>
+                    <div class="bet-option" data-option="003">⚡ 003</div>
                 </div>
             </div>
             
-            <div class="bet-type" onclick="selectBetType('score', this)">
+            <div class="bet-type" data-type="score">
                 <div style="font-weight: bold;">📊 APUESTA PUNTUACIÓN (1.5x)</div>
                 <div style="font-size: 0.9rem; color: #FFA500;">¿Cuál será la puntuación total?</div>
                 <div class="bet-options" id="scoreOptions">
-                    <div class="bet-option" onclick="selectBetOption('high', this)">📈 Alta (>100)</div>
-                    <div class="bet-option" onclick="selectBetOption('medium', this)">📊 Media (50-100)</div>
-                    <div class="bet-option" onclick="selectBetOption('low', this)">📉 Baja (<50)</div>
+                    <div class="bet-option" data-option="high">📈 Alta (>100)</div>
+                    <div class="bet-option" data-option="medium">📊 Media (50-100)</div>
+                    <div class="bet-option" data-option="low">📉 Baja (<50)</div>
                 </div>
             </div>
             
-            <div class="bet-type" onclick="selectBetType('difference', this)">
+            <div class="bet-type" data-type="difference">
                 <div style="font-weight: bold;">⚡ APUESTA DIFERENCIA (3x)</div>
                 <div style="font-size: 0.9rem; color: #FFA500;">¿Será reñido o dominante?</div>
                 <div class="bet-options" id="differenceOptions">
-                    <div class="bet-option" onclick="selectBetOption('close', this)">⚡ Reñido (<20)</div>
-                    <div class="bet-option" onclick="selectBetOption('wide', this)">🏆 Dominante (>20)</div>
+                    <div class="bet-option" data-option="close">⚡ Reñido (<20)</div>
+                    <div class="bet-option" data-option="wide">🏆 Dominante (>20)</div>
                 </div>
             </div>
             
@@ -436,6 +436,26 @@
             updatePlayersDisplay();
             updateCoinsDisplay();
             
+            // Add event listeners for bet types
+            document.querySelectorAll('.bet-type').forEach(betType => {
+                betType.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const type = this.getAttribute('data-type');
+                    console.log('🎯 Bet type clicked:', type);
+                    selectBetType(type, this);
+                });
+            });
+            
+            // Add event listeners for bet options
+            document.querySelectorAll('.bet-option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const optionValue = this.getAttribute('data-option');
+                    console.log('🎲 Bet option clicked:', optionValue);
+                    selectBetOption(optionValue, this);
+                });
+            });
+            
             // Add click event listeners to ensure they work
             const playButton = document.getElementById('playButton');
             if (playButton) {
@@ -449,14 +469,6 @@
                     e.stopPropagation();
                     startGame();
                 });
-                
-                // Also add onclick as backup
-                playButton.onclick = function(e) {
-                    console.log('🎮 Play button onclick triggered!');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    startGame();
-                };
                 
                 console.log('✅ Play button event listeners added');
             } else {
@@ -562,6 +574,16 @@
                 return;
             }
             
+            if (!currentBetType) {
+                console.log('⚠️ No bet type selected');
+                const statusText = document.getElementById('statusText');
+                if (statusText) {
+                    statusText.textContent = '❌ Selecciona un tipo de apuesta primero';
+                    statusText.style.color = '#FF0000';
+                }
+                return;
+            }
+            
             console.log('🎲 Selecting bet option:', option);
             
             // Remove previous selections
@@ -573,21 +595,11 @@
             
             const statusText = document.getElementById('statusText');
             if (statusText) {
-                if (currentBetType) {
-                    statusText.textContent = `✅ Seleccionado: ${currentBetType.toUpperCase()} - Opción: ${option}`;
-                } else {
-                    statusText.textContent = `✅ Opción: ${option}`;
-                }
+                statusText.textContent = `✅ Seleccionado: ${currentBetType.toUpperCase()} - Opción: ${option}`;
+                statusText.style.color = '#00FF00';
             }
             
             console.log('✅ Bet option selected:', option, 'Current type:', currentBetType);
-            
-            // Debug: Show current state
-            console.log('🔍 Current game state:', {
-                betType: currentBetType,
-                betOption: currentBetOption,
-                gameInProgress: gameInProgress
-            });
         }
 
         function startGame() {

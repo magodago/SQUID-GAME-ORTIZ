@@ -6708,6 +6708,14 @@
     }
     
     function activateFusionPower() {
+      // Increment easter eggs found counter
+      const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
+      localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
+      console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
+      
+      // Update statistics display
+      loadStats();
+      
       // Show fusion power modal
       fusionPowerModal.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -7321,6 +7329,14 @@
     });
     
     function activateSquidPower() {
+      // Increment easter eggs found counter
+      const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
+      localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
+      console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
+      
+      // Update statistics display
+      loadStats();
+      
       // Show squid power modal
       squidPowerModal.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -7431,6 +7447,14 @@
     });
     
     function activateLockPower() {
+      // Increment easter eggs found counter
+      const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
+      localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
+      console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
+      
+      // Update statistics display
+      loadStats();
+      
       // Show lock power modal
       lockPowerModal.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -8504,6 +8528,14 @@
       
       // Update display
       loadTotalCoins();
+      
+      // Increment easter eggs found counter
+      const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
+      localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
+      console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
+      
+      // Update statistics display
+      loadStats();
       
       // Track Easter Egg in Firebase
       if (window.PlayerDataManager) {

@@ -2510,10 +2510,10 @@
       justify-content: center;
       margin: 1rem 0;
       padding: 1rem 2rem;
-      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
-      border: 3px solid #FF6B35;
+      background: linear-gradient(135deg, #e60073 0%, #1a1a1a 100%);
+      border: 3px solid #e60073;
       border-radius: 15px;
-      box-shadow: 0 0 30px #FF6B35, inset 0 0 20px rgba(255, 107, 53, 0.3);
+      box-shadow: 0 0 30px #e60073, inset 0 0 20px rgba(230, 0, 115, 0.3);
       backdrop-filter: blur(5px);
       margin-left: auto;
       margin-right: auto;
@@ -2525,7 +2525,7 @@
     
     .daily-reward-container:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 40px #FF6B35, inset 0 0 30px rgba(255, 107, 53, 0.5);
+      box-shadow: 0 0 40px #e60073, inset 0 0 30px rgba(230, 0, 115, 0.5);
     }
     
     .daily-reward-container .envelope-btn {
@@ -4782,7 +4782,9 @@
 
     // DAILY REWARD Button Event Listener
     const dailyRewardBtn = document.getElementById('dailyRewardBtn');
-    dailyRewardBtn.addEventListener('click', () => {
+    const dailyRewardContainer = document.querySelector('.daily-reward-container');
+    
+    function handleDailyRewardClick() {
       console.log('DAILY REWARD seleccionado');
       
       // Check if daily reward is available
@@ -4792,8 +4794,8 @@
       }
       
       // Add dramatic effect
-      dailyRewardBtn.style.transform = 'scale(0.9) rotateY(5deg)';
-      dailyRewardBtn.style.boxShadow = '0 0 80px #FF6B35, inset 0 0 40px rgba(255, 107, 53, 0.7)';
+      dailyRewardContainer.style.transform = 'scale(0.9) rotateY(5deg)';
+      dailyRewardContainer.style.boxShadow = '0 0 80px #e60073, inset 0 0 40px rgba(230, 0, 115, 0.7)';
       
       // Create reward explosion effect
       for (let i = 0; i < 12; i++) {
@@ -4801,13 +4803,13 @@
         particle.style.position = 'absolute';
         particle.style.width = '6px';
         particle.style.height = '6px';
-        particle.style.background = '#FF6B35';
+        particle.style.background = '#e60073';
         particle.style.borderRadius = '50%';
         particle.style.pointerEvents = 'none';
         particle.style.zIndex = '1000';
-        particle.style.boxShadow = '0 0 10px #FF6B35';
+        particle.style.boxShadow = '0 0 10px #e60073';
         
-        const rect = dailyRewardBtn.getBoundingClientRect();
+        const rect = dailyRewardContainer.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         
@@ -4840,15 +4842,19 @@
       
       // Reset button after animation
       setTimeout(() => {
-        dailyRewardBtn.style.transform = '';
-        dailyRewardBtn.style.boxShadow = '';
+        dailyRewardContainer.style.transform = '';
+        dailyRewardContainer.style.boxShadow = '';
       }, 1200);
       
       // Show daily reward modal
       setTimeout(() => {
         showDailyRewardModal();
       }, 1200);
-    });
+    }
+    
+    // Add event listeners to both container and button
+    dailyRewardContainer.addEventListener('click', handleDailyRewardClick);
+    dailyRewardBtn.addEventListener('click', handleDailyRewardClick);
 
     // FRONT MAN Button Event Listener
     const frontmanBtn = document.getElementById('frontmanBtn');

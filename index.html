@@ -4011,7 +4011,13 @@
           
           // Show admin panel button
           const adminPanelBtn = document.getElementById('adminPanelBtn');
-          adminPanelBtn.style.display = 'flex';
+          console.log('🔍 Showing admin panel button:', adminPanelBtn);
+          if (adminPanelBtn) {
+            adminPanelBtn.style.display = 'flex';
+            console.log('✅ Admin panel button displayed');
+          } else {
+            console.error('❌ Admin panel button not found when trying to show it');
+          }
           
           // Clear inputs but don't hide access panel for admin
           setTimeout(() => {
@@ -5343,11 +5349,16 @@
     
     // Admin panel event listeners
     const adminPanelBtn = document.getElementById('adminPanelBtn');
+    console.log('🔍 Admin panel button element:', adminPanelBtn);
     
-    adminPanelBtn.addEventListener('click', () => {
-      console.log('🔐 Admin panel button clicked!');
-      activateAdminPanel();
-    });
+    if (adminPanelBtn) {
+      adminPanelBtn.addEventListener('click', () => {
+        console.log('🔐 Admin panel button clicked!');
+        activateAdminPanel();
+      });
+    } else {
+      console.error('❌ Admin panel button not found!');
+    }
     
     refreshAdminBtn.addEventListener('click', () => {
       loadAdminData();

@@ -8114,7 +8114,8 @@
     }
 
     function loadStats() {
-      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      // Use OrtizCoinManager for consistent coin handling
+      const totalCoins = window.OrtizCoinManager ? window.OrtizCoinManager.getTotalCoins() : parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
       const easterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
       const daysActive = parseInt(localStorage.getItem('daysActive') || '0');
@@ -8316,6 +8317,75 @@
         }
       }, 4000);
     }
+
+    // CENTRALIZED COIN MANAGEMENT SYSTEM
+    window.OrtizCoinManager = {
+      // Get current total coins
+      getTotalCoins: function() {
+        return parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      },
+      
+      // Add coins safely (accumulate, don't overwrite)
+      addCoins: function(amount, source = 'game') {
+        const currentCoins = this.getTotalCoins();
+        const newTotal = currentCoins + amount;
+        localStorage.setItem('totalOrtizCoins', newTotal.toString());
+        
+        console.log(`💰 OrtizCoinManager: +${amount} coins from ${source}. Total: ${newTotal}`);
+        
+        // Update display if on main page
+        if (typeof loadTotalCoins === 'function') {
+          loadTotalCoins();
+        }
+        
+        // Trigger event for other components
+        window.dispatchEvent(new CustomEvent('ortizCoinsUpdated', { 
+          detail: { totalCoins: newTotal, added: amount, source: source } 
+        }));
+        
+        return newTotal;
+      },
+      
+      // Set coins (overwrite total)
+      setCoins: function(amount, source = 'game') {
+        localStorage.setItem('totalOrtizCoins', amount.toString());
+        
+        console.log(`💰 OrtizCoinManager: Set to ${amount} coins from ${source}`);
+        
+        // Update display if on main page
+        if (typeof loadTotalCoins === 'function') {
+          loadTotalCoins();
+        }
+        
+        // Trigger event for other components
+        window.dispatchEvent(new CustomEvent('ortizCoinsUpdated', { 
+          detail: { totalCoins: amount, source: source } 
+        }));
+        
+        return amount;
+      },
+      
+      // Deduct coins safely
+      deductCoins: function(amount, source = 'game') {
+        const currentCoins = this.getTotalCoins();
+        const newTotal = Math.max(0, currentCoins - amount); // Don't go below 0
+        localStorage.setItem('totalOrtizCoins', newTotal.toString());
+        
+        console.log(`💰 OrtizCoinManager: -${amount} coins from ${source}. Total: ${newTotal}`);
+        
+        // Update display if on main page
+        if (typeof loadTotalCoins === 'function') {
+          loadTotalCoins();
+        }
+        
+        // Trigger event for other components
+        window.dispatchEvent(new CustomEvent('ortizCoinsUpdated', { 
+          detail: { totalCoins: newTotal, deducted: amount, source: source } 
+        }));
+        
+        return newTotal;
+      }
+    };
 
     // Initialize achievements system
     function initializeAchievements() {

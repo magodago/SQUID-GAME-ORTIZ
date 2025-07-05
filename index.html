@@ -4394,27 +4394,10 @@
         clearTimeout(fusionSequenceTimeout);
       }
       
-      console.log('Checking fusion sequence for:', target.textContent, target.className, target.id);
-      
-      // Check for coin emoji - 🪙
-      if (target.textContent === '🪙' || target.classList.contains('coin-icon')) {
-        console.log('Coin emoji detected!');
-        addToFusionSequence('coinEmoji', now);
-      }
-      // Check for "ORTIZ" text
-      else if (target.textContent && target.textContent.includes('ORTIZ')) {
-        console.log('ORTIZ text detected!');
-        addToFusionSequence('ortiz', now);
-      }
-      // Check for "COINS" text
-      else if (target.textContent && target.textContent.includes('COINS')) {
-        console.log('COINS text detected!');
-        addToFusionSequence('coins', now);
-      }
-      // Check for total coins number
-      else if (target.id === 'totalCoins' || target.closest('#totalCoins')) {
-        console.log('Total coins number detected!');
-        addToFusionSequence('totalCoins', now);
+      // Check for coins counter (any part of it)
+      if (target.closest('#coinsCounter') || target.closest('.coins-counter')) {
+        console.log('Coins counter clicked for fusion!');
+        addToFusionSequence('coinsCounter', now);
       }
       
       // Set timeout to reset sequence after 5 seconds
@@ -4432,8 +4415,8 @@
         console.log('📋 Current fusion sequence:', fusionSequence.map(item => item.element));
         
         // Check if sequence is complete
-        if (fusionSequence.length === 8) {
-          const expectedSequence = ['coinEmoji', 'ortiz', 'coins', 'totalCoins', 'totalCoins', 'coins', 'ortiz', 'coinEmoji'];
+        if (fusionSequence.length === 3) {
+          const expectedSequence = ['coinsCounter', 'coinsCounter', 'coinsCounter'];
           const actualSequence = fusionSequence.map(item => item.element);
           
           console.log('🎯 Expected sequence:', expectedSequence);
@@ -4771,51 +4754,7 @@
       }
     });
     
-    // Test function for fusion power (temporary)
-    function testFusionPower() {
-      console.log('Testing fusion power...');
-      activateFusionPower();
-    }
-    
-    // Debug function to show current sequence
-    function debugFusionSequence() {
-      console.log('Current fusion sequence:', fusionSequence.map(item => item.element));
-      console.log('Sequence length:', fusionSequence.length);
-      console.log('Expected sequence:', ['coinEmoji', 'ortiz', 'coins', 'totalCoins', 'totalCoins', 'coins', 'ortiz', 'coinEmoji']);
-    }
-    
-    // Add test button (temporary)
-    setTimeout(() => {
-      const testBtn = document.createElement('button');
-      testBtn.textContent = 'TEST FUSION';
-      testBtn.style.position = 'fixed';
-      testBtn.style.top = '10px';
-      testBtn.style.left = '10px';
-      testBtn.style.zIndex = '10000';
-      testBtn.style.background = '#9933ff';
-      testBtn.style.color = 'white';
-      testBtn.style.border = 'none';
-      testBtn.style.padding = '10px';
-      testBtn.style.borderRadius = '5px';
-      testBtn.style.cursor = 'pointer';
-      testBtn.onclick = testFusionPower;
-      document.body.appendChild(testBtn);
-      
-      const debugBtn = document.createElement('button');
-      debugBtn.textContent = 'DEBUG SEQ';
-      debugBtn.style.position = 'fixed';
-      debugBtn.style.top = '50px';
-      debugBtn.style.left = '10px';
-      debugBtn.style.zIndex = '10000';
-      debugBtn.style.background = '#ff9933';
-      debugBtn.style.color = 'white';
-      debugBtn.style.border = 'none';
-      debugBtn.style.padding = '10px';
-      debugBtn.style.borderRadius = '5px';
-      debugBtn.style.cursor = 'pointer';
-      debugBtn.onclick = debugFusionSequence;
-      document.body.appendChild(debugBtn);
-    }, 1000);
+
     
     // Easter Egg 3 - Squid Power Detection
     let clickedLetters = new Set();

@@ -372,7 +372,7 @@
         });
 
         async function loadAdminData() {
-            console.log('📊 Loading admin data from Firebase...');
+            console.log('📊 Loading admin data with Firebase sync...');
             
             // Show loading state
             document.getElementById('loadingState').style.display = 'block';
@@ -381,6 +381,10 @@
             document.getElementById('emptyState').style.display = 'none';
 
             try {
+                // First load local data
+                const localData = loadFallbackData();
+                console.log('📱 Local data loaded:', localData);
+                
                 // Wait for Firebase to be ready
                 let attempts = 0;
                 while (!window.PlayerDataManager && attempts < 10) {
@@ -389,24 +393,52 @@
                     attempts++;
                 }
                 
-                if (!window.PlayerDataManager) {
-                    console.error('❌ Firebase not ready after 10 attempts');
-                    throw new Error('Firebase not initialized');
+                if (window.PlayerDataManager && localData.players.length > 0) {
+                    console.log('☁️ Firebase ready, forcing sync of local data...');
+                    
+                    // Force sync local data to Firebase
+                    for (const player of localData.players) {
+                        console.log('📤 Syncing player to Firebase:', player.name);
+                        try {
+                            await PlayerDataManager.savePlayerData(
+                                player.name,
+                                player.coins,
+                                {
+                                    gamesPlayed: player.gamesPlayed,
+                                    totalWins: player.totalWins,
+                                    cluesFound: player.cluesFound,
+                                    lastSync: new Date().toISOString(),
+                                    syncedFrom: 'admin-panel'
+                                }
+                            );
+                            console.log('✅ Player synced to Firebase:', player.name);
+                        } catch (syncError) {
+                            console.error('❌ Error syncing player:', player.name, syncError);
+                        }
+                    }
+                    
+                    // Wait a moment for Firebase to update
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    // Now get updated data from Firebase
+                    console.log('☁️ Loading updated data from Firebase...');
+                    const firebasePlayers = await PlayerDataManager.getAllPlayers();
+                    const firebaseStats = await PlayerDataManager.getPlayerStats();
+                    
+                    console.log('☁️ Updated Firebase data:', firebasePlayers);
+                    
+                    // Use Firebase data if available, otherwise use local
+                    const finalPlayers = firebasePlayers && firebasePlayers.length > 0 ? firebasePlayers : localData.players;
+                    const finalStats = firebaseStats || localData.stats;
+                    
+                    updateAdminUI(finalPlayers, finalStats);
+                    console.log('✅ Admin data loaded with Firebase sync');
+                    
+                } else {
+                    console.log('📱 Using local data only (Firebase not available)');
+                    updateAdminUI(localData.players, localData.stats);
                 }
                 
-                console.log('✅ Firebase ready, getting data...');
-                
-                // Get all players from Firebase
-                const players = await PlayerDataManager.getAllPlayers();
-                const stats = await PlayerDataManager.getPlayerStats();
-                
-                console.log('Players from Firebase:', players);
-                console.log('Stats from Firebase:', stats);
-                
-                                // Use the updateAdminUI function
-                updateAdminUI(players, stats);
-                
-                console.log('✅ Admin data loaded successfully from Firebase');
             } catch (error) {
                 console.error('❌ Error loading admin data:', error);
                 
@@ -519,19 +551,15 @@
         }
 
         // Event listeners
-        document.getElementById('refreshBtn').addEventListener('click', () => {
-            console.log('🔄 Refreshing admin data...');
-            // Force refresh from localStorage
-            const fallbackData = loadFallbackData();
-            if (fallbackData.players.length > 0) {
-                console.log('✅ Using fresh localStorage data:', fallbackData);
-                updateAdminUI(fallbackData.players, fallbackData.stats);
-                
-                // Show success message
-                showRefreshMessage('✅ Datos actualizados desde el dispositivo');
-            } else {
-                showRefreshMessage('❌ No hay datos para mostrar');
-            }
+        document.getElementById('refreshBtn').addEventListener('click', async () => {
+            console.log('🔄 Refreshing admin data with Firebase sync...');
+            showRefreshMessage('🔄 Actualizando datos y sincronizando con Firebase...');
+            
+            // Force sync and load data
+            await loadAdminData();
+            
+            // Show success message
+            showRefreshMessage('✅ Datos actualizados y sincronizados con Firebase');
         });
 
         document.getElementById('migrateBtn').addEventListener('click', () => {
@@ -602,6 +630,59 @@
         
         // Add button to container
         document.querySelector('.button-container').insertBefore(checkFirebaseBtn, document.getElementById('backBtn'));
+        
+        // Add button to force sync local data to Firebase
+        const forceSyncBtn = document.createElement('button');
+        forceSyncBtn.textContent = '📤 Forzar Sincronización';
+        forceSyncBtn.className = 'admin-btn';
+        forceSyncBtn.style.background = 'linear-gradient(45deg, #4caf50, #45a049)';
+        forceSyncBtn.addEventListener('click', async () => {
+            console.log('📤 Force syncing local data to Firebase...');
+            showRefreshMessage('📤 Forzando sincronización de datos locales a Firebase...');
+            
+            try {
+                const localData = loadFallbackData();
+                if (localData.players.length === 0) {
+                    showRefreshMessage('❌ No hay datos locales para sincronizar');
+                    return;
+                }
+                
+                if (!window.PlayerDataManager) {
+                    showRefreshMessage('❌ Firebase no disponible');
+                    return;
+                }
+                
+                // Force sync each player
+                for (const player of localData.players) {
+                    console.log('📤 Syncing player:', player.name);
+                    await PlayerDataManager.savePlayerData(
+                        player.name,
+                        player.coins,
+                        {
+                            gamesPlayed: player.gamesPlayed,
+                            totalWins: player.totalWins,
+                            cluesFound: player.cluesFound,
+                            lastSync: new Date().toISOString(),
+                            syncedFrom: 'force-sync'
+                        }
+                    );
+                }
+                
+                showRefreshMessage('✅ Datos locales sincronizados a Firebase');
+                
+                // Reload data to show updated Firebase data
+                setTimeout(() => {
+                    loadAdminData();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ Error during force sync:', error);
+                showRefreshMessage('❌ Error durante la sincronización: ' + error.message);
+            }
+        });
+        
+        // Add button to container
+        document.querySelector('.button-container').insertBefore(forceSyncBtn, document.getElementById('backBtn'));
 
         document.getElementById('backBtn').addEventListener('click', () => {
             console.log('⬅️ Going back to main page...');

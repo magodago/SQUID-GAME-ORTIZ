@@ -353,6 +353,300 @@ const PlayerDataManager = {
       players.sort((a, b) => b.lastUpdated - a.lastUpdated);
       callback(players);
     });
+  },
+
+  // Enhanced player data tracking functions
+  trackEasterEgg: async function(playerName, easterEggType, coinsEarned = 0) {
+    try {
+      console.log(`🥚 Tracking Easter Egg: ${easterEggType} for ${playerName}`);
+      
+      const playerRef = db.ref(`players/${playerName}`);
+      const snapshot = await playerRef.once('value');
+      const playerData = snapshot.val() || {};
+      
+      // Initialize Easter Eggs tracking if not exists
+      if (!playerData.easterEggs) {
+        playerData.easterEggs = {};
+      }
+      
+      // Track this specific Easter Egg
+      if (!playerData.easterEggs[easterEggType]) {
+        playerData.easterEggs[easterEggType] = {
+          found: true,
+          firstFound: new Date().toISOString(),
+          timesFound: 1,
+          totalCoinsEarned: coinsEarned
+        };
+      } else {
+        playerData.easterEggs[easterEggType].timesFound += 1;
+        playerData.easterEggs[easterEggType].totalCoinsEarned += coinsEarned;
+        playerData.easterEggs[easterEggType].lastFound = new Date().toISOString();
+      }
+      
+      // Update total Easter Eggs count
+      playerData.totalEasterEggs = Object.keys(playerData.easterEggs).length;
+      
+      // Add to activity log
+      if (!playerData.activityLog) {
+        playerData.activityLog = [];
+      }
+      
+      playerData.activityLog.push({
+        type: 'easter-egg',
+        easterEggType: easterEggType,
+        coinsEarned: coinsEarned,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Keep only last 50 activities
+      if (playerData.activityLog.length > 50) {
+        playerData.activityLog = playerData.activityLog.slice(-50);
+      }
+      
+      await playerRef.set(playerData);
+      console.log(`✅ Easter Egg tracked: ${easterEggType}`);
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Error tracking Easter Egg:', error);
+      return false;
+    }
+  },
+  
+  startGameSession: async function(playerName, gameType) {
+    try {
+      console.log(`🎮 Starting game session: ${gameType} for ${playerName}`);
+      
+      const playerRef = db.ref(`players/${playerName}`);
+      const snapshot = await playerRef.once('value');
+      const playerData = snapshot.val() || {};
+      
+      // Initialize game sessions if not exists
+      if (!playerData.gameSessions) {
+        playerData.gameSessions = {};
+      }
+      
+      // Start new session
+      const sessionId = Date.now().toString();
+      playerData.gameSessions[sessionId] = {
+        gameType: gameType,
+        startTime: new Date().toISOString(),
+        status: 'active'
+      };
+      
+      // Update current session
+      playerData.currentSession = {
+        sessionId: sessionId,
+        gameType: gameType,
+        startTime: new Date().toISOString()
+      };
+      
+      await playerRef.set(playerData);
+      console.log(`✅ Game session started: ${gameType}`);
+      
+      return sessionId;
+    } catch (error) {
+      console.error('❌ Error starting game session:', error);
+      return null;
+    }
+  },
+  
+  endGameSession: async function(playerName, sessionId, gameResult = {}) {
+    try {
+      console.log(`🏁 Ending game session: ${sessionId} for ${playerName}`);
+      
+      const playerRef = db.ref(`players/${playerName}`);
+      const snapshot = await playerRef.once('value');
+      const playerData = snapshot.val() || {};
+      
+      if (playerData.gameSessions && playerData.gameSessions[sessionId]) {
+        const session = playerData.gameSessions[sessionId];
+        const endTime = new Date();
+        const startTime = new Date(session.startTime);
+        const duration = Math.round((endTime - startTime) / 1000); // seconds
+        
+        // Update session with end data
+        session.endTime = endTime.toISOString();
+        session.duration = duration;
+        session.status = 'completed';
+        session.result = gameResult;
+        
+        // Update total play time
+        playerData.totalPlayTime = (playerData.totalPlayTime || 0) + duration;
+        
+        // Update game-specific stats
+        if (!playerData.gameStats) {
+          playerData.gameStats = {};
+        }
+        
+        if (!playerData.gameStats[session.gameType]) {
+          playerData.gameStats[session.gameType] = {
+            totalGames: 0,
+            totalWins: 0,
+            totalPlayTime: 0,
+            averagePlayTime: 0
+          };
+        }
+        
+        const gameStat = playerData.gameStats[session.gameType];
+        gameStat.totalGames += 1;
+        gameStat.totalPlayTime += duration;
+        gameStat.averagePlayTime = Math.round(gameStat.totalPlayTime / gameStat.totalGames);
+        
+        if (gameResult.won) {
+          gameStat.totalWins += 1;
+        }
+        
+        // Clear current session
+        playerData.currentSession = null;
+        
+        // Add to activity log
+        if (!playerData.activityLog) {
+          playerData.activityLog = [];
+        }
+        
+        playerData.activityLog.push({
+          type: 'game-completed',
+          gameType: session.gameType,
+          duration: duration,
+          result: gameResult,
+          timestamp: new Date().toISOString()
+        });
+        
+        // Keep only last 50 activities
+        if (playerData.activityLog.length > 50) {
+          playerData.activityLog = playerData.activityLog.slice(-50);
+        }
+        
+        await playerRef.set(playerData);
+        console.log(`✅ Game session ended: ${sessionId}, duration: ${duration}s`);
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('❌ Error ending game session:', error);
+      return false;
+    }
+  },
+  
+  trackGameAction: async function(playerName, gameType, action, data = {}) {
+    try {
+      console.log(`🎯 Tracking game action: ${action} in ${gameType} for ${playerName}`);
+      
+      const playerRef = db.ref(`players/${playerName}`);
+      const snapshot = await playerRef.once('value');
+      const playerData = snapshot.val() || {};
+      
+      // Initialize game actions if not exists
+      if (!playerData.gameActions) {
+        playerData.gameActions = {};
+      }
+      
+      if (!playerData.gameActions[gameType]) {
+        playerData.gameActions[gameType] = [];
+      }
+      
+      // Add action
+      playerData.gameActions[gameType].push({
+        action: action,
+        data: data,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Keep only last 100 actions per game
+      if (playerData.gameActions[gameType].length > 100) {
+        playerData.gameActions[gameType] = playerData.gameActions[gameType].slice(-100);
+      }
+      
+      await playerRef.set(playerData);
+      console.log(`✅ Game action tracked: ${action}`);
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Error tracking game action:', error);
+      return false;
+    }
+  },
+  
+  getDetailedPlayerStats: async function(playerName) {
+    try {
+      console.log(`📊 Getting detailed stats for: ${playerName}`);
+      
+      const playerRef = db.ref(`players/${playerName}`);
+      const snapshot = await playerRef.once('value');
+      const playerData = snapshot.val() || {};
+      
+      // Calculate additional stats
+      const stats = {
+        name: playerName,
+        coins: playerData.coins || 0,
+        gamesPlayed: playerData.gamesPlayed || 0,
+        totalWins: playerData.totalWins || 0,
+        cluesFound: playerData.cluesFound || 0,
+        dailyRewards: playerData.dailyRewards || 0,
+        totalPlayTime: playerData.totalPlayTime || 0,
+        totalEasterEggs: playerData.totalEasterEggs || 0,
+        lastUpdated: playerData.lastUpdated || new Date().toISOString(),
+        
+        // Easter Eggs details
+        easterEggs: playerData.easterEggs || {},
+        
+        // Game-specific stats
+        gameStats: playerData.gameStats || {},
+        
+        // Recent activity
+        recentActivity: playerData.activityLog ? playerData.activityLog.slice(-10) : [],
+        
+        // Current session
+        currentSession: playerData.currentSession || null,
+        
+        // Calculated stats
+        winRate: playerData.gamesPlayed > 0 ? Math.round((playerData.totalWins / playerData.gamesPlayed) * 100) : 0,
+        coinsPerGame: playerData.gamesPlayed > 0 ? Math.round(playerData.coins / playerData.gamesPlayed) : 0,
+        averagePlayTime: playerData.gamesPlayed > 0 ? Math.round(playerData.totalPlayTime / playerData.gamesPlayed) : 0,
+        
+        // Player level
+        playerLevel: playerData.coins >= 10000 ? 'Maestro' : 
+                    playerData.coins >= 5000 ? 'Experto' : 
+                    playerData.coins >= 1000 ? 'Intermedio' : 
+                    playerData.coins >= 100 ? 'Principiante' : 'Novato'
+      };
+      
+      console.log(`✅ Detailed stats retrieved for: ${playerName}`);
+      return stats;
+      
+    } catch (error) {
+      console.error('❌ Error getting detailed player stats:', error);
+      return null;
+    }
+  },
+  
+  getAllPlayersDetailedStats: async function() {
+    try {
+      console.log('📊 Getting detailed stats for all players...');
+      
+      const playersRef = db.ref('players');
+      const snapshot = await playersRef.once('value');
+      const playersData = snapshot.val() || {};
+      
+      const detailedStats = [];
+      
+      for (const [playerName, playerData] of Object.entries(playersData)) {
+        const stats = await this.getDetailedPlayerStats(playerName);
+        if (stats) {
+          detailedStats.push(stats);
+        }
+      }
+      
+      console.log(`✅ Detailed stats retrieved for ${detailedStats.length} players`);
+      return detailedStats;
+      
+    } catch (error) {
+      console.error('❌ Error getting all players detailed stats:', error);
+      return [];
+    }
   }
 };
 

@@ -411,6 +411,21 @@
             <div class="stat-label">Jugador Más Activo</div>
             <div class="stat-value" id="mostActivePlayer">-</div>
         </div>
+        <div class="stat-card">
+            <span class="stat-icon">🥚</span>
+            <div class="stat-label">Total Easter Eggs</div>
+            <div class="stat-value" id="totalEasterEggs">0</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">⏱️</span>
+            <div class="stat-label">Tiempo Total Jugado</div>
+            <div class="stat-value" id="totalPlayTime">0h</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🥚</span>
+            <div class="stat-label">Más Easter Eggs</div>
+            <div class="stat-value" id="mostEasterEggsPlayer">-</div>
+        </div>
     </div>
 
     <!-- Players Section -->
@@ -504,16 +519,21 @@
                     // Wait a moment for Firebase to update
                     await new Promise(resolve => setTimeout(resolve, 2000));
                     
-                    // Now get updated data from Firebase
-                    console.log('☁️ Loading updated data from Firebase...');
-                    const firebasePlayers = await PlayerDataManager.getAllPlayers();
-                    const firebaseStats = await PlayerDataManager.getPlayerStats();
+                    // Now get updated data from Firebase with detailed stats
+                    console.log('☁️ Loading detailed data from Firebase...');
+                    const firebasePlayers = await PlayerDataManager.getAllPlayersDetailedStats();
                     
                     console.log('☁️ Updated Firebase data:', firebasePlayers);
                     
                     // Use Firebase data if available, otherwise use local
                     const finalPlayers = firebasePlayers && firebasePlayers.length > 0 ? firebasePlayers : localData.players;
-                    const finalStats = firebaseStats || localData.stats;
+                    
+                    // Calculate stats from final players
+                    const finalStats = {
+                        totalPlayers: finalPlayers.length,
+                        totalCoins: finalPlayers.reduce((sum, p) => sum + p.coins, 0),
+                        averageCoins: finalPlayers.length > 0 ? Math.round(finalPlayers.reduce((sum, p) => sum + p.coins, 0) / finalPlayers.length) : 0
+                    };
                     
                     updateAdminUI(finalPlayers, finalStats);
                     console.log('✅ Admin data loaded with Firebase sync');
@@ -594,11 +614,14 @@
             const totalWins = players.reduce((sum, p) => sum + (p.totalWins || 0), 0);
             const totalClues = players.reduce((sum, p) => sum + (p.cluesFound || 0), 0);
             const totalDailyRewards = players.reduce((sum, p) => sum + (p.dailyRewards || 0), 0);
+            const totalPlayTime = players.reduce((sum, p) => sum + (p.totalPlayTime || 0), 0);
+            const totalEasterEggs = players.reduce((sum, p) => sum + (p.totalEasterEggs || 0), 0);
             const winRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
             
             // Find richest and most active players
             const richestPlayer = players.length > 0 ? players.reduce((max, p) => p.coins > max.coins ? p : max).name : '-';
             const mostActivePlayer = players.length > 0 ? players.reduce((max, p) => (p.gamesPlayed || 0) > (max.gamesPlayed || 0) ? p : max).name : '-';
+            const mostEasterEggsPlayer = players.length > 0 ? players.reduce((max, p) => (p.totalEasterEggs || 0) > (max.totalEasterEggs || 0) ? p : max).name : '-';
             
             // Update stats
             document.getElementById('totalPlayers').textContent = stats.totalPlayers;
@@ -611,6 +634,21 @@
             document.getElementById('totalDailyRewards').textContent = totalDailyRewards;
             document.getElementById('richestPlayer').textContent = richestPlayer;
             document.getElementById('mostActivePlayer').textContent = mostActivePlayer;
+            document.getElementById('totalEasterEggs').textContent = totalEasterEggs;
+            document.getElementById('mostEasterEggsPlayer').textContent = mostEasterEggsPlayer;
+            
+            // Format total play time
+            const formatTotalPlayTime = (seconds) => {
+                if (!seconds) return '0h';
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                if (hours > 0) {
+                    return `${hours}h ${minutes}m`;
+                } else {
+                    return `${minutes}m`;
+                }
+            };
+            document.getElementById('totalPlayTime').textContent = formatTotalPlayTime(totalPlayTime);
             
             // Update players list
             const playersGrid = document.getElementById('playersGrid');
@@ -676,6 +714,39 @@
                         levelColor = '#90ee90';
                     }
                     
+                    // Format play time
+                    const formatPlayTime = (seconds) => {
+                        if (!seconds) return '0s';
+                        const hours = Math.floor(seconds / 3600);
+                        const minutes = Math.floor((seconds % 3600) / 60);
+                        const secs = seconds % 60;
+                        if (hours > 0) {
+                            return `${hours}h ${minutes}m`;
+                        } else if (minutes > 0) {
+                            return `${minutes}m ${secs}s`;
+                        } else {
+                            return `${secs}s`;
+                        }
+                    };
+                    
+                    // Easter Eggs summary
+                    const easterEggsList = player.easterEggs ? Object.keys(player.easterEggs).map(type => {
+                        const egg = player.easterEggs[type];
+                        return `${type}: ${egg.timesFound}x`;
+                    }).join(', ') : 'Ninguno';
+                    
+                    // Recent activity summary
+                    const recentActivity = player.recentActivity ? player.recentActivity.slice(-3).map(activity => {
+                        const time = new Date(activity.timestamp).toLocaleTimeString();
+                        if (activity.type === 'easter-egg') {
+                            return `🥚 ${activity.easterEggType} (${time})`;
+                        } else if (activity.type === 'game-completed') {
+                            return `🎮 ${activity.gameType} (${time})`;
+                        } else {
+                            return `📝 ${activity.type} (${time})`;
+                        }
+                    }).join('<br>') : 'Sin actividad reciente';
+                    
                     playerCard.innerHTML = `
                         <div class="player-info">
                             <span class="player-icon">🎖️</span>
@@ -684,16 +755,23 @@
                                 <div style="display: flex; gap: 10px; margin: 5px 0; flex-wrap: wrap;">
                                     <span style="background: ${levelColor}; color: #000; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;">${playerLevel}</span>
                                     <span style="background: ${activityColor}; color: #000; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">${activityStatus}</span>
+                                    <span style="background: #ff69b4; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">🥚 ${player.totalEasterEggs || 0}</span>
+                                    <span style="background: #4169e1; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">⏱️ ${formatPlayTime(player.totalPlayTime || 0)}</span>
                                 </div>
                                 <p style="margin: 8px 0; font-size: 0.9rem;">
                                     <strong>Estadísticas Generales:</strong><br>
-                                    🎮 Juegos: ${player.gamesPlayed} | 🏆 Victorias: ${player.totalWins} | 🎯 Tasa de Victoria: ${winRate}%<br>
-                                    🪙 Monedas: ${player.coins} | 💰 Promedio por juego: ${coinsPerGame} | 🎭 Pistas: ${player.cluesFound}
+                                    🎮 Juegos: ${player.gamesPlayed} | 🏆 Victorias: ${player.totalWins} | 🎯 Tasa: ${winRate}%<br>
+                                    🪙 Monedas: ${player.coins} | 💰 Promedio: ${coinsPerGame} | 🎭 Pistas: ${player.cluesFound}
                                 </p>
                                 <p style="margin: 8px 0; font-size: 0.85rem; color: #ccc;">
                                     <strong>Juegos Específicos:</strong><br>
                                     🎖️ Soldier: ${soldierGames} | 🎮 Player: ${playerGames} | 👑 VIP: ${vipGames}<br>
                                     🎭 Joker: ${jokerGames} | 🎯 Front Man: ${frontmanGames} | 🎁 Recompensas: ${dailyRewards}
+                                </p>
+                                <p style="margin: 8px 0; font-size: 0.8rem; color: #aaa;">
+                                    <strong>🥚 Easter Eggs:</strong> ${easterEggsList}<br>
+                                    <strong>📊 Actividad Reciente:</strong><br>
+                                    <span style="font-size: 0.75rem;">${recentActivity}</span>
                                 </p>
                                 <small style="color: #888;">Última actividad: ${lastActivity}</small>
                                 ${isMigrated ? `<br><small style="color: #00ff00;">Migrado el: ${new Date(player.migrationInfo.migratedAt).toLocaleString()}</small>` : ''}
@@ -705,7 +783,7 @@
                                 <div style="font-size: 2rem; color: #ffd700; text-shadow: 0 0 10px #ffd700;">🪙 ${player.coins}</div>
                                 <div style="font-size: 0.8rem; color: #ccc; margin-top: 5px;">
                                     ${winRate}% victoria<br>
-                                    ${coinsPerGame} monedas/juego
+                                    ${formatPlayTime(player.totalPlayTime || 0)} jugado
                                 </div>
                             </div>
                         </div>
@@ -748,6 +826,8 @@
                     totalWins: currentData.players.reduce((sum, p) => sum + (p.totalWins || 0), 0),
                     totalClues: currentData.players.reduce((sum, p) => sum + (p.cluesFound || 0), 0),
                     totalDailyRewards: currentData.players.reduce((sum, p) => sum + (p.dailyRewards || 0), 0),
+                    totalPlayTime: currentData.players.reduce((sum, p) => sum + (p.totalPlayTime || 0), 0),
+                    totalEasterEggs: currentData.players.reduce((sum, p) => sum + (p.totalEasterEggs || 0), 0),
                     winRate: currentData.players.reduce((sum, p) => sum + (p.gamesPlayed || 0), 0) > 0 ? 
                         Math.round((currentData.players.reduce((sum, p) => sum + (p.totalWins || 0), 0) / 
                         currentData.players.reduce((sum, p) => sum + (p.gamesPlayed || 0), 0)) * 100) : 0
@@ -759,14 +839,18 @@
                     totalWins: player.totalWins || 0,
                     cluesFound: player.cluesFound || 0,
                     dailyRewards: player.dailyRewards || 0,
+                    totalPlayTime: player.totalPlayTime || 0,
+                    totalEasterEggs: player.totalEasterEggs || 0,
                     winRate: player.gamesPlayed > 0 ? Math.round((player.totalWins / player.gamesPlayed) * 100) : 0,
                     coinsPerGame: player.gamesPlayed > 0 ? Math.round(player.coins / player.gamesPlayed) : 0,
+                    averagePlayTime: player.gamesPlayed > 0 ? Math.round((player.totalPlayTime || 0) / player.gamesPlayed) : 0,
                     lastActivity: player.lastUpdated ? new Date(player.lastUpdated).toISOString() : null,
                     daysSinceLastActivity: player.lastUpdated ? Math.floor((new Date() - new Date(player.lastUpdated)) / (1000 * 60 * 60 * 24)) : null,
                     playerLevel: player.coins >= 10000 ? 'Maestro' : 
                                 player.coins >= 5000 ? 'Experto' : 
                                 player.coins >= 1000 ? 'Intermedio' : 
                                 player.coins >= 100 ? 'Principiante' : 'Novato',
+                    easterEggs: player.easterEggs || {},
                     gameStats: {
                         soldierGames: player.soldierGames || 0,
                         playerGames: player.playerGames || 0,
@@ -774,6 +858,7 @@
                         jokerGames: player.jokerGames || 0,
                         frontmanGames: player.frontmanGames || 0
                     },
+                    recentActivity: player.recentActivity || [],
                     migrationInfo: player.migrationInfo,
                     isLocal: player.isLocal,
                     lastSync: player.lastSync

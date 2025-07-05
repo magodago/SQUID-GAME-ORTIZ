@@ -370,6 +370,21 @@
             document.getElementById('emptyState').style.display = 'none';
 
             try {
+                // Wait for Firebase to be ready
+                let attempts = 0;
+                while (!window.PlayerDataManager && attempts < 10) {
+                    console.log('⏳ Waiting for Firebase to initialize...', attempts + 1);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    attempts++;
+                }
+                
+                if (!window.PlayerDataManager) {
+                    console.error('❌ Firebase not ready after 10 attempts');
+                    throw new Error('Firebase not initialized');
+                }
+                
+                console.log('✅ Firebase ready, getting data...');
+                
                 // Get all players from Firebase
                 const players = await PlayerDataManager.getAllPlayers();
                 const stats = await PlayerDataManager.getPlayerStats();
@@ -377,60 +392,119 @@
                 console.log('Players from Firebase:', players);
                 console.log('Stats from Firebase:', stats);
                 
-                // Update stats
-                document.getElementById('totalPlayers').textContent = stats.totalPlayers;
-                document.getElementById('totalCoins').textContent = stats.totalCoins;
-                document.getElementById('averageCoins').textContent = stats.averageCoins;
-                
-                // Update players list
-                const playersGrid = document.getElementById('playersGrid');
-                playersGrid.innerHTML = '';
-                
-                if (players.length === 0) {
-                    document.getElementById('emptyState').style.display = 'block';
-                } else {
-                                            players.forEach(player => {
-                            const playerCard = document.createElement('div');
-                            playerCard.className = 'player-card';
-                            
-                            // Check if player was migrated
-                            const isMigrated = player.migrationInfo;
-                            const migrationBadge = isMigrated ? '<span style="background: #00ff00; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">MIGRADO</span>' : '';
-                            
-                            playerCard.innerHTML = `
-                                <div class="player-info">
-                                    <span class="player-icon">🎖️</span>
-                                    <div class="player-details">
-                                        <h3>${player.name} ${migrationBadge}</h3>
-                                        <p>Juegos: ${player.gamesPlayed} | Victorias: ${player.totalWins} | Pistas: ${player.cluesFound}</p>
-                                        <small>Última actividad: ${player.lastUpdated.toLocaleString()}</small>
-                                        ${isMigrated ? `<br><small style="color: #00ff00;">Migrado el: ${new Date(player.migrationInfo.migratedAt).toLocaleString()}</small>` : ''}
-                                    </div>
-                                </div>
-                                <div class="player-coins">🪙 ${player.coins}</div>
-                            `;
-                            playersGrid.appendChild(playerCard);
-                        });
-                    
-                    document.getElementById('playersSection').style.display = 'block';
-                }
-                
-                // Hide loading and show content
-                document.getElementById('loadingState').style.display = 'none';
-                document.getElementById('statsContainer').style.display = 'flex';
+                                // Use the updateAdminUI function
+                updateAdminUI(players, stats);
                 
                 console.log('✅ Admin data loaded successfully from Firebase');
             } catch (error) {
                 console.error('❌ Error loading admin data:', error);
                 
-                // Show error state
-                document.getElementById('loadingState').style.display = 'none';
-                document.getElementById('emptyState').style.display = 'block';
-                document.getElementById('emptyState').innerHTML = `
-                    <div class="empty-icon">❌</div>
-                    <div class="empty-text">Error al cargar datos: ${error.message}</div>
-                `;
+                // Try fallback to localStorage
+                console.log('🔄 Trying fallback to localStorage...');
+                try {
+                    const fallbackData = loadFallbackData();
+                    if (fallbackData.players.length > 0) {
+                        console.log('✅ Using fallback data:', fallbackData);
+                        updateAdminUI(fallbackData.players, fallbackData.stats);
+                    } else {
+                        throw new Error('No fallback data available');
+                    }
+                } catch (fallbackError) {
+                    console.error('❌ Fallback also failed:', fallbackError);
+                    
+                    // Show error state
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('emptyState').style.display = 'block';
+                    document.getElementById('emptyState').innerHTML = `
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-text">Error al cargar datos: ${error.message}</div>
+                    `;
+                }
             }
+        }
+        
+        // Fallback function to load data from localStorage
+        function loadFallbackData() {
+            console.log('📦 Loading fallback data from localStorage...');
+            
+            const playerName = localStorage.getItem('soldierName');
+            const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+            const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+            const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+            
+            const players = [];
+            if (playerName) {
+                players.push({
+                    id: 'local',
+                    name: playerName,
+                    coins: totalCoins,
+                    lastUpdated: new Date(),
+                    gamesPlayed: gamesPlayed,
+                    totalWins: totalWins,
+                    cluesFound: cluesFound,
+                    isLocal: true
+                });
+            }
+            
+            const stats = {
+                totalPlayers: players.length,
+                totalCoins: players.reduce((sum, p) => sum + p.coins, 0),
+                averageCoins: players.length > 0 ? Math.round(players.reduce((sum, p) => sum + p.coins, 0) / players.length) : 0,
+                totalGames: players.reduce((sum, p) => sum + p.gamesPlayed, 0),
+                totalWins: players.reduce((sum, p) => sum + p.totalWins, 0),
+                totalClues: players.reduce((sum, p) => sum + p.cluesFound, 0),
+                winRate: 0
+            };
+            
+            return { players, stats };
+        }
+        
+        // Function to update admin UI
+        function updateAdminUI(players, stats) {
+            // Update stats
+            document.getElementById('totalPlayers').textContent = stats.totalPlayers;
+            document.getElementById('totalCoins').textContent = stats.totalCoins;
+            document.getElementById('averageCoins').textContent = stats.averageCoins;
+            
+            // Update players list
+            const playersGrid = document.getElementById('playersGrid');
+            playersGrid.innerHTML = '';
+            
+            if (players.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+            } else {
+                players.forEach(player => {
+                    const playerCard = document.createElement('div');
+                    playerCard.className = 'player-card';
+                    
+                    // Check if player was migrated
+                    const isMigrated = player.migrationInfo;
+                    const isLocal = player.isLocal;
+                    const migrationBadge = isMigrated ? '<span style="background: #00ff00; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">MIGRADO</span>' : '';
+                    const localBadge = isLocal ? '<span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">LOCAL</span>' : '';
+                    
+                    playerCard.innerHTML = `
+                        <div class="player-info">
+                            <span class="player-icon">🎖️</span>
+                            <div class="player-details">
+                                <h3>${player.name} ${migrationBadge} ${localBadge}</h3>
+                                <p>Juegos: ${player.gamesPlayed} | Victorias: ${player.totalWins} | Pistas: ${player.cluesFound}</p>
+                                <small>Última actividad: ${player.lastUpdated.toLocaleString()}</small>
+                                ${isMigrated ? `<br><small style="color: #00ff00;">Migrado el: ${new Date(player.migrationInfo.migratedAt).toLocaleString()}</small>` : ''}
+                            </div>
+                        </div>
+                        <div class="player-coins">🪙 ${player.coins}</div>
+                    `;
+                    playersGrid.appendChild(playerCard);
+                });
+                
+                document.getElementById('playersSection').style.display = 'block';
+            }
+            
+            // Hide loading and show content
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('statsContainer').style.display = 'flex';
         }
 
         // Event listeners

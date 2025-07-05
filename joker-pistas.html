@@ -146,8 +146,8 @@
 
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
             margin-bottom: 30px;
         }
 
@@ -158,7 +158,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
+            font-size: 2.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
@@ -192,6 +192,8 @@
             transform: scale(1.1);
             box-shadow: 0 0 50px rgba(0, 100, 0, 0.8);
             border-color: #006400;
+            background: linear-gradient(135deg, #006400 0%, #228B22 50%, #32CD32 100%);
+            color: #FFFFFF;
             animation: selectedPulse 1s ease-in-out infinite alternate;
         }
 
@@ -199,10 +201,12 @@
             from { 
                 box-shadow: 0 0 50px rgba(0, 100, 0, 0.8);
                 border-color: #006400;
+                background: linear-gradient(135deg, #006400 0%, #228B22 50%, #32CD32 100%);
             }
             to { 
                 box-shadow: 0 0 70px rgba(0, 100, 0, 1);
                 border-color: #228B22;
+                background: linear-gradient(135deg, #228B22 0%, #32CD32 50%, #006400 100%);
             }
         }
 
@@ -439,12 +443,13 @@
             }
             
             .cards-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
             }
             
             .card {
-                font-size: 3rem;
+                font-size: 2rem;
+                border-radius: 10px;
             }
             
             .play-btn {
@@ -454,6 +459,7 @@
             
             .result-modal {
                 min-width: 300px;
+                max-width: 90%;
                 padding: 20px;
             }
         }
@@ -597,13 +603,14 @@
                 const result = generateResult();
                 revealCards(result.jokerPositions);
                 
+                // Esperar a que todas las cartas se revelen (6 cartas * 200ms = 1200ms) + 500ms extra
                 setTimeout(() => {
                     showResult(result.win, result.message, result.hint);
                     isPlaying = false;
                     document.getElementById('playBtn').disabled = false;
                     selectedCards = [];
                     createCards(); // Regenerar tarjetas
-                }, 2000);
+                }, 1700);
             }, 1000);
         }
 
@@ -771,7 +778,7 @@
                 particle.style.position = 'fixed';
                 particle.style.width = '6px';
                 particle.style.height = '6px';
-                particle.style.background = ['#FFD700', '#FFA500', '#FF0000'][Math.floor(Math.random() * 3)];
+                particle.style.background = ['#FFFFFF', '#006400', '#000000'][Math.floor(Math.random() * 3)];
                 particle.style.borderRadius = '50%';
                 particle.style.pointerEvents = 'none';
                 particle.style.zIndex = '1000';
@@ -810,13 +817,13 @@
         }
 
         function createVictoryEffects() {
-            // Efectos de confeti dorado
+            // Efectos de confeti con colores de la serie
             for (let i = 0; i < 50; i++) {
                 const confetti = document.createElement('div');
                 confetti.style.position = 'fixed';
                 confetti.style.width = '8px';
                 confetti.style.height = '8px';
-                confetti.style.background = ['#FFD700', '#FFA500', '#FF0000', '#FFFFFF'][Math.floor(Math.random() * 4)];
+                confetti.style.background = ['#FFFFFF', '#006400', '#000000', '#228B22'][Math.floor(Math.random() * 4)];
                 confetti.style.borderRadius = '50%';
                 confetti.style.pointerEvents = 'none';
                 confetti.style.zIndex = '2000';

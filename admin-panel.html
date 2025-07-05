@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Panel de Administración - Squid Game Ortiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', Arial, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Matrix Rain Background */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, #00ff00, transparent);
+            animation: matrixFall 3s linear infinite;
+        }
+
+        @keyframes matrixFall {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+
+        /* Header */
+        .admin-header {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 3px solid #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+
+        .admin-title {
+            font-size: 2.5rem;
+            color: #00ff00;
+            text-shadow: 0 0 20px #00ff00;
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+
+        .admin-subtitle {
+            font-size: 1.2rem;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+
+        /* Stats Container */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            padding: 30px 20px;
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 0, 0, 0.3));
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #ffffff;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            color: #00ff00;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Players List */
+        .players-section {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .players-title {
+            text-align: center;
+            font-size: 1.8rem;
+            color: #00ff00;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px #00ff00;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .player-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.3));
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .player-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-icon {
+            font-size: 2rem;
+        }
+
+        .player-details h3 {
+            color: #ffffff;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .player-coins {
+            color: #ffd700;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ffd700;
+        }
+
+        /* Buttons */
+        .button-container {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .admin-btn {
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            color: #000000;
+            font-family: 'Orbitron', Arial, sans-serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.4);
+        }
+
+        .admin-btn.back-btn {
+            background: linear-gradient(45deg, #ff4757, #ff3742);
+        }
+
+        .admin-btn.back-btn:hover {
+            box-shadow: 0 5px 20px rgba(255, 71, 87, 0.4);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #ffffff;
+            opacity: 0.7;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-text {
+            font-size: 1.2rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .admin-title {
+                font-size: 2rem;
+            }
+
+            .stats-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stat-card {
+                min-width: 250px;
+            }
+
+            .players-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .player-card {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .admin-btn {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #00ff00;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 255, 0, 0.3);
+            border-top: 4px solid #00ff00;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Rain Background -->
+    <div class="matrix-rain">
+        <div class="matrix-column" style="left: 5%"></div>
+        <div class="matrix-column" style="left: 15%"></div>
+        <div class="matrix-column" style="left: 25%"></div>
+        <div class="matrix-column" style="left: 35%"></div>
+        <div class="matrix-column" style="left: 45%"></div>
+        <div class="matrix-column" style="left: 55%"></div>
+        <div class="matrix-column" style="left: 65%"></div>
+        <div class="matrix-column" style="left: 75%"></div>
+        <div class="matrix-column" style="left: 85%"></div>
+        <div class="matrix-column" style="left: 95%"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="admin-header">
+        <h1 class="admin-title">🔐 PANEL DE ADMINISTRACIÓN</h1>
+        <p class="admin-subtitle">Sistema de Control de Jugadores</p>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" id="loadingState">
+        <div class="loading-spinner"></div>
+        <p>Cargando datos de jugadores...</p>
+    </div>
+
+    <!-- Stats Container -->
+    <div class="stats-container" id="statsContainer" style="display: none;">
+        <div class="stat-card">
+            <span class="stat-icon">👥</span>
+            <div class="stat-label">Total Jugadores</div>
+            <div class="stat-value" id="totalPlayers">0</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🪙</span>
+            <div class="stat-label">Total Monedas</div>
+            <div class="stat-value" id="totalCoins">0</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">📊</span>
+            <div class="stat-label">Promedio por Jugador</div>
+            <div class="stat-value" id="averageCoins">0</div>
+        </div>
+    </div>
+
+    <!-- Players Section -->
+    <div class="players-section" id="playersSection" style="display: none;">
+        <h2 class="players-title">📋 Lista de Jugadores</h2>
+        <div class="players-grid" id="playersGrid">
+            <!-- Players will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">👤</div>
+        <div class="empty-text">No hay jugadores registrados</div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="button-container">
+        <button class="admin-btn" id="refreshBtn">🔄 Actualizar Datos</button>
+        <button class="admin-btn back-btn" id="backBtn">⬅️ Volver al Inicio</button>
+    </div>
+
+    <script>
+        // Load admin data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminData();
+        });
+
+        function loadAdminData() {
+            console.log('📊 Loading admin data...');
+            
+            // Show loading state
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('statsContainer').style.display = 'none';
+            document.getElementById('playersSection').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+
+            // Simulate loading time for better UX
+            setTimeout(() => {
+                // Get all player data from localStorage
+                const allPlayers = [];
+                let totalCoins = 0;
+                
+                // Check for current player data
+                const currentName = localStorage.getItem('soldierName') || 'Jugador';
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                
+                console.log('Current player name:', currentName);
+                console.log('Current player coins:', currentCoins);
+                
+                if (currentName && currentCoins >= 0) {
+                    allPlayers.push({
+                        name: currentName,
+                        coins: currentCoins
+                    });
+                    totalCoins += currentCoins;
+                }
+                
+                console.log('Total players:', allPlayers.length);
+                console.log('Total coins:', totalCoins);
+                
+                // Update stats
+                document.getElementById('totalPlayers').textContent = allPlayers.length;
+                document.getElementById('totalCoins').textContent = totalCoins;
+                
+                const averageCoins = allPlayers.length > 0 ? Math.round(totalCoins / allPlayers.length) : 0;
+                document.getElementById('averageCoins').textContent = averageCoins;
+                
+                // Update players list
+                const playersGrid = document.getElementById('playersGrid');
+                playersGrid.innerHTML = '';
+                
+                if (allPlayers.length === 0) {
+                    document.getElementById('emptyState').style.display = 'block';
+                } else {
+                    allPlayers.forEach(player => {
+                        const playerCard = document.createElement('div');
+                        playerCard.className = 'player-card';
+                        playerCard.innerHTML = `
+                            <div class="player-info">
+                                <span class="player-icon">🎖️</span>
+                                <div class="player-details">
+                                    <h3>${player.name}</h3>
+                                    <p>Jugador Registrado</p>
+                                </div>
+                            </div>
+                            <div class="player-coins">🪙 ${player.coins}</div>
+                        `;
+                        playersGrid.appendChild(playerCard);
+                    });
+                    
+                    document.getElementById('playersSection').style.display = 'block';
+                }
+                
+                // Hide loading and show content
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('statsContainer').style.display = 'flex';
+                
+                console.log('✅ Admin data loaded successfully');
+            }, 1000);
+        }
+
+        // Event listeners
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            console.log('🔄 Refreshing admin data...');
+            loadAdminData();
+        });
+
+        document.getElementById('backBtn').addEventListener('click', () => {
+            console.log('⬅️ Going back to main page...');
+            window.location.href = 'index.html';
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    card.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            console.log('🔄 Auto-refreshing admin data...');
+            loadAdminData();
+        }, 30000);
+    </script>
+</body>
+</html> 

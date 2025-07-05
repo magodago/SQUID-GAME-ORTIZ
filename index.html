@@ -5352,10 +5352,10 @@
     console.log('🔍 Admin panel button element:', adminPanelBtn);
     
     if (adminPanelBtn) {
-      adminPanelBtn.addEventListener('click', () => {
-        console.log('🔐 Admin panel button clicked!');
-        activateAdminPanel();
-      });
+          adminPanelBtn.addEventListener('click', () => {
+      console.log('🔐 Admin panel button clicked!');
+      window.location.href = 'admin-panel.html';
+    });
     } else {
       console.error('❌ Admin panel button not found!');
     }

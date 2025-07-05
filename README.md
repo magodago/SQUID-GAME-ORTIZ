@@ -109,7 +109,9 @@ Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request.
 
 ---
 
-**¡Disfruta del juego y encuentra todos los secretos!** 🎮✨ 
+**¡Disfruta del juego y encuentra todos los secretos!** 🎮✨
+
+*Deploy con permisos corregidos - Sistema de logros activo* 
 
 # SQUID GAME ORTIZ
 

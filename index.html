@@ -4802,8 +4802,8 @@
         console.log('Data revealed:', input.getAttribute('data-revealed'));
         console.log('Current value:', input.value);
         
-        // Solo si el dígito está disponible para revelar
-        if (input.getAttribute('data-revealed') === 'true' && !input.value) {
+        // Solo si el dígito está disponible para revelar y no hay un timer activo
+        if (input.getAttribute('data-revealed') === 'true' && !input.value && !pressTimers[index]) {
           console.log('Starting long press timer for digit:', digitsToReveal[index]);
           pressStartTimes[index] = Date.now();
           
@@ -4816,6 +4816,9 @@
             input.style.fontWeight = 'bold';
             input.style.boxShadow = '0 0 20px #00ff7f';
             input.readOnly = true;
+            
+            // Limpiar el timer después de revelar
+            delete pressTimers[index];
             
             // Mostrar notificación
             showDigitRevealNotification(index, digitsToReveal[index]);
@@ -4862,7 +4865,7 @@
         console.log('Current value:', input.value);
         
         // No prevenir el comportamiento por defecto para permitir el teclado
-        if (input.getAttribute('data-revealed') === 'true' && !input.value) {
+        if (input.getAttribute('data-revealed') === 'true' && !input.value && !pressTimers[index]) {
           console.log('Starting long press timer for digit:', digitsToReveal[index]);
           pressStartTimes[index] = Date.now();
           
@@ -4874,6 +4877,9 @@
             input.style.fontWeight = 'bold';
             input.style.boxShadow = '0 0 20px #00ff7f';
             input.readOnly = true;
+            
+            // Limpiar el timer después de revelar
+            delete pressTimers[index];
             
             showDigitRevealNotification(index, digitsToReveal[index]);
           }, 2000);

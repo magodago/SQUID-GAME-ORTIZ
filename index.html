@@ -4233,7 +4233,7 @@
     
     <!-- Access Panel -->
     <div class="access-panel" id="accessPanel">
-      <div class="access-title">ACCESO A DATOS PRIVILEGIADOS</div>
+      <div class="access-title"><span id="easter-egg-6" style="color: white; font-size: inherit; font-weight: inherit; margin-right: 5px; display: none;">6</span>ACCESO A DATOS PRIVILEGIADOS</div>
       <div class="code-input-container">
         <div class="code-inputs">
           <input type="text" class="code-input" maxlength="1" data-index="0" pattern="[A-Za-z0-9]">
@@ -5674,8 +5674,10 @@
 
     // Función para cargar y mostrar el total de monedas
     function loadTotalCoins() {
+      console.log('🚀 === FUNCIÓN loadTotalCoins EJECUTÁNDOSE ===');
       const totalCoinsElement = document.getElementById('totalCoins');
       let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0', 10);
+      console.log('💰 Monedas leídas de localStorage:', totalCoins);
       totalCoinsElement.textContent = totalCoins;
       
       // Verificar si se debe revelar algún dígito
@@ -5684,64 +5686,17 @@
       // Check all button visibility
       checkAllButtonVisibility();
       
-      // Easter Egg: Mostrar "6" pequeño en el título si tiene más de 50,000 monedas
-      const titleElement = document.querySelector('.description.glitch-title');
-      console.log('🔍 Buscando elemento del título:', titleElement);
+      // Easter Egg: Mostrar "6" en el título de acceso si tiene más de 50,000 monedas
+      const easterEgg6 = document.getElementById('easter-egg-6');
       
-      if (titleElement) {
-        console.log('✅ Elemento del título encontrado');
-        console.log('💰 Monedas actuales:', totalCoins);
-        
+      if (easterEgg6) {
         if (totalCoins >= 50000) {
-          console.log('🎯 Condición cumplida: más de 50,000 monedas');
-          
-          // Agregar el "6" pequeño si no existe
-          if (!titleElement.querySelector('.easter-egg-6')) {
-            console.log('➕ Creando Easter Egg "6"');
-            
-            const easterEgg6 = document.createElement('span');
-            easterEgg6.className = 'easter-egg-6';
-            easterEgg6.textContent = '6';
-            easterEgg6.style.cssText = `
-              position: absolute;
-              top: 5px;
-              right: 10px;
-              font-size: 12px;
-              color: #00ff7f;
-              opacity: 1;
-              font-weight: bold;
-              text-shadow: 0 0 5px #00ff7f;
-              pointer-events: none;
-              z-index: 9999;
-              background: rgba(0, 0, 0, 0.8);
-              padding: 2px 4px;
-              border-radius: 3px;
-              border: 1px solid #00ff7f;
-            `;
-            
-            // Asegurar que el elemento padre tenga position relative
-            titleElement.style.position = 'relative';
-            titleElement.style.overflow = 'visible';
-            
-            titleElement.appendChild(easterEgg6);
-            console.log('✅ Easter Egg "6" agregado al título - jugador tiene', totalCoins, 'monedas');
-            console.log('🎨 Estilos aplicados:', easterEgg6.style.cssText);
-          } else {
-            console.log('ℹ️ Easter Egg "6" ya existe');
-          }
+          easterEgg6.style.display = 'inline';
         } else {
-          console.log('❌ No cumple condición: menos de 50,000 monedas');
-          
-          // Remover el "6" si existe y no tiene suficientes monedas
-          const existingEasterEgg = titleElement.querySelector('.easter-egg-6');
-          if (existingEasterEgg) {
-            existingEasterEgg.remove();
-            console.log('🗑️ Easter Egg "6" removido del título - jugador tiene', totalCoins, 'monedas');
-          }
+          easterEgg6.style.display = 'none';
         }
-      } else {
-        console.log('❌ Elemento del título no encontrado');
       }
+
     }
 
     // Escuchar evento ortizCoinsUpdated y actualizar el contador

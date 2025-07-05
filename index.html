@@ -5841,78 +5841,76 @@
     // Migration function for old player data
     function migrateOldPlayerData() {
       try {
-        console.log('🔄 Checking for old player data to migrate...');
+        console.log('🔄 Checking for player data to sync...');
         
-        // Check for old data in localStorage
-        const oldName = localStorage.getItem('soldierName');
-        const oldCoins = localStorage.getItem('totalOrtizCoins');
-        const oldGamesPlayed = localStorage.getItem('gamesPlayed');
-        const oldTotalWins = localStorage.getItem('totalWins');
-        const oldCluesFound = localStorage.getItem('cluesFound');
+        // Check for current data in localStorage
+        const playerName = localStorage.getItem('soldierName');
+        const totalCoins = localStorage.getItem('totalOrtizCoins');
+        const gamesPlayed = localStorage.getItem('gamesPlayed');
+        const totalWins = localStorage.getItem('totalWins');
+        const cluesFound = localStorage.getItem('cluesFound');
         
         console.log('📊 Found localStorage data:', {
-          name: oldName,
-          coins: oldCoins,
-          gamesPlayed: oldGamesPlayed,
-          totalWins: oldTotalWins,
-          cluesFound: oldCluesFound
+          name: playerName,
+          coins: totalCoins,
+          gamesPlayed: gamesPlayed,
+          totalWins: totalWins,
+          cluesFound: cluesFound
         });
         
-        // Check if we have old data and haven't migrated yet
-        const hasOldData = oldName && (oldCoins || oldGamesPlayed || oldTotalWins || oldCluesFound);
+        // Check if we have player data
+        const hasPlayerData = playerName && (totalCoins || gamesPlayed || totalWins || cluesFound);
         const alreadyMigrated = localStorage.getItem('dataMigratedToFirebase');
         
-        console.log('🔍 Migration check:', {
-          hasOldData: hasOldData,
+        console.log('🔍 Sync check:', {
+          hasPlayerData: hasPlayerData,
           alreadyMigrated: alreadyMigrated,
           PlayerDataManager: !!window.PlayerDataManager
         });
         
-        if (hasOldData && !alreadyMigrated) {
-          console.log('📦 Found old player data, migrating to Firebase...');
+        if (hasPlayerData) {
+          // Always sync current data, not just migrate once
+          console.log('📦 Syncing current player data to Firebase...');
           
-          // Prepare migration data
-          const migrationData = {
-            name: oldName,
-            coins: parseInt(oldCoins || '0'),
-            gamesPlayed: parseInt(oldGamesPlayed || '0'),
-            totalWins: parseInt(oldTotalWins || '0'),
-            cluesFound: parseInt(oldCluesFound || '0'),
-            migratedAt: new Date().toISOString(),
-            migrationNote: 'Migrated from localStorage'
+          // Prepare sync data
+          const syncData = {
+            name: playerName,
+            coins: parseInt(totalCoins || '0'),
+            gamesPlayed: parseInt(gamesPlayed || '0'),
+            totalWins: parseInt(totalWins || '0'),
+            cluesFound: parseInt(cluesFound || '0'),
+            syncedAt: new Date().toISOString()
           };
           
           // Save to Firebase
           if (window.PlayerDataManager) {
             PlayerDataManager.savePlayerData(
-              migrationData.name, 
-              migrationData.coins, 
+              syncData.name, 
+              syncData.coins, 
               {
-                gamesPlayed: migrationData.gamesPlayed,
-                totalWins: migrationData.totalWins,
-                cluesFound: migrationData.cluesFound,
-                migrationNote: migrationData.migrationNote,
-                migratedAt: migrationData.migratedAt,
-                originalCoins: migrationData.coins
+                gamesPlayed: syncData.gamesPlayed,
+                totalWins: syncData.totalWins,
+                cluesFound: syncData.cluesFound
               }
             );
             
-            // Mark as migrated
-            localStorage.setItem('dataMigratedToFirebase', 'true');
-            localStorage.setItem('migrationTimestamp', new Date().toISOString());
-            
-            console.log('✅ Old player data successfully migrated to Firebase:', migrationData);
-            
-            // Show migration notification
-            showMigrationNotification(migrationData);
+            // Mark as synced
+            if (!alreadyMigrated) {
+              localStorage.setItem('dataMigratedToFirebase', 'true');
+              localStorage.setItem('migrationTimestamp', new Date().toISOString());
+              console.log('✅ Player data successfully migrated to Firebase:', syncData);
+              
+              // Show migration notification only for first time
+              showMigrationNotification(syncData);
+            } else {
+              console.log('✅ Player data synced to Firebase (update):', syncData);
+            }
           }
-        } else if (alreadyMigrated) {
-          console.log('✅ Data already migrated to Firebase');
         } else {
-          console.log('📭 No old player data found to migrate');
+          console.log('📭 No player data found to sync');
         }
       } catch (error) {
-        console.error('❌ Error during data migration:', error);
+        console.error('❌ Error during data sync:', error);
       }
     }
 
@@ -5984,10 +5982,9 @@
 
     // Sync data when page loads
     document.addEventListener('DOMContentLoaded', () => {
-      // First migrate old data, then sync
+      // Sync player data to Firebase
       setTimeout(() => {
-        migrateOldPlayerData(); // Migrate old data first
-        setTimeout(syncPlayerDataToFirebase, 1000); // Then sync current data
+        migrateOldPlayerData(); // Sync current data to Firebase
       }, 2000);
     });
   </script>

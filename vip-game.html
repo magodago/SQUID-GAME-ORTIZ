@@ -764,9 +764,14 @@
             
             console.log('✅ Starting game with bet:', currentBetType, currentBetOption, betAmount);
             
-            // Deduct coins
-            vipCoins -= betAmount;
-            localStorage.setItem('totalOrtizCoins', vipCoins.toString());
+            // Deduct coins using centralized system
+            if (window.OrtizCoinManager && OrtizCoinManager.deductCoins) {
+                OrtizCoinManager.deductCoins(betAmount, 'vip-betting');
+                vipCoins = OrtizCoinManager.getTotalCoins();
+            } else {
+                vipCoins -= betAmount;
+                localStorage.setItem('totalOrtizCoins', vipCoins.toString());
+            }
             updateCoinsDisplay();
             
             // Start game
@@ -884,9 +889,14 @@
             
             // Update coins and statistics
             if (won) {
-                // Safe coin addition
-                if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
-                    console.log('🔒 Using safe coin addition');
+                // Use centralized coin system
+                if (window.OrtizCoinManager && OrtizCoinManager.addCoins) {
+                    console.log('💰 Using OrtizCoinManager for winnings');
+                    OrtizCoinManager.addCoins(winnings, 'vip-betting-win');
+                    vipCoins = OrtizCoinManager.getTotalCoins();
+                    console.log('✅ Coins added with OrtizCoinManager:', winnings);
+                } else if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
+                    console.log('🔒 Using PlayerDataManager for winnings');
                     if (PlayerDataManager.safeAddCoins(winnings, 'vip-betting-win')) {
                         vipCoins += winnings;
                         console.log('✅ Coins added safely:', winnings);
@@ -894,7 +904,7 @@
                         console.error('❌ Error al añadir monedas ganadas');
                     }
                 } else {
-                    console.log('⚠️ PlayerDataManager not available, using direct addition');
+                    console.log('⚠️ No system available, using direct addition');
                     vipCoins += winnings;
                     localStorage.setItem('totalOrtizCoins', vipCoins.toString());
                 }

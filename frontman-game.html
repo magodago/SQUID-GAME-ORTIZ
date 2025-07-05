@@ -740,26 +740,33 @@
             score += points;
             document.getElementById('score').textContent = score;
             
-            // Dar Ortiz Coins de forma segura
+            // Dar Ortiz Coins usando el sistema centralizado
             const coins = Math.floor(points / 10);
-            if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
-                console.log('🔒 Usando PlayerDataManager para añadir monedas');
-                if (PlayerDataManager.safeAddCoins(coins, 'frontman-game')) {
-                    frontmanCoins += coins;
-                    localStorage.setItem('totalOrtizCoins', frontmanCoins.toString());
-                    console.log('✅ Monedas añadidas con PlayerDataManager:', coins);
-                } else {
-                    console.error('❌ Error al añadir monedas con PlayerDataManager');
-                    // Fallback: añadir directamente
-                    frontmanCoins += coins;
-                    localStorage.setItem('totalOrtizCoins', frontmanCoins.toString());
-                    console.log('⚠️ Monedas añadidas directamente:', coins);
-                }
+            if (window.OrtizCoinManager && OrtizCoinManager.addCoins) {
+                console.log('💰 Usando OrtizCoinManager para añadir monedas');
+                OrtizCoinManager.addCoins(coins, 'frontman-game');
+                frontmanCoins = OrtizCoinManager.getTotalCoins();
+                console.log('✅ Monedas añadidas con OrtizCoinManager:', coins);
             } else {
-                console.log('⚠️ PlayerDataManager no disponible, añadiendo directamente');
-                frontmanCoins += coins;
-                localStorage.setItem('totalOrtizCoins', frontmanCoins.toString());
-                console.log('✅ Monedas añadidas directamente:', coins);
+                console.log('⚠️ OrtizCoinManager no disponible, usando PlayerDataManager');
+                if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
+                    if (PlayerDataManager.safeAddCoins(coins, 'frontman-game')) {
+                        frontmanCoins += coins;
+                        // Don't overwrite totalOrtizCoins, just update local variable
+                        console.log('✅ Monedas añadidas con PlayerDataManager:', coins);
+                    } else {
+                        console.error('❌ Error al añadir monedas con PlayerDataManager');
+                        // Fallback: añadir directamente
+                        frontmanCoins += coins;
+                        // Don't overwrite totalOrtizCoins, just update local variable
+                        console.log('⚠️ Monedas añadidas directamente:', coins);
+                    }
+                } else {
+                    console.log('⚠️ Ningún sistema disponible, añadiendo directamente');
+                    frontmanCoins += coins;
+                    // Don't overwrite totalOrtizCoins, just update local variable
+                    console.log('✅ Monedas añadidas directamente:', coins);
+                }
             }
             
             // Mostrar mensaje de éxito

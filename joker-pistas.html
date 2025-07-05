@@ -513,7 +513,7 @@
             <div class="cost-info">💸 Costo por juego: <span id="costDisplay">35</span> Ortiz Coins</div>
             <div class="game-rules">
                 🎯 <strong>Objetivo:</strong> Selecciona 3 tarjetas y encuentra los 3 Jokers escondidos<br>
-                📊 <strong>Probabilidad de ganar:</strong> 20% por juego
+                📊 <strong>Probabilidad de ganar:</strong> 5% por juego
             </div>
         </div>
         
@@ -579,7 +579,7 @@
                 const gameRules = document.querySelector('.game-rules');
                 gameRules.innerHTML = `
                     🎯 <strong>Objetivo:</strong> Selecciona 3 tarjetas y encuentra los 3 Jokers escondidos<br>
-                    📊 <strong>Probabilidad de ganar:</strong> 20% por juego<br>
+                    📊 <strong>Probabilidad de ganar:</strong> 5% por juego<br>
                     ⚠️ <strong>¡ADVERTENCIA!</strong> El costo ha aumentado a 50 monedas
                 `;
             }
@@ -665,8 +665,8 @@
         }
 
         function generateResult() {
-            // 20% de probabilidad de ganar
-            const isWin = Math.random() < 0.2;
+            // 5% de probabilidad de ganar (probabilidad real)
+            const isWin = Math.random() < 0.05;
             
             if (isWin) {
                 // Verificar qué pista mostrar

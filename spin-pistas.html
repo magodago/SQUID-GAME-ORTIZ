@@ -534,6 +534,9 @@
             <!-- Botón para mostrar debug -->
             <button onclick="toggleDebug()" style="background: #FF6B35; color: white; border: none; padding: 8px 15px; margin: 5px; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">🔍 DEBUG</button>
             
+            <!-- Botón para forzar combinación ganadora -->
+            <button onclick="forceWin()" style="background: #00FF00; color: black; border: none; padding: 8px 15px; margin: 5px; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">🎯 FORZAR GANAR</button>
+            
             <div class="back-box">
                 <button onclick="goBack()" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #FFFFFF 0%, #006400 100%); border: none; border-radius: 10px; color: #000; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">← VOLVER AL MENÚ PRINCIPAL</button>
             </div>
@@ -992,9 +995,27 @@
             debugText.innerHTML = `
                 Símbolos: ${reel1Text} ${reel2Text} ${reel3Text}<br>
                 Formas: ${shape1} | ${shape2} | ${shape3}<br>
+                ¿Son iguales?: ${shape1 === shape2 && shape2 === shape3 ? '✅ SÍ' : '❌ NO'}<br>
+                ¿No son unknown?: ${shape1 !== 'unknown' && shape2 !== 'unknown' && shape3 !== 'unknown' ? '✅ SÍ' : '❌ NO'}<br>
                 ¿Ganó?: ${isWin ? '✅ SÍ' : '❌ NO'}<br>
                 Estado: ${isWin ? 'JACKPOT!' : 'No coinciden'}
             `;
+        }
+
+        function forceWin() {
+            // Forzar tres cuadrados claros
+            document.getElementById('reel1').textContent = '🟥';
+            document.getElementById('reel2').textContent = '🟦';
+            document.getElementById('reel3').textContent = '⬛';
+            
+            // Actualizar debug
+            updateDebugInfo();
+            
+            // Simular resultado después de 1 segundo
+            setTimeout(() => {
+                const result = generateResult();
+                showResult(result.win, result.message, result.hint);
+            }, 1000);
         }
 
         function getShapeFromEmoji(emoji) {

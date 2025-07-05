@@ -3308,10 +3308,10 @@
       <div class="access-title">ACCESO A DATOS PRIVILEGIADOS</div>
       <div class="code-input-container">
         <div class="code-inputs">
-          <input type="text" class="code-input" maxlength="1" data-index="0">
-          <input type="text" class="code-input" maxlength="1" data-index="1">
-          <input type="text" class="code-input" maxlength="1" data-index="2">
-          <input type="text" class="code-input" maxlength="1" data-index="3">
+          <input type="text" class="code-input" maxlength="1" data-index="0" pattern="[A-Za-z0-9]">
+          <input type="text" class="code-input" maxlength="1" data-index="1" pattern="[A-Za-z0-9]">
+          <input type="text" class="code-input" maxlength="1" data-index="2" pattern="[A-Za-z0-9]">
+          <input type="text" class="code-input" maxlength="1" data-index="3" pattern="[A-Za-z0-9]">
         </div>
         <div class="lock-icon" id="lockIcon" style="cursor: pointer;">🔒</div>
       </div>
@@ -3801,11 +3801,14 @@
       input.addEventListener('input', (e) => {
         const value = e.target.value;
         
-        // Only allow numbers
-        if (!/^\d*$/.test(value)) {
+        // Allow numbers and letters (for admin code DAGO)
+        if (!/^[A-Za-z0-9]*$/.test(value)) {
           e.target.value = '';
           return;
         }
+        
+        // Convert to uppercase for consistency
+        e.target.value = value.toUpperCase();
         
         // Move to next input if value entered
         if (value && index < codeInputs.length - 1) {

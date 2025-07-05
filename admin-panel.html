@@ -238,10 +238,16 @@
             .stats-container {
                 flex-direction: column;
                 align-items: center;
+                gap: 15px;
             }
 
             .stat-card {
-                min-width: 250px;
+                min-width: 280px;
+                padding: 20px;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
             }
 
             .players-grid {
@@ -252,12 +258,54 @@
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
+                padding: 15px;
+            }
+
+            .player-details h3 {
+                font-size: 1.1rem;
+            }
+
+            .player-details p {
+                font-size: 0.8rem;
             }
 
             .admin-btn {
                 display: block;
                 width: 100%;
                 margin: 10px 0;
+                font-size: 1rem;
+                padding: 12px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-title {
+                font-size: 1.5rem;
+            }
+
+            .stat-card {
+                min-width: 250px;
+                padding: 15px;
+            }
+
+            .stat-icon {
+                font-size: 2rem;
+            }
+
+            .stat-value {
+                font-size: 1.3rem;
+            }
+
+            .player-card {
+                padding: 12px;
+            }
+
+            .player-details h3 {
+                font-size: 1rem;
+            }
+
+            .player-details p {
+                font-size: 0.75rem;
             }
         }
 
@@ -328,6 +376,41 @@
             <div class="stat-label">Promedio por Jugador</div>
             <div class="stat-value" id="averageCoins">0</div>
         </div>
+        <div class="stat-card">
+            <span class="stat-icon">🎮</span>
+            <div class="stat-label">Total Juegos Jugados</div>
+            <div class="stat-value" id="totalGames">0</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🏆</span>
+            <div class="stat-label">Total Victorias</div>
+            <div class="stat-value" id="totalWins">0</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🎯</span>
+            <div class="stat-label">Tasa de Victoria</div>
+            <div class="stat-value" id="winRate">0%</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🎭</span>
+            <div class="stat-label">Total Pistas Encontradas</div>
+            <div class="stat-value" id="totalClues">0</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🎁</span>
+            <div class="stat-label">Recompensas Diarias</div>
+            <div class="stat-value" id="totalDailyRewards">0</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">⭐</span>
+            <div class="stat-label">Jugador Más Rico</div>
+            <div class="stat-value" id="richestPlayer">-</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🔥</span>
+            <div class="stat-label">Jugador Más Activo</div>
+            <div class="stat-value" id="mostActivePlayer">-</div>
+        </div>
     </div>
 
     <!-- Players Section -->
@@ -347,6 +430,7 @@
     <!-- Buttons -->
     <div class="button-container">
         <button class="admin-btn" id="refreshBtn">🔄 Actualizar Datos</button>
+        <button class="admin-btn" id="exportBtn" style="background: linear-gradient(45deg, #4caf50, #45a049);">📊 Exportar Estadísticas</button>
         <button class="admin-btn" id="migrateBtn" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24);">📦 Migrar Datos Antiguos</button>
         <button class="admin-btn back-btn" id="backBtn">⬅️ Volver al Inicio</button>
     </div>
@@ -505,10 +589,28 @@
         
         // Function to update admin UI
         function updateAdminUI(players, stats) {
+            // Calculate additional statistics
+            const totalGames = players.reduce((sum, p) => sum + (p.gamesPlayed || 0), 0);
+            const totalWins = players.reduce((sum, p) => sum + (p.totalWins || 0), 0);
+            const totalClues = players.reduce((sum, p) => sum + (p.cluesFound || 0), 0);
+            const totalDailyRewards = players.reduce((sum, p) => sum + (p.dailyRewards || 0), 0);
+            const winRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
+            
+            // Find richest and most active players
+            const richestPlayer = players.length > 0 ? players.reduce((max, p) => p.coins > max.coins ? p : max).name : '-';
+            const mostActivePlayer = players.length > 0 ? players.reduce((max, p) => (p.gamesPlayed || 0) > (max.gamesPlayed || 0) ? p : max).name : '-';
+            
             // Update stats
             document.getElementById('totalPlayers').textContent = stats.totalPlayers;
             document.getElementById('totalCoins').textContent = stats.totalCoins;
             document.getElementById('averageCoins').textContent = stats.averageCoins;
+            document.getElementById('totalGames').textContent = totalGames;
+            document.getElementById('totalWins').textContent = totalWins;
+            document.getElementById('winRate').textContent = winRate + '%';
+            document.getElementById('totalClues').textContent = totalClues;
+            document.getElementById('totalDailyRewards').textContent = totalDailyRewards;
+            document.getElementById('richestPlayer').textContent = richestPlayer;
+            document.getElementById('mostActivePlayer').textContent = mostActivePlayer;
             
             // Update players list
             const playersGrid = document.getElementById('playersGrid');
@@ -527,17 +629,86 @@
                     const migrationBadge = isMigrated ? '<span style="background: #00ff00; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">MIGRADO</span>' : '';
                     const localBadge = isLocal ? '<span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">LOCAL</span>' : '';
                     
+                    // Calculate additional statistics
+                    const winRate = player.gamesPlayed > 0 ? Math.round((player.totalWins / player.gamesPlayed) * 100) : 0;
+                    const coinsPerGame = player.gamesPlayed > 0 ? Math.round(player.coins / player.gamesPlayed) : 0;
+                    const lastActivity = player.lastUpdated ? new Date(player.lastUpdated).toLocaleString() : 'Desconocido';
+                    const daysSinceLastActivity = player.lastUpdated ? Math.floor((new Date() - new Date(player.lastUpdated)) / (1000 * 60 * 60 * 24)) : 0;
+                    
+                    // Get game-specific stats if available
+                    const soldierGames = player.soldierGames || 0;
+                    const playerGames = player.playerGames || 0;
+                    const vipGames = player.vipGames || 0;
+                    const jokerGames = player.jokerGames || 0;
+                    const frontmanGames = player.frontmanGames || 0;
+                    const dailyRewards = player.dailyRewards || 0;
+                    
+                    // Activity status
+                    let activityStatus = '';
+                    let activityColor = '#00ff00';
+                    if (daysSinceLastActivity === 0) {
+                        activityStatus = 'Hoy';
+                    } else if (daysSinceLastActivity === 1) {
+                        activityStatus = 'Ayer';
+                        activityColor = '#ffff00';
+                    } else if (daysSinceLastActivity <= 7) {
+                        activityStatus = `${daysSinceLastActivity} días`;
+                        activityColor = '#ffa500';
+                    } else {
+                        activityStatus = `${daysSinceLastActivity} días`;
+                        activityColor = '#ff0000';
+                    }
+                    
+                    // Player level based on coins
+                    let playerLevel = 'Novato';
+                    let levelColor = '#ffffff';
+                    if (player.coins >= 10000) {
+                        playerLevel = 'Maestro';
+                        levelColor = '#ffd700';
+                    } else if (player.coins >= 5000) {
+                        playerLevel = 'Experto';
+                        levelColor = '#ff6b6b';
+                    } else if (player.coins >= 1000) {
+                        playerLevel = 'Intermedio';
+                        levelColor = '#00bfff';
+                    } else if (player.coins >= 100) {
+                        playerLevel = 'Principiante';
+                        levelColor = '#90ee90';
+                    }
+                    
                     playerCard.innerHTML = `
                         <div class="player-info">
                             <span class="player-icon">🎖️</span>
                             <div class="player-details">
                                 <h3>${player.name} ${migrationBadge} ${localBadge}</h3>
-                                <p>Juegos: ${player.gamesPlayed} | Victorias: ${player.totalWins} | Pistas: ${player.cluesFound}</p>
-                                <small>Última actividad: ${player.lastUpdated.toLocaleString()}</small>
+                                <div style="display: flex; gap: 10px; margin: 5px 0; flex-wrap: wrap;">
+                                    <span style="background: ${levelColor}; color: #000; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;">${playerLevel}</span>
+                                    <span style="background: ${activityColor}; color: #000; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">${activityStatus}</span>
+                                </div>
+                                <p style="margin: 8px 0; font-size: 0.9rem;">
+                                    <strong>Estadísticas Generales:</strong><br>
+                                    🎮 Juegos: ${player.gamesPlayed} | 🏆 Victorias: ${player.totalWins} | 🎯 Tasa de Victoria: ${winRate}%<br>
+                                    🪙 Monedas: ${player.coins} | 💰 Promedio por juego: ${coinsPerGame} | 🎭 Pistas: ${player.cluesFound}
+                                </p>
+                                <p style="margin: 8px 0; font-size: 0.85rem; color: #ccc;">
+                                    <strong>Juegos Específicos:</strong><br>
+                                    🎖️ Soldier: ${soldierGames} | 🎮 Player: ${playerGames} | 👑 VIP: ${vipGames}<br>
+                                    🎭 Joker: ${jokerGames} | 🎯 Front Man: ${frontmanGames} | 🎁 Recompensas: ${dailyRewards}
+                                </p>
+                                <small style="color: #888;">Última actividad: ${lastActivity}</small>
                                 ${isMigrated ? `<br><small style="color: #00ff00;">Migrado el: ${new Date(player.migrationInfo.migratedAt).toLocaleString()}</small>` : ''}
+                                ${player.lastSync ? `<br><small style="color: #00bfff;">Sincronizado: ${new Date(player.lastSync).toLocaleString()}</small>` : ''}
                             </div>
                         </div>
-                        <div class="player-coins">🪙 ${player.coins}</div>
+                        <div class="player-coins">
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; color: #ffd700; text-shadow: 0 0 10px #ffd700;">🪙 ${player.coins}</div>
+                                <div style="font-size: 0.8rem; color: #ccc; margin-top: 5px;">
+                                    ${winRate}% victoria<br>
+                                    ${coinsPerGame} monedas/juego
+                                </div>
+                            </div>
+                        </div>
                     `;
                     playersGrid.appendChild(playerCard);
                 });
@@ -560,6 +731,77 @@
             
             // Show success message
             showRefreshMessage('✅ Datos actualizados y sincronizados con Firebase');
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            console.log('📊 Exporting detailed statistics...');
+            
+            // Get current data
+            const currentData = loadFallbackData();
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                systemStats: {
+                    totalPlayers: currentData.stats.totalPlayers,
+                    totalCoins: currentData.stats.totalCoins,
+                    averageCoins: currentData.stats.averageCoins,
+                    totalGames: currentData.players.reduce((sum, p) => sum + (p.gamesPlayed || 0), 0),
+                    totalWins: currentData.players.reduce((sum, p) => sum + (p.totalWins || 0), 0),
+                    totalClues: currentData.players.reduce((sum, p) => sum + (p.cluesFound || 0), 0),
+                    totalDailyRewards: currentData.players.reduce((sum, p) => sum + (p.dailyRewards || 0), 0),
+                    winRate: currentData.players.reduce((sum, p) => sum + (p.gamesPlayed || 0), 0) > 0 ? 
+                        Math.round((currentData.players.reduce((sum, p) => sum + (p.totalWins || 0), 0) / 
+                        currentData.players.reduce((sum, p) => sum + (p.gamesPlayed || 0), 0)) * 100) : 0
+                },
+                players: currentData.players.map(player => ({
+                    name: player.name,
+                    coins: player.coins,
+                    gamesPlayed: player.gamesPlayed || 0,
+                    totalWins: player.totalWins || 0,
+                    cluesFound: player.cluesFound || 0,
+                    dailyRewards: player.dailyRewards || 0,
+                    winRate: player.gamesPlayed > 0 ? Math.round((player.totalWins / player.gamesPlayed) * 100) : 0,
+                    coinsPerGame: player.gamesPlayed > 0 ? Math.round(player.coins / player.gamesPlayed) : 0,
+                    lastActivity: player.lastUpdated ? new Date(player.lastUpdated).toISOString() : null,
+                    daysSinceLastActivity: player.lastUpdated ? Math.floor((new Date() - new Date(player.lastUpdated)) / (1000 * 60 * 60 * 24)) : null,
+                    playerLevel: player.coins >= 10000 ? 'Maestro' : 
+                                player.coins >= 5000 ? 'Experto' : 
+                                player.coins >= 1000 ? 'Intermedio' : 
+                                player.coins >= 100 ? 'Principiante' : 'Novato',
+                    gameStats: {
+                        soldierGames: player.soldierGames || 0,
+                        playerGames: player.playerGames || 0,
+                        vipGames: player.vipGames || 0,
+                        jokerGames: player.jokerGames || 0,
+                        frontmanGames: player.frontmanGames || 0
+                    },
+                    migrationInfo: player.migrationInfo,
+                    isLocal: player.isLocal,
+                    lastSync: player.lastSync
+                })),
+                topPlayers: {
+                    richest: currentData.players.length > 0 ? currentData.players.reduce((max, p) => p.coins > max.coins ? p : max).name : null,
+                    mostActive: currentData.players.length > 0 ? currentData.players.reduce((max, p) => (p.gamesPlayed || 0) > (max.gamesPlayed || 0) ? p : max).name : null,
+                    bestWinRate: currentData.players.length > 0 ? currentData.players.reduce((max, p) => {
+                        const maxRate = max.gamesPlayed > 0 ? (max.totalWins / max.gamesPlayed) : 0;
+                        const pRate = p.gamesPlayed > 0 ? (p.totalWins / p.gamesPlayed) : 0;
+                        return pRate > maxRate ? p : max;
+                    }).name : null
+                }
+            };
+            
+            // Create and download file
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `squid-game-stats-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showRefreshMessage('📊 Estadísticas exportadas como JSON');
         });
 
         document.getElementById('migrateBtn').addEventListener('click', () => {
@@ -689,6 +931,62 @@
             window.location.href = 'index.html';
         });
 
+        // Function to show refresh messages
+        function showRefreshMessage(message) {
+            // Remove existing message
+            const existingMessage = document.querySelector('.refresh-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            // Create new message
+            const messageEl = document.createElement('div');
+            messageEl.className = 'refresh-message';
+            messageEl.textContent = message;
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(45deg, #00ff00, #00cc00);
+                color: #000;
+                padding: 15px 25px;
+                border-radius: 10px;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 5px 20px rgba(0, 255, 0, 0.5);
+                animation: slideDown 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(messageEl);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (messageEl.parentNode) {
+                    messageEl.style.animation = 'slideUp 0.3s ease-in';
+                    setTimeout(() => {
+                        if (messageEl.parentNode) {
+                            messageEl.remove();
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        }
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
         // Add some interactive effects
         document.querySelectorAll('.stat-card').forEach(card => {
             card.addEventListener('click', () => {

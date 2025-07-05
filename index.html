@@ -6781,6 +6781,72 @@
       }
     }
 
+    // AUTOMATIC SYNC FUNCTIONS (NEW - DOESN'T AFFECT DAILY REWARD)
+    function initializeAutomaticSync() {
+      console.log('🔄 Initializing automatic sync every hour...');
+      
+      // Initial sync when page loads
+      setTimeout(() => {
+        console.log('🔄 Initial sync after page load...');
+        syncPlayerDataToFirebase();
+      }, 5000); // Wait 5 seconds after page load
+      
+      // Set up hourly sync
+      setInterval(() => {
+        console.log('🔄 Hourly automatic sync...');
+        syncPlayerDataToFirebase();
+      }, 60 * 60 * 1000); // 1 hour = 60 * 60 * 1000 ms
+      
+      console.log('✅ Automatic sync initialized - will sync every hour');
+    }
+
+    function syncPlayerDataToFirebase() {
+      console.log('🔄 AUTOMATIC SYNC - Collecting player data...');
+      
+      // Collect all player data from localStorage
+      const playerName = localStorage.getItem('soldierName') || 'Unknown';
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+      const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+      const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+      const totalEasterEggs = parseInt(localStorage.getItem('totalEasterEggs') || '0');
+      const totalPlayTime = parseInt(localStorage.getItem('totalPlayTime') || '0');
+      
+      const playerData = {
+        coins: totalCoins,
+        gamesPlayed: gamesPlayed,
+        totalWins: totalWins,
+        cluesFound: cluesFound,
+        totalEasterEggs: totalEasterEggs,
+        totalPlayTime: totalPlayTime,
+        lastAutoSync: new Date().toISOString(),
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log('📊 Automatic sync data collected:', playerData);
+      
+      // Check Firebase availability
+      if (typeof firebase === 'undefined' || !firebase.database) {
+        console.log('⚠️ Firebase not available for automatic sync');
+        return;
+      }
+      
+      try {
+        const database = firebase.database();
+        const playerRef = database.ref(`players/${playerName.replace(/[.#$[\]]/g, '_')}`);
+        
+        console.log('📤 Sending automatic sync data to Firebase...');
+        
+        playerRef.update(playerData).then(() => {
+          console.log('✅ Automatic sync completed successfully');
+        }).catch(error => {
+          console.error('❌ Automatic sync failed:', error);
+        });
+      } catch (error) {
+        console.error('❌ Automatic sync error:', error);
+      }
+    }
+
     // Initialize page
     document.addEventListener('DOMContentLoaded', () => {
       console.log('🚀 Page loaded...');
@@ -6793,7 +6859,8 @@
       // Initialize daily reward
       initializeDailyReward();
       
-      // No automatic sync - only manual sync through admin panel
+      // Initialize automatic sync every hour
+      initializeAutomaticSync();
     });
 
     function loadAdminData() {

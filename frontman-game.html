@@ -851,6 +851,14 @@
             const currentGamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
             localStorage.setItem('gamesPlayed', (currentGamesPlayed + 1).toString());
 
+            // Consider it a win if score > 0 (player got some points)
+            const isWin = score > 0;
+            if (isWin) {
+                const currentWins = parseInt(localStorage.getItem('totalWins') || '0');
+                localStorage.setItem('totalWins', (currentWins + 1).toString());
+                updateAchievementProgress('wins', 1);
+            }
+
             // Actualizar logros diarios
             updateAchievementProgress('games', 1);
 

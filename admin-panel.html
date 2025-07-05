@@ -544,14 +544,64 @@
         tryFirebaseBtn.textContent = '☁️ Intentar Firebase';
         tryFirebaseBtn.className = 'admin-btn';
         tryFirebaseBtn.style.background = 'linear-gradient(45deg, #00bcd4, #0097a7)';
-        tryFirebaseBtn.addEventListener('click', () => {
+        tryFirebaseBtn.addEventListener('click', async () => {
             console.log('☁️ Trying Firebase sync...');
             showRefreshMessage('☁️ Intentando conectar con Firebase...');
-            loadAdminData();
+            
+            try {
+                // Check if Firebase is loaded
+                console.log('🔍 Checking Firebase availability...');
+                console.log('window.PlayerDataManager:', window.PlayerDataManager);
+                console.log('window.firebase:', window.firebase);
+                
+                if (!window.PlayerDataManager) {
+                    console.log('❌ PlayerDataManager not found, trying to initialize...');
+                    showRefreshMessage('❌ Firebase no disponible - Intentando cargar...');
+                    
+                    // Try to load Firebase manually
+                    if (typeof initializeFirebase === 'function') {
+                        console.log('🔄 Calling initializeFirebase...');
+                        await initializeFirebase();
+                        console.log('✅ initializeFirebase completed');
+                    } else {
+                        console.log('❌ initializeFirebase function not found');
+                    }
+                    
+                    // Wait a bit and check again
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    console.log('🔄 After wait - PlayerDataManager:', window.PlayerDataManager);
+                }
+                
+                if (window.PlayerDataManager) {
+                    console.log('✅ PlayerDataManager found, loading data...');
+                    showRefreshMessage('✅ Firebase conectado - Cargando datos...');
+                    await loadAdminData();
+                } else {
+                    console.log('❌ PlayerDataManager still not available');
+                    showRefreshMessage('❌ Firebase no disponible - Revisa la consola');
+                }
+            } catch (error) {
+                console.error('❌ Error during Firebase sync:', error);
+                showRefreshMessage('❌ Error: ' + error.message);
+            }
         });
         
         // Add button to container
         document.querySelector('.button-container').insertBefore(tryFirebaseBtn, document.getElementById('backBtn'));
+        
+        // Add button to check Firebase config
+        const checkFirebaseBtn = document.createElement('button');
+        checkFirebaseBtn.textContent = '🔍 Verificar Firebase';
+        checkFirebaseBtn.className = 'admin-btn';
+        checkFirebaseBtn.style.background = 'linear-gradient(45deg, #ff9800, #f57c00)';
+        checkFirebaseBtn.addEventListener('click', () => {
+            console.log('🔍 Checking Firebase configuration...');
+            showRefreshMessage('🔍 Verificando configuración de Firebase...');
+            checkFirebaseConfig();
+        });
+        
+        // Add button to container
+        document.querySelector('.button-container').insertBefore(checkFirebaseBtn, document.getElementById('backBtn'));
 
         document.getElementById('backBtn').addEventListener('click', () => {
             console.log('⬅️ Going back to main page...');
@@ -576,6 +626,38 @@
                 updateAdminUI(fallbackData.players, fallbackData.stats);
             }
         }, 10000);
+
+        // Check Firebase configuration
+        function checkFirebaseConfig() {
+            console.log('🔍 Checking Firebase configuration...');
+            
+            // Check if Firebase config exists
+            const firebaseConfig = {
+                apiKey: "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                authDomain: "squid-game-ortiz.firebaseapp.com",
+                databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
+                projectId: "squid-game-ortiz",
+                storageBucket: "squid-game-ortiz.appspot.com",
+                messagingSenderId: "123456789012",
+                appId: "1:123456789012:web:abcdef1234567890"
+            };
+            
+            console.log('📋 Firebase config:', firebaseConfig);
+            console.log('🌐 Database URL:', firebaseConfig.databaseURL);
+            
+            // Check if we can access the database URL
+            fetch(firebaseConfig.databaseURL + '/.json')
+                .then(response => {
+                    console.log('✅ Firebase database accessible:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('📊 Current Firebase data:', data);
+                })
+                .catch(error => {
+                    console.error('❌ Firebase database not accessible:', error);
+                });
+        }
 
         // Migration function for admin panel
         async function migrateOldDataFromAdmin() {

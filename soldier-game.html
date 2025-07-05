@@ -879,8 +879,13 @@
         totalCoins += player.totalCoins;
       });
       
-      // Store the total for the main page to read
-      localStorage.setItem('totalOrtizCoins', totalCoins.toString());
+      // Store the total for the main page to read using safe update
+      if (window.PlayerDataManager && PlayerDataManager.safeUpdateCoins(totalCoins, 'soldier-game-total')) {
+        // Successfully updated
+      } else {
+        // Fallback to direct update if PlayerDataManager not available
+        localStorage.setItem('totalOrtizCoins', totalCoins.toString());
+      }
       
       // Trigger a custom event that the main page can listen to
       window.dispatchEvent(new CustomEvent('ortizCoinsUpdated', { 

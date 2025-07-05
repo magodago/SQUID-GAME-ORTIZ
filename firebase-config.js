@@ -41,6 +41,116 @@ if (document.readyState === 'loading') {
 
 // Player data management functions
 const PlayerDataManager = {
+  // Safe coin update function that prevents overwriting other players' data
+  safeUpdateCoins: function(newCoins, gameType = 'unknown') {
+    try {
+      const playerName = localStorage.getItem('soldierName');
+      if (!playerName) {
+        console.error('❌ No player name found for safe coin update');
+        return false;
+      }
+
+      // Get current coins from localStorage
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      
+      // Only update if the new value is higher or if it's a valid game transaction
+      if (newCoins >= currentCoins || gameType !== 'unknown') {
+        localStorage.setItem('totalOrtizCoins', newCoins.toString());
+        console.log(`✅ Safe coin update: ${currentCoins} -> ${newCoins} (${gameType})`);
+        
+        // Auto-sync to Firebase
+        this.savePlayerData(playerName, newCoins, {
+          gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+          totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+          cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+          lastSync: new Date().toISOString(),
+          autoSync: true,
+          gameType: gameType,
+          coinChange: newCoins - currentCoins
+        });
+        
+        return true;
+      } else {
+        console.warn(`⚠️ Coin update blocked: ${currentCoins} -> ${newCoins} (${gameType}) - would decrease coins`);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Error in safe coin update:', error);
+      return false;
+    }
+  },
+
+  // Safe coin deduction function for game costs
+  safeDeductCoins: function(amount, gameType = 'unknown') {
+    try {
+      const playerName = localStorage.getItem('soldierName');
+      if (!playerName) {
+        console.error('❌ No player name found for coin deduction');
+        return false;
+      }
+
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      
+      if (currentCoins >= amount) {
+        const newCoins = currentCoins - amount;
+        localStorage.setItem('totalOrtizCoins', newCoins.toString());
+        console.log(`✅ Safe coin deduction: ${currentCoins} - ${amount} = ${newCoins} (${gameType})`);
+        
+        // Auto-sync to Firebase
+        this.savePlayerData(playerName, newCoins, {
+          gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+          totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+          cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+          lastSync: new Date().toISOString(),
+          autoSync: true,
+          gameType: gameType,
+          coinChange: -amount
+        });
+        
+        return true;
+      } else {
+        console.warn(`⚠️ Insufficient coins for deduction: ${currentCoins} < ${amount} (${gameType})`);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Error in safe coin deduction:', error);
+      return false;
+    }
+  },
+
+  // Safe coin addition function for game winnings
+  safeAddCoins: function(amount, gameType = 'unknown') {
+    try {
+      const playerName = localStorage.getItem('soldierName');
+      if (!playerName) {
+        console.error('❌ No player name found for coin addition');
+        return false;
+      }
+
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newCoins = currentCoins + amount;
+      
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      console.log(`✅ Safe coin addition: ${currentCoins} + ${amount} = ${newCoins} (${gameType})`);
+      
+      // Auto-sync to Firebase
+      this.savePlayerData(playerName, newCoins, {
+        gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+        totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+        cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+        lastSync: new Date().toISOString(),
+        autoSync: true,
+        gameType: gameType,
+        coinChange: amount
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Error in safe coin addition:', error);
+      return false;
+    }
+  },
+
   // Save player data to Firebase Realtime Database
   savePlayerData: async function(playerName, coins, gameData = {}) {
     try {
@@ -93,7 +203,8 @@ const PlayerDataManager = {
           timestamp: new Date().toISOString(),
           gameType: gameData.gameType || 'unknown',
           syncedCoins: coins,
-          finalCoins: finalCoins
+          finalCoins: finalCoins,
+          coinChange: gameData.coinChange || 0
         };
       }
       

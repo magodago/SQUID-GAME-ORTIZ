@@ -493,13 +493,20 @@
         gameArea.style.display = 'none';
         victoryScreen.style.display = 'flex';
         victoryCoins.textContent = coins;
-        // Acumular coins en localStorage y actualizar pantalla principal
-        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0', 10);
-        totalCoins += coins;
-        localStorage.setItem('totalOrtizCoins', totalCoins);
+        
+        // Acumular coins de forma segura sin sobrescribir
+        if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(coins, 'player-game')) {
+          console.log(`✅ Monedas acumuladas del Player Game: +${coins}`);
+        } else {
+          // Fallback si PlayerDataManager no está disponible
+          let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0', 10);
+          totalCoins += coins;
+          localStorage.setItem('totalOrtizCoins', totalCoins);
+        }
+        
         // Lanzar evento para actualizar en home
-        window.parent && window.parent.postMessage({ type: 'ortizCoinsUpdated', totalCoins }, '*');
-        window.dispatchEvent(new CustomEvent('ortizCoinsUpdated', { detail: { totalCoins } }));
+        window.parent && window.parent.postMessage({ type: 'ortizCoinsUpdated', totalCoins: coins }, '*');
+        window.dispatchEvent(new CustomEvent('ortizCoinsUpdated', { detail: { totalCoins: coins } }));
       } else {
         gameArea.style.display = 'none';
         gameOverScreen.style.display = 'flex';

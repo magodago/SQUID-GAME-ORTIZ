@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VIP Apuestas - Squid Game Ortiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -16,117 +20,41 @@
             font-family: 'Orbitron', monospace;
             background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
             color: #FFD700;
-            overflow-y: auto;
             min-height: 100vh;
-            position: relative;
-        }
-
-        .vip-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
-            z-index: 1;
+            padding: 20px;
         }
 
         .vip-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
             text-align: center;
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.95);
-            padding: 15px 20px;
-            border-bottom: 3px solid #FFD700;
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #FFD700;
+            border-radius: 15px;
         }
 
         .vip-title {
             font-size: 2.5rem;
             font-weight: 900;
             color: #FFD700;
-            text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
-            margin: 0;
+            text-shadow: 0 0 30px #FFD700;
             animation: vipGlow 2s ease-in-out infinite alternate;
         }
 
         @keyframes vipGlow {
-            from { text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700; }
-            to { text-shadow: 0 0 40px #FFD700, 0 0 80px #FFD700, 0 0 120px #FFD700; }
+            from { text-shadow: 0 0 30px #FFD700; }
+            to { text-shadow: 0 0 40px #FFD700, 0 0 80px #FFD700; }
         }
 
-        .back-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            color: #000;
-            font-family: 'Orbitron', monospace;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 101;
-        }
-
-        .back-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px #FFD700;
-        }
-
-        .back-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .vip-main {
-            position: relative;
-            margin: 100px auto 100px auto;
-            width: 90%;
-            max-width: 1200px;
-            min-height: 70vh;
-            z-index: 5;
+        .game-container {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .game-arena {
-            background: rgba(0, 0, 0, 0.9);
-            border: 3px solid #FFD700;
-            border-radius: 15px;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .arena-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.05) 50%, transparent 70%),
-                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
-            animation: arenaPulse 3s ease-in-out infinite;
-            z-index: 1;
-        }
-
-        @keyframes arenaPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
-        }
-
-        .betting-panel {
+        .arena-section {
             background: rgba(0, 0, 0, 0.9);
             border: 3px solid #FFD700;
             border-radius: 15px;
@@ -138,18 +66,12 @@
             font-size: 1.5rem;
             margin-bottom: 20px;
             color: #FFD700;
-            text-shadow: 0 0 20px #FFD700;
-            position: relative;
-            z-index: 2;
         }
 
-        .players-container {
+        .players-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
-            height: calc(100% - 80px);
-            position: relative;
-            z-index: 2;
         }
 
         .player-card {
@@ -159,317 +81,201 @@
             padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .player-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
-            transform: rotate(45deg);
-            animation: playerShine 4s linear infinite;
-            z-index: 1;
-        }
-
-        @keyframes playerShine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         .player-card.winner {
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             color: #000;
-            animation: winnerGlow 1s ease-in-out infinite alternate;
             transform: scale(1.05);
+            animation: winnerPulse 1s ease-in-out infinite alternate;
         }
 
-        .player-card.winner::before {
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: winnerShine 2s linear infinite;
-        }
-
-        @keyframes winnerShine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        @keyframes winnerGlow {
-            from { 
-                box-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
-                transform: scale(1.05);
-            }
-            to { 
-                box-shadow: 0 0 50px #FFD700, 0 0 70px #FFD700, 0 0 90px #FFD700;
-                transform: scale(1.08);
-            }
-        }
-
-        .player-content {
-            position: relative;
-            z-index: 2;
+        @keyframes winnerPulse {
+            from { box-shadow: 0 0 20px #FFD700; }
+            to { box-shadow: 0 0 40px #FFD700, 0 0 60px #FFD700; }
         }
 
         .player-emoji {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            display: block;
-            animation: playerBounce 2s ease-in-out infinite;
-        }
-
-        @keyframes playerBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
 
         .player-name {
+            font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 10px;
-            font-size: 1.1rem;
         }
 
         .player-score {
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1rem;
             color: #FFA500;
         }
 
-        .score-animation {
-            animation: scorePop 0.5s ease-out;
-        }
-
-        @keyframes scorePop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); color: #FFD700; }
-            100% { transform: scale(1); }
+        .betting-section {
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid #FFD700;
+            border-radius: 15px;
+            padding: 20px;
         }
 
         .bet-type {
-            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            margin-bottom: 10px;
-            position: relative;
-        }
-        
-        .bet-type:hover:not(:disabled) {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px #FFD700;
-        }
-        
-        .bet-type.selected {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000;
-            border-color: #FFA500;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            transform: scale(1.05);
-        }
-
-        .bet-type:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .bet-options {
-            margin-top: 15px;
-            padding: 15px;
             background: rgba(255, 215, 0, 0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
-        
-        .bet-option {
-            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
             border: 2px solid #FFD700;
             border-radius: 10px;
-            padding: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-align: center;
-            margin-bottom: 8px;
-            position: relative;
         }
 
-        .bet-option:hover:not(:disabled) {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px #FFD700;
+        .bet-type:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .bet-type.selected {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #FFA500;
+        }
+
+        .bet-options {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .bet-option {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid #FFA500;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .bet-option:hover {
+            background: rgba(255, 165, 0, 0.2);
         }
 
         .bet-option.selected {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000;
-            border-color: #FFA500;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            transform: scale(1.05);
+            background: rgba(255, 165, 0, 0.3);
+            border-color: #FFD700;
         }
 
-        .bet-option:disabled {
+        .bet-input {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            background: #1a1a1a;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            color: #FFD700;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .play-button {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: none;
+            border-radius: 15px;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        .play-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
-        
-        .bet-option.selected::before {
-            content: "✅";
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #000;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            border: 2px solid #FFD700;
+
+        .game-progress {
+            display: none;
+            margin: 20px 0;
+            background: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        .place-bet-btn {
-            width: 100%;
-            padding: 15px;
+        .progress-bar {
+            height: 20px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            color: #FFD700;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 15px 25px;
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             border: none;
             border-radius: 10px;
             color: #000;
             font-family: 'Orbitron', monospace;
-            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 20px;
         }
 
-        .place-bet-btn:hover:not(:disabled) {
+        .back-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 30px #FFD700;
-        }
-
-        .place-bet-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .game-status {
-            position: relative;
-            margin: 20px auto;
-            width: 90%;
-            max-width: 600px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            z-index: 10;
-        }
-
-        .instructions {
-            display: none;
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid #FFD700;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: #FFA500;
-        }
-
-        .instructions h3 {
-            color: #FFD700;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-
-        .instructions ol {
-            margin-left: 20px;
-        }
-
-        .instructions li {
-            margin-bottom: 5px;
-        }
-
-        .game-progress {
-            width: 100%;
-            height: 10px;
-            background: rgba(255, 215, 0, 0.2);
-            border-radius: 5px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #FFD700, #FFA500);
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 5px;
         }
 
         .result-modal {
+            display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            background: rgba(0, 0, 0, 0.95);
             border: 3px solid #FFD700;
             border-radius: 20px;
             padding: 30px;
             text-align: center;
             z-index: 1000;
             min-width: 300px;
-            max-width: 400px;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
-            animation: modalAppear 0.5s ease-out;
         }
 
-        @keyframes modalAppear {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.5);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
-
-        .result-modal.win {
-            border-color: #00FF00;
-            box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
-        }
-
-        .result-modal.lose {
-            border-color: #FF0000;
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
         }
 
         .result-icon {
-            font-size: 4rem;
+            font-size: 3rem;
             margin-bottom: 20px;
-            animation: resultBounce 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes resultBounce {
-            from { transform: scale(1); }
-            to { transform: scale(1.1); }
         }
 
         .result-title {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: bold;
             margin-bottom: 15px;
-            text-shadow: 0 0 20px currentColor;
         }
 
         .result-title.win {
@@ -481,503 +287,247 @@
         }
 
         .result-message {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            margin-bottom: 15px;
         }
 
         .result-coins {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
-            color: #FFD700;
             margin-bottom: 20px;
-            text-shadow: 0 0 10px #FFD700;
         }
 
         .modal-btn {
+            padding: 15px 30px;
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             border: none;
             border-radius: 10px;
-            padding: 12px 25px;
             color: #000;
             font-family: 'Orbitron', monospace;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
         }
 
-        .modal-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px #FFD700;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 999;
-            animation: overlayAppear 0.3s ease-out;
-        }
-
-        @keyframes overlayAppear {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .coin-rain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 998;
-        }
-
-        .coin-particle {
-            position: absolute;
-            font-size: 2rem;
-            color: #FFD700;
-            animation: coinFall 3s linear forwards;
-        }
-
-        @keyframes coinFall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
-            .vip-title {
-                font-size: 1.2rem;
-            }
-            
-            .vip-main {
-                width: 95%;
-                margin: 100px auto 80px auto;
+            .game-container {
                 grid-template-columns: 1fr;
-                grid-template-rows: auto auto;
-                gap: 15px;
             }
             
-            .game-arena {
-                padding: 10px;
-                max-height: 200px;
+            .players-grid {
+                grid-template-columns: 1fr;
             }
             
-            .arena-title {
-                font-size: 1rem;
-                margin-bottom: 8px;
-            }
-            
-            .players-container {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 5px;
-                height: auto;
-            }
-            
-            .player-card {
-                padding: 10px;
-            }
-            
-            .player-emoji {
+            .vip-title {
                 font-size: 2rem;
-                margin-bottom: 8px;
-            }
-            
-            .player-name {
-                font-size: 0.8rem;
-            }
-            
-            .player-score {
-                font-size: 0.9rem;
-            }
-            
-            .betting-panel {
-                padding: 10px;
-                max-height: none;
-            }
-            
-            .bet-type {
-                padding: 8px;
-                margin-bottom: 5px;
-            }
-            
-            .bet-option {
-                padding: 8px;
-                margin-bottom: 5px;
-            }
-            
-            .place-bet-btn {
-                padding: 10px;
-                font-size: 0.9rem;
-            }
-            
-            .game-status {
-                margin: 15px auto;
-                padding: 10px;
-                width: 95%;
-            }
-            
-            .instructions {
-                display: block !important;
-                margin-bottom: 10px;
-                padding: 8px;
-                font-size: 0.7rem;
-            }
-            
-            .back-btn {
-                display: none;
             }
         }
     </style>
-    
-    <!-- Firebase Configuration -->
-    <script src="firebase-config.js"></script>
 </head>
 <body>
-    <div class="vip-bg"></div>
+    <button class="back-button" onclick="goBack()">← VOLVER</button>
     
     <div class="vip-header">
         <div class="vip-title">👑 VIP APUESTAS</div>
     </div>
     
-    <div class="vip-main">
-        <div class="game-arena">
-            <div class="arena-bg"></div>
+    <div class="game-container">
+        <div class="arena-section">
             <div class="arena-title">🎮 ARENA DE JUEGO</div>
-            <div class="players-container" id="playersContainer">
-                <!-- Players will be generated dynamically -->
+            <div class="players-grid" id="playersGrid">
+                <!-- Players will be generated here -->
             </div>
+            <div class="game-progress" id="gameProgress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="status-text" id="statusText">Esperando apuestas...</div>
         </div>
         
-        <div class="betting-panel">
-            <div class="instructions">
-                <h3>📋 INSTRUCCIONES VIP</h3>
-                <ol>
-                    <li><strong>Observa</strong> los 3 jugadores en la arena</li>
-                    <li><strong>Selecciona</strong> el tipo de apuesta que deseas hacer</li>
-                    <li><strong>Elige</strong> tu opción específica de apuesta</li>
-                    <li><strong>Ingresa</strong> la cantidad de Ortiz Coins a apostar</li>
-                    <li><strong>Presiona JUGAR</strong> y observa la competencia</li>
-                    <li><strong>¡Gana Ortiz Coins</strong> si tu predicción es correcta!</li>
-                </ol>
-            </div>
-            <div style="text-align: center; font-size: 1.3rem; margin-bottom: 20px; color: #FFD700;">💰 APUESTA</div>
+        <div class="betting-section">
+            <h3 style="text-align: center; margin-bottom: 20px;">💰 HACER APUESTA</h3>
             
-            <div class="bet-types">
-                <div class="bet-type" onclick="selectBetType('winner', this)">
-                    <div style="font-weight: bold; margin-bottom: 5px;">🏆 APUESTA GANADOR</div>
-                    <div style="font-size: 0.8rem; color: #FFA500;">Selecciona qué jugador ganará (2x ganancia)</div>
-                    <div class="bet-options" id="winnerOptions" style="display: none;">
-                        <div class="bet-option" data-option="playerA" onclick="selectBetOption('playerA', this)">
-                            <div style="font-weight: bold;">🎮 001</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que 001 ganará</div>
-                        </div>
-                        <div class="bet-option" data-option="playerB" onclick="selectBetOption('playerB', this)">
-                            <div style="font-weight: bold;">🎯 002</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que 002 ganará</div>
-                        </div>
-                        <div class="bet-option" data-option="playerC" onclick="selectBetOption('playerC', this)">
-                            <div style="font-weight: bold;">⚡ 003</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que 003 ganará</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bet-type" onclick="selectBetType('score', this)">
-                    <div style="font-weight: bold; margin-bottom: 5px;">📊 APUESTA PUNTUACIÓN</div>
-                    <div style="font-size: 0.8rem; color: #FFA500;">Predice la puntuación total (1.5x ganancia)</div>
-                    <div class="bet-options" id="scoreOptions" style="display: none;">
-                        <div class="bet-option" data-option="high" onclick="selectBetOption('high', this)">
-                            <div style="font-weight: bold;">📈 Alta (>100)</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Puntuación total será alta</div>
-                        </div>
-                        <div class="bet-option" data-option="medium" onclick="selectBetOption('medium', this)">
-                            <div style="font-weight: bold;">📊 Media (50-100)</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Puntuación total será media</div>
-                        </div>
-                        <div class="bet-option" data-option="low" onclick="selectBetOption('low', this)">
-                            <div style="font-weight: bold;">📉 Baja (<50)</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Puntuación total será baja</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bet-type" onclick="selectBetType('difference', this)">
-                    <div style="font-weight: bold; margin-bottom: 5px;">⚡ APUESTA DIFERENCIA</div>
-                    <div style="font-size: 0.8rem; color: #FFA500;">Predice si será reñido o no (3x ganancia)</div>
-                    <div class="bet-options" id="differenceOptions" style="display: none;">
-                        <div class="bet-option" data-option="close" onclick="selectBetOption('close', this)">
-                            <div style="font-weight: bold;">⚡ Reñido (<20)</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Diferencia pequeña entre ganadores</div>
-                        </div>
-                        <div class="bet-option" data-option="wide" onclick="selectBetOption('wide', this)">
-                            <div style="font-weight: bold;">🏆 Dominante (>20)</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Diferencia grande entre ganadores</div>
-                        </div>
-                    </div>
+            <div class="bet-type" onclick="selectBetType('winner', this)">
+                <div style="font-weight: bold;">🏆 APUESTA GANADOR (2x)</div>
+                <div style="font-size: 0.9rem; color: #FFA500;">¿Quién ganará?</div>
+                <div class="bet-options" id="winnerOptions">
+                    <div class="bet-option" onclick="selectBetOption('001', this)">🎮 001</div>
+                    <div class="bet-option" onclick="selectBetOption('002', this)">🎯 002</div>
+                    <div class="bet-option" onclick="selectBetOption('003', this)">⚡ 003</div>
                 </div>
             </div>
             
-            <input type="number" id="betAmount" min="1" max="1000" value="10" style="width: 100%; padding: 10px; margin: 10px 0; background: #1a1a1a; border: 2px solid #FFD700; border-radius: 5px; color: #FFD700; font-family: 'Orbitron', monospace;">
-            <button class="place-bet-btn" id="placeBetBtn" onclick="placeBet()">JUGAR</button>
-        </div>
-        
-        <div style="background: rgba(0, 0, 0, 0.9); border: 2px solid #FFD700; border-radius: 10px; padding: 15px; margin-top: 20px; text-align: center;">
-            <button onclick="goBack()" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; border-radius: 10px; color: #000; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">← VOLVER AL MENÚ PRINCIPAL</button>
-        </div>
+            <div class="bet-type" onclick="selectBetType('score', this)">
+                <div style="font-weight: bold;">📊 APUESTA PUNTUACIÓN (1.5x)</div>
+                <div style="font-size: 0.9rem; color: #FFA500;">¿Cuál será la puntuación total?</div>
+                <div class="bet-options" id="scoreOptions">
+                    <div class="bet-option" onclick="selectBetOption('high', this)">📈 Alta (>100)</div>
+                    <div class="bet-option" onclick="selectBetOption('medium', this)">📊 Media (50-100)</div>
+                    <div class="bet-option" onclick="selectBetOption('low', this)">📉 Baja (<50)</div>
+                </div>
+            </div>
+            
+            <div class="bet-type" onclick="selectBetType('difference', this)">
+                <div style="font-weight: bold;">⚡ APUESTA DIFERENCIA (3x)</div>
+                <div style="font-size: 0.9rem; color: #FFA500;">¿Será reñido o dominante?</div>
+                <div class="bet-options" id="differenceOptions">
+                    <div class="bet-option" onclick="selectBetOption('close', this)">⚡ Reñido (<20)</div>
+                    <div class="bet-option" onclick="selectBetOption('wide', this)">🏆 Dominante (>20)</div>
+                </div>
+            </div>
+            
+            <input type="number" class="bet-input" id="betAmount" min="1" max="1000" value="10" placeholder="Cantidad de Ortiz Coins">
+            <button class="play-button" id="playButton" onclick="startGame()">🎮 JUGAR</button>
         </div>
     </div>
     
-    <div class="game-status">
-        <div id="statusText">Esperando apuestas...</div>
-        <div class="game-progress" id="gameProgress" style="display: none;">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        <button class="back-btn" onclick="goBack()" style="margin-top: 10px; width: 100%;">← VOLVER</button>
-    </div>
-
-    <div class="result-modal" id="resultModal" style="display: none;">
-        <div class="result-icon">🎯</div>
-        <div class="result-title">¡Resultado!</div>
-        <div class="result-message">¡Tu apuesta fue...</div>
-        <div class="result-coins">0 Ortiz Coins</div>
-        <button class="modal-btn" id="closeModalBtn">Cerrar</button>
-    </div>
-
-    <div class="modal-overlay" id="modalOverlay" style="display: none;"></div>
-
-    <div class="coin-rain">
-        <!-- Coin particles will be generated dynamically -->
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="result-modal" id="resultModal">
+        <div class="result-icon" id="resultIcon">🎯</div>
+        <div class="result-title" id="resultTitle">¡Resultado!</div>
+        <div class="result-message" id="resultMessage">Tu apuesta fue...</div>
+        <div class="result-coins" id="resultCoins">0 Ortiz Coins</div>
+        <button class="modal-btn" onclick="closeResult()">Cerrar</button>
     </div>
 
     <script>
+        // Game state
         let vipCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
         let currentBetType = null;
         let currentBetOption = null;
         let gameInProgress = false;
-        let players = [];
+        let players = [
+            { name: '001', emoji: '🎮', score: 0 },
+            { name: '002', emoji: '🎯', score: 0 },
+            { name: '003', emoji: '⚡', score: 0 }
+        ];
 
-        function initVIPGame() {
-            generatePlayers();
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePlayersDisplay();
+            updateCoinsDisplay();
+        });
+
+        function updatePlayersDisplay() {
+            const grid = document.getElementById('playersGrid');
+            grid.innerHTML = '';
+            
+            players.forEach(player => {
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.innerHTML = `
+                    <div class="player-emoji">${player.emoji}</div>
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-score">Puntos: <span class="score-value">${player.score}</span></div>
+                `;
+                grid.appendChild(card);
+            });
         }
 
-        function generatePlayers() {
-            const playersContainer = document.getElementById('playersContainer');
-            playersContainer.innerHTML = '';
-            
-            const playerNames = ['001', '002', '003'];
-            const playerEmojis = ['🎮', '🎯', '⚡'];
-            
-            players = playerNames.map((name, index) => ({
-                id: index,
-                name: name,
-                emoji: playerEmojis[index],
-                score: 0
-            }));
-
-            players.forEach(player => {
-                const playerCard = document.createElement('div');
-                playerCard.className = 'player-card';
-                playerCard.innerHTML = `
-                    <div class="player-content">
-                        <div class="player-emoji">${player.emoji}</div>
-                        <div class="player-name">${player.name}</div>
-                        <div class="player-score">Puntos: <span class="score-value">${player.score}</span></div>
-                    </div>
-                `;
-                playersContainer.appendChild(playerCard);
-            });
+        function updateCoinsDisplay() {
+            // Update coins display if it exists
+            const coinsDisplay = document.querySelector('.coins-display');
+            if (coinsDisplay) {
+                coinsDisplay.textContent = `💰 ${vipCoins} Ortiz Coins`;
+            }
         }
 
         function selectBetType(betType, element) {
             if (gameInProgress) return;
             
-            // Remover selección anterior de tipos
-            document.querySelectorAll('.bet-type').forEach(opt => opt.classList.remove('selected'));
+            // Remove previous selections
+            document.querySelectorAll('.bet-type').forEach(bt => bt.classList.remove('selected'));
+            document.querySelectorAll('.bet-options').forEach(bo => bo.style.display = 'none');
             
-            // Ocultar todas las opciones
-            document.querySelectorAll('.bet-options').forEach(opt => opt.style.display = 'none');
-            
-            // Seleccionar nuevo tipo
+            // Select new type
             element.classList.add('selected');
             currentBetType = betType;
             currentBetOption = null;
             
-            // Mostrar opciones específicas
+            // Show options
             const optionsId = betType + 'Options';
-            const optionsElement = document.getElementById(optionsId);
-            if (optionsElement) {
-                optionsElement.style.display = 'block';
+            const options = document.getElementById(optionsId);
+            if (options) {
+                options.style.display = 'block';
             }
             
-            // Mostrar confirmación visual
-            const typeNames = {
-                'winner': '🏆 APUESTA GANADOR',
-                'score': '📊 APUESTA PUNTUACIÓN',
-                'difference': '⚡ APUESTA DIFERENCIA'
-            };
-            
-            document.getElementById('statusText').textContent = `✅ Seleccionado: ${typeNames[betType]}`;
+            document.getElementById('statusText').textContent = `✅ Seleccionado: ${betType.toUpperCase()}`;
         }
-        
-        function selectBetOption(betId, element) {
+
+        function selectBetOption(option, element) {
             if (gameInProgress) return;
             
-            // Remover selección anterior de opciones
-            document.querySelectorAll('.bet-option').forEach(opt => opt.classList.remove('selected'));
+            // Remove previous selections
+            document.querySelectorAll('.bet-option').forEach(bo => bo.classList.remove('selected'));
             
-            // Seleccionar nueva opción
+            // Select new option
             element.classList.add('selected');
-            currentBetOption = betId;
+            currentBetOption = option;
             
-            // Mostrar confirmación visual
-            const optionNames = {
-                'playerA': '001 🎮',
-                'playerB': '002 🎯', 
-                'playerC': '003 ⚡',
-                'high': 'Puntuación Alta 📈',
-                'medium': 'Puntuación Media 📊',
-                'low': 'Puntuación Baja 📉',
-                'close': 'Competencia Reñida ⚡',
-                'wide': 'Competencia Dominante 🏆'
-            };
-            
-            document.getElementById('statusText').textContent = `✅ Seleccionado: ${optionNames[betId]}`;
+            document.getElementById('statusText').textContent = `✅ Opción: ${option}`;
         }
 
-        function placeBet() {
-            console.log('🎯 placeBet() called');
-            console.log('gameInProgress:', gameInProgress);
-            console.log('currentBetType:', currentBetType);
+        function startGame() {
+            if (gameInProgress) return;
             
-            if (gameInProgress) {
-                console.log('❌ Game in progress, cannot place bet');
+            if (!currentBetType || !currentBetOption) {
+                alert('⚠️ Selecciona tipo y opción de apuesta primero');
                 return;
             }
             
-            if (!currentBetType) {
-                console.log('❌ No bet type selected');
-                alert('⚠️ ¡Selecciona un tipo de apuesta primero!');
-                return;
-            }
-            
-            // Verificar que se haya seleccionado una opción específica
-            const selectedOption = document.querySelector('.bet-option.selected');
-            console.log('selectedOption:', selectedOption);
-            
-            if (!selectedOption) {
-                console.log('❌ No option selected');
-                alert('⚠️ ¡Selecciona una opción específica primero!');
-                return;
-            }
-            
-            currentBetOption = selectedOption.getAttribute('data-option');
-            console.log('currentBetOption:', currentBetOption);
-            
-            if (!currentBetOption) {
-                console.log('❌ No data-option attribute found');
-                alert('⚠️ ¡Selecciona una opción específica primero!');
-                return;
-            }
-
             const betAmount = parseInt(document.getElementById('betAmount').value);
             if (betAmount > vipCoins) {
                 alert('❌ No tienes suficientes Ortiz Coins');
                 return;
             }
-
-            // Mostrar confirmación de apuesta
-            const typeNames = {
-                'winner': '🏆 APUESTA GANADOR',
-                'score': '📊 APUESTA PUNTUACIÓN',
-                'difference': '⚡ APUESTA DIFERENCIA'
-            };
             
-            const optionNames = {
-                'playerA': '001 🎮',
-                'playerB': '002 🎯', 
-                'playerC': '003 ⚡',
-                'high': 'Puntuación Alta 📈',
-                'medium': 'Puntuación Media 📊',
-                'low': 'Puntuación Baja 📉',
-                'close': 'Competencia Reñida ⚡',
-                'wide': 'Competencia Dominante 🏆'
-            };
-            
-            const confirmMessage = `💰 ¿Confirmar apuesta?\n\n🎯 Tipo: ${typeNames[currentBetType]}\n🎲 Opción: ${optionNames[currentBetOption]}\n💎 Cantidad: ${betAmount} Ortiz Coins\n\n¿Continuar?`;
-            
-            if (confirm(confirmMessage)) {
-                vipCoins -= betAmount;
-                localStorage.setItem('totalOrtizCoins', vipCoins.toString());
-                document.getElementById('statusText').textContent = `🎯 Apostando a ${optionNames[currentBetOption]}...`;
-                startGame(betAmount);
+            if (betAmount <= 0) {
+                alert('❌ Apuesta debe ser mayor a 0');
+                return;
             }
-        }
-
-        function startGame(betAmount) {
+            
+            // Confirm bet
+            const confirmMessage = `💰 ¿Confirmar apuesta?\n\n🎯 Tipo: ${currentBetType}\n🎲 Opción: ${currentBetOption}\n💎 Cantidad: ${betAmount} Ortiz Coins\n\n¿Continuar?`;
+            
+            if (!confirm(confirmMessage)) return;
+            
+            // Start game
             gameInProgress = true;
             
-            // Bloquear todos los botones
-            document.getElementById('placeBetBtn').disabled = true;
-            document.getElementById('backBtn').disabled = true;
-            document.querySelectorAll('.bet-type').forEach(btn => btn.style.pointerEvents = 'none');
-            document.querySelectorAll('.bet-option').forEach(btn => btn.style.pointerEvents = 'none');
-            document.getElementById('betAmount').disabled = true;
+            // Safe coin deduction
+            if (window.PlayerDataManager && PlayerDataManager.safeDeductCoins(betAmount, 'vip-betting')) {
+                vipCoins -= betAmount;
+            } else {
+                alert('❌ Error al deducir monedas. Intenta de nuevo.');
+                return;
+            }
             
-            // Mostrar barra de progreso
-            document.getElementById('gameProgress').style.display = 'block';
+            // Update UI
+            document.getElementById('playButton').disabled = true;
             document.getElementById('statusText').textContent = '🎮 ¡Juego en progreso!';
+            document.getElementById('gameProgress').style.display = 'block';
             
-            // Reset player scores
+            // Reset scores
             players.forEach(player => player.score = 0);
+            updatePlayersDisplay();
             
+            // Start game loop
             let round = 0;
             const maxRounds = 15;
             
             const gameTimer = setInterval(() => {
                 round++;
                 
-                // Actualizar barra de progreso
+                // Update progress bar
                 const progress = (round / maxRounds) * 100;
                 document.getElementById('progressBar').style.width = progress + '%';
                 
-                // Actualizar puntuaciones de todos los jugadores
+                // Update player scores
                 players.forEach((player, index) => {
-                    // Generar puntuación aleatoria
-                    const basePoints = Math.floor(Math.random() * 15) + 1;
-                    const bonusPoints = Math.random() > 0.7 ? Math.floor(Math.random() * 10) : 0;
-                    const points = basePoints + bonusPoints;
-                    
+                    const points = Math.floor(Math.random() * 15) + 1;
                     player.score += points;
-                    
-                    // Buscar el elemento de puntuación por el nombre del jugador
-                    const playerCards = document.querySelectorAll('.player-card');
-                    if (playerCards[index]) {
-                        const scoreElement = playerCards[index].querySelector('.score-value');
-                        if (scoreElement) {
-                            scoreElement.textContent = player.score;
-                            playerCards[index].classList.add('score-animation');
-                            
-                            // Remover animación después de un tiempo
-                            setTimeout(() => {
-                                playerCards[index].classList.remove('score-animation');
-                            }, 500);
-                        }
-                    }
                 });
-
+                
+                updatePlayersDisplay();
+                
+                // End game
                 if (round >= maxRounds) {
                     clearInterval(gameTimer);
                     endGame(betAmount);
@@ -986,181 +536,113 @@
         }
 
         function endGame(betAmount) {
-            // Find the winner
+            // Find winner
             const winner = players.reduce((prev, current) => 
                 (prev.score > current.score) ? prev : current
             );
             
-            // Marcar ganador visualmente
+            // Mark winner visually
             document.querySelectorAll('.player-card').forEach((card, index) => {
-                if (players[index].id === winner.id) {
+                if (players[index].name === winner.name) {
                     card.classList.add('winner');
                 }
             });
             
-            // Calculate total score and differences
+            // Calculate results
             const totalScore = players.reduce((sum, player) => sum + player.score, 0);
             const scores = players.map(p => p.score).sort((a, b) => b - a);
             const difference = scores[0] - scores[1];
             
-            // Calculate winnings based on bet type and option
-            let winnings = 0;
+            // Check if player won
             let won = false;
-            let resultMessage = '';
-            let resultDetails = '';
+            let winnings = 0;
             
             if (currentBetType === 'winner') {
-                // Winner bets
-                const playerNames = {
-                    'playerA': '001',
-                    'playerB': '002',
-                    'playerC': '003'
-                };
-                
-                if (winner.name === playerNames[currentBetOption]) {
-                    winnings = betAmount * 2;
+                if (winner.name === currentBetOption) {
                     won = true;
-                    resultMessage = `¡GANASTE!`;
-                    resultDetails = `${winner.name} ganó con ${winner.score} puntos`;
-                } else {
-                    resultMessage = `¡PERDISTE!`;
-                    resultDetails = `Ganó ${winner.name} con ${winner.score} puntos`;
+                    winnings = betAmount * 2;
                 }
             } else if (currentBetType === 'score') {
-                // Score bets
                 let predicted = false;
                 if (currentBetOption === 'high' && totalScore > 100) predicted = true;
                 if (currentBetOption === 'medium' && totalScore >= 50 && totalScore <= 100) predicted = true;
                 if (currentBetOption === 'low' && totalScore < 50) predicted = true;
                 
                 if (predicted) {
-                    winnings = Math.floor(betAmount * 1.5);
                     won = true;
-                    resultMessage = `¡GANASTE!`;
-                    resultDetails = `Puntuación total: ${totalScore}`;
-                } else {
-                    resultMessage = `¡PERDISTE!`;
-                    resultDetails = `Puntuación total: ${totalScore}`;
+                    winnings = Math.floor(betAmount * 1.5);
                 }
             } else if (currentBetType === 'difference') {
-                // Difference bets
                 let predicted = false;
                 if (currentBetOption === 'close' && difference < 20) predicted = true;
                 if (currentBetOption === 'wide' && difference >= 20) predicted = true;
                 
                 if (predicted) {
-                    winnings = betAmount * 3;
                     won = true;
-                    resultMessage = `¡GANASTE!`;
-                    resultDetails = `Diferencia: ${difference} puntos`;
-                } else {
-                    resultMessage = `¡PERDISTE!`;
-                    resultDetails = `Diferencia: ${difference} puntos`;
+                    winnings = betAmount * 3;
                 }
             }
             
+            // Update coins
             if (won) {
-                vipCoins += winnings;
-                localStorage.setItem('totalOrtizCoins', vipCoins.toString());
-                showResultModal(true, winnings, resultDetails);
-            } else {
-                showResultModal(false, betAmount, resultDetails);
+                // Safe coin addition
+                if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(winnings, 'vip-betting-win')) {
+                    vipCoins += winnings;
+                } else {
+                    console.error('❌ Error al añadir monedas ganadas');
+                }
             }
+            
+            // Show result
+            showResult(won, winnings, betAmount);
+            
+            // Reset game state
+            setTimeout(() => {
+                gameInProgress = false;
+                document.getElementById('playButton').disabled = false;
+                document.getElementById('gameProgress').style.display = 'none';
+                document.getElementById('progressBar').style.width = '0%';
+                document.getElementById('statusText').textContent = 'Esperando apuestas...';
+                
+                // Clear selections
+                document.querySelectorAll('.bet-type').forEach(bt => bt.classList.remove('selected'));
+                document.querySelectorAll('.bet-option').forEach(bo => {
+                    bo.classList.remove('selected');
+                    bo.parentElement.style.display = 'none';
+                });
+                
+                currentBetType = null;
+                currentBetOption = null;
+            }, 3000);
         }
 
-        function showResultModal(won, coins, details) {
-            const modal = document.getElementById('resultModal');
-            const overlay = document.getElementById('modalOverlay');
-            const icon = modal.querySelector('.result-icon');
-            const title = modal.querySelector('.result-title');
-            const message = modal.querySelector('.result-message');
-            const coinsElement = modal.querySelector('.result-coins');
+        function showResult(won, winnings, betAmount) {
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const message = document.getElementById('resultMessage');
+            const coins = document.getElementById('resultCoins');
             
             if (won) {
-                modal.className = 'result-modal win';
                 icon.textContent = '🏆';
                 title.textContent = '¡GANASTE!';
                 title.className = 'result-title win';
-                message.textContent = `¡Felicidades! Has ganado:`;
-                coinsElement.textContent = `+${coins} Ortiz Coins`;
-                
-                // Efecto de lluvia de monedas
-                createCoinRain();
+                message.textContent = '¡Felicidades! Has ganado:';
+                coins.textContent = `+${winnings} Ortiz Coins`;
             } else {
-                modal.className = 'result-modal lose';
                 icon.textContent = '💔';
                 title.textContent = '¡PERDISTE!';
                 title.className = 'result-title lose';
-                message.textContent = `¡Suerte la próxima vez, jugador!`;
-                coinsElement.textContent = `-${coins} Ortiz Coins`;
+                message.textContent = '¡Suerte la próxima vez!';
+                coins.textContent = `-${betAmount} Ortiz Coins`;
             }
             
-            overlay.style.display = 'block';
-            modal.style.display = 'block';
-            
-            // Auto-cerrar después de 4 segundos
-            setTimeout(() => {
-                closeResultModal();
-            }, 4000);
+            document.getElementById('modalOverlay').style.display = 'block';
+            document.getElementById('resultModal').style.display = 'block';
         }
 
-        function createCoinRain() {
-            const coinRain = document.querySelector('.coin-rain');
-            coinRain.innerHTML = '';
-            
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => {
-                    const coin = document.createElement('div');
-                    coin.className = 'coin-particle';
-                    coin.textContent = '💰';
-                    coin.style.left = Math.random() * 100 + '%';
-                    coin.style.animationDelay = Math.random() * 2 + 's';
-                    coinRain.appendChild(coin);
-                    
-                    // Remover moneda después de la animación
-                    setTimeout(() => {
-                        coin.remove();
-                    }, 3000);
-                }, i * 100);
-            }
-        }
-
-        function closeResultModal() {
-            const modal = document.getElementById('resultModal');
-            const overlay = document.getElementById('modalOverlay');
-            
-            modal.style.display = 'none';
-            overlay.style.display = 'none';
-            
-            // Limpiar lluvia de monedas
-            document.querySelector('.coin-rain').innerHTML = '';
-            
-            // Desbloquear todos los botones
-            document.getElementById('placeBetBtn').disabled = false;
-            document.getElementById('backBtn').disabled = false;
-            document.querySelectorAll('.bet-type').forEach(btn => btn.style.pointerEvents = 'auto');
-            document.querySelectorAll('.bet-option').forEach(btn => btn.style.pointerEvents = 'auto');
-            document.getElementById('betAmount').disabled = false;
-            
-            // Ocultar barra de progreso
-            document.getElementById('gameProgress').style.display = 'none';
-            document.getElementById('progressBar').style.width = '0%';
-            
-            document.getElementById('statusText').textContent = 'Esperando apuestas...';
-            currentBetType = null;
-            currentBetOption = null;
-            
-            // Limpiar selecciones
-            document.querySelectorAll('.bet-type').forEach(opt => opt.classList.remove('selected'));
-            document.querySelectorAll('.bet-option').forEach(opt => opt.classList.remove('selected'));
-            document.querySelectorAll('.bet-options').forEach(opt => opt.style.display = 'none');
-            document.querySelectorAll('.player-card').forEach(card => card.classList.remove('winner'));
-            
-            // Reset player scores for next game
-            players.forEach(player => player.score = 0);
-            generatePlayers();
-            
-            gameInProgress = false;
+        function closeResult() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('resultModal').style.display = 'none';
         }
 
         function goBack() {
@@ -1171,8 +653,6 @@
 
         // Auto-sync function for VIP game
         function autoSyncVIPData() {
-            console.log('🔄 Auto-syncing VIP game data to Firebase...');
-            
             const playerName = localStorage.getItem('soldierName');
             const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
             const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
@@ -1202,25 +682,16 @@
         // Override localStorage.setItem for VIP game
         const originalVIPSetItem = localStorage.setItem;
         localStorage.setItem = function(key, value) {
-            console.log('🔄 VIP localStorage.setItem called:', key, '=', value);
             originalVIPSetItem.apply(this, arguments);
             
             // Auto-sync when VIP game data changes
             if (['totalOrtizCoins', 'gamesPlayed', 'totalWins', 'cluesFound'].includes(key)) {
-                console.log('📊 VIP game data changed:', key, '=', value);
                 setTimeout(autoSyncVIPData, 1000);
             }
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
-            initVIPGame();
-            
-            // Event listener para cerrar modal
-            document.getElementById('closeModalBtn').addEventListener('click', closeResultModal);
-            
-            // Initial sync
-            setTimeout(autoSyncVIPData, 2000);
-        });
+        // Initial sync
+        setTimeout(autoSyncVIPData, 2000);
     </script>
 </body>
 </html> 

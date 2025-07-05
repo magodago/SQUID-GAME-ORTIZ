@@ -4739,10 +4739,15 @@
     });
     
     function activateEasterEgg() {
-      // Add 500 coins to total
-      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      totalCoins += 500;
-      localStorage.setItem('totalOrtizCoins', totalCoins);
+      // Add 500 coins to total using safe addition
+      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(500, 'easter-egg-sistema-activo')) {
+        console.log('✅ Easter Egg coins added safely: +500');
+      } else {
+        // Fallback if PlayerDataManager not available
+        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        totalCoins += 500;
+        localStorage.setItem('totalOrtizCoins', totalCoins);
+      }
       
       // Update display
       loadTotalCoins();
@@ -5086,10 +5091,15 @@
     }
     
     function addOneCoin() {
-      // Add 1 coin to total
-      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      totalCoins += 1;
-      localStorage.setItem('totalOrtizCoins', totalCoins);
+      // Add 1 coin to total using safe addition
+      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(1, 'easter-egg-soldier-name')) {
+        console.log('✅ Easter Egg coin added safely: +1');
+      } else {
+        // Fallback if PlayerDataManager not available
+        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        totalCoins += 1;
+        localStorage.setItem('totalOrtizCoins', totalCoins);
+      }
       
       // Update display
       loadTotalCoins();
@@ -5099,10 +5109,15 @@
     }
     
     function addTwentyCoins() {
-      // Add 20 coins to total
-      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      totalCoins += 20;
-      localStorage.setItem('totalOrtizCoins', totalCoins);
+      // Add 20 coins to total using safe addition
+      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(20, 'easter-egg-gods-power')) {
+        console.log('✅ Easter Egg coins added safely: +20');
+      } else {
+        // Fallback if PlayerDataManager not available
+        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        totalCoins += 20;
+        localStorage.setItem('totalOrtizCoins', totalCoins);
+      }
       
       // Update display
       loadTotalCoins();

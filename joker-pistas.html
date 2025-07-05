@@ -643,9 +643,15 @@
             }
 
             isPlaying = true;
-            coins -= cost;
-            localStorage.setItem('totalOrtizCoins', coins.toString());
-            updateCoinsDisplay();
+            
+            // Safe coin deduction
+            if (window.PlayerDataManager && PlayerDataManager.safeDeductCoins(cost, 'joker-pistas')) {
+                coins -= cost;
+                updateCoinsDisplay();
+            } else {
+                alert('❌ Error al deducir monedas. Intenta de nuevo.');
+                return;
+            }
 
             // Deshabilitar todos los botones durante el juego
             document.getElementById('playBtn').disabled = true;

@@ -740,10 +740,13 @@
             score += points;
             document.getElementById('score').textContent = score;
             
-            // Dar Ortiz Coins
+            // Dar Ortiz Coins de forma segura
             const coins = Math.floor(points / 10);
-            frontmanCoins += coins;
-            localStorage.setItem('totalOrtizCoins', frontmanCoins.toString());
+            if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(coins, 'frontman-game')) {
+                frontmanCoins += coins;
+            } else {
+                console.error('❌ Error al añadir monedas ganadas');
+            }
             
             // Mostrar mensaje de éxito
             const successMessage = document.createElement('div');

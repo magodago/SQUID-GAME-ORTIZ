@@ -2049,8 +2049,160 @@
       border: 3px solid #00FFFF;
     }
     
-    /* Fusion Power Modal Styles */
-    .fusion-power-modal {
+      /* Admin Panel Styles */
+  .admin-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+  }
+  
+  .admin-content {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    border: 2px solid #00ff00;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+    animation: adminEntrance 0.8s ease-out;
+  }
+  
+  @keyframes adminEntrance {
+    from {
+      opacity: 0;
+      transform: scale(0.8) translateY(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  .admin-header h3 {
+    color: #00ff00;
+    text-align: center;
+    margin: 0 0 10px 0;
+    font-size: 1.8rem;
+    text-shadow: 0 0 10px #00ff00;
+  }
+  
+  .admin-subtitle {
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+  }
+  
+  .admin-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+  
+  .stat-item {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    min-width: 150px;
+    margin: 5px;
+  }
+  
+  .stat-icon {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .stat-label {
+    color: #ffffff;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .stat-value {
+    color: #00ff00;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px #00ff00;
+  }
+  
+  .players-list h4 {
+    color: #00ff00;
+    margin: 0 0 15px 0;
+    text-align: center;
+    font-size: 1.3rem;
+  }
+  
+  .players-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #00ff00;
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+  }
+  
+  .player-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #00ff00;
+  }
+  
+  .player-name {
+    color: #ffffff;
+    font-weight: bold;
+  }
+  
+  .player-coins {
+    color: #ffd700;
+    font-weight: bold;
+  }
+  
+  .admin-footer {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+  }
+  
+  .admin-btn {
+    background: linear-gradient(45deg, #00ff00, #00cc00);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    color: #000000;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+  
+  .admin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.4);
+  }
+
+  /* Fusion Power Modal Styles */
+  .fusion-power-modal {
       position: fixed;
       top: 0;
       left: 0;
@@ -3633,27 +3785,43 @@
       const enteredCode = Array.from(codeInputs).map(input => input.value).join('');
       
       if (enteredCode.length === 4) {
-        if (enteredCode === secretCode) {
+        // Check for admin code "DAGO"
+        if (enteredCode.toUpperCase() === 'DAGO') {
+          accessStatus.textContent = '🔐 CÓDIGO ADMIN - ACCESO PERMITIDO';
+          accessStatus.style.color = '#00ff00';
+          accessStatus.style.textShadow = '0 0 10px #00ff00';
+          
+          // Activate admin panel
+          activateAdminPanel();
+          
+          // Clear inputs and hide access panel after success
+          setTimeout(() => {
+            codeInputs.forEach(input => input.value = '');
+            accessPanel.style.display = 'none';
+          }, 2000);
+        }
+        // Check for regular secret code
+        else if (enteredCode === secretCode) {
           accessStatus.textContent = '✅ CÓDIGO CORRECTO - ACCESO PERMITIDO';
-        accessStatus.style.color = '#00ff7f';
-        accessStatus.style.textShadow = '0 0 10px #00ff7f';
-        
+          accessStatus.style.color = '#00ff7f';
+          accessStatus.style.textShadow = '0 0 10px #00ff7f';
+          
           // Mostrar ventana de vida extra
           showExtraLifeModal();
           
           // Hide access panel after success
-        setTimeout(() => {
-          accessPanel.style.display = 'none';
-        }, 2000);
-      } else {
+          setTimeout(() => {
+            accessPanel.style.display = 'none';
+          }, 2000);
+        } else {
           accessStatus.textContent = '❌ CÓDIGO INCORRECTO - ACCESO DENEGADO';
           accessStatus.style.color = '#ff4757';
           accessStatus.style.textShadow = '0 0 10px #ff4757';
-        
-        // Clear inputs after error
-        setTimeout(() => {
-          codeInputs.forEach(input => input.value = '');
-          codeInputs[0].focus();
+          
+          // Clear inputs after error
+          setTimeout(() => {
+            codeInputs.forEach(input => input.value = '');
+            codeInputs[0].focus();
           }, 2000);
         }
       }
@@ -4452,6 +4620,13 @@
     const godsPowerModal = document.getElementById('godsPowerModal');
     const closeGodsPowerBtn = document.getElementById('closeGodsPower');
     
+    // Admin Panel variables
+    let adminSequence = [];
+    let adminSequenceTimeout = null;
+    const adminPanel = document.getElementById('adminPanel');
+    const refreshAdminBtn = document.getElementById('refreshAdminBtn');
+    const closeAdminBtn = document.getElementById('closeAdminBtn');
+    
     // Fusion Power Easter Egg variables
     let fusionSequence = [];
     let fusionSequenceTimeout = null;
@@ -4533,6 +4708,60 @@
       // Check for fusion power sequence
       checkFusionSequence(target);
     });
+    
+    function checkAdminSequence(target) {
+      // This function is now handled by the code input system
+    }
+    
+    function addToAdminSequence(element, timestamp) {
+      // This function is now handled by the code input system
+    }
+    
+    function activateAdminPanel() {
+      adminPanel.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      loadAdminData();
+    }
+    
+    function loadAdminData() {
+      // Get all player data from localStorage
+      const allPlayers = [];
+      let totalCoins = 0;
+      
+      // Check for current player data
+      const currentName = localStorage.getItem('soldierName') || 'Jugador';
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      
+      if (currentName && currentCoins > 0) {
+        allPlayers.push({
+          name: currentName,
+          coins: currentCoins
+        });
+        totalCoins += currentCoins;
+      }
+      
+      // Update stats
+      document.getElementById('totalPlayers').textContent = allPlayers.length;
+      document.getElementById('totalCoinsAdmin').textContent = totalCoins;
+      
+      // Update players list
+      const playersContainer = document.getElementById('playersContainer');
+      playersContainer.innerHTML = '';
+      
+      if (allPlayers.length === 0) {
+        playersContainer.innerHTML = '<div class="player-item"><span class="player-name">No hay jugadores registrados</span></div>';
+      } else {
+        allPlayers.forEach(player => {
+          const playerItem = document.createElement('div');
+          playerItem.className = 'player-item';
+          playerItem.innerHTML = `
+            <span class="player-name">🎖️ ${player.name}</span>
+            <span class="player-coins">🪙 ${player.coins}</span>
+          `;
+          playersContainer.appendChild(playerItem);
+        });
+      }
+    }
     
     function checkFusionSequence(target) {
       const now = Date.now();
@@ -4862,6 +5091,24 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && godsPowerModal.classList.contains('active')) {
         closeGodsPowerModal();
+      }
+    });
+    
+    // Admin panel event listeners
+    refreshAdminBtn.addEventListener('click', () => {
+      loadAdminData();
+    });
+    
+    closeAdminBtn.addEventListener('click', () => {
+      adminPanel.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    });
+    
+    // Close admin panel when clicking outside
+    adminPanel.addEventListener('click', (e) => {
+      if (e.target === adminPanel) {
+        adminPanel.style.display = 'none';
+        document.body.style.overflow = 'auto';
       }
     });
     
@@ -5295,5 +5542,41 @@
       }
     });
   </script>
+  <!-- Admin Panel -->
+  <div class="admin-panel" id="adminPanel" style="display: none;">
+    <div class="admin-content">
+      <div class="admin-header">
+        <h3>🔐 PANEL DE ADMINISTRACIÓN</h3>
+        <div class="admin-subtitle">Datos de Jugadores</div>
+      </div>
+      
+      <div class="admin-stats">
+        <div class="stat-item">
+          <span class="stat-icon">👥</span>
+          <span class="stat-label">Total Jugadores:</span>
+          <span class="stat-value" id="totalPlayers">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">🪙</span>
+          <span class="stat-label">Total Monedas:</span>
+          <span class="stat-value" id="totalCoinsAdmin">0</span>
+        </div>
+      </div>
+      
+      <div class="players-list" id="playersList">
+        <h4>📋 Lista de Jugadores</h4>
+        <div class="players-container" id="playersContainer">
+          <!-- Players will be listed here -->
+        </div>
+      </div>
+      
+      <div class="admin-footer">
+        <button class="admin-btn" id="refreshAdminBtn">🔄 Actualizar</button>
+        <button class="admin-btn" id="closeAdminBtn">❌ Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fusion Power Modal -->
 </body>
 </html> 

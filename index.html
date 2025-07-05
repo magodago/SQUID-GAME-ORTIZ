@@ -6584,16 +6584,26 @@
       
       modal.style.display = 'flex';
       
-      // Add event listener to close button
+      // Add event listener to close button with debug
       const closeBtn = document.getElementById('closeDailyReward');
-      closeBtn.onclick = () => {
-        claimDailyReward(rewardAmount);
-        modal.style.display = 'none';
-        // Disable the button immediately
-        const dailyRewardBtn = document.getElementById('dailyRewardBtn');
-        dailyRewardBtn.classList.add('disabled');
-        dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
-      };
+      if (closeBtn) {
+        console.log('🔍 Close button found, adding event listener...');
+        alert('🔍 Botón de cobrar encontrado - Agregando event listener...');
+        
+        closeBtn.onclick = function() {
+          alert('🎁 BOTÓN COBRAR PULSADO - Ejecutando claim...');
+          console.log('🎁 Close button clicked, claiming reward...');
+          claimDailyReward(rewardAmount);
+          modal.style.display = 'none';
+          // Disable the button immediately
+          const dailyRewardBtn = document.getElementById('dailyRewardBtn');
+          dailyRewardBtn.classList.add('disabled');
+          dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
+        };
+      } else {
+        console.error('❌ Close button not found!');
+        alert('❌ Botón de cobrar no encontrado!');
+      }
     }
 
     function createRewardParticles() {

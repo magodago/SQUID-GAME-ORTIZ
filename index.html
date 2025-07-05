@@ -1671,8 +1671,8 @@
       justify-content: center;
       z-index: 4000;
       backdrop-filter: blur(25px);
-      border: 4px solid #FF6B35;
-      box-shadow: 0 0 120px #FF6B35, inset 0 0 120px rgba(255, 107, 53, 0.3);
+      border: 4px solid #00FFFF;
+      box-shadow: 0 0 120px #00FFFF, inset 0 0 120px rgba(0, 255, 255, 0.3);
       padding: 2rem;
       box-sizing: border-box;
       overflow: hidden;
@@ -1700,10 +1700,10 @@
     
     .lock-power-content {
       background: linear-gradient(145deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-      border: 4px solid #FF6B35;
+      border: 4px solid #00FFFF;
       border-radius: 30px;
       padding: 3rem 2.5rem;
-      box-shadow: 0 0 100px #FF6B35, inset 0 0 80px rgba(255, 107, 53, 0.2);
+      box-shadow: 0 0 100px #00FFFF, inset 0 0 80px rgba(0, 255, 255, 0.2);
       text-align: center;
       max-width: 85%;
       max-height: 85vh;
@@ -1713,10 +1713,10 @@
     }
     
     .lock-power-header h2 {
-      color: #FF6B35;
+      color: #00FFFF;
       font-size: 2.4rem;
       margin-bottom: 1rem;
-      text-shadow: 0 0 60px #FF6B35, 0 0 120px #FF6B35;
+      text-shadow: 0 0 60px #00FFFF, 0 0 120px #00FFFF;
       font-weight: bold;
       letter-spacing: 0.1em;
       animation: lockPowerTitleGlow 2.5s infinite;
@@ -1724,10 +1724,10 @@
     
     @keyframes lockPowerTitleGlow {
       0%, 100% {
-        text-shadow: 0 0 60px #FF6B35, 0 0 120px #FF6B35;
+        text-shadow: 0 0 60px #00FFFF, 0 0 120px #00FFFF;
       }
       50% {
-        text-shadow: 0 0 90px #FF6B35, 0 0 180px #FF6B35, 0 0 270px #FF6B35;
+        text-shadow: 0 0 90px #00FFFF, 0 0 180px #00FFFF, 0 0 270px #00FFFF;
       }
     }
     
@@ -1757,10 +1757,10 @@
     
     .lock-particle {
       position: absolute;
-      font-size: 1.2rem;
-      color: #FF6B35;
-      text-shadow: 0 0 15px #FF6B35;
-      animation: lockParticleFloat 2.5s ease-out forwards;
+      font-size: 1.5rem;
+      color: #00FFFF;
+      text-shadow: 0 0 15px #00FFFF;
+      animation: lockParticleFloat 3s ease-out forwards;
     }
     
     @keyframes lockParticleFloat {
@@ -1784,8 +1784,8 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 5rem;
-      color: #FF6B35;
-      text-shadow: 0 0 50px #FF6B35, 0 0 100px #FF6B35;
+      color: #00FFFF;
+      text-shadow: 0 0 50px #00FFFF, 0 0 100px #00FFFF;
       animation: lockSymbolPulse 2s infinite alternate;
       z-index: 10;
     }
@@ -1793,11 +1793,11 @@
     @keyframes lockSymbolPulse {
       0% {
         transform: translate(-50%, -50%) scale(1) rotate(0deg);
-        text-shadow: 0 0 50px #FF6B35, 0 0 100px #FF6B35;
+        text-shadow: 0 0 50px #00FFFF, 0 0 100px #00FFFF;
       }
       100% {
         transform: translate(-50%, -50%) scale(1.4) rotate(-20deg);
-        text-shadow: 0 0 70px #FF6B35, 0 0 140px #FF6B35, 0 0 210px #FF6B35;
+        text-shadow: 0 0 70px #00FFFF, 0 0 140px #00FFFF, 0 0 210px #00FFFF;
       }
     }
     
@@ -1806,20 +1806,20 @@
     }
     
     .lock-title {
-      color: #FF6B35;
+      color: #00FFFF;
       font-size: 2rem;
       font-weight: bold;
       margin-bottom: 1.2rem;
-      text-shadow: 0 0 50px #FF6B35;
+      text-shadow: 0 0 50px #00FFFF;
       animation: lockTitlePulse 2.5s infinite;
     }
     
     @keyframes lockTitlePulse {
       0%, 100% {
-        text-shadow: 0 0 50px #FF6B35;
+        text-shadow: 0 0 50px #00FFFF;
       }
       50% {
-        text-shadow: 0 0 80px #FF6B35, 0 0 140px #FF6B35;
+        text-shadow: 0 0 80px #00FFFF, 0 0 140px #00FFFF;
       }
     }
     
@@ -1849,33 +1849,33 @@
     }
     
     .lock-power-btn {
-      background: linear-gradient(45deg, #FF6B35, #FF4500);
-      color: #fff;
-      border: 3px solid #FF6B35;
+      background: linear-gradient(45deg, #00FFFF, #0080FF);
+      color: #000;
+      border: 3px solid #00FFFF;
       padding: 1.3rem 3.5rem;
       font-size: 1.3rem;
       font-weight: bold;
       border-radius: 18px;
       cursor: pointer;
       transition: all 0.3s;
-      box-shadow: 0 0 60px #FF6B35, inset 0 0 40px rgba(255, 107, 53, 0.4);
+      box-shadow: 0 0 60px #00FFFF, inset 0 0 40px rgba(0, 255, 255, 0.4);
       text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       margin-top: 1.5rem;
       animation: lockPowerBtnPulse 2.5s infinite;
     }
     
     .lock-power-btn:hover {
-      background: linear-gradient(45deg, #FF4500, #FF6B35);
-      box-shadow: 0 0 80px #FF6B35, inset 0 0 50px rgba(255, 107, 53, 0.6);
+      background: linear-gradient(45deg, #0080FF, #00FFFF);
+      box-shadow: 0 0 80px #00FFFF, inset 0 0 50px rgba(0, 255, 255, 0.6);
       transform: scale(1.05);
     }
     
     @keyframes lockPowerBtnPulse {
       0%, 100% {
-        box-shadow: 0 0 60px #FF6B35, inset 0 0 40px rgba(255, 107, 53, 0.4);
+        box-shadow: 0 0 60px #00FFFF, inset 0 0 40px rgba(0, 255, 255, 0.4);
       }
       50% {
-        box-shadow: 0 0 80px #FF6B35, inset 0 0 50px rgba(255, 107, 53, 0.6);
+        box-shadow: 0 0 80px #00FFFF, inset 0 0 50px rgba(0, 255, 255, 0.6);
       }
     }
     
@@ -2691,23 +2691,23 @@
     <div class="lock-power-modal" id="lockPowerModal">
       <div class="lock-power-content">
         <div class="lock-power-header">
-          <h2>🔐 EL PODER DEL CANDADO</h2>
-          <div class="lock-power-subtitle">¡Has desbloqueado el poder del candado!</div>
+          <h2>🦑 EL PODER DEL CALAMAR</h2>
+          <div class="lock-power-subtitle">¡Has desbloqueado la inmunidad suprema!</div>
         </div>
         
         <div class="lock-animation-container">
           <div class="lock-effects" id="lockEffects"></div>
-          <div class="lock-symbol">🔐</div>
+          <div class="lock-symbol">🦑</div>
         </div>
         
         <div class="lock-power-message">
-          <div class="lock-title">PODER DEL CANDADO</div>
-          <div class="lock-description">Puedes bloquear cualquier acción de otro jugador durante 30 segundos</div>
-          <div class="lock-warning">⚠️ Este poder solo se puede usar una vez por sesión</div>
+          <div class="lock-title">INMUNIDAD TOTAL</div>
+          <div class="lock-description">Eres inmune en cualquier juego, excepto el juego final</div>
+          <div class="lock-warning">⚠️ La inmunidad no aplica en el último desafío</div>
         </div>
         
         <div class="lock-power-footer">
-          <button class="lock-power-btn" id="closeLockPower">¡ACTIVAR PODER!</button>
+          <button class="lock-power-btn" id="closeLockPower">¡ACTIVAR INMUNIDAD!</button>
         </div>
       </div>
     </div>
@@ -4022,8 +4022,8 @@
       
       // Add visual feedback for each click
       lockIcon.style.transform = 'scale(1.3)';
-      lockIcon.style.textShadow = '0 0 30px #FF6B35, 0 0 60px #FF6B35';
-      lockIcon.style.color = '#FF6B35';
+      lockIcon.style.textShadow = '0 0 30px #00FFFF, 0 0 60px #00FFFF';
+      lockIcon.style.color = '#00FFFF';
       
       setTimeout(() => {
         lockIcon.style.transform = '';
@@ -4051,11 +4051,11 @@
     function createLockParticles() {
       const lockEffects = document.getElementById('lockEffects');
       
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 15; i++) {
         setTimeout(() => {
           const particle = document.createElement('div');
           particle.className = 'lock-particle';
-          particle.textContent = '🔐';
+          particle.textContent = '🫧';
           particle.style.left = Math.random() * 100 + '%';
           particle.style.top = Math.random() * 100 + '%';
           
@@ -4066,8 +4066,8 @@
             if (particle.parentNode) {
               particle.parentNode.removeChild(particle);
             }
-          }, 2500);
-        }, i * 200);
+          }, 3000);
+        }, i * 150);
       }
     }
     

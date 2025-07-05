@@ -5686,37 +5686,61 @@
       
       // Easter Egg: Mostrar "6" pequeño en el título si tiene más de 50,000 monedas
       const titleElement = document.querySelector('.description.glitch-title');
+      console.log('🔍 Buscando elemento del título:', titleElement);
+      
       if (titleElement) {
+        console.log('✅ Elemento del título encontrado');
+        console.log('💰 Monedas actuales:', totalCoins);
+        
         if (totalCoins >= 50000) {
+          console.log('🎯 Condición cumplida: más de 50,000 monedas');
+          
           // Agregar el "6" pequeño si no existe
           if (!titleElement.querySelector('.easter-egg-6')) {
+            console.log('➕ Creando Easter Egg "6"');
+            
             const easterEgg6 = document.createElement('span');
             easterEgg6.className = 'easter-egg-6';
             easterEgg6.textContent = '6';
             easterEgg6.style.cssText = `
               position: absolute;
-              top: 2px;
-              right: 5px;
-              font-size: 8px;
+              top: 5px;
+              right: 10px;
+              font-size: 12px;
               color: #00ff7f;
-              opacity: 0.7;
+              opacity: 1;
               font-weight: bold;
-              text-shadow: 0 0 3px #00ff7f;
+              text-shadow: 0 0 5px #00ff7f;
               pointer-events: none;
-              z-index: 10;
+              z-index: 9999;
+              background: rgba(0, 0, 0, 0.8);
+              padding: 2px 4px;
+              border-radius: 3px;
+              border: 1px solid #00ff7f;
             `;
+            
+            // Asegurar que el elemento padre tenga position relative
             titleElement.style.position = 'relative';
+            titleElement.style.overflow = 'visible';
+            
             titleElement.appendChild(easterEgg6);
-            console.log('🥚 Easter Egg "6" agregado al título - jugador tiene', totalCoins, 'monedas');
+            console.log('✅ Easter Egg "6" agregado al título - jugador tiene', totalCoins, 'monedas');
+            console.log('🎨 Estilos aplicados:', easterEgg6.style.cssText);
+          } else {
+            console.log('ℹ️ Easter Egg "6" ya existe');
           }
         } else {
+          console.log('❌ No cumple condición: menos de 50,000 monedas');
+          
           // Remover el "6" si existe y no tiene suficientes monedas
           const existingEasterEgg = titleElement.querySelector('.easter-egg-6');
           if (existingEasterEgg) {
             existingEasterEgg.remove();
-            console.log('🥚 Easter Egg "6" removido del título - jugador tiene', totalCoins, 'monedas');
+            console.log('🗑️ Easter Egg "6" removido del título - jugador tiene', totalCoins, 'monedas');
           }
         }
+      } else {
+        console.log('❌ Elemento del título no encontrado');
       }
     }
 

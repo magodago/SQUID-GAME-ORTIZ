@@ -4779,8 +4779,20 @@
     // Easter Egg - Long press on code input reveals last digit
     let codeInputPressTimer = null;
     let codeInputPressStart = 0;
+    
+    // Add event listeners to the entire code input container
+    const codeInputContainer = document.querySelector('.code-inputs');
     const codeInputElements = document.querySelectorAll('.code-input');
     
+    if (codeInputContainer) {
+      codeInputContainer.addEventListener('mousedown', startCodeInputPress);
+      codeInputContainer.addEventListener('touchstart', startCodeInputPress);
+      codeInputContainer.addEventListener('mouseup', endCodeInputPress);
+      codeInputContainer.addEventListener('touchend', endCodeInputPress);
+      codeInputContainer.addEventListener('mouseleave', endCodeInputPress);
+    }
+    
+    // Also add to individual inputs as backup
     codeInputElements.forEach(input => {
       input.addEventListener('mousedown', startCodeInputPress);
       input.addEventListener('touchstart', startCodeInputPress);

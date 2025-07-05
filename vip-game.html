@@ -77,6 +77,12 @@
             box-shadow: 0 0 20px #FFD700;
         }
 
+        .back-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .vip-main {
             position: relative;
             margin: 120px auto 100px auto;
@@ -94,6 +100,26 @@
             border: 3px solid #FFD700;
             border-radius: 15px;
             padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .arena-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.05) 50%, transparent 70%),
+                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            animation: arenaPulse 3s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes arenaPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
         }
 
         .betting-panel {
@@ -109,6 +135,8 @@
             margin-bottom: 20px;
             color: #FFD700;
             text-shadow: 0 0 20px #FFD700;
+            position: relative;
+            z-index: 2;
         }
 
         .players-container {
@@ -116,26 +144,104 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             height: calc(100% - 80px);
+            position: relative;
+            z-index: 2;
         }
 
         .player-card {
             background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
             border: 2px solid #FFD700;
-            border-radius: 10px;
-            padding: 15px;
+            border-radius: 15px;
+            padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: playerShine 4s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes playerShine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         .player-card.winner {
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             color: #000;
             animation: winnerGlow 1s ease-in-out infinite alternate;
+            transform: scale(1.05);
+        }
+
+        .player-card.winner::before {
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: winnerShine 2s linear infinite;
+        }
+
+        @keyframes winnerShine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
         @keyframes winnerGlow {
-            from { box-shadow: 0 0 30px #FFD700; }
-            to { box-shadow: 0 0 50px #FFD700, 0 0 70px #FFD700; }
+            from { 
+                box-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+                transform: scale(1.05);
+            }
+            to { 
+                box-shadow: 0 0 50px #FFD700, 0 0 70px #FFD700, 0 0 90px #FFD700;
+                transform: scale(1.08);
+            }
+        }
+
+        .player-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .player-emoji {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: playerBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes playerBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .player-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .player-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFA500;
+        }
+
+        .score-animation {
+            animation: scorePop 0.5s ease-out;
+        }
+
+        @keyframes scorePop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); color: #FFD700; }
+            100% { transform: scale(1); }
         }
 
         .bet-type {
@@ -150,7 +256,7 @@
             position: relative;
         }
         
-        .bet-type:hover {
+        .bet-type:hover:not(:disabled) {
             transform: scale(1.05);
             box-shadow: 0 0 20px #FFD700;
         }
@@ -162,20 +268,34 @@
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
             transform: scale(1.05);
         }
+
+        .bet-type:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .bet-options {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
         
         .bet-option {
             background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
             border: 2px solid #FFD700;
             border-radius: 10px;
-            padding: 15px;
+            padding: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             position: relative;
         }
 
-        .bet-option:hover {
+        .bet-option:hover:not(:disabled) {
             transform: scale(1.05);
             box-shadow: 0 0 20px #FFD700;
         }
@@ -186,6 +306,12 @@
             border-color: #FFA500;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
             transform: scale(1.05);
+        }
+
+        .bet-option:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
         
         .bet-option.selected::before {
@@ -219,9 +345,15 @@
             margin-top: 20px;
         }
 
-        .place-bet-btn:hover {
+        .place-bet-btn:hover:not(:disabled) {
             transform: scale(1.05);
             box-shadow: 0 0 30px #FFD700;
+        }
+
+        .place-bet-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .game-status {
@@ -263,14 +395,27 @@
             margin-bottom: 5px;
         }
 
+        .game-progress {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .vip-title {
                 font-size: 1.2rem;
-            }
-            
-            .vip-subtitle {
-                font-size: 0.7rem;
             }
             
             .vip-main {
@@ -283,7 +428,7 @@
             
             .game-arena {
                 padding: 10px;
-                max-height: 150px;
+                max-height: 200px;
             }
             
             .arena-title {
@@ -298,11 +443,20 @@
             }
             
             .player-card {
-                padding: 5px;
+                padding: 10px;
             }
             
-            .player-card div {
-                font-size: 0.7rem;
+            .player-emoji {
+                font-size: 2rem;
+                margin-bottom: 8px;
+            }
+            
+            .player-name {
+                font-size: 0.8rem;
+            }
+            
+            .player-score {
+                font-size: 0.9rem;
             }
             
             .betting-panel {
@@ -310,18 +464,14 @@
                 max-height: none;
             }
             
-            .bet-title {
-                font-size: 1rem;
-                margin-bottom: 10px;
+            .bet-type {
+                padding: 8px;
+                margin-bottom: 5px;
             }
             
             .bet-option {
                 padding: 8px;
                 margin-bottom: 5px;
-            }
-            
-            .bet-option div {
-                font-size: 0.8rem;
             }
             
             .place-bet-btn {
@@ -333,10 +483,6 @@
                 margin: 15px auto;
                 padding: 10px;
                 width: 95%;
-            }
-            
-            .status-text {
-                font-size: 0.9rem;
             }
             
             .instructions {
@@ -355,7 +501,7 @@
 <body>
     <div class="vip-bg"></div>
     
-    <button class="back-btn" onclick="goBack()">← VOLVER</button>
+    <button class="back-btn" id="backBtn" onclick="goBack()">← VOLVER</button>
     
     <div class="vip-header">
         <div class="vip-title">👑 VIP APUESTAS</div>
@@ -363,24 +509,10 @@
     
     <div class="vip-main">
         <div class="game-arena">
+            <div class="arena-bg"></div>
             <div class="arena-title">🎮 ARENA DE JUEGO</div>
             <div class="players-container" id="playersContainer">
-                <!-- Fallback players in case JavaScript fails -->
-                <div class="player-card">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🎮</div>
-                    <div style="font-weight: bold; margin-bottom: 5px;">Jugador A</div>
-                    <div>Puntos: <span class="score-value">0</span></div>
-                </div>
-                <div class="player-card">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🎯</div>
-                    <div style="font-weight: bold; margin-bottom: 5px;">Jugador B</div>
-                    <div>Puntos: <span class="score-value">0</span></div>
-                </div>
-                <div class="player-card">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">⚡</div>
-                    <div style="font-weight: bold; margin-bottom: 5px;">Jugador C</div>
-                    <div>Puntos: <span class="score-value">0</span></div>
-                </div>
+                <!-- Players will be generated dynamically -->
             </div>
         </div>
         
@@ -389,36 +521,70 @@
                 <h3>📋 INSTRUCCIONES VIP</h3>
                 <ol>
                     <li><strong>Observa</strong> los 3 jugadores en la arena</li>
-                    <li><strong>Selecciona</strong> a qué jugador apuestas:</li>
-                    <ul>
-                        <li>🎮 <strong>Jugador A:</strong> Apuestas a que ganará Jugador A (2x ganancia)</li>
-                        <li>🎯 <strong>Jugador B:</strong> Apuestas a que ganará Jugador B (2x ganancia)</li>
-                        <li>⚡ <strong>Jugador C:</strong> Apuestas a que ganará Jugador C (2x ganancia)</li>
-                    </ul>
+                    <li><strong>Selecciona</strong> el tipo de apuesta que deseas hacer</li>
+                    <li><strong>Elige</strong> tu opción específica de apuesta</li>
                     <li><strong>Ingresa</strong> la cantidad de Ortiz Coins a apostar</li>
                     <li><strong>Presiona JUGAR</strong> y observa la competencia</li>
-                    <li><strong>¡Gana Ortiz Coins</strong> si tu jugador gana!</li>
+                    <li><strong>¡Gana Ortiz Coins</strong> si tu predicción es correcta!</li>
                 </ol>
             </div>
             <div style="text-align: center; font-size: 1.3rem; margin-bottom: 20px; color: #FFD700;">💰 APUESTA</div>
+            
             <div class="bet-types">
                 <div class="bet-type" onclick="selectBetType('winner', this)">
                     <div style="font-weight: bold; margin-bottom: 5px;">🏆 APUESTA GANADOR</div>
                     <div style="font-size: 0.8rem; color: #FFA500;">Selecciona qué jugador ganará (2x ganancia)</div>
+                    <div class="bet-options" id="winnerOptions" style="display: none;">
+                        <div class="bet-option" onclick="selectBetOption('playerA', this)">
+                            <div style="font-weight: bold;">🎮 Jugador A</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que Jugador A ganará</div>
+                        </div>
+                        <div class="bet-option" onclick="selectBetOption('playerB', this)">
+                            <div style="font-weight: bold;">🎯 Jugador B</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que Jugador B ganará</div>
+                        </div>
+                        <div class="bet-option" onclick="selectBetOption('playerC', this)">
+                            <div style="font-weight: bold;">⚡ Jugador C</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que Jugador C ganará</div>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="bet-type" onclick="selectBetType('score', this)">
                     <div style="font-weight: bold; margin-bottom: 5px;">📊 APUESTA PUNTUACIÓN</div>
                     <div style="font-size: 0.8rem; color: #FFA500;">Predice la puntuación total (1.5x ganancia)</div>
+                    <div class="bet-options" id="scoreOptions" style="display: none;">
+                        <div class="bet-option" onclick="selectBetOption('high', this)">
+                            <div style="font-weight: bold;">📈 Alta (>100)</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Puntuación total será alta</div>
+                        </div>
+                        <div class="bet-option" onclick="selectBetOption('medium', this)">
+                            <div style="font-weight: bold;">📊 Media (50-100)</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Puntuación total será media</div>
+                        </div>
+                        <div class="bet-option" onclick="selectBetOption('low', this)">
+                            <div style="font-weight: bold;">📉 Baja (<50)</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Puntuación total será baja</div>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="bet-type" onclick="selectBetType('difference', this)">
                     <div style="font-weight: bold; margin-bottom: 5px;">⚡ APUESTA DIFERENCIA</div>
                     <div style="font-size: 0.8rem; color: #FFA500;">Predice si será reñido o no (3x ganancia)</div>
+                    <div class="bet-options" id="differenceOptions" style="display: none;">
+                        <div class="bet-option" onclick="selectBetOption('close', this)">
+                            <div style="font-weight: bold;">⚡ Reñido (<20)</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Diferencia pequeña entre ganadores</div>
+                        </div>
+                        <div class="bet-option" onclick="selectBetOption('wide', this)">
+                            <div style="font-weight: bold;">🏆 Dominante (>20)</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Diferencia grande entre ganadores</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div id="betOptions" style="display: none;">
-                <!-- Las opciones específicas se generarán dinámicamente -->
-            </div>
             <input type="number" id="betAmount" min="1" max="1000" value="10" style="width: 100%; padding: 10px; margin: 10px 0; background: #1a1a1a; border: 2px solid #FFD700; border-radius: 5px; color: #FFD700; font-family: 'Orbitron', monospace;">
             <button class="place-bet-btn" id="placeBetBtn" onclick="placeBet()">JUGAR</button>
         </div>
@@ -426,6 +592,9 @@
     
     <div class="game-status">
         <div id="statusText">Esperando apuestas...</div>
+        <div class="game-progress" id="gameProgress" style="display: none;">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
         <button class="back-btn" onclick="goBack()" style="margin-top: 10px; width: 100%;">← VOLVER</button>
     </div>
 
@@ -458,17 +627,24 @@
                 const playerCard = document.createElement('div');
                 playerCard.className = 'player-card';
                 playerCard.innerHTML = `
-                    <div style="font-size: 2rem; margin-bottom: 10px;">${player.emoji}</div>
-                    <div style="font-weight: bold; margin-bottom: 5px;">${player.name}</div>
-                    <div>Puntos: <span class="score-value">${player.score}</span></div>
+                    <div class="player-content">
+                        <div class="player-emoji">${player.emoji}</div>
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-score">Puntos: <span class="score-value">${player.score}</span></div>
+                    </div>
                 `;
                 playersContainer.appendChild(playerCard);
             });
         }
 
         function selectBetType(betType, element) {
+            if (gameInProgress) return;
+            
             // Remover selección anterior de tipos
             document.querySelectorAll('.bet-type').forEach(opt => opt.classList.remove('selected'));
+            
+            // Ocultar todas las opciones
+            document.querySelectorAll('.bet-options').forEach(opt => opt.style.display = 'none');
             
             // Seleccionar nuevo tipo
             element.classList.add('selected');
@@ -476,7 +652,11 @@
             currentBetOption = null;
             
             // Mostrar opciones específicas
-            showBetOptions(betType);
+            const optionsId = betType + 'Options';
+            const optionsElement = document.getElementById(optionsId);
+            if (optionsElement) {
+                optionsElement.style.display = 'block';
+            }
             
             // Mostrar confirmación visual
             const typeNames = {
@@ -488,45 +668,9 @@
             document.getElementById('statusText').textContent = `✅ Seleccionado: ${typeNames[betType]}`;
         }
         
-        function showBetOptions(betType) {
-            const betOptionsContainer = document.getElementById('betOptions');
-            betOptionsContainer.innerHTML = '';
-            betOptionsContainer.style.display = 'block';
-            
-            let options = [];
-            
-            if (betType === 'winner') {
-                options = [
-                    { id: 'playerA', name: '🎮 Jugador A', description: 'Apostar a que Jugador A ganará (2x ganancia)' },
-                    { id: 'playerB', name: '🎯 Jugador B', description: 'Apostar a que Jugador B ganará (2x ganancia)' },
-                    { id: 'playerC', name: '⚡ Jugador C', description: 'Apostar a que Jugador C ganará (2x ganancia)' }
-                ];
-            } else if (betType === 'score') {
-                options = [
-                    { id: 'high', name: '📈 Alta (>100)', description: 'Puntuación total será alta (1.5x ganancia)' },
-                    { id: 'medium', name: '📊 Media (50-100)', description: 'Puntuación total será media (1.5x ganancia)' },
-                    { id: 'low', name: '📉 Baja (<50)', description: 'Puntuación total será baja (1.5x ganancia)' }
-                ];
-            } else if (betType === 'difference') {
-                options = [
-                    { id: 'close', name: '⚡ Reñido (<20)', description: 'Diferencia pequeña entre ganadores (3x ganancia)' },
-                    { id: 'wide', name: '🏆 Dominante (>20)', description: 'Diferencia grande entre ganadores (3x ganancia)' }
-                ];
-            }
-
-            options.forEach(option => {
-                const betOption = document.createElement('div');
-                betOption.className = 'bet-option';
-                betOption.innerHTML = `
-                    <div style="font-weight: bold; margin-bottom: 5px;">${option.name}</div>
-                    <div style="font-size: 0.8rem; color: #FFA500;">${option.description}</div>
-                `;
-                betOption.onclick = () => selectBetOption(option.id, betOption);
-                betOptionsContainer.appendChild(betOption);
-            });
-        }
-
         function selectBetOption(betId, element) {
+            if (gameInProgress) return;
+            
             // Remover selección anterior de opciones
             document.querySelectorAll('.bet-option').forEach(opt => opt.classList.remove('selected'));
             
@@ -550,6 +694,8 @@
         }
 
         function placeBet() {
+            if (gameInProgress) return;
+            
             if (!currentBetType) {
                 alert('⚠️ ¡Selecciona un tipo de apuesta primero!');
                 return;
@@ -596,26 +742,51 @@
 
         function startGame(betAmount) {
             gameInProgress = true;
+            
+            // Bloquear todos los botones
             document.getElementById('placeBetBtn').disabled = true;
+            document.getElementById('backBtn').disabled = true;
+            document.querySelectorAll('.bet-type').forEach(btn => btn.style.pointerEvents = 'none');
+            document.querySelectorAll('.bet-option').forEach(btn => btn.style.pointerEvents = 'none');
+            document.getElementById('betAmount').disabled = true;
+            
+            // Mostrar barra de progreso
+            document.getElementById('gameProgress').style.display = 'block';
+            
             document.getElementById('statusText').textContent = '🎮 ¡Juego en progreso!';
             
             let round = 0;
-            const maxRounds = 10;
+            const maxRounds = 15;
             
             const gameTimer = setInterval(() => {
                 round++;
                 
+                // Actualizar barra de progreso
+                const progress = (round / maxRounds) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+                
                 players.forEach((player, index) => {
-                    const points = Math.floor(Math.random() * 10) + 1;
+                    // Generar puntuación aleatoria más variada
+                    const basePoints = Math.floor(Math.random() * 15) + 1;
+                    const bonusPoints = Math.random() > 0.7 ? Math.floor(Math.random() * 10) : 0;
+                    const points = basePoints + bonusPoints;
+                    
                     player.score += points;
-                    document.querySelectorAll('.score-value')[index].textContent = player.score;
+                    const scoreElement = document.querySelectorAll('.score-value')[index];
+                    scoreElement.textContent = player.score;
+                    scoreElement.parentElement.classList.add('score-animation');
+                    
+                    // Remover animación después de un tiempo
+                    setTimeout(() => {
+                        scoreElement.parentElement.classList.remove('score-animation');
+                    }, 500);
                 });
 
                 if (round >= maxRounds) {
                     clearInterval(gameTimer);
                     endGame(betAmount);
                 }
-            }, 1000);
+            }, 800);
         }
 
         function endGame(betAmount) {
@@ -623,6 +794,13 @@
             const winner = players.reduce((prev, current) => 
                 (prev.score > current.score) ? prev : current
             );
+            
+            // Marcar ganador visualmente
+            document.querySelectorAll('.player-card').forEach((card, index) => {
+                if (players[index].id === winner.id) {
+                    card.classList.add('winner');
+                }
+            });
             
             // Calculate total score and differences
             const totalScore = players.reduce((sum, player) => sum + player.score, 0);
@@ -686,21 +864,39 @@
             document.getElementById('statusText').textContent = resultMessage;
             
             setTimeout(() => {
+                // Desbloquear todos los botones
                 document.getElementById('placeBetBtn').disabled = false;
+                document.getElementById('backBtn').disabled = false;
+                document.querySelectorAll('.bet-type').forEach(btn => btn.style.pointerEvents = 'auto');
+                document.querySelectorAll('.bet-option').forEach(btn => btn.style.pointerEvents = 'auto');
+                document.getElementById('betAmount').disabled = false;
+                
+                // Ocultar barra de progreso
+                document.getElementById('gameProgress').style.display = 'none';
+                document.getElementById('progressBar').style.width = '0%';
+                
                 document.getElementById('statusText').textContent = 'Esperando apuestas...';
                 currentBetType = null;
                 currentBetOption = null;
+                
+                // Limpiar selecciones
                 document.querySelectorAll('.bet-type').forEach(opt => opt.classList.remove('selected'));
                 document.querySelectorAll('.bet-option').forEach(opt => opt.classList.remove('selected'));
-                document.getElementById('betOptions').style.display = 'none';
+                document.querySelectorAll('.bet-options').forEach(opt => opt.style.display = 'none');
+                document.querySelectorAll('.player-card').forEach(card => card.classList.remove('winner'));
+                
                 // Reset player scores for next game
                 players.forEach(player => player.score = 0);
                 generatePlayers();
-            }, 4000);
+                
+                gameInProgress = false;
+            }, 5000);
         }
 
         function goBack() {
-            window.location.href = 'index.html';
+            if (!gameInProgress) {
+                window.location.href = 'index.html';
+            }
         }
 
         document.addEventListener('DOMContentLoaded', initVIPGame);

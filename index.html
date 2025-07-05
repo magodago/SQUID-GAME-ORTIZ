@@ -7420,6 +7420,11 @@
       // Reset coins to 0
       localStorage.setItem('totalOrtizCoins', '0');
       
+      // Hide ALL IN button permanently
+      const allInContainer = document.getElementById('allInContainer');
+      allInContainer.style.display = 'none';
+      allInContainer.classList.remove('visible');
+      
       // Update display
       loadTotalCoins();
       
@@ -7531,6 +7536,12 @@
       
       // Update coins
       localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      
+      // Hide Front Man button permanently
+      const frontmanContainer = document.getElementById('frontmanCallContainer');
+      frontmanContainer.style.display = 'none';
+      frontmanContainer.classList.remove('visible');
+      
       loadTotalCoins();
       
       // Show result message
@@ -7553,6 +7564,11 @@
     function executeFrontManNo() {
       console.log('❌ Front Man NO - player is smart');
       
+      // Hide Front Man button permanently
+      const frontmanContainer = document.getElementById('frontmanCallContainer');
+      frontmanContainer.style.display = 'none';
+      frontmanContainer.classList.remove('visible');
+      
       // Show result message
       const modal = document.getElementById('frontmanModal');
       modal.innerHTML = `
@@ -7567,10 +7583,6 @@
       // Add close button listener
       document.getElementById('frontmanCloseBtn').addEventListener('click', () => {
         closeFrontManModal();
-        // Hide the Front Man button permanently
-        const frontmanContainer = document.getElementById('frontmanCallContainer');
-        frontmanContainer.style.display = 'none';
-        frontmanContainer.classList.remove('visible');
       });
     }
     
@@ -7689,6 +7701,11 @@
       };
       
       const modal = document.getElementById('playerFightModal');
+      
+      // Hide Player Fight button permanently
+      const playerFightContainer = document.getElementById('playerFightContainer');
+      playerFightContainer.style.display = 'none';
+      playerFightContainer.classList.remove('visible');
       
       if (result === 'empate') {
         // Tie - no one wins or loses

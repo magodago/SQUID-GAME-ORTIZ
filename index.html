@@ -4397,32 +4397,32 @@
       console.log('Checking fusion sequence for:', target.textContent, target.className, target.id);
       
       // Check for medal (soldier icon) - 🎖️
-      if (target.textContent === '🎖️' || target.classList.contains('soldier-icon')) {
+      if (target.textContent === '🎖️') {
         console.log('Medal detected!');
         addToFusionSequence('medal', now);
       }
       // Check for player (soldier name display container)
-      else if (target.closest('#soldierNameDisplay') || target.classList.contains('soldier-name')) {
+      else if (target.closest('#soldierNameDisplay')) {
         console.log('Player container detected!');
         addToFusionSequence('player', now);
       }
       // Check for player name (soldier name text)
-      else if (target.id === 'soldierNameText' || target.closest('#soldierNameText')) {
+      else if (target.id === 'soldierNameText') {
         console.log('Player name detected!');
         addToFusionSequence('playerName', now);
       }
       // Check for total coins number
-      else if (target.id === 'totalCoins' || target.closest('#totalCoins')) {
+      else if (target.id === 'totalCoins') {
         console.log('Total coins number detected!');
         addToFusionSequence('totalCoins', now);
       }
       // Check for "COINS" text
-      else if (target.textContent.includes('COINS') || target.classList.contains('coins-text')) {
+      else if (target.textContent && target.textContent.includes('COINS')) {
         console.log('COINS text detected!');
         addToFusionSequence('coins', now);
       }
       // Check for coin emoji - 🪙
-      else if (target.textContent === '🪙' || target.classList.contains('coin-icon')) {
+      else if (target.textContent === '🪙') {
         console.log('Coin emoji detected!');
         addToFusionSequence('coinEmoji', now);
       }
@@ -4773,6 +4773,30 @@
         closeFusionPowerModal();
       }
     });
+    
+    // Test function for fusion power (temporary)
+    function testFusionPower() {
+      console.log('Testing fusion power...');
+      activateFusionPower();
+    }
+    
+    // Add test button (temporary)
+    setTimeout(() => {
+      const testBtn = document.createElement('button');
+      testBtn.textContent = 'TEST FUSION';
+      testBtn.style.position = 'fixed';
+      testBtn.style.top = '10px';
+      testBtn.style.left = '10px';
+      testBtn.style.zIndex = '10000';
+      testBtn.style.background = '#9933ff';
+      testBtn.style.color = 'white';
+      testBtn.style.border = 'none';
+      testBtn.style.padding = '10px';
+      testBtn.style.borderRadius = '5px';
+      testBtn.style.cursor = 'pointer';
+      testBtn.onclick = testFusionPower;
+      document.body.appendChild(testBtn);
+    }, 1000);
     
     // Easter Egg 3 - Squid Power Detection
     let clickedLetters = new Set();

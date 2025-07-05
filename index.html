@@ -4556,33 +4556,29 @@
     }
     
     function addToFusionSequence(element, timestamp) {
-      // Only add if not already in sequence
-      if (!fusionSequence.find(item => item.element === element)) {
-        fusionSequence.push({ element, timestamp });
-        console.log('✅ Added to fusion sequence:', element);
-        console.log('📋 Current fusion sequence:', fusionSequence.map(item => item.element));
+      // Add to sequence (allow multiple clicks on same element)
+      fusionSequence.push({ element, timestamp });
+      console.log('✅ Added to fusion sequence:', element);
+      console.log('📋 Current fusion sequence:', fusionSequence.map(item => item.element));
+      
+      // Check if sequence is complete
+      if (fusionSequence.length === 6) {
+        const expectedSequence = ['triangle', 'triangle', 'triangle', 'triangle', 'triangle', 'triangle'];
+        const actualSequence = fusionSequence.map(item => item.element);
         
-        // Check if sequence is complete
-        if (fusionSequence.length === 6) {
-          const expectedSequence = ['triangle', 'triangle', 'triangle', 'triangle', 'triangle', 'triangle'];
-          const actualSequence = fusionSequence.map(item => item.element);
-          
-          console.log('🎯 Expected sequence:', expectedSequence);
-          console.log('🎯 Actual sequence:', actualSequence);
-          
-          if (JSON.stringify(expectedSequence) === JSON.stringify(actualSequence)) {
-            console.log('🎉 Fusion power sequence completed!');
-            activateFusionPower();
-            fusionSequence = []; // Reset sequence
-          } else {
-            console.log('❌ Fusion sequence incorrect, resetting');
-            console.log('❌ Expected:', expectedSequence);
-            console.log('❌ Got:', actualSequence);
-            fusionSequence = [];
-          }
+        console.log('🎯 Expected sequence:', expectedSequence);
+        console.log('🎯 Actual sequence:', actualSequence);
+        
+        if (JSON.stringify(expectedSequence) === JSON.stringify(actualSequence)) {
+          console.log('🎉 Fusion power sequence completed!');
+          activateFusionPower();
+          fusionSequence = []; // Reset sequence
+        } else {
+          console.log('❌ Fusion sequence incorrect, resetting');
+          console.log('❌ Expected:', expectedSequence);
+          console.log('❌ Got:', actualSequence);
+          fusionSequence = [];
         }
-      } else {
-        console.log('⚠️ Element already in sequence:', element);
       }
     }
     

@@ -2806,15 +2806,15 @@
   }
 
   .rps-btn {
-    padding: 20px;
+    padding: 15px;
     border: 3px solid #ff00ff;
     border-radius: 15px;
-    font-size: 3rem;
+    font-size: 2rem;
     background: linear-gradient(45deg, #ff00ff, #cc00cc);
     color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-width: 100px;
+    min-width: 80px;
     text-shadow: 0 0 10px #ffffff;
     box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
   }
@@ -7719,12 +7719,15 @@
               <p>¡Los has derrotado! Mantienes tus monedas.</p>
             </div>
             <button class="player-fight-close-btn" id="playerFightCloseBtn">🏆 ¡VENCEDOR!</button>
+            <button class="player-fight-close-btn" id="playerFightBackBtn" style="margin-left: 10px; background: linear-gradient(45deg, #666666, #444444);">🔙 VOLVER</button>
           </div>
         `;
       } else {
-        // Player loses - lose all coins
+        // Player loses - lose half coins
         const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        localStorage.setItem('totalOrtizCoins', '0');
+        const lostCoins = Math.floor(currentCoins / 2);
+        const remainingCoins = currentCoins - lostCoins;
+        localStorage.setItem('totalOrtizCoins', remainingCoins.toString());
         loadTotalCoins();
         
         modal.innerHTML = `
@@ -7733,16 +7736,28 @@
             <div class="fight-result fight-lose">
               <p>Tu elección: ${choiceEmojis[playerChoice]}</p>
               <p>Jugadores: ${choiceEmojis[computerChoice]}</p>
-              <p>¡Un grupo de jugadores te ha robado todo!</p>
-              <p>Perdiste ${currentCoins.toLocaleString()} monedas</p>
+              <p>¡Un grupo de jugadores te ha robado la mitad!</p>
+              <p>Perdiste ${lostCoins.toLocaleString()} monedas</p>
+              <p>Te quedan ${remainingCoins.toLocaleString()} monedas</p>
             </div>
             <button class="player-fight-close-btn" id="playerFightCloseBtn">💀 ¡ROBADO!</button>
+            <button class="player-fight-close-btn" id="playerFightBackBtn" style="margin-left: 10px; background: linear-gradient(45deg, #666666, #444444);">🔙 VOLVER</button>
           </div>
         `;
       }
       
       // Add close button listener
       document.getElementById('playerFightCloseBtn').addEventListener('click', () => {
+        closePlayerFightModal();
+      });
+      
+      // Add back button listener
+      document.getElementById('playerFightBackBtn').addEventListener('click', () => {
+        closePlayerFightModal();
+      });
+      
+      // Add back button listener
+      document.getElementById('playerFightBackBtn').addEventListener('click', () => {
         closePlayerFightModal();
       });
     }

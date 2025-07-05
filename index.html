@@ -2503,6 +2503,38 @@
       }
     }
     
+    /* Daily Reward Container */
+    .daily-reward-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    
+    .daily-reward-container .envelope-btn {
+      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+      border: 2px solid #FF6B35;
+      border-radius: 15px;
+      padding: 0.8rem 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px #FF6B35;
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    
+    .daily-reward-container .envelope-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #FF6B35;
+    }
+    
+    .daily-reward-container .envelope-btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
     /* Daily Reward Modal Styles */
     .daily-reward-modal {
       display: none;
@@ -2520,10 +2552,10 @@
     .daily-reward-content {
       background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
       border: 3px solid #FF6B35;
-      border-radius: 20px;
-      padding: 2rem;
+      border-radius: 15px;
+      padding: 1.5rem;
       text-align: center;
-      max-width: 400px;
+      max-width: 300px;
       width: 90%;
       position: relative;
       box-shadow: 0 0 50px #FF6B35;
@@ -2531,21 +2563,21 @@
     
     .daily-reward-header h2 {
       color: #FF6B35;
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
+      font-size: 1.4rem;
+      margin-bottom: 0.3rem;
       text-shadow: 0 0 20px #FF6B35;
     }
     
     .daily-reward-subtitle {
       color: #FFD700;
-      font-size: 1rem;
-      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
     }
     
     .daily-reward-animation {
       position: relative;
-      height: 120px;
-      margin: 1.5rem 0;
+      height: 80px;
+      margin: 1rem 0;
       overflow: hidden;
     }
     
@@ -2586,7 +2618,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 3rem;
+      font-size: 2.5rem;
       color: #FF6B35;
       text-shadow: 0 0 30px #FF6B35;
       animation: rewardSymbolPulse 1.5s infinite alternate;
@@ -2603,34 +2635,34 @@
     
     .reward-title {
       color: #FF6B35;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: bold;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
       text-shadow: 0 0 15px #FF6B35;
     }
     
     .reward-amount {
       color: #FFD700;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: bold;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.3rem;
       text-shadow: 0 0 20px #FFD700;
     }
     
     .reward-description {
       color: #ccc;
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
     }
     
     .daily-reward-footer .daily-reward-btn {
       background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
       color: #fff;
       border: 2px solid #FF6B35;
-      padding: 0.8rem 2rem;
-      font-size: 1.1rem;
+      padding: 0.6rem 1.5rem;
+      font-size: 1rem;
       font-weight: bold;
-      border-radius: 15px;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s;
       box-shadow: 0 0 20px #FF6B35;
@@ -3477,6 +3509,15 @@
     </div>
     <div class="typewriter" id="typewriter"><span></span></div>
     
+    <!-- Daily Reward Button -->
+    <div class="daily-reward-container">
+      <button class="envelope-btn daily-reward-btn" id="dailyRewardBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🎁 DIARIO</span>
+        </div>
+      </button>
+    </div>
+    
     <!-- Soldier Name Display -->
     <div class="soldier-name" id="soldierNameDisplay" style="display: none;">
       <span class="soldier-icon">🎖️</span>
@@ -3524,11 +3565,6 @@
       <button class="envelope-btn joker-btn" id="jokerBtn">
         <div class="envelope-content">
           <span class="envelope-text">JOKER PISTAS</span>
-        </div>
-      </button>
-      <button class="envelope-btn daily-reward-btn" id="dailyRewardBtn">
-        <div class="envelope-content">
-          <span class="envelope-text">🎁 DIARIO</span>
         </div>
       </button>
     </div>
@@ -6356,6 +6392,8 @@
       closeBtn.onclick = () => {
         claimDailyReward(rewardAmount);
         modal.style.display = 'none';
+        // Return to main page
+        window.location.href = 'index.html';
       };
     }
 
@@ -6402,6 +6440,11 @@
       
       // Show success message
       showDailyRewardMessage(`¡Recompensa cobrada! +${amount} monedas`);
+      
+      // Force Firebase sync
+      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
+        PlayerDataManager.safeAddCoins(amount, 'daily-reward');
+      }
     }
 
     function collectAndSyncPlayerData(rewardAmount) {

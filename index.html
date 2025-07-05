@@ -2503,6 +2503,144 @@
       }
     }
     
+    /* Daily Reward Modal Styles */
+    .daily-reward-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .daily-reward-content {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      border: 3px solid #FF6B35;
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      position: relative;
+      box-shadow: 0 0 50px #FF6B35;
+    }
+    
+    .daily-reward-header h2 {
+      color: #FF6B35;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 20px #FF6B35;
+    }
+    
+    .daily-reward-subtitle {
+      color: #FFD700;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .daily-reward-animation {
+      position: relative;
+      height: 120px;
+      margin: 1.5rem 0;
+      overflow: hidden;
+    }
+    
+    .reward-effects {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .reward-particle {
+      position: absolute;
+      font-size: 1.2rem;
+      color: #FF6B35;
+      text-shadow: 0 0 10px #FF6B35;
+      animation: rewardParticleFloat 2s ease-out forwards;
+    }
+    
+    @keyframes rewardParticleFloat {
+      0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0) rotate(0deg);
+      }
+      20% {
+        opacity: 1;
+        transform: translateY(30px) scale(1) rotate(10deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-30px) scale(1.2) rotate(360deg);
+      }
+    }
+    
+    .reward-symbol {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3rem;
+      color: #FF6B35;
+      text-shadow: 0 0 30px #FF6B35;
+      animation: rewardSymbolPulse 1.5s infinite alternate;
+    }
+    
+    @keyframes rewardSymbolPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.2) rotate(-10deg);
+      }
+    }
+    
+    .reward-title {
+      color: #FF6B35;
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 15px #FF6B35;
+    }
+    
+    .reward-amount {
+      color: #FFD700;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 20px #FFD700;
+    }
+    
+    .reward-description {
+      color: #ccc;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .daily-reward-footer .daily-reward-btn {
+      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+      color: #fff;
+      border: 2px solid #FF6B35;
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px #FF6B35;
+    }
+    
+    .daily-reward-footer .daily-reward-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #FF6B35;
+    }
+
     /* Plus One Coin Effect Styles */
     .plus-one-effect {
       position: fixed;
@@ -2938,6 +3076,39 @@
       box-shadow: 0 0 50px #000000, inset 0 0 30px rgba(0, 0, 0, 0.5);
     }
     
+    .daily-reward-btn {
+      background: linear-gradient(45deg, #FF6B35, #F7931E);
+      box-shadow: 0 0 30px #FF6B35, inset 0 0 20px rgba(255, 107, 53, 0.3);
+      animation: dailyRewardPulse 2s infinite;
+    }
+    
+    .daily-reward-btn:hover {
+      transform: scale(1.1) rotateY(5deg);
+      box-shadow: 0 0 50px #FF6B35, inset 0 0 30px rgba(255, 107, 53, 0.5);
+      animation: none;
+    }
+    
+    .daily-reward-btn.disabled {
+      background: linear-gradient(45deg, #666666, #999999);
+      box-shadow: 0 0 20px #666666, inset 0 0 15px rgba(102, 102, 102, 0.3);
+      animation: none;
+      cursor: not-allowed;
+    }
+    
+    .daily-reward-btn.disabled:hover {
+      transform: none;
+      box-shadow: 0 0 20px #666666, inset 0 0 15px rgba(102, 102, 102, 0.3);
+    }
+    
+    @keyframes dailyRewardPulse {
+      0%, 100% {
+        box-shadow: 0 0 30px #FF6B35, inset 0 0 20px rgba(255, 107, 53, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 50px #FF6B35, inset 0 0 30px rgba(255, 107, 53, 0.5);
+      }
+    }
+    
     .envelope-btn:active {
       transform: scale(0.95);
     }
@@ -3355,8 +3526,9 @@
           <span class="envelope-text">JOKER PISTAS</span>
         </div>
       </button>
+      <button class="envelope-btn daily-reward-btn" id="dailyRewardBtn">
         <div class="envelope-content">
-          <span class="envelope-text">FRONT MAN</span>
+          <span class="envelope-text">🎁 DIARIO</span>
         </div>
       </button>
     </div>
@@ -3513,6 +3685,31 @@
       </div>
     </div>
     
+    <!-- Daily Reward Modal -->
+    <div class="daily-reward-modal" id="dailyRewardModal">
+      <div class="daily-reward-content">
+        <div class="daily-reward-header">
+          <h2>🎁 RECOMPENSA DIARIA</h2>
+          <div class="daily-reward-subtitle">¡Tu recompensa diaria está lista!</div>
+        </div>
+        
+        <div class="daily-reward-animation">
+          <div class="reward-effects" id="rewardEffects"></div>
+          <div class="reward-symbol">🎁</div>
+        </div>
+        
+        <div class="daily-reward-message">
+          <div class="reward-title">¡MONEDAS GANADAS!</div>
+          <div class="reward-amount" id="rewardAmount">+25 ORTIZ COINS</div>
+          <div class="reward-description">Vuelve mañana para otra recompensa</div>
+        </div>
+        
+        <div class="daily-reward-footer">
+          <button class="daily-reward-btn" id="closeDailyReward">¡COBRAR!</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Fusion Power Modal -->
     <div class="fusion-power-modal" id="fusionPowerModal">
       <div class="fusion-power-content">
@@ -4526,6 +4723,76 @@
           window.location.href = 'joker-pistas.html';
         }, 2000);
       }, 1000);
+    });
+
+    // DAILY REWARD Button Event Listener
+    const dailyRewardBtn = document.getElementById('dailyRewardBtn');
+    dailyRewardBtn.addEventListener('click', () => {
+      console.log('DAILY REWARD seleccionado');
+      
+      // Check if daily reward is available
+      if (!isDailyRewardAvailable()) {
+        showDailyRewardMessage('Ya has cobrado tu recompensa diaria. Vuelve mañana.');
+        return;
+      }
+      
+      // Add dramatic effect
+      dailyRewardBtn.style.transform = 'scale(0.9) rotateY(5deg)';
+      dailyRewardBtn.style.boxShadow = '0 0 80px #FF6B35, inset 0 0 40px rgba(255, 107, 53, 0.7)';
+      
+      // Create reward explosion effect
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '6px';
+        particle.style.height = '6px';
+        particle.style.background = '#FF6B35';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        particle.style.boxShadow = '0 0 10px #FF6B35';
+        
+        const rect = dailyRewardBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 12) * Math.PI * 2;
+        const distance = 60;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1200,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1200);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        dailyRewardBtn.style.transform = '';
+        dailyRewardBtn.style.boxShadow = '';
+      }, 1200);
+      
+      // Show daily reward modal
+      setTimeout(() => {
+        showDailyRewardModal();
+      }, 1200);
     });
 
     // FRONT MAN Button Event Listener
@@ -6055,11 +6322,181 @@
 
 
 
+    // Daily Reward Functions
+    function isDailyRewardAvailable() {
+      const lastRewardDate = localStorage.getItem('lastDailyRewardDate');
+      const today = new Date().toDateString();
+      
+      if (!lastRewardDate || lastRewardDate !== today) {
+        return true;
+      }
+      return false;
+    }
+
+    function getDailyRewardAmount() {
+      const rewards = [5, 10, 25, 50];
+      const randomIndex = Math.floor(Math.random() * rewards.length);
+      return rewards[randomIndex];
+    }
+
+    function showDailyRewardModal() {
+      const rewardAmount = getDailyRewardAmount();
+      const modal = document.getElementById('dailyRewardModal');
+      const amountElement = document.getElementById('rewardAmount');
+      
+      amountElement.textContent = `+${rewardAmount} ORTIZ COINS`;
+      
+      // Create reward particles
+      createRewardParticles();
+      
+      modal.style.display = 'flex';
+      
+      // Add event listener to close button
+      const closeBtn = document.getElementById('closeDailyReward');
+      closeBtn.onclick = () => {
+        claimDailyReward(rewardAmount);
+        modal.style.display = 'none';
+      };
+    }
+
+    function createRewardParticles() {
+      const effectsContainer = document.getElementById('rewardEffects');
+      effectsContainer.innerHTML = '';
+      
+      for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'reward-particle';
+        particle.textContent = ['💰', '🎁', '⭐', '💎'][Math.floor(Math.random() * 4)];
+        
+        const size = 12 + Math.random() * 18;
+        particle.style.fontSize = `${size}px`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.animationDelay = `${Math.random() * 2}s`;
+        
+        effectsContainer.appendChild(particle);
+      }
+    }
+
+    function claimDailyReward(amount) {
+      console.log('🎁 Claiming daily reward:', amount, 'coins');
+      
+      // Add coins to player
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newCoins = currentCoins + amount;
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      
+      // Mark as claimed today
+      localStorage.setItem('lastDailyRewardDate', new Date().toDateString());
+      
+      // Update display
+      updateCoinsDisplay();
+      
+      // Disable button
+      const dailyRewardBtn = document.getElementById('dailyRewardBtn');
+      dailyRewardBtn.classList.add('disabled');
+      dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
+      
+      // Sync to Firebase with player data collection
+      collectAndSyncPlayerData(amount);
+      
+      // Show success message
+      showDailyRewardMessage(`¡Recompensa cobrada! +${amount} monedas`);
+    }
+
+    function collectAndSyncPlayerData(rewardAmount) {
+      console.log('📊 Collecting player data for Firebase sync...');
+      
+      const playerData = {
+        name: localStorage.getItem('soldierName') || 'Unknown',
+        coins: parseInt(localStorage.getItem('totalOrtizCoins') || '0'),
+        gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+        totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+        cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+        lastDailyReward: new Date().toISOString(),
+        dailyRewardAmount: rewardAmount,
+        userAgent: navigator.userAgent,
+        screenResolution: `${screen.width}x${screen.height}`,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language: navigator.language,
+        platform: navigator.platform,
+        cookiesEnabled: navigator.cookieEnabled,
+        online: navigator.onLine,
+        timestamp: new Date().toISOString()
+      };
+      
+      // Save to Firebase
+      if (window.PlayerDataManager && PlayerDataManager.savePlayerData) {
+        PlayerDataManager.savePlayerData(playerData.name, playerData.coins, {
+          ...playerData,
+          gameType: 'daily-reward',
+          autoSync: true
+        }).then(result => {
+          if (result) {
+            console.log('✅ Daily reward data synced to Firebase:', playerData);
+          } else {
+            console.log('⚠️ Failed to sync daily reward data');
+          }
+        }).catch(error => {
+          console.error('❌ Error syncing daily reward data:', error);
+        });
+      } else {
+        console.log('⚠️ PlayerDataManager not available for daily reward sync');
+      }
+    }
+
+    function showDailyRewardMessage(message) {
+      const messageEl = document.createElement('div');
+      messageEl.textContent = message;
+      messageEl.style.position = 'fixed';
+      messageEl.style.top = '50%';
+      messageEl.style.left = '50%';
+      messageEl.style.transform = 'translate(-50%, -50%)';
+      messageEl.style.color = '#FF6B35';
+      messageEl.style.fontSize = '1.2rem';
+      messageEl.style.fontWeight = 'bold';
+      messageEl.style.textShadow = '0 0 20px #FF6B35';
+      messageEl.style.zIndex = '2000';
+      messageEl.style.pointerEvents = 'none';
+      messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+      
+      document.body.appendChild(messageEl);
+      
+      // Animate message
+      messageEl.animate([
+        { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+        { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+        { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+      ], {
+        duration: 3000,
+        easing: 'ease-in-out'
+      });
+      
+      // Remove message
+      setTimeout(() => {
+        if (messageEl.parentNode) {
+          messageEl.parentNode.removeChild(messageEl);
+        }
+      }, 3000);
+    }
+
+    // Initialize daily reward button state
+    function initializeDailyReward() {
+      const dailyRewardBtn = document.getElementById('dailyRewardBtn');
+      if (!isDailyRewardAvailable()) {
+        dailyRewardBtn.classList.add('disabled');
+        dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
+      }
+    }
+
     // Sync data when page loads
     document.addEventListener('DOMContentLoaded', () => {
       console.log('🚀 Page loaded, starting Firebase sync...');
       console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
       console.log('🔍 Firebase available:', !!window.firebase);
+      
+      // Initialize daily reward
+      initializeDailyReward();
       
       // Sync player data to Firebase
       setTimeout(() => {

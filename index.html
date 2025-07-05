@@ -6653,87 +6653,47 @@
     function collectAndSyncPlayerData(rewardAmount) {
       console.log('📊 Collecting player data for Firebase sync...');
       
-      // Collect all localStorage data
-      const allLocalStorageData = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        const value = localStorage.getItem(key);
-        allLocalStorageData[key] = value;
-      }
+      // Simple player data collection
+      const playerName = localStorage.getItem('soldierName') || 'Unknown';
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+      const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+      const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
       
       const playerData = {
-        name: localStorage.getItem('soldierName') || 'Unknown',
-        coins: parseInt(localStorage.getItem('totalOrtizCoins') || '0'),
-        gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-        totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-        cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+        coins: totalCoins,
+        gamesPlayed: gamesPlayed,
+        totalWins: totalWins,
+        cluesFound: cluesFound,
         lastDailyReward: new Date().toISOString(),
         dailyRewardAmount: rewardAmount,
-        allLocalStorageData: allLocalStorageData, // Send all localStorage data
-        userAgent: navigator.userAgent,
-        screenResolution: `${screen.width}x${screen.height}`,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        language: navigator.language,
-        platform: navigator.platform,
-        cookiesEnabled: navigator.cookieEnabled,
-        online: navigator.onLine,
         timestamp: new Date().toISOString()
       };
       
       console.log('📊 Player data collected:', playerData);
-      console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
       console.log('🔍 Firebase available:', !!window.firebase);
       
-      // Try PlayerDataManager first
-      if (window.PlayerDataManager && PlayerDataManager.savePlayerData) {
-        console.log('📤 Attempting PlayerDataManager sync...');
-        PlayerDataManager.savePlayerData(playerData.name, playerData.coins, {
-          ...playerData,
-          gameType: 'daily-reward',
-          autoSync: true
-        }).then(result => {
-          if (result) {
-            console.log('✅ Daily reward data synced to Firebase via PlayerDataManager:', playerData);
-            showDailyRewardMessage(`✅ Datos enviados a Firebase! +${rewardAmount} monedas`);
-          } else {
-            console.log('⚠️ PlayerDataManager sync failed, trying fallback...');
-            tryFallbackFirebaseSync(playerData);
-          }
-        }).catch(error => {
-          console.error('❌ PlayerDataManager sync error:', error);
-          tryFallbackFirebaseSync(playerData);
-        });
-      } else {
-        console.log('⚠️ PlayerDataManager not available, trying fallback...');
-        tryFallbackFirebaseSync(playerData);
-      }
-    }
-
-    function tryFallbackFirebaseSync(playerData) {
-      console.log('🔄 Trying fallback Firebase sync...');
-      
-      if (window.firebase && window.firebase.database) {
+      // Simple Firebase sync - same logic as admin panel
+      if (typeof firebase !== 'undefined' && firebase.database) {
+        console.log('✅ Firebase detectado - Enviando datos...');
+        
         try {
-          const database = window.firebase.database();
-          const playerRef = database.ref(`players/${playerData.name.replace(/[.#$[\]]/g, '_')}`);
+          const database = firebase.database();
+          const playerRef = database.ref(`players/${playerName.replace(/[.#$[\]]/g, '_')}`);
           
-          playerRef.set({
-            ...playerData,
-            lastUpdate: new Date().toISOString(),
-            syncMethod: 'fallback'
-          }).then(() => {
-            console.log('✅ Fallback Firebase sync completed successfully');
-            showDailyRewardMessage(`✅ Datos enviados a Firebase! +${playerData.dailyRewardAmount} monedas`);
+          playerRef.set(playerData).then(() => {
+            console.log('✅ Daily reward data synced to Firebase successfully');
+            showDailyRewardMessage(`✅ Datos enviados a Firebase! +${rewardAmount} monedas`);
           }).catch(error => {
-            console.error('❌ Fallback Firebase sync failed:', error);
+            console.error('❌ Firebase sync failed:', error);
             showDailyRewardMessage(`⚠️ Error al enviar datos: ${error.message}`);
           });
         } catch (error) {
-          console.error('❌ Fallback Firebase sync error:', error);
+          console.error('❌ Firebase sync error:', error);
           showDailyRewardMessage(`⚠️ Error de conexión: ${error.message}`);
         }
       } else {
-        console.error('❌ No Firebase available for sync');
+        console.error('❌ Firebase no disponible');
         showDailyRewardMessage(`⚠️ Firebase no disponible - datos guardados localmente`);
         
         // Store data locally as backup

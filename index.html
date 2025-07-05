@@ -7708,18 +7708,38 @@
       
       const modal = document.getElementById('playerFightModal');
       
-      if (playerWins) {
-        // Player wins - keep coins
+      if (result === 'empate') {
+        // Tie - no one wins or loses
+        modal.innerHTML = `
+          <div class="player-fight-content">
+            <h2 style="color: #ffff00;">🤝 ¡EMPATE!</h2>
+            <div class="fight-result fight-tie">
+              <p style="font-size: 12px;">Tu elección: ${choiceEmojis[playerChoice]}</p>
+              <p style="font-size: 12px;">Jugadores: ${choiceEmojis[computerChoice]}</p>
+              <p style="font-size: 12px;">¡Empate! Nadie gana ni pierde.</p>
+            </div>
+            <button class="player-fight-close-btn" id="playerFightBackBtn" style="background: linear-gradient(45deg, #ffff00, #cccc00); color: black;">🔙 VOLVER</button>
+          </div>
+        `;
+      } else if (playerWins) {
+        // Player wins - lose 5000 coins
+        const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        const lostCoins = 5000;
+        const remainingCoins = Math.max(0, currentCoins - lostCoins);
+        localStorage.setItem('totalOrtizCoins', remainingCoins.toString());
+        loadTotalCoins();
+        
         modal.innerHTML = `
           <div class="player-fight-content">
             <h2 style="color: #00ff00;">🏆 ¡VICTORIA!</h2>
             <div class="fight-result fight-win">
-              <p>Tu elección: ${choiceEmojis[playerChoice]}</p>
-              <p>Jugadores: ${choiceEmojis[computerChoice]}</p>
-              <p>¡Los has derrotado! Mantienes tus monedas.</p>
+              <p style="font-size: 12px;">Tu elección: ${choiceEmojis[playerChoice]}</p>
+              <p style="font-size: 12px;">Jugadores: ${choiceEmojis[computerChoice]}</p>
+              <p style="font-size: 12px;">¡Consigues escapar, pero te roban 5000 monedas!</p>
+              <p style="font-size: 12px;">Perdiste ${lostCoins.toLocaleString()} monedas</p>
+              <p style="font-size: 12px;">Te quedan ${remainingCoins.toLocaleString()} monedas</p>
             </div>
-            <button class="player-fight-close-btn" id="playerFightCloseBtn">🏆 ¡VENCEDOR!</button>
-            <button class="player-fight-close-btn" id="playerFightBackBtn" style="margin-left: 10px; background: linear-gradient(45deg, #00ff00, #00cc00); color: white;">🔙 VOLVER</button>
+            <button class="player-fight-close-btn" id="playerFightBackBtn" style="background: linear-gradient(45deg, #00ff00, #00cc00); color: white;">🔙 VOLVER</button>
           </div>
         `;
       } else {
@@ -7734,27 +7754,16 @@
           <div class="player-fight-content">
             <h2 style="color: #ff0000;">💀 ¡DERROTA!</h2>
             <div class="fight-result fight-lose">
-              <p>Tu elección: ${choiceEmojis[playerChoice]}</p>
-              <p>Jugadores: ${choiceEmojis[computerChoice]}</p>
-              <p>¡Un grupo de jugadores te ha robado la mitad!</p>
-              <p>Perdiste ${lostCoins.toLocaleString()} monedas</p>
-              <p>Te quedan ${remainingCoins.toLocaleString()} monedas</p>
+              <p style="font-size: 12px;">Tu elección: ${choiceEmojis[playerChoice]}</p>
+              <p style="font-size: 12px;">Jugadores: ${choiceEmojis[computerChoice]}</p>
+              <p style="font-size: 12px;">¡Un grupo de jugadores te ha robado la mitad!</p>
+              <p style="font-size: 12px;">Perdiste ${lostCoins.toLocaleString()} monedas</p>
+              <p style="font-size: 12px;">Te quedan ${remainingCoins.toLocaleString()} monedas</p>
             </div>
-            <button class="player-fight-close-btn" id="playerFightCloseBtn">💀 ¡ROBADO!</button>
-            <button class="player-fight-close-btn" id="playerFightBackBtn" style="margin-left: 10px; background: linear-gradient(45deg, #ff0000, #cc0000); color: white;">🔙 VOLVER</button>
+            <button class="player-fight-close-btn" id="playerFightBackBtn" style="background: linear-gradient(45deg, #ff0000, #cc0000); color: white;">🔙 VOLVER</button>
           </div>
         `;
       }
-      
-      // Add close button listener
-      document.getElementById('playerFightCloseBtn').addEventListener('click', () => {
-        closePlayerFightModal();
-      });
-      
-      // Add back button listener
-      document.getElementById('playerFightBackBtn').addEventListener('click', () => {
-        closePlayerFightModal();
-      });
       
       // Add back button listener
       document.getElementById('playerFightBackBtn').addEventListener('click', () => {

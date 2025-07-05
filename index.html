@@ -1657,6 +1657,228 @@
       }
     }
     
+    /* Lock Power Modal Styles */
+    .lock-power-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 4000;
+      backdrop-filter: blur(25px);
+      border: 4px solid #FF6B35;
+      box-shadow: 0 0 120px #FF6B35, inset 0 0 120px rgba(255, 107, 53, 0.3);
+      padding: 2rem;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    
+    .lock-power-modal.active {
+      display: flex;
+      animation: lockPowerEntrance 1.5s ease-out;
+    }
+    
+    @keyframes lockPowerEntrance {
+      0% {
+        opacity: 0;
+        transform: scale(0.2) rotate(20deg);
+      }
+      50% {
+        opacity: 0.7;
+        transform: scale(1.3) rotate(-12deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+    
+    .lock-power-content {
+      background: linear-gradient(145deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+      border: 4px solid #FF6B35;
+      border-radius: 30px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 0 100px #FF6B35, inset 0 0 80px rgba(255, 107, 53, 0.2);
+      text-align: center;
+      max-width: 85%;
+      max-height: 85vh;
+      position: relative;
+      z-index: 4001;
+      overflow-y: auto;
+    }
+    
+    .lock-power-header h2 {
+      color: #FF6B35;
+      font-size: 2.4rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 60px #FF6B35, 0 0 120px #FF6B35;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      animation: lockPowerTitleGlow 2.5s infinite;
+    }
+    
+    @keyframes lockPowerTitleGlow {
+      0%, 100% {
+        text-shadow: 0 0 60px #FF6B35, 0 0 120px #FF6B35;
+      }
+      50% {
+        text-shadow: 0 0 90px #FF6B35, 0 0 180px #FF6B35, 0 0 270px #FF6B35;
+      }
+    }
+    
+    .lock-power-subtitle {
+      color: #FFD700;
+      font-size: 1.2rem;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 0 30px #FFD700;
+      font-weight: bold;
+    }
+    
+    .lock-animation-container {
+      position: relative;
+      height: 200px;
+      margin: 2.5rem 0;
+      overflow: hidden;
+    }
+    
+    .lock-effects {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .lock-particle {
+      position: absolute;
+      font-size: 1.2rem;
+      color: #FF6B35;
+      text-shadow: 0 0 15px #FF6B35;
+      animation: lockParticleFloat 2.5s ease-out forwards;
+    }
+    
+    @keyframes lockParticleFloat {
+      0% {
+        opacity: 0;
+        transform: translateY(100px) scale(0) rotate(0deg);
+      }
+      20% {
+        opacity: 1;
+        transform: translateY(80px) scale(1) rotate(10deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(1.5) rotate(360deg);
+      }
+    }
+    
+    .lock-symbol {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5rem;
+      color: #FF6B35;
+      text-shadow: 0 0 50px #FF6B35, 0 0 100px #FF6B35;
+      animation: lockSymbolPulse 2s infinite alternate;
+      z-index: 10;
+    }
+    
+    @keyframes lockSymbolPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        text-shadow: 0 0 50px #FF6B35, 0 0 100px #FF6B35;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.4) rotate(-20deg);
+        text-shadow: 0 0 70px #FF6B35, 0 0 140px #FF6B35, 0 0 210px #FF6B35;
+      }
+    }
+    
+    .lock-power-message {
+      margin: 2.5rem 0;
+    }
+    
+    .lock-title {
+      color: #FF6B35;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 0 50px #FF6B35;
+      animation: lockTitlePulse 2.5s infinite;
+    }
+    
+    @keyframes lockTitlePulse {
+      0%, 100% {
+        text-shadow: 0 0 50px #FF6B35;
+      }
+      50% {
+        text-shadow: 0 0 80px #FF6B35, 0 0 140px #FF6B35;
+      }
+    }
+    
+    .lock-description {
+      color: #FFD700;
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 0 25px #FFD700;
+    }
+    
+    .lock-warning {
+      color: #FF4757;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 20px #FF4757;
+      animation: lockWarningBlink 1.2s infinite;
+    }
+    
+    @keyframes lockWarningBlink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+    
+    .lock-power-btn {
+      background: linear-gradient(45deg, #FF6B35, #FF4500);
+      color: #fff;
+      border: 3px solid #FF6B35;
+      padding: 1.3rem 3.5rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 60px #FF6B35, inset 0 0 40px rgba(255, 107, 53, 0.4);
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      margin-top: 1.5rem;
+      animation: lockPowerBtnPulse 2.5s infinite;
+    }
+    
+    .lock-power-btn:hover {
+      background: linear-gradient(45deg, #FF4500, #FF6B35);
+      box-shadow: 0 0 80px #FF6B35, inset 0 0 50px rgba(255, 107, 53, 0.6);
+      transform: scale(1.05);
+    }
+    
+    @keyframes lockPowerBtnPulse {
+      0%, 100% {
+        box-shadow: 0 0 60px #FF6B35, inset 0 0 40px rgba(255, 107, 53, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 80px #FF6B35, inset 0 0 50px rgba(255, 107, 53, 0.6);
+      }
+    }
+    
     /* Ortiz Coins Counter */
     .coins-counter {
       display: flex;
@@ -2354,7 +2576,7 @@
           <input type="text" class="code-input" maxlength="1" data-index="2">
           <input type="text" class="code-input" maxlength="1" data-index="3">
         </div>
-        <div class="lock-icon">🔒</div>
+        <div class="lock-icon" id="lockIcon" style="cursor: pointer;">🔒</div>
       </div>
       <div class="access-status" id="accessStatus"></div>
     </div>
@@ -2461,6 +2683,31 @@
         
         <div class="gods-power-footer">
           <button class="gods-power-btn" id="closeGodsPower">¡ACTIVAR PODER!</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Lock Power Modal -->
+    <div class="lock-power-modal" id="lockPowerModal">
+      <div class="lock-power-content">
+        <div class="lock-power-header">
+          <h2>🔐 EL PODER DEL CANDADO</h2>
+          <div class="lock-power-subtitle">¡Has desbloqueado el poder del candado!</div>
+        </div>
+        
+        <div class="lock-animation-container">
+          <div class="lock-effects" id="lockEffects"></div>
+          <div class="lock-symbol">🔐</div>
+        </div>
+        
+        <div class="lock-power-message">
+          <div class="lock-title">PODER DEL CANDADO</div>
+          <div class="lock-description">Puedes bloquear cualquier acción de otro jugador durante 30 segundos</div>
+          <div class="lock-warning">⚠️ Este poder solo se puede usar una vez por sesión</div>
+        </div>
+        
+        <div class="lock-power-footer">
+          <button class="lock-power-btn" id="closeLockPower">¡ACTIVAR PODER!</button>
         </div>
       </div>
     </div>
@@ -3749,6 +3996,111 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && squidPowerModal.classList.contains('active')) {
         closeSquidPowerModal();
+      }
+    });
+    
+    // Easter Egg 4 - Lock Power Detection
+    let lockClicks = 0;
+    let lastLockClick = 0;
+    const lockPowerModal = document.getElementById('lockPowerModal');
+    const closeLockPowerBtn = document.getElementById('closeLockPower');
+    const lockIcon = document.getElementById('lockIcon');
+    
+    // Detect clicks on lock icon
+    lockIcon.addEventListener('click', () => {
+      const now = Date.now();
+      
+      // Reset counter if more than 5 seconds between clicks
+      if (now - lastLockClick > 5000) {
+        lockClicks = 0;
+      }
+      
+      lockClicks++;
+      lastLockClick = now;
+      
+      console.log('Lock clicks:', lockClicks);
+      
+      // Add visual feedback for each click
+      lockIcon.style.transform = 'scale(1.3)';
+      lockIcon.style.textShadow = '0 0 30px #FF6B35, 0 0 60px #FF6B35';
+      lockIcon.style.color = '#FF6B35';
+      
+      setTimeout(() => {
+        lockIcon.style.transform = '';
+        lockIcon.style.textShadow = '';
+        lockIcon.style.color = '';
+      }, 300);
+      
+      // Check if 7 clicks reached
+      if (lockClicks >= 7) {
+        console.log('Lock power activated!');
+        activateLockPower();
+        lockClicks = 0; // Reset counter
+      }
+    });
+    
+    function activateLockPower() {
+      // Show lock power modal
+      lockPowerModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Create lock particle effects
+      createLockParticles();
+    }
+    
+    function createLockParticles() {
+      const lockEffects = document.getElementById('lockEffects');
+      
+      for (let i = 0; i < 12; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.className = 'lock-particle';
+          particle.textContent = '🔐';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.top = Math.random() * 100 + '%';
+          
+          lockEffects.appendChild(particle);
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 2500);
+        }, i * 200);
+      }
+    }
+    
+    // Close lock power modal
+    closeLockPowerBtn.addEventListener('click', () => {
+      closeLockPowerModal();
+    });
+    
+    // Close modal when clicking anywhere on the modal
+    lockPowerModal.addEventListener('click', (e) => {
+      // Only close if clicking on the modal background, not on content
+      if (e.target === lockPowerModal) {
+        closeLockPowerModal();
+      }
+    });
+    
+    function closeLockPowerModal() {
+      lockPowerModal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      
+      // Clear lock effects
+      document.getElementById('lockEffects').innerHTML = '';
+      
+      // Redirect to home after a short delay
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 300);
+    }
+    
+    // Add ESC key functionality to close lock power modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lockPowerModal.classList.contains('active')) {
+        closeLockPowerModal();
       }
     });
   </script>

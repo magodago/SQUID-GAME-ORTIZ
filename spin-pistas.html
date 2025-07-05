@@ -525,9 +525,6 @@
             
             <button class="spin-btn" id="spinBtn" onclick="spin()">🎰 GIRAR</button>
             
-            <!-- Botón de prueba temporal -->
-            <button onclick="testWin()" style="background: #FF0000; color: white; border: none; padding: 10px; margin: 10px; border-radius: 5px; cursor: pointer;">🧪 PRUEBA GANAR</button>
-            
             <div class="back-box">
                 <button onclick="goBack()" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #FFFFFF 0%, #006400 100%); border: none; border-radius: 10px; color: #000; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">← VOLVER AL MENÚ PRINCIPAL</button>
             </div>
@@ -793,7 +790,9 @@
             const reel2Text = document.getElementById('reel2').textContent;
             const reel3Text = document.getElementById('reel3').textContent;
             
+            console.log('=== ANÁLISIS DE SÍMBOLOS ===');
             console.log('Símbolos en pantalla:', reel1Text, reel2Text, reel3Text);
+            console.log('Códigos Unicode:', reel1Text.charCodeAt(0), reel2Text.charCodeAt(0), reel3Text.charCodeAt(0));
             
             // Obtener las formas de cada símbolo
             const shape1 = getShapeFromEmoji(reel1Text);
@@ -801,10 +800,12 @@
             const shape3 = getShapeFromEmoji(reel3Text);
             
             console.log('Formas detectadas:', shape1, shape2, shape3);
+            console.log('¿Son iguales?', shape1 === shape2 && shape2 === shape3);
+            console.log('¿No son unknown?', shape1 !== 'unknown' && shape2 !== 'unknown' && shape3 !== 'unknown');
             
             // Verificar si las tres formas son iguales
             if (shape1 === shape2 && shape2 === shape3 && shape1 !== 'unknown') {
-                console.log('¡JACKPOT! Tres formas iguales detectadas');
+                console.log('✅ ¡JACKPOT! Tres formas iguales detectadas');
                 
                 // ¡JACKPOT! - Dar pista
                 const shapeNames = {
@@ -817,6 +818,8 @@
                 const pista1Mostrada = localStorage.getItem('spinPista1Mostrada') === 'true';
                 const pista2Mostrada = localStorage.getItem('spinPista2Mostrada') === 'true';
                 const pista3Mostrada = localStorage.getItem('spinPista3Mostrada') === 'true';
+                
+                console.log('Estado de pistas:', { pista1Mostrada, pista2Mostrada, pista3Mostrada, hintsFound });
                 
                 if (!pista1Mostrada) {
                     // Mostrar pista 1 por primera vez
@@ -861,7 +864,14 @@
                     };
                 }
             } else {
-                console.log('No hay coincidencia de formas');
+                console.log('❌ No hay coincidencia de formas');
+                console.log('Razón:', {
+                    shape1_equals_shape2: shape1 === shape2,
+                    shape2_equals_shape3: shape2 === shape3,
+                    shape1_not_unknown: shape1 !== 'unknown',
+                    shape2_not_unknown: shape2 !== 'unknown',
+                    shape3_not_unknown: shape3 !== 'unknown'
+                });
                 return {
                     win: false,
                     message: `¡No hay coincidencia!\n${reel1Text} - ${reel2Text} - ${reel3Text}`,
@@ -925,9 +935,7 @@
         }
 
         function goBack() {
-            if (!isSpinning) {
-                window.location.href = 'index.html';
-            }
+            window.location.href = 'index.html';
         }
 
         // Función de prueba para verificar símbolos
@@ -943,21 +951,6 @@
                 const shape = getShapeFromEmoji(emoji);
                 console.log(`${emoji} -> ${shape}`);
             });
-        }
-
-        function testWin() {
-            // Forzar tres cuadrados para probar (incluyendo cuadrado amarillo)
-            document.getElementById('reel1').textContent = '🟥';
-            document.getElementById('reel2').textContent = '🟨';
-            document.getElementById('reel3').textContent = '⬛';
-            
-            console.log('Forzando combinación ganadora: 🟥🟨⬛ (tres cuadrados)');
-            
-            setTimeout(() => {
-                const result = generateResult();
-                console.log('Resultado de la prueba:', result);
-                showResult(result.win, result.message, result.hint);
-            }, 1000);
         }
 
         function getShapeFromEmoji(emoji) {

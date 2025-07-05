@@ -564,12 +564,22 @@
             { symbol: '⬛', name: 'Cuadrado Negro', shape: 'square', color: 'black' }
         ];
 
+        // Función para debuggear símbolos
+        function debugSymbols() {
+            console.log('Todos los símbolos disponibles:');
+            symbols.forEach((s, i) => {
+                console.log(`${i}: ${s.symbol} - ${s.name} - ${s.shape}`);
+            });
+        }
+
         const hints = [
             "Si una medalla con tu nombre y tu verdadero nombre quieres ganar? esta secuencia has de usar."
         ];
 
         function initSlotMachine() {
             updateCoinsDisplay();
+            // Debug: mostrar todos los símbolos disponibles
+            debugSymbols();
             // Generar símbolos iniciales aleatorios
             document.getElementById('reel1').textContent = symbols[Math.floor(Math.random() * symbols.length)].symbol;
             document.getElementById('reel2').textContent = symbols[Math.floor(Math.random() * symbols.length)].symbol;
@@ -758,13 +768,21 @@
             const reel2Text = document.getElementById('reel2').textContent;
             const reel3Text = document.getElementById('reel3').textContent;
             
+            // Debug: mostrar qué símbolos están en pantalla
+            console.log('Símbolos en pantalla:', reel1Text, reel2Text, reel3Text);
+            
             // Encontrar los objetos de símbolos correspondientes
             const reel1Symbol = symbols.find(s => s.symbol === reel1Text);
             const reel2Symbol = symbols.find(s => s.symbol === reel2Text);
             const reel3Symbol = symbols.find(s => s.symbol === reel3Text);
+            
+            // Debug: mostrar los objetos encontrados
+            console.log('Objetos encontrados:', reel1Symbol, reel2Symbol, reel3Symbol);
+            console.log('Formas:', reel1Symbol?.shape, reel2Symbol?.shape, reel3Symbol?.shape);
 
             // Verificar si son iguales (misma forma, no necesariamente color)
-            if (reel1Symbol.shape === reel2Symbol.shape && reel2Symbol.shape === reel3Symbol.shape) {
+            if (reel1Symbol && reel2Symbol && reel3Symbol && 
+                reel1Symbol.shape === reel2Symbol.shape && reel2Symbol.shape === reel3Symbol.shape) {
                 // ¡JACKPOT! - Dar pista
                 if (hintsFound < totalHints) {
                     hintsFound++;

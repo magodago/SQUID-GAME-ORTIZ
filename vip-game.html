@@ -127,29 +127,28 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
         }
 
         .bet-type:hover {
             background: rgba(255, 215, 0, 0.2);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
 
         .bet-type.selected {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            border: 3px solid #FF0000;
-            color: #000;
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            background: rgba(255, 215, 0, 0.3);
+            border: 2px solid #FFA500;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
 
-        .bet-type.selected::before {
-            content: '✅';
+        .bet-type.selected::after {
+            content: '✓';
             position: absolute;
             top: 10px;
             right: 15px;
             font-size: 1.2rem;
-            color: #000;
+            color: #FFA500;
+            font-weight: bold;
         }
 
         .bet-options {
@@ -166,30 +165,28 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
         }
 
         .bet-option:hover {
             background: rgba(255, 165, 0, 0.2);
             transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(255, 165, 0, 0.3);
         }
 
         .bet-option.selected {
-            background: linear-gradient(135deg, #00FF00 0%, #00CC00 100%);
+            background: rgba(0, 255, 0, 0.2);
             border: 2px solid #00FF00;
-            color: #000;
-            font-weight: bold;
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
         }
 
-        .bet-option.selected::before {
-            content: '🎯';
+        .bet-option.selected::after {
+            content: '●';
             position: absolute;
-            top: 5px;
-            right: 8px;
-            font-size: 0.9rem;
-            color: #000;
+            top: 8px;
+            right: 10px;
+            font-size: 1rem;
+            color: #00FF00;
+            font-weight: bold;
         }
 
         .bet-input {
@@ -521,6 +518,7 @@
                 console.log('🔄 Deselecting bet type:', betType);
                 document.querySelectorAll('.bet-type').forEach(bt => bt.classList.remove('selected'));
                 document.querySelectorAll('.bet-options').forEach(bo => bo.style.display = 'none');
+                document.querySelectorAll('.bet-option').forEach(bo => bo.classList.remove('selected'));
                 currentBetType = null;
                 currentBetOption = null;
                 
@@ -535,13 +533,12 @@
             // Remove previous selections
             document.querySelectorAll('.bet-type').forEach(bt => bt.classList.remove('selected'));
             document.querySelectorAll('.bet-options').forEach(bo => bo.style.display = 'none');
+            document.querySelectorAll('.bet-option').forEach(bo => bo.classList.remove('selected'));
             
             // Select new type
             element.classList.add('selected');
             currentBetType = betType;
-            
-            // Reset bet option when changing type
-            currentBetOption = null;
+            currentBetOption = null; // Reset option when changing type
             
             // Show options
             const optionsId = betType + 'Options';
@@ -556,7 +553,7 @@
                 statusText.style.color = '#00FF00';
             }
             
-            console.log('✅ Bet type selected:', betType);
+            console.log('✅ Bet type selected:', betType, 'Current option:', currentBetOption);
         }
 
         function selectBetOption(option, element) {

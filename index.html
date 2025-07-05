@@ -2240,6 +2240,28 @@
       }
     }
     
+    @keyframes digitRevealGlow {
+      0%, 100% {
+        box-shadow: 0 0 20px #00ff00, inset 0 0 10px #00ff00;
+        transform: scale(1.1);
+      }
+      50% {
+        box-shadow: 0 0 40px #00ff00, inset 0 0 20px #00ff00;
+        transform: scale(1.15);
+      }
+    }
+    
+    @keyframes messageGlow {
+      0%, 100% {
+        box-shadow: 0 0 30px #00ff00;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        box-shadow: 0 0 50px #00ff00, 0 0 70px #00ff00;
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+    }
+    
     .fusion-power-btn {
       background: linear-gradient(45deg, #9933ff, #6600cc);
       color: #fff;
@@ -4753,6 +4775,140 @@
         closeFusionPowerModal();
       }
     });
+    
+    // Easter Egg - Long press on code input reveals last digit
+    let codeInputPressTimer = null;
+    let codeInputPressStart = 0;
+    const codeInputElements = document.querySelectorAll('.code-input');
+    
+    codeInputElements.forEach(input => {
+      input.addEventListener('mousedown', startCodeInputPress);
+      input.addEventListener('touchstart', startCodeInputPress);
+      input.addEventListener('mouseup', endCodeInputPress);
+      input.addEventListener('touchend', endCodeInputPress);
+      input.addEventListener('mouseleave', endCodeInputPress);
+    });
+    
+    function startCodeInputPress(e) {
+      codeInputPressStart = Date.now();
+      codeInputPressTimer = setTimeout(() => {
+        revealLastDigit();
+      }, 2000); // 2 seconds
+    }
+    
+    function endCodeInputPress(e) {
+      if (codeInputPressTimer) {
+        clearTimeout(codeInputPressTimer);
+        codeInputPressTimer = null;
+      }
+    }
+    
+    function revealLastDigit() {
+      console.log('🎯 Last digit revealed: 1');
+      
+      // Find the last input (4th digit)
+      const lastInput = document.querySelector('.code-input[data-index="3"]');
+      if (lastInput) {
+        // Show the digit with a special effect
+        lastInput.value = '1';
+        lastInput.style.background = 'linear-gradient(45deg, #00ff00, #00cc00)';
+        lastInput.style.color = '#000';
+        lastInput.style.fontWeight = 'bold';
+        lastInput.style.boxShadow = '0 0 20px #00ff00, inset 0 0 10px #00ff00';
+        lastInput.style.border = '3px solid #00ff00';
+        lastInput.style.transform = 'scale(1.1)';
+        
+        // Add a glow animation
+        lastInput.style.animation = 'digitRevealGlow 2s infinite';
+        
+        // Create a visual effect
+        createDigitRevealEffect(lastInput);
+        
+        // Show a message
+        showDigitRevealMessage();
+      }
+    }
+    
+    function createDigitRevealEffect(input) {
+      // Create particles around the input
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.textContent = '1';
+          particle.style.position = 'absolute';
+          particle.style.color = '#00ff00';
+          particle.style.fontWeight = 'bold';
+          particle.style.fontSize = '1.2rem';
+          particle.style.pointerEvents = 'none';
+          particle.style.zIndex = '1000';
+          particle.style.textShadow = '0 0 10px #00ff00';
+          
+          const rect = input.getBoundingClientRect();
+          particle.style.left = (rect.left + rect.width / 2) + 'px';
+          particle.style.top = (rect.top + rect.height / 2) + 'px';
+          
+          document.body.appendChild(particle);
+          
+          // Animate particle
+          const angle = (i / 8) * Math.PI * 2;
+          const distance = 50;
+          const targetX = Math.cos(angle) * distance;
+          const targetY = Math.sin(angle) * distance;
+          
+          particle.animate([
+            { 
+              opacity: 1, 
+              transform: 'translate(-50%, -50%) scale(1)',
+            },
+            { 
+              opacity: 0.8, 
+              transform: `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(1.5)`,
+            },
+            { 
+              opacity: 0, 
+              transform: `translate(calc(-50% + ${targetX * 2}px), calc(-50% + ${targetY * 2}px)) scale(0.5)`,
+            }
+          ], {
+            duration: 1500,
+            easing: 'ease-out'
+          });
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 1500);
+        }, i * 100);
+      }
+    }
+    
+    function showDigitRevealMessage() {
+      const message = document.createElement('div');
+      message.textContent = '🎯 ÚLTIMO DÍGITO REVELADO: 1';
+      message.style.position = 'fixed';
+      message.style.top = '20%';
+      message.style.left = '50%';
+      message.style.transform = 'translate(-50%, -50%)';
+      message.style.background = 'linear-gradient(45deg, #00ff00, #00cc00)';
+      message.style.color = '#000';
+      message.style.padding = '15px 25px';
+      message.style.borderRadius = '10px';
+      message.style.fontWeight = 'bold';
+      message.style.fontSize = '1.2rem';
+      message.style.zIndex = '10000';
+      message.style.boxShadow = '0 0 30px #00ff00';
+      message.style.animation = 'messageGlow 2s infinite';
+      
+      document.body.appendChild(message);
+      
+      // Remove message after 3 seconds
+      setTimeout(() => {
+        if (message.parentNode) {
+          message.parentNode.removeChild(message);
+        }
+      }, 3000);
+    }
     
 
     

@@ -5856,36 +5856,29 @@
       }
     });
     
-    // Easter Egg - Long press on code input reveals last digit
+    // Easter Egg - Long press on LAST code input reveals last digit
     let codeInputPressTimer = null;
     let codeInputPressStart = 0;
     
-    // Add event listeners to the entire code input container
-    const codeInputContainer = document.querySelector('.code-inputs');
-    const codeInputElements = document.querySelectorAll('.code-input');
+    // Only add event listeners to the LAST input (4th digit)
+    const lastCodeInput = document.querySelector('.code-input[data-index="3"]');
     
-    if (codeInputContainer) {
-      codeInputContainer.addEventListener('mousedown', startCodeInputPress);
-      codeInputContainer.addEventListener('touchstart', startCodeInputPress);
-      codeInputContainer.addEventListener('mouseup', endCodeInputPress);
-      codeInputContainer.addEventListener('touchend', endCodeInputPress);
-      codeInputContainer.addEventListener('mouseleave', endCodeInputPress);
+    if (lastCodeInput) {
+      lastCodeInput.addEventListener('mousedown', startCodeInputPress);
+      lastCodeInput.addEventListener('touchstart', startCodeInputPress);
+      lastCodeInput.addEventListener('mouseup', endCodeInputPress);
+      lastCodeInput.addEventListener('touchend', endCodeInputPress);
+      lastCodeInput.addEventListener('mouseleave', endCodeInputPress);
     }
     
-    // Also add to individual inputs as backup
-    codeInputElements.forEach(input => {
-      input.addEventListener('mousedown', startCodeInputPress);
-      input.addEventListener('touchstart', startCodeInputPress);
-      input.addEventListener('mouseup', endCodeInputPress);
-      input.addEventListener('touchend', endCodeInputPress);
-      input.addEventListener('mouseleave', endCodeInputPress);
-    });
-    
     function startCodeInputPress(e) {
-      codeInputPressStart = Date.now();
-      codeInputPressTimer = setTimeout(() => {
-        revealLastDigit();
-      }, 2000); // 2 seconds
+      // Only activate if it's the last input
+      if (e.target.getAttribute('data-index') === '3') {
+        codeInputPressStart = Date.now();
+        codeInputPressTimer = setTimeout(() => {
+          revealLastDigit();
+        }, 2000); // 2 seconds
+      }
     }
     
     function endCodeInputPress(e) {

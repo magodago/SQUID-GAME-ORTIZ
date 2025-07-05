@@ -3945,10 +3945,9 @@
           // Activate admin panel
           activateAdminPanel();
           
-          // Clear inputs and hide access panel after success
+          // Clear inputs but don't hide access panel for admin
           setTimeout(() => {
             codeInputs.forEach(input => input.value = '');
-            accessPanel.style.display = 'none';
           }, 2000);
         }
         // Check for regular secret code
@@ -4869,12 +4868,21 @@
     }
     
     function activateAdminPanel() {
+      console.log('🔐 Activating admin panel...');
+      console.log('Admin panel element:', adminPanel);
+      
       adminPanel.style.display = 'flex';
       document.body.style.overflow = 'hidden';
+      
+      console.log('Admin panel display style:', adminPanel.style.display);
+      
       loadAdminData();
+      console.log('🔐 Admin panel activated!');
     }
     
     function loadAdminData() {
+      console.log('📊 Loading admin data...');
+      
       // Get all player data from localStorage
       const allPlayers = [];
       let totalCoins = 0;
@@ -4882,6 +4890,9 @@
       // Check for current player data
       const currentName = localStorage.getItem('soldierName') || 'Jugador';
       const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      
+      console.log('Current player name:', currentName);
+      console.log('Current player coins:', currentCoins);
       
       if (currentName && currentCoins > 0) {
         allPlayers.push({
@@ -4891,9 +4902,18 @@
         totalCoins += currentCoins;
       }
       
+      console.log('Total players:', allPlayers.length);
+      console.log('Total coins:', totalCoins);
+      
       // Update stats
-      document.getElementById('totalPlayers').textContent = allPlayers.length;
-      document.getElementById('totalCoinsAdmin').textContent = totalCoins;
+      const totalPlayersElement = document.getElementById('totalPlayers');
+      const totalCoinsElement = document.getElementById('totalCoinsAdmin');
+      
+      console.log('Total players element:', totalPlayersElement);
+      console.log('Total coins element:', totalCoinsElement);
+      
+      if (totalPlayersElement) totalPlayersElement.textContent = allPlayers.length;
+      if (totalCoinsElement) totalCoinsElement.textContent = totalCoins;
       
       // Update players list
       const playersContainer = document.getElementById('playersContainer');

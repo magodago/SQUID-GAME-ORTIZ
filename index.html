@@ -6752,34 +6752,27 @@
     function loadAdminData() {
       console.log('📊 Loading admin data...');
       
-      // Load data from localStorage first
-      const playerName = localStorage.getItem('soldierName') || 'Unknown';
-      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
-      const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
-      const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+      // Initialize admin panel with empty state - NO localStorage
+      document.getElementById('totalPlayers').textContent = '0';
+      document.getElementById('totalCoinsAdmin').textContent = '0';
       
-      // Update admin stats
-      document.getElementById('totalPlayers').textContent = '1';
-      document.getElementById('totalCoinsAdmin').textContent = totalCoins.toLocaleString();
-      
-      // Create player entry
+      // Create empty players container
       const playersContainer = document.getElementById('playersContainer');
       playersContainer.innerHTML = `
         <div class="player-entry">
           <div class="player-info">
-            <span class="player-name">${playerName}</span>
-            <span class="player-coins">🪙 ${totalCoins.toLocaleString()}</span>
+            <span class="player-name">Cargando datos...</span>
+            <span class="player-coins">🪙 0</span>
           </div>
           <div class="player-stats">
-            <span>🎮 ${gamesPlayed} juegos</span>
-            <span>🏆 ${totalWins} victorias</span>
-            <span>🔍 ${cluesFound} pistas</span>
+            <span>🎮 0 juegos</span>
+            <span>🏆 0 victorias</span>
+            <span>🔍 0 pistas</span>
           </div>
         </div>
       `;
       
-      console.log('✅ Admin data loaded from localStorage');
+      console.log('✅ Admin panel initialized - waiting for Firebase data');
     }
 
     function updateAdminPanelWithFirebaseData(playersData) {

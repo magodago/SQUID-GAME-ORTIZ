@@ -852,9 +852,7 @@
             localStorage.setItem('gamesPlayed', (currentGamesPlayed + 1).toString());
 
             // Actualizar logros diarios
-            if (typeof updateAchievementProgress === 'function') {
-                updateAchievementProgress('games', 1);
-            }
+            updateAchievementProgress('games', 1);
 
             // Sincronizar monedas con Firebase
             autoSyncFrontmanData();
@@ -929,6 +927,122 @@
         
         // Inicializar partículas cuando se carga la página
         if (document.getElementById('goldParticles')) createGoldParticles();
+
+        // ACHIEVEMENTS SYSTEM FOR FRONT MAN GAME
+        const dailyAchievements = [
+          {
+            id: 'play_3_games',
+            icon: '🎮',
+            title: 'Jugador Activo',
+            description: 'Juega 3 juegos hoy',
+            target: 3,
+            reward: 25,
+            type: 'games'
+          },
+          {
+            id: 'win_2_games',
+            icon: '🏆',
+            title: 'Ganador',
+            description: 'Gana 2 juegos hoy',
+            target: 2,
+            reward: 50,
+            type: 'wins'
+          },
+          {
+            id: 'find_1_clue',
+            icon: '🔍',
+            title: 'Detective',
+            description: 'Encuentra 1 pista hoy',
+            target: 1,
+            reward: 30,
+            type: 'clues'
+          },
+          {
+            id: 'earn_100_coins',
+            icon: '💰',
+            title: 'Rico',
+            description: 'Gana 100 monedas hoy',
+            target: 100,
+            reward: 40,
+            type: 'coins'
+          },
+          {
+            id: 'use_daily_reward',
+            icon: '🎁',
+            title: 'Fiel',
+            description: 'Cobra tu recompensa diaria',
+            target: 1,
+            reward: 20,
+            type: 'daily_reward'
+          }
+        ];
+
+        function updateAchievementProgress(type, amount = 1) {
+          const today = new Date().toDateString();
+          const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
+          
+          let achievementCompleted = false;
+          let completedAchievement = null;
+          
+          dailyAchievements.forEach(achievement => {
+            if (achievement.type === type) {
+              const currentProgress = todayData[achievement.id] || 0;
+              const newProgress = currentProgress + amount;
+              todayData[achievement.id] = newProgress;
+              
+              // Check if achievement completed
+              if (newProgress >= achievement.target && currentProgress < achievement.target) {
+                achievementCompleted = true;
+                completedAchievement = achievement;
+                
+                // Achievement just completed
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const newCoins = currentCoins + achievement.reward;
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                
+                // Show achievement notification
+                showAchievementNotification(achievement);
+              }
+            }
+          });
+          
+          localStorage.setItem(`achievements_${today}`, JSON.stringify(todayData));
+          
+          return { achievementCompleted, completedAchievement };
+        }
+
+        function showAchievementNotification(achievement) {
+          const notification = document.createElement('div');
+          notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 1rem;
+            color: #000;
+            font-weight: bold;
+            z-index: 10000;
+            box-shadow: 0 0 20px #FFD700;
+            animation: slideInRight 0.5s ease-out;
+          `;
+          
+          notification.innerHTML = `
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">${achievement.icon}</div>
+            <div style="font-size: 1rem; margin-bottom: 0.3rem;">¡${achievement.title}!</div>
+            <div style="font-size: 0.8rem;">+${achievement.reward} monedas</div>
+          `;
+          
+          document.body.appendChild(notification);
+          
+          // Remove after 3 seconds
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 3000);
+        }
     </script>
 </body>
 </html> 

@@ -9,6 +9,9 @@
   <title class="glitch-title" data-text="SQUID GAME ORTIZ">SQUID GAME ORTIZ</title>
   <!-- Fuente similar a la de Squid Game -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
   <style>
     /* Glitch Effect for Document Title */
     title.glitch-title {
@@ -5811,7 +5814,49 @@
         closeLockPowerModal();
       }
     });
+
+    // Firebase Data Sync Functions
+    function syncPlayerDataToFirebase() {
+      try {
+        const playerName = localStorage.getItem('soldierName') || 'Jugador';
+        const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+        const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+        const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+
+        // Save to Firebase
+        if (window.PlayerDataManager) {
+          PlayerDataManager.savePlayerData(playerName, totalCoins, {
+            gamesPlayed: gamesPlayed,
+            totalWins: totalWins,
+            cluesFound: cluesFound
+          });
+          console.log('✅ Player data synced to Firebase');
+        }
+      } catch (error) {
+        console.error('❌ Error syncing to Firebase:', error);
+      }
+    }
+
+    // Sync data when coins are updated
+    function updateCoinsAndSync(newCoins) {
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      updateCoinsDisplay();
+      syncPlayerDataToFirebase();
+    }
+
+    // Sync data periodically
+    setInterval(syncPlayerDataToFirebase, 30000); // Every 30 seconds
+
+    // Sync data when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(syncPlayerDataToFirebase, 2000); // Sync after 2 seconds
+    });
   </script>
+  
+  <!-- Firebase Configuration -->
+  <script src="firebase-config.js"></script>
+  
   <!-- Admin Panel -->
   <div class="admin-panel" id="adminPanel" style="display: none;">
     <div class="admin-content">

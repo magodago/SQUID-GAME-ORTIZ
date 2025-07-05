@@ -6401,6 +6401,12 @@
     }
 
     function showDailyRewardModal() {
+      // Check if already claimed today
+      if (!isDailyRewardAvailable()) {
+        showDailyRewardMessage('Ya has cobrado tu recompensa diaria. Vuelve mañana.');
+        return;
+      }
+      
       const rewardAmount = getDailyRewardAmount();
       const modal = document.getElementById('dailyRewardModal');
       const amountElement = document.getElementById('rewardAmount');
@@ -6417,6 +6423,10 @@
       closeBtn.onclick = () => {
         claimDailyReward(rewardAmount);
         modal.style.display = 'none';
+        // Disable the button immediately
+        const dailyRewardBtn = document.getElementById('dailyRewardBtn');
+        dailyRewardBtn.classList.add('disabled');
+        dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
       };
     }
 
@@ -6442,21 +6452,32 @@
     function claimDailyReward(amount) {
       console.log('🎁 Claiming daily reward:', amount, 'coins');
       
+      // Double check if already claimed today
+      if (!isDailyRewardAvailable()) {
+        console.log('⚠️ Daily reward already claimed today');
+        showDailyRewardMessage('Ya has cobrado tu recompensa diaria. Vuelve mañana.');
+        return;
+      }
+      
       // Add coins to player (only the exact amount shown)
       const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const newCoins = currentCoins + amount;
       localStorage.setItem('totalOrtizCoins', newCoins.toString());
       
-      // Mark as claimed today
+      // Mark as claimed today IMMEDIATELY to prevent multiple claims
       localStorage.setItem('lastDailyRewardDate', new Date().toDateString());
       
       // Update display
       updateCoinsDisplay();
       
-      // Disable button
+      // Disable button immediately
       const dailyRewardBtn = document.getElementById('dailyRewardBtn');
       dailyRewardBtn.classList.add('disabled');
       dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
+      
+      // Close modal immediately
+      const modal = document.getElementById('dailyRewardModal');
+      modal.style.display = 'none';
       
       // Sync to Firebase with player data collection
       collectAndSyncPlayerData(amount);

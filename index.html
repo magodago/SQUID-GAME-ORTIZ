@@ -2698,6 +2698,16 @@
       box-shadow: 0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
     }
     
+    .spin-btn {
+      background: linear-gradient(45deg, #FF69B4, #FF1493);
+      box-shadow: 0 0 30px #FF69B4, inset 0 0 20px rgba(255, 105, 180, 0.3);
+    }
+    
+    .spin-btn:hover {
+      transform: scale(1.1) rotateY(5deg);
+      box-shadow: 0 0 50px #FF69B4, inset 0 0 30px rgba(255, 105, 180, 0.5);
+    }
+    
     .frontman-btn {
       background: linear-gradient(45deg, #000000, #333333);
       box-shadow: 0 0 30px #000000, inset 0 0 20px rgba(0, 0, 0, 0.3);
@@ -3113,6 +3123,11 @@
       <button class="envelope-btn vip-btn" id="vipBtn">
         <div class="envelope-content">
           <span class="envelope-text">VIP</span>
+        </div>
+      </button>
+      <button class="envelope-btn spin-btn" id="spinBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">SPIN PISTAS</span>
         </div>
       </button>
       <button class="envelope-btn frontman-btn" id="frontmanBtn">
@@ -3995,6 +4010,101 @@
             messageEl.parentNode.removeChild(messageEl);
           }
           window.location.href = 'vip-game.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // SPIN PISTAS Button Event Listener
+    const spinBtn = document.getElementById('spinBtn');
+    spinBtn.addEventListener('click', () => {
+      console.log('SPIN PISTAS seleccionado');
+      
+      // Add dramatic effect
+      spinBtn.style.transform = 'scale(0.9) rotateY(5deg)';
+      spinBtn.style.boxShadow = '0 0 80px #FF69B4, inset 0 0 40px rgba(255, 105, 180, 0.7)';
+      
+      // Create simple explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#FF69B4';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = spinBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        spinBtn.style.transform = '';
+        spinBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🎰 SPIN PISTAS ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#FF69B4';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #FF69B4';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'spin-pistas.html';
         }, 2000);
       }, 1000);
     });

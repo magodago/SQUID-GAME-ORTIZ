@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin Pistas - Squid Game Ortiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            color: #FFD700;
+            overflow-y: auto;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .slot-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        .slot-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.95);
+            padding: 15px 20px;
+            border-bottom: 3px solid #FFD700;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .slot-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #FFD700;
+            text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+            margin: 0;
+            animation: slotGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes slotGlow {
+            from { text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700; }
+            to { text-shadow: 0 0 40px #FFD700, 0 0 80px #FFD700, 0 0 120px #FFD700; }
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 101;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #FFD700;
+        }
+
+        .slot-main {
+            position: relative;
+            margin: 100px auto 100px auto;
+            width: 90%;
+            max-width: 800px;
+            min-height: 70vh;
+            z-index: 5;
+        }
+
+        .slot-machine {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            border: 4px solid #FFD700;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slot-machine::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.05), transparent);
+            transform: rotate(45deg);
+            animation: slotShine 4s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes slotShine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .slot-reels {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .slot-reel {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            border: 3px solid #FFD700;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .slot-reel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 0%, rgba(255, 215, 0, 0.1) 50%, transparent 100%);
+            z-index: 1;
+        }
+
+        .slot-symbol {
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .slot-symbol.spinning {
+            animation: symbolSpin 0.5s linear infinite;
+        }
+
+        @keyframes symbolSpin {
+            0% { transform: translateY(-20px) scale(0.8); opacity: 0.5; }
+            50% { transform: translateY(0) scale(1.2); opacity: 1; }
+            100% { transform: translateY(20px) scale(0.8); opacity: 0.5; }
+        }
+
+        .slot-symbol.winner {
+            animation: winnerPulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes winnerPulse {
+            from { transform: scale(1); filter: brightness(1); }
+            to { transform: scale(1.3); filter: brightness(1.5); }
+        }
+
+        .spin-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 20px 40px;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .spin-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px #FFD700;
+        }
+
+        .spin-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cost-info {
+            font-size: 1.2rem;
+            color: #FFA500;
+            margin: 10px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .coins-display {
+            font-size: 1.3rem;
+            color: #FFD700;
+            margin: 15px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .result-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            z-index: 1000;
+            min-width: 350px;
+            max-width: 500px;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            animation: modalAppear 0.5s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .result-modal.win {
+            border-color: #00FF00;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: resultBounce 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes resultBounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .result-title.win {
+            color: #00FF00;
+        }
+
+        .result-title.lose {
+            color: #FF0000;
+        }
+
+        .result-message {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: #FFA500;
+        }
+
+        .hint-text {
+            font-size: 1.1rem;
+            color: #00FF00;
+            font-style: italic;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            color: #000;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #FFD700;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            animation: overlayAppear 0.3s ease-out;
+        }
+
+        @keyframes overlayAppear {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .back-box {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .slot-title {
+                font-size: 1.5rem;
+            }
+            
+            .slot-main {
+                width: 95%;
+                margin: 100px auto 80px auto;
+            }
+            
+            .slot-machine {
+                padding: 20px;
+            }
+            
+            .slot-reels {
+                gap: 10px;
+            }
+            
+            .slot-reel {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+            
+            .spin-btn {
+                padding: 15px 30px;
+                font-size: 1.2rem;
+            }
+            
+            .result-modal {
+                min-width: 300px;
+                padding: 20px;
+            }
+            
+            .back-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slot-bg"></div>
+    
+    <button class="back-btn" onclick="goBack()">← VOLVER</button>
+    
+    <div class="slot-header">
+        <div class="slot-title">🎰 SPIN PISTAS</div>
+    </div>
+    
+    <div class="slot-main">
+        <div class="slot-machine">
+            <div class="coins-display">💰 Ortiz Coins: <span id="coinsDisplay">0</span></div>
+            <div class="cost-info">💸 Costo por giro: 5 Ortiz Coins</div>
+            
+            <div class="slot-reels">
+                <div class="slot-reel">
+                    <div class="slot-symbol" id="reel1">🔴</div>
+                </div>
+                <div class="slot-reel">
+                    <div class="slot-symbol" id="reel2">🟡</div>
+                </div>
+                <div class="slot-reel">
+                    <div class="slot-symbol" id="reel3">🔵</div>
+                </div>
+            </div>
+            
+            <button class="spin-btn" id="spinBtn" onclick="spin()">🎰 GIRAR</button>
+            
+            <div class="back-box">
+                <button onclick="goBack()" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; border-radius: 10px; color: #000; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">← VOLVER AL MENÚ PRINCIPAL</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-modal" id="resultModal" style="display: none;">
+        <div class="result-icon">🎯</div>
+        <div class="result-title">¡Resultado!</div>
+        <div class="result-message">¡Tu giro fue...</div>
+        <div class="hint-text" id="hintText" style="display: none;"></div>
+        <button class="modal-btn" id="closeModalBtn">Cerrar</button>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay" style="display: none;"></div>
+
+    <script>
+        let coins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        let isSpinning = false;
+        let hintsFound = 0;
+        const totalHints = 1; // Por ahora solo 1 pista
+
+        const symbols = [
+            { symbol: '🔴', name: 'Círculo Rojo', color: 'red' },
+            { symbol: '🟡', name: 'Círculo Amarillo', color: 'yellow' },
+            { symbol: '🔵', name: 'Círculo Azul', color: 'blue' },
+            { symbol: '🟢', name: 'Círculo Verde', color: 'green' },
+            { symbol: '🟣', name: 'Círculo Morado', color: 'purple' },
+            { symbol: '🔺', name: 'Triángulo Rojo', color: 'red' },
+            { symbol: '🟨', name: 'Triángulo Amarillo', color: 'yellow' },
+            { symbol: '🔷', name: 'Triángulo Azul', color: 'blue' },
+            { symbol: '🟩', name: 'Triángulo Verde', color: 'green' },
+            { symbol: '🟪', name: 'Triángulo Morado', color: 'purple' },
+            { symbol: '🟥', name: 'Cuadrado Rojo', color: 'red' },
+            { symbol: '🟦', name: 'Cuadrado Azul', color: 'blue' },
+            { symbol: '🟧', name: 'Cuadrado Naranja', color: 'orange' },
+            { symbol: '🟫', name: 'Cuadrado Marrón', color: 'brown' },
+            { symbol: '⬛', name: 'Cuadrado Negro', color: 'black' }
+        ];
+
+        const hints = [
+            "Si una medalla con tu nombre y tu verdadero nombre quieres ganar? esta secuencia has de usar."
+        ];
+
+        function initSlotMachine() {
+            updateCoinsDisplay();
+            // Generar símbolos iniciales aleatorios
+            document.getElementById('reel1').textContent = symbols[Math.floor(Math.random() * symbols.length)].symbol;
+            document.getElementById('reel2').textContent = symbols[Math.floor(Math.random() * symbols.length)].symbol;
+            document.getElementById('reel3').textContent = symbols[Math.floor(Math.random() * symbols.length)].symbol;
+        }
+
+        function updateCoinsDisplay() {
+            document.getElementById('coinsDisplay').textContent = coins;
+        }
+
+        function spin() {
+            if (isSpinning) return;
+            
+            if (coins < 5) {
+                showResult(false, "No tienes suficientes Ortiz Coins para girar");
+                return;
+            }
+
+            isSpinning = true;
+            coins -= 5;
+            localStorage.setItem('totalOrtizCoins', coins.toString());
+            updateCoinsDisplay();
+
+            document.getElementById('spinBtn').disabled = true;
+            
+            // Animar los símbolos
+            const reels = ['reel1', 'reel2', 'reel3'];
+            reels.forEach((reelId, index) => {
+                const reel = document.getElementById(reelId);
+                reel.classList.add('spinning');
+                
+                // Parar la animación después de un tiempo diferente para cada reel
+                setTimeout(() => {
+                    reel.classList.remove('spinning');
+                }, 1000 + (index * 500));
+            });
+
+            // Generar resultado después de las animaciones
+            setTimeout(() => {
+                const result = generateResult();
+                showResult(result.win, result.message, result.hint);
+                isSpinning = false;
+                document.getElementById('spinBtn').disabled = false;
+            }, 2500);
+        }
+
+        function generateResult() {
+            const reel1Symbol = symbols[Math.floor(Math.random() * symbols.length)];
+            const reel2Symbol = symbols[Math.floor(Math.random() * symbols.length)];
+            const reel3Symbol = symbols[Math.floor(Math.random() * symbols.length)];
+
+            // Actualizar símbolos en pantalla
+            document.getElementById('reel1').textContent = reel1Symbol.symbol;
+            document.getElementById('reel2').textContent = reel2Symbol.symbol;
+            document.getElementById('reel3').textContent = reel3Symbol.symbol;
+
+            // Verificar si son iguales (mismo símbolo y color)
+            if (reel1Symbol.symbol === reel2Symbol.symbol && reel2Symbol.symbol === reel3Symbol.symbol) {
+                // ¡JACKPOT! - Dar pista
+                if (hintsFound < totalHints) {
+                    hintsFound++;
+                    return {
+                        win: true,
+                        message: `¡JACKPOT! 🎉\nTres ${reel1Symbol.name} iguales`,
+                        hint: hints[hintsFound - 1]
+                    };
+                } else {
+                    return {
+                        win: true,
+                        message: `¡JACKPOT! 🎉\nTres ${reel1Symbol.name} iguales\nYa tienes todas las pistas`,
+                        hint: null
+                    };
+                }
+            } else {
+                return {
+                    win: false,
+                    message: `¡No hay coincidencia!\n${reel1Symbol.name} - ${reel2Symbol.name} - ${reel3Symbol.name}`,
+                    hint: null
+                };
+            }
+        }
+
+        function showResult(won, message, hint = null) {
+            const modal = document.getElementById('resultModal');
+            const overlay = document.getElementById('modalOverlay');
+            const icon = modal.querySelector('.result-icon');
+            const title = modal.querySelector('.result-title');
+            const messageEl = modal.querySelector('.result-message');
+            const hintEl = document.getElementById('hintText');
+
+            if (won) {
+                modal.className = 'result-modal win';
+                icon.textContent = '🏆';
+                title.textContent = '¡GANASTE!';
+                title.className = 'result-title win';
+                messageEl.textContent = message;
+                
+                if (hint) {
+                    hintEl.textContent = `💡 PISTA: ${hint}`;
+                    hintEl.style.display = 'block';
+                } else {
+                    hintEl.style.display = 'none';
+                }
+            } else {
+                modal.className = 'result-modal lose';
+                icon.textContent = '💔';
+                title.textContent = '¡PERDISTE!';
+                title.className = 'result-title lose';
+                messageEl.textContent = message;
+                hintEl.style.display = 'none';
+            }
+
+            overlay.style.display = 'block';
+            modal.style.display = 'block';
+
+            // Auto-cerrar después de 5 segundos
+            setTimeout(() => {
+                closeResultModal();
+            }, 5000);
+        }
+
+        function closeResultModal() {
+            const modal = document.getElementById('resultModal');
+            const overlay = document.getElementById('modalOverlay');
+
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+
+        function goBack() {
+            if (!isSpinning) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initSlotMachine();
+            
+            // Event listener para cerrar modal
+            document.getElementById('closeModalBtn').addEventListener('click', closeResultModal);
+        });
+    </script>
+</body>
+</html> 

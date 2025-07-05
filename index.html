@@ -5683,6 +5683,41 @@
       
       // Check all button visibility
       checkAllButtonVisibility();
+      
+      // Easter Egg: Mostrar "6" pequeño en el título si tiene más de 50,000 monedas
+      const titleElement = document.querySelector('.description.glitch-title');
+      if (titleElement) {
+        if (totalCoins >= 50000) {
+          // Agregar el "6" pequeño si no existe
+          if (!titleElement.querySelector('.easter-egg-6')) {
+            const easterEgg6 = document.createElement('span');
+            easterEgg6.className = 'easter-egg-6';
+            easterEgg6.textContent = '6';
+            easterEgg6.style.cssText = `
+              position: absolute;
+              top: 2px;
+              right: 5px;
+              font-size: 8px;
+              color: #00ff7f;
+              opacity: 0.7;
+              font-weight: bold;
+              text-shadow: 0 0 3px #00ff7f;
+              pointer-events: none;
+              z-index: 10;
+            `;
+            titleElement.style.position = 'relative';
+            titleElement.appendChild(easterEgg6);
+            console.log('🥚 Easter Egg "6" agregado al título - jugador tiene', totalCoins, 'monedas');
+          }
+        } else {
+          // Remover el "6" si existe y no tiene suficientes monedas
+          const existingEasterEgg = titleElement.querySelector('.easter-egg-6');
+          if (existingEasterEgg) {
+            existingEasterEgg.remove();
+            console.log('🥚 Easter Egg "6" removido del título - jugador tiene', totalCoins, 'monedas');
+          }
+        }
+      }
     }
 
     // Escuchar evento ortizCoinsUpdated y actualizar el contador

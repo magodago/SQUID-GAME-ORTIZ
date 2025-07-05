@@ -5724,20 +5724,31 @@
     console.log('🔍 Force sync button element:', forceSyncBtn);
     console.log('🔍 Close admin button element:', closeAdminBtn);
     
+    // Mobile debug - check if elements are found
+    if (adminPanelBtn) alert('✅ Admin button encontrado');
+    else alert('❌ Admin button NO encontrado');
+    
+    if (adminPanel) alert('✅ Admin panel encontrado');
+    else alert('❌ Admin panel NO encontrado');
+    
     if (adminPanelBtn) {
       adminPanelBtn.addEventListener('click', () => {
         console.log('🔐 Admin panel button clicked!');
+        alert('🔐 Admin panel button clicked!');
         if (adminPanel) {
           adminPanel.style.display = 'flex';
           document.body.style.overflow = 'hidden';
           loadAdminData();
           console.log('✅ Admin panel opened');
+          alert('✅ Admin panel opened');
         } else {
           console.error('❌ Admin panel element not found!');
+          alert('❌ Admin panel element not found!');
         }
       });
     } else {
       console.error('❌ Admin panel button not found!');
+      alert('❌ Admin panel button not found!');
     }
     
     if (forceSyncBtn) {

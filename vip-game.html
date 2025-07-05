@@ -927,6 +927,9 @@
         }
 
         function startGame(betAmount) {
+            console.log('🎮 startGame() called with betAmount:', betAmount);
+            console.log('players array:', players);
+            
             gameInProgress = true;
             
             // Bloquear todos los botones
@@ -937,19 +940,37 @@
             document.getElementById('betAmount').disabled = true;
             
             // Mostrar barra de progreso
-            document.getElementById('gameProgress').style.display = 'block';
+            const gameProgress = document.getElementById('gameProgress');
+            if (gameProgress) {
+                gameProgress.style.display = 'block';
+                console.log('✅ Game progress bar shown');
+            } else {
+                console.log('❌ Game progress bar not found');
+            }
             
-            document.getElementById('statusText').textContent = '🎮 ¡Juego en progreso!';
+            const statusText = document.getElementById('statusText');
+            if (statusText) {
+                statusText.textContent = '🎮 ¡Juego en progreso!';
+                console.log('✅ Status text updated');
+            } else {
+                console.log('❌ Status text not found');
+            }
             
             let round = 0;
             const maxRounds = 15;
             
+            console.log('⏰ Starting game timer...');
+            
             const gameTimer = setInterval(() => {
                 round++;
+                console.log(`🎯 Round ${round}/${maxRounds}`);
                 
                 // Actualizar barra de progreso
-                const progress = (round / maxRounds) * 100;
-                document.getElementById('progressBar').style.width = progress + '%';
+                const progressBar = document.getElementById('progressBar');
+                if (progressBar) {
+                    const progress = (round / maxRounds) * 100;
+                    progressBar.style.width = progress + '%';
+                }
                 
                 players.forEach((player, index) => {
                     // Generar puntuación aleatoria más variada
@@ -958,17 +979,24 @@
                     const points = basePoints + bonusPoints;
                     
                     player.score += points;
-                    const scoreElement = document.querySelectorAll('.score-value')[index];
-                    scoreElement.textContent = player.score;
-                    scoreElement.parentElement.classList.add('score-animation');
+                    console.log(`🎮 Player ${player.name}: +${points} points = ${player.score} total`);
                     
-                    // Remover animación después de un tiempo
-                    setTimeout(() => {
-                        scoreElement.parentElement.classList.remove('score-animation');
-                    }, 500);
+                    const scoreElements = document.querySelectorAll('.score-value');
+                    if (scoreElements[index]) {
+                        scoreElements[index].textContent = player.score;
+                        scoreElements[index].parentElement.classList.add('score-animation');
+                        
+                        // Remover animación después de un tiempo
+                        setTimeout(() => {
+                            scoreElements[index].parentElement.classList.remove('score-animation');
+                        }, 500);
+                    } else {
+                        console.log(`❌ Score element not found for player ${index}`);
+                    }
                 });
 
                 if (round >= maxRounds) {
+                    console.log('🏁 Game finished, calling endGame()');
                     clearInterval(gameTimer);
                     endGame(betAmount);
                 }

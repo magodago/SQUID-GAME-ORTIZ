@@ -6651,7 +6651,8 @@
     }
 
     function collectAndSyncPlayerData(rewardAmount) {
-      console.log('📊 Collecting player data for Firebase sync...');
+      console.log('🎁 DAILY REWARD SYNC - Iniciando...');
+      alert('🎁 Iniciando sincronización con Firebase...');
       
       // Simple player data collection
       const playerName = localStorage.getItem('soldierName') || 'Unknown';
@@ -6671,38 +6672,44 @@
       };
       
       console.log('📊 Player data collected:', playerData);
-      console.log('🔍 Firebase available:', !!window.firebase);
+      alert(`📊 Datos recolectados:\nJugador: ${playerName}\nMonedas: ${totalCoins}\nRecompensa: ${rewardAmount}`);
       
-      // Simple Firebase sync - same logic as admin panel
-      if (typeof firebase !== 'undefined' && firebase.database) {
-        console.log('✅ Firebase detectado - Enviando datos...');
+      // Check Firebase availability
+      if (typeof firebase === 'undefined') {
+        alert('❌ Firebase no está definido');
+        console.error('❌ Firebase not defined');
+        return;
+      }
+      
+      if (!firebase.database) {
+        alert('❌ Firebase Database no está disponible');
+        console.error('❌ Firebase Database not available');
+        return;
+      }
+      
+      alert('✅ Firebase disponible - Conectando...');
+      console.log('✅ Firebase available, connecting...');
+      
+      try {
+        const database = firebase.database();
+        const playerRef = database.ref(`players/${playerName.replace(/[.#$[\]]/g, '_')}`);
         
-        try {
-          const database = firebase.database();
-          const playerRef = database.ref(`players/${playerName.replace(/[.#$[\]]/g, '_')}`);
-          
-          playerRef.set(playerData).then(() => {
-            console.log('✅ Daily reward data synced to Firebase successfully');
-            showDailyRewardMessage(`✅ Datos enviados a Firebase! +${rewardAmount} monedas`);
-          }).catch(error => {
-            console.error('❌ Firebase sync failed:', error);
-            showDailyRewardMessage(`⚠️ Error al enviar datos: ${error.message}`);
-          });
-        } catch (error) {
-          console.error('❌ Firebase sync error:', error);
-          showDailyRewardMessage(`⚠️ Error de conexión: ${error.message}`);
-        }
-      } else {
-        console.error('❌ Firebase no disponible');
-        showDailyRewardMessage(`⚠️ Firebase no disponible - datos guardados localmente`);
+        alert('📤 Enviando datos a Firebase...');
+        console.log('📤 Sending data to Firebase...');
         
-        // Store data locally as backup
-        const backupData = {
-          ...playerData,
-          backupTimestamp: new Date().toISOString(),
-          needsSync: true
-        };
-        localStorage.setItem('firebaseBackupData', JSON.stringify(backupData));
+        playerRef.set(playerData).then(() => {
+          console.log('✅ Daily reward data synced to Firebase successfully');
+          alert(`✅ ÉXITO! Datos enviados a Firebase\nJugador: ${playerName}\nMonedas: ${totalCoins}\nRecompensa: ${rewardAmount}`);
+          showDailyRewardMessage(`✅ Datos enviados a Firebase! +${rewardAmount} monedas`);
+        }).catch(error => {
+          console.error('❌ Firebase sync failed:', error);
+          alert(`❌ Error al enviar datos: ${error.message}`);
+          showDailyRewardMessage(`⚠️ Error al enviar datos: ${error.message}`);
+        });
+      } catch (error) {
+        console.error('❌ Firebase sync error:', error);
+        alert(`❌ Error de conexión: ${error.message}`);
+        showDailyRewardMessage(`⚠️ Error de conexión: ${error.message}`);
       }
     }
 

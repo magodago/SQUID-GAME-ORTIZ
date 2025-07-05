@@ -6496,38 +6496,68 @@
       };
       
       console.log('📊 Player data collected:', playerData);
+      console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
+      console.log('🔍 Firebase available:', !!window.firebase);
       
-      // Save to Firebase
+      // Try PlayerDataManager first
       if (window.PlayerDataManager && PlayerDataManager.savePlayerData) {
+        console.log('📤 Attempting PlayerDataManager sync...');
         PlayerDataManager.savePlayerData(playerData.name, playerData.coins, {
           ...playerData,
           gameType: 'daily-reward',
           autoSync: true
         }).then(result => {
           if (result) {
-            console.log('✅ Daily reward data synced to Firebase:', playerData);
+            console.log('✅ Daily reward data synced to Firebase via PlayerDataManager:', playerData);
+            showDailyRewardMessage(`✅ Datos enviados a Firebase! +${rewardAmount} monedas`);
           } else {
-            console.log('⚠️ Failed to sync daily reward data');
+            console.log('⚠️ PlayerDataManager sync failed, trying fallback...');
+            tryFallbackFirebaseSync(playerData);
           }
         }).catch(error => {
-          console.error('❌ Error syncing daily reward data:', error);
+          console.error('❌ PlayerDataManager sync error:', error);
+          tryFallbackFirebaseSync(playerData);
         });
       } else {
-        console.log('⚠️ PlayerDataManager not available for daily reward sync');
-        // Fallback: try to sync with basic Firebase
-        if (window.firebase && window.firebase.database) {
-          try {
-            const database = window.firebase.database();
-            const playerRef = database.ref(`players/${playerData.name.replace(/[.#$[\]]/g, '_')}`);
-            playerRef.set({
-              ...playerData,
-              lastUpdate: new Date().toISOString()
-            });
-            console.log('✅ Fallback Firebase sync completed');
-          } catch (error) {
+        console.log('⚠️ PlayerDataManager not available, trying fallback...');
+        tryFallbackFirebaseSync(playerData);
+      }
+    }
+
+    function tryFallbackFirebaseSync(playerData) {
+      console.log('🔄 Trying fallback Firebase sync...');
+      
+      if (window.firebase && window.firebase.database) {
+        try {
+          const database = window.firebase.database();
+          const playerRef = database.ref(`players/${playerData.name.replace(/[.#$[\]]/g, '_')}`);
+          
+          playerRef.set({
+            ...playerData,
+            lastUpdate: new Date().toISOString(),
+            syncMethod: 'fallback'
+          }).then(() => {
+            console.log('✅ Fallback Firebase sync completed successfully');
+            showDailyRewardMessage(`✅ Datos enviados a Firebase! +${playerData.dailyRewardAmount} monedas`);
+          }).catch(error => {
             console.error('❌ Fallback Firebase sync failed:', error);
-          }
+            showDailyRewardMessage(`⚠️ Error al enviar datos: ${error.message}`);
+          });
+        } catch (error) {
+          console.error('❌ Fallback Firebase sync error:', error);
+          showDailyRewardMessage(`⚠️ Error de conexión: ${error.message}`);
         }
+      } else {
+        console.error('❌ No Firebase available for sync');
+        showDailyRewardMessage(`⚠️ Firebase no disponible - datos guardados localmente`);
+        
+        // Store data locally as backup
+        const backupData = {
+          ...playerData,
+          backupTimestamp: new Date().toISOString(),
+          needsSync: true
+        };
+        localStorage.setItem('firebaseBackupData', JSON.stringify(backupData));
       }
     }
 
@@ -6581,6 +6611,9 @@
       console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
       console.log('🔍 Firebase available:', !!window.firebase);
       
+      // Check Firebase status
+      checkFirebaseStatus();
+      
       // Initialize daily reward
       initializeDailyReward();
       
@@ -6590,6 +6623,41 @@
         migrateOldPlayerData(); // Sync current data to Firebase
       }, 2000);
     });
+
+    function checkFirebaseStatus() {
+      console.log('🔍 Checking Firebase status...');
+      
+      if (window.firebase) {
+        console.log('✅ Firebase SDK loaded');
+        if (window.firebase.database) {
+          console.log('✅ Firebase Database available');
+          // Test connection
+          try {
+            const database = window.firebase.database();
+            const testRef = database.ref('test');
+            testRef.set({ test: true, timestamp: new Date().toISOString() }).then(() => {
+              console.log('✅ Firebase connection test successful');
+              testRef.remove(); // Clean up test data
+            }).catch(error => {
+              console.error('❌ Firebase connection test failed:', error);
+            });
+          } catch (error) {
+            console.error('❌ Firebase database error:', error);
+          }
+        } else {
+          console.log('⚠️ Firebase Database not available');
+        }
+      } else {
+        console.log('❌ Firebase SDK not loaded');
+      }
+      
+      if (window.PlayerDataManager) {
+        console.log('✅ PlayerDataManager available');
+        console.log('🔍 PlayerDataManager methods:', Object.keys(window.PlayerDataManager));
+      } else {
+        console.log('❌ PlayerDataManager not available');
+      }
+    }
   </script>
   
   <!-- Firebase Configuration -->

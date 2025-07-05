@@ -927,9 +927,6 @@
         }
 
         function startGame(betAmount) {
-            console.log('🎮 startGame() called with betAmount:', betAmount);
-            console.log('players array:', players);
-            
             gameInProgress = true;
             
             // Bloquear todos los botones
@@ -940,63 +937,48 @@
             document.getElementById('betAmount').disabled = true;
             
             // Mostrar barra de progreso
-            const gameProgress = document.getElementById('gameProgress');
-            if (gameProgress) {
-                gameProgress.style.display = 'block';
-                console.log('✅ Game progress bar shown');
-            } else {
-                console.log('❌ Game progress bar not found');
-            }
+            document.getElementById('gameProgress').style.display = 'block';
+            document.getElementById('statusText').textContent = '🎮 ¡Juego en progreso!';
             
-            const statusText = document.getElementById('statusText');
-            if (statusText) {
-                statusText.textContent = '🎮 ¡Juego en progreso!';
-                console.log('✅ Status text updated');
-            } else {
-                console.log('❌ Status text not found');
-            }
+            // Reset player scores
+            players.forEach(player => player.score = 0);
             
             let round = 0;
             const maxRounds = 15;
             
-            console.log('⏰ Starting game timer...');
-            
             const gameTimer = setInterval(() => {
                 round++;
-                console.log(`🎯 Round ${round}/${maxRounds}`);
                 
                 // Actualizar barra de progreso
-                const progressBar = document.getElementById('progressBar');
-                if (progressBar) {
-                    const progress = (round / maxRounds) * 100;
-                    progressBar.style.width = progress + '%';
-                }
+                const progress = (round / maxRounds) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
                 
+                // Actualizar puntuaciones de todos los jugadores
                 players.forEach((player, index) => {
-                    // Generar puntuación aleatoria más variada
+                    // Generar puntuación aleatoria
                     const basePoints = Math.floor(Math.random() * 15) + 1;
                     const bonusPoints = Math.random() > 0.7 ? Math.floor(Math.random() * 10) : 0;
                     const points = basePoints + bonusPoints;
                     
                     player.score += points;
-                    console.log(`🎮 Player ${player.name}: +${points} points = ${player.score} total`);
                     
-                    const scoreElements = document.querySelectorAll('.score-value');
-                    if (scoreElements[index]) {
-                        scoreElements[index].textContent = player.score;
-                        scoreElements[index].parentElement.classList.add('score-animation');
-                        
-                        // Remover animación después de un tiempo
-                        setTimeout(() => {
-                            scoreElements[index].parentElement.classList.remove('score-animation');
-                        }, 500);
-                    } else {
-                        console.log(`❌ Score element not found for player ${index}`);
+                    // Buscar el elemento de puntuación por el nombre del jugador
+                    const playerCards = document.querySelectorAll('.player-card');
+                    if (playerCards[index]) {
+                        const scoreElement = playerCards[index].querySelector('.score-value');
+                        if (scoreElement) {
+                            scoreElement.textContent = player.score;
+                            playerCards[index].classList.add('score-animation');
+                            
+                            // Remover animación después de un tiempo
+                            setTimeout(() => {
+                                playerCards[index].classList.remove('score-animation');
+                            }, 500);
+                        }
                     }
                 });
 
                 if (round >= maxRounds) {
-                    console.log('🏁 Game finished, calling endGame()');
                     clearInterval(gameTimer);
                     endGame(betAmount);
                 }

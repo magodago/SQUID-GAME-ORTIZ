@@ -7420,6 +7420,9 @@
       // Reset coins to 0
       localStorage.setItem('totalOrtizCoins', '0');
       
+      // Mark ALL IN as used permanently
+      localStorage.setItem('allInUsed', 'true');
+      
       // Hide ALL IN button permanently
       const allInContainer = document.getElementById('allInContainer');
       allInContainer.style.display = 'none';
@@ -7537,6 +7540,9 @@
       // Update coins
       localStorage.setItem('totalOrtizCoins', newCoins.toString());
       
+      // Mark Front Man as used permanently
+      localStorage.setItem('frontManUsed', 'true');
+      
       // Hide Front Man button permanently
       const frontmanContainer = document.getElementById('frontmanCallContainer');
       frontmanContainer.style.display = 'none';
@@ -7563,6 +7569,9 @@
     
     function executeFrontManNo() {
       console.log('❌ Front Man NO - player is smart');
+      
+      // Mark Front Man as used permanently
+      localStorage.setItem('frontManUsed', 'true');
       
       // Hide Front Man button permanently
       const frontmanContainer = document.getElementById('frontmanCallContainer');
@@ -7701,6 +7710,9 @@
       };
       
       const modal = document.getElementById('playerFightModal');
+      
+      // Mark Player Fight as used permanently
+      localStorage.setItem('playerFightUsed', 'true');
       
       // Hide Player Fight button permanently
       const playerFightContainer = document.getElementById('playerFightContainer');
@@ -8119,36 +8131,45 @@
       
       const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       
-      // Check ALL IN button (15000+ coins)
+      // Check ALL IN button (15000+ coins and not used)
       const allInContainer = document.getElementById('allInContainer');
       if (allInContainer) {
-        if (totalCoins >= 15000) {
+        const allInUsed = localStorage.getItem('allInUsed') === 'true';
+        if (totalCoins >= 15000 && !allInUsed) {
           allInContainer.classList.add('visible');
+          allInContainer.style.display = 'block';
           console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins');
         } else {
           allInContainer.classList.remove('visible');
+          allInContainer.style.display = 'none';
         }
       }
       
-      // Check Front Man button (20000+ coins)
+      // Check Front Man button (20000+ coins and not used)
       const frontmanContainer = document.getElementById('frontmanCallContainer');
       if (frontmanContainer) {
-        if (totalCoins >= 20000) {
+        const frontManUsed = localStorage.getItem('frontManUsed') === 'true';
+        if (totalCoins >= 20000 && !frontManUsed) {
           frontmanContainer.classList.add('visible');
+          frontmanContainer.style.display = 'block';
           console.log('📞 Front Man button visible - player has', totalCoins, 'coins');
         } else {
           frontmanContainer.classList.remove('visible');
+          frontmanContainer.style.display = 'none';
         }
       }
       
-      // Check Player Fight button (25000+ coins)
+      // Check Player Fight button (25000+ coins and not used)
       const playerFightContainer = document.getElementById('playerFightContainer');
       if (playerFightContainer) {
-        if (totalCoins >= 25000) {
+        const playerFightUsed = localStorage.getItem('playerFightUsed') === 'true';
+        if (totalCoins >= 25000 && !playerFightUsed) {
           playerFightContainer.classList.add('visible');
+          playerFightContainer.style.display = 'block';
           console.log('⚔️ Player Fight button visible - player has', totalCoins, 'coins');
         } else {
           playerFightContainer.classList.remove('visible');
+          playerFightContainer.style.display = 'none';
         }
       }
     }

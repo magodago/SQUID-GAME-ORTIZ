@@ -2508,16 +2508,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.8rem;
-      margin: 0.5rem 0;
-      padding: 0.6rem 1.2rem;
-      background: rgba(0, 0, 0, 0.6);
-      border: 2px solid #FF6B35;
-      border-radius: 10px;
-      box-shadow: 0 0 20px #FF6B35;
+      margin: 1rem 0;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+      border: 3px solid #FF6B35;
+      border-radius: 15px;
+      box-shadow: 0 0 30px #FF6B35, inset 0 0 20px rgba(255, 107, 53, 0.3);
       backdrop-filter: blur(5px);
       margin-left: auto;
       margin-right: auto;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      max-width: 300px;
+    }
+    
+    .daily-reward-container:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px #FF6B35, inset 0 0 30px rgba(255, 107, 53, 0.5);
     }
     
     .daily-reward-container .envelope-btn {
@@ -2527,17 +2535,17 @@
       transition: all 0.3s;
       font-family: 'Orbitron', Arial, sans-serif;
       font-weight: bold;
-      font-size: 1rem;
-      color: #FF6B35;
-      text-shadow: 0 0 10px #FF6B35;
+      font-size: 1.2rem;
+      color: #fff;
+      text-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
       padding: 0;
-      width: auto;
+      width: 100%;
       height: auto;
     }
     
     .daily-reward-container .envelope-btn:hover {
-      transform: scale(1.05);
-      text-shadow: 0 0 20px #FF6B35;
+      transform: none;
+      text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
     }
     
     .daily-reward-container .envelope-btn.disabled {

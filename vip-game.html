@@ -17,113 +17,145 @@
         }
 
         body {
+            margin: 0;
+            padding: 10px;
             font-family: 'Orbitron', monospace;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
             color: #FFD700;
             min-height: 100vh;
-            padding: 20px;
+            box-sizing: border-box;
         }
 
         .vip-header {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 3px solid #FFD700;
-            border-radius: 15px;
+            margin-bottom: 10px;
         }
 
         .vip-title {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: #FFD700;
-            text-shadow: 0 0 30px #FFD700;
-            animation: vipGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes vipGlow {
-            from { text-shadow: 0 0 30px #FFD700; }
-            to { text-shadow: 0 0 40px #FFD700, 0 0 80px #FFD700; }
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #FFD700;
+            margin: 0;
         }
 
         .game-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            gap: 15px;
+            height: calc(100vh - 80px);
+            max-height: 600px;
         }
 
         .arena-section {
             background: rgba(0, 0, 0, 0.9);
             border: 3px solid #FFD700;
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
         }
 
         .arena-title {
+            font-size: 1.2rem;
+            font-weight: bold;
             text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             color: #FFD700;
         }
 
         .players-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: 8px;
+            flex: 1;
+            margin-bottom: 10px;
         }
 
         .player-card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            background: rgba(255, 215, 0, 0.1);
             border: 2px solid #FFD700;
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 8px;
             text-align: center;
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .player-card.winner {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000;
-            transform: scale(1.05);
-            animation: winnerPulse 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes winnerPulse {
-            from { box-shadow: 0 0 20px #FFD700; }
-            to { box-shadow: 0 0 40px #FFD700, 0 0 60px #FFD700; }
+            background: rgba(0, 255, 0, 0.3);
+            border-color: #00FF00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
         }
 
         .player-emoji {
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
         }
 
         .player-name {
-            font-size: 1.2rem;
             font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
         }
 
         .player-score {
-            font-size: 1rem;
+            font-size: 0.8rem;
             color: #FFA500;
+        }
+
+        .score-value {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .game-progress {
+            display: none;
+            margin: 10px 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            height: 15px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            text-align: center;
+            font-size: 1rem;
+            margin: 5px 0;
+            color: #FFD700;
+            min-height: 20px;
         }
 
         .betting-section {
             background: rgba(0, 0, 0, 0.9);
             border: 3px solid #FFD700;
             border-radius: 15px;
-            padding: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .betting-section h3 {
+            text-align: center;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
         }
 
         .bet-type {
             background: rgba(255, 215, 0, 0.1);
             border: 2px solid #FFD700;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
@@ -131,94 +163,109 @@
 
         .bet-type:hover {
             background: rgba(255, 215, 0, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
         }
 
         .bet-type.selected {
             background: rgba(255, 215, 0, 0.3);
             border: 2px solid #FFA500;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
         }
 
         .bet-type.selected::after {
             content: '✓';
             position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.2rem;
+            top: 8px;
+            right: 10px;
+            font-size: 1rem;
             color: #FFA500;
             font-weight: bold;
         }
 
+        .bet-type > div:first-child {
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .bet-type > div:nth-child(2) {
+            font-size: 0.8rem;
+            color: #FFA500;
+            margin-bottom: 5px;
+        }
+
         .bet-options {
             display: none;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .bet-option {
             background: rgba(255, 165, 0, 0.1);
             border: 1px solid #FFA500;
-            border-radius: 8px;
-            padding: 10px;
-            margin: 5px 0;
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin: 3px 0;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            font-size: 0.8rem;
         }
 
         .bet-option:hover {
             background: rgba(255, 165, 0, 0.2);
             transform: translateY(-1px);
-            box-shadow: 0 3px 10px rgba(255, 165, 0, 0.3);
+            box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
         }
 
         .bet-option.selected {
             background: rgba(0, 255, 0, 0.2);
             border: 2px solid #00FF00;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
         }
 
         .bet-option.selected::after {
             content: '●';
             position: absolute;
-            top: 8px;
-            right: 10px;
-            font-size: 1rem;
+            top: 6px;
+            right: 8px;
+            font-size: 0.8rem;
             color: #00FF00;
             font-weight: bold;
         }
 
         .bet-input {
             width: 100%;
-            padding: 15px;
-            margin: 20px 0;
+            padding: 10px;
+            margin: 10px 0;
             background: #1a1a1a;
             border: 2px solid #FFD700;
-            border-radius: 10px;
+            border-radius: 8px;
             color: #FFD700;
             font-family: 'Orbitron', monospace;
-            font-size: 1.1rem;
+            font-size: 1rem;
             text-align: center;
+            box-sizing: border-box;
         }
 
         .play-button {
             width: 100%;
-            padding: 20px;
+            padding: 12px;
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             border: none;
-            border-radius: 15px;
+            border-radius: 10px;
             color: #000;
             font-family: 'Orbitron', monospace;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-bottom: 8px;
         }
 
         .play-button:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
         }
 
         .play-button:disabled {
@@ -227,45 +274,22 @@
             transform: none;
         }
 
-        .game-progress {
-            display: none;
-            margin: 20px 0;
-            background: #1a1a1a;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 20px;
-            background: linear-gradient(90deg, #FFD700, #FFA500);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .status-text {
-            text-align: center;
-            font-size: 1.2rem;
-            margin: 20px 0;
-            color: #FFD700;
-        }
-
         .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 15px 25px;
+            padding: 10px;
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             color: #000;
             font-family: 'Orbitron', monospace;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            width: 100%;
+            font-size: 0.9rem;
         }
 
         .back-button:hover {
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         .result-modal {
@@ -335,16 +359,58 @@
         }
 
         @media (max-width: 768px) {
-            .game-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .players-grid {
-                grid-template-columns: 1fr;
+            body {
+                padding: 5px;
             }
             
             .vip-title {
-                font-size: 2rem;
+                font-size: 1.4rem;
+            }
+            
+            .game-container {
+                grid-template-columns: 1fr;
+                height: calc(100vh - 60px);
+                gap: 10px;
+            }
+            
+            .arena-section, .betting-section {
+                padding: 10px;
+            }
+            
+            .players-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 5px;
+            }
+            
+            .player-card {
+                padding: 5px;
+            }
+            
+            .player-emoji {
+                font-size: 1.2rem;
+            }
+            
+            .player-name {
+                font-size: 0.8rem;
+            }
+            
+            .player-score {
+                font-size: 0.7rem;
+            }
+            
+            .bet-type {
+                padding: 8px;
+                margin-bottom: 6px;
+            }
+            
+            .bet-option {
+                padding: 5px 6px;
+                font-size: 0.7rem;
+            }
+            
+            .play-button, .back-button {
+                padding: 8px;
+                font-size: 1rem;
             }
         }
     </style>

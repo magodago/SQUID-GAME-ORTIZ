@@ -388,22 +388,28 @@
                 if (players.length === 0) {
                     document.getElementById('emptyState').style.display = 'block';
                 } else {
-                    players.forEach(player => {
-                        const playerCard = document.createElement('div');
-                        playerCard.className = 'player-card';
-                        playerCard.innerHTML = `
-                            <div class="player-info">
-                                <span class="player-icon">🎖️</span>
-                                <div class="player-details">
-                                    <h3>${player.name}</h3>
-                                    <p>Juegos: ${player.gamesPlayed} | Victorias: ${player.totalWins} | Pistas: ${player.cluesFound}</p>
-                                    <small>Última actividad: ${player.lastUpdated.toLocaleString()}</small>
+                                            players.forEach(player => {
+                            const playerCard = document.createElement('div');
+                            playerCard.className = 'player-card';
+                            
+                            // Check if player was migrated
+                            const isMigrated = player.migrationInfo;
+                            const migrationBadge = isMigrated ? '<span style="background: #00ff00; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">MIGRADO</span>' : '';
+                            
+                            playerCard.innerHTML = `
+                                <div class="player-info">
+                                    <span class="player-icon">🎖️</span>
+                                    <div class="player-details">
+                                        <h3>${player.name} ${migrationBadge}</h3>
+                                        <p>Juegos: ${player.gamesPlayed} | Victorias: ${player.totalWins} | Pistas: ${player.cluesFound}</p>
+                                        <small>Última actividad: ${player.lastUpdated.toLocaleString()}</small>
+                                        ${isMigrated ? `<br><small style="color: #00ff00;">Migrado el: ${new Date(player.migrationInfo.migratedAt).toLocaleString()}</small>` : ''}
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="player-coins">🪙 ${player.coins}</div>
-                        `;
-                        playersGrid.appendChild(playerCard);
-                    });
+                                <div class="player-coins">🪙 ${player.coins}</div>
+                            `;
+                            playersGrid.appendChild(playerCard);
+                        });
                     
                     document.getElementById('playersSection').style.display = 'block';
                 }

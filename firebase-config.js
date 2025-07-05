@@ -22,19 +22,36 @@ const PlayerDataManager = {
   savePlayerData: async function(playerName, coins, gameData = {}) {
     try {
       const playerRef = db.ref('players/' + playerName);
-      await playerRef.set({
+      
+      // Check if player already exists
+      const snapshot = await playerRef.once('value');
+      const existingData = snapshot.val() || {};
+      
+      // Prepare new data
+      const newData = {
         name: playerName,
         coins: coins,
         lastUpdated: Date.now(),
-        gamesPlayed: gameData.gamesPlayed || 0,
-        totalWins: gameData.totalWins || 0,
-        cluesFound: gameData.cluesFound || 0,
+        gamesPlayed: gameData.gamesPlayed || existingData.gamesPlayed || 0,
+        totalWins: gameData.totalWins || existingData.totalWins || 0,
+        cluesFound: gameData.cluesFound || existingData.cluesFound || 0,
         deviceInfo: {
           userAgent: navigator.userAgent,
           platform: navigator.platform,
           timestamp: new Date().toISOString()
         }
-      });
+      };
+      
+      // Add migration info if this is a migration
+      if (gameData.migrationNote) {
+        newData.migrationInfo = {
+          migratedAt: gameData.migratedAt,
+          note: gameData.migrationNote,
+          originalCoins: gameData.originalCoins || coins
+        };
+      }
+      
+      await playerRef.set(newData);
       console.log('✅ Player data saved to Firebase Realtime Database:', playerName);
       return true;
     } catch (error) {

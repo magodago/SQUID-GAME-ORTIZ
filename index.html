@@ -3373,21 +3373,47 @@
 
     /* Achievements Button Styles */
     .achievements-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem 0;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      border: 3px solid #FFD700;
+      border-radius: 15px;
+      box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+      backdrop-filter: blur(5px);
+      margin-left: auto;
+      margin-right: auto;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      max-width: 300px;
+    }
+
+    .achievements-container:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
     }
 
     .achievements-btn {
-      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-      border: 2px solid #FFD700;
-      box-shadow: 0 0 20px #FFD700;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #000;
+      text-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+      padding: 0;
+      width: 100%;
+      height: auto;
     }
 
     .achievements-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 30px #FFD700;
+      transform: none;
+      text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
     }
 
     /* Achievements Modal Styles */

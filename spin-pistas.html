@@ -396,6 +396,9 @@
         <div class="slot-machine">
             <div class="coins-display">💰 Ortiz Coins: <span id="coinsDisplay">0</span></div>
             <div class="cost-info">💸 Costo por giro: 5 Ortiz Coins</div>
+            <div class="game-info" style="color: #FFFFFF; font-size: 1rem; margin: 10px 0; background: rgba(0, 100, 0, 0.2); padding: 10px; border-radius: 8px; border: 1px solid rgba(0, 100, 0, 0.3);">
+                🎯 <strong>Objetivo:</strong> Consigue 3 figuras iguales (círculos, triángulos o cuadrados)
+            </div>
             
             <div class="slot-reels">
                 <div class="slot-reel">
@@ -434,21 +437,21 @@
         const totalHints = 1; // Por ahora solo 1 pista
 
         const symbols = [
-            { symbol: '🔴', name: 'Círculo Rojo', color: 'red' },
-            { symbol: '🟡', name: 'Círculo Amarillo', color: 'yellow' },
-            { symbol: '🔵', name: 'Círculo Azul', color: 'blue' },
-            { symbol: '🟢', name: 'Círculo Verde', color: 'green' },
-            { symbol: '🟣', name: 'Círculo Morado', color: 'purple' },
-            { symbol: '🔺', name: 'Triángulo Rojo', color: 'red' },
-            { symbol: '🟨', name: 'Triángulo Amarillo', color: 'yellow' },
-            { symbol: '🔷', name: 'Triángulo Azul', color: 'blue' },
-            { symbol: '🟩', name: 'Triángulo Verde', color: 'green' },
-            { symbol: '🟪', name: 'Triángulo Morado', color: 'purple' },
-            { symbol: '🟥', name: 'Cuadrado Rojo', color: 'red' },
-            { symbol: '🟦', name: 'Cuadrado Azul', color: 'blue' },
-            { symbol: '🟧', name: 'Cuadrado Naranja', color: 'orange' },
-            { symbol: '🟫', name: 'Cuadrado Marrón', color: 'brown' },
-            { symbol: '⬛', name: 'Cuadrado Negro', color: 'black' }
+            { symbol: '🔴', name: 'Círculo Rojo', shape: 'circle', color: 'red' },
+            { symbol: '🟡', name: 'Círculo Amarillo', shape: 'circle', color: 'yellow' },
+            { symbol: '🔵', name: 'Círculo Azul', shape: 'circle', color: 'blue' },
+            { symbol: '🟢', name: 'Círculo Verde', shape: 'circle', color: 'green' },
+            { symbol: '🟣', name: 'Círculo Morado', shape: 'circle', color: 'purple' },
+            { symbol: '🔺', name: 'Triángulo Rojo', shape: 'triangle', color: 'red' },
+            { symbol: '🟨', name: 'Triángulo Amarillo', shape: 'triangle', color: 'yellow' },
+            { symbol: '🔷', name: 'Triángulo Azul', shape: 'triangle', color: 'blue' },
+            { symbol: '🟩', name: 'Triángulo Verde', shape: 'triangle', color: 'green' },
+            { symbol: '🟪', name: 'Triángulo Morado', shape: 'triangle', color: 'purple' },
+            { symbol: '🟥', name: 'Cuadrado Rojo', shape: 'square', color: 'red' },
+            { symbol: '🟦', name: 'Cuadrado Azul', shape: 'square', color: 'blue' },
+            { symbol: '🟧', name: 'Cuadrado Naranja', shape: 'square', color: 'orange' },
+            { symbol: '🟫', name: 'Cuadrado Marrón', shape: 'square', color: 'brown' },
+            { symbol: '⬛', name: 'Cuadrado Negro', shape: 'square', color: 'black' }
         ];
 
         const hints = [
@@ -524,20 +527,30 @@
             document.getElementById('reel2').textContent = reel2Symbol.symbol;
             document.getElementById('reel3').textContent = reel3Symbol.symbol;
 
-            // Verificar si son iguales (mismo símbolo y color)
-            if (reel1Symbol.symbol === reel2Symbol.symbol && reel2Symbol.symbol === reel3Symbol.symbol) {
+            // Verificar si son iguales (misma forma, no necesariamente color)
+            if (reel1Symbol.shape === reel2Symbol.shape && reel2Symbol.shape === reel3Symbol.shape) {
                 // ¡JACKPOT! - Dar pista
                 if (hintsFound < totalHints) {
                     hintsFound++;
+                    const shapeNames = {
+                        'circle': 'Círculos',
+                        'triangle': 'Triángulos', 
+                        'square': 'Cuadrados'
+                    };
                     return {
                         win: true,
-                        message: `¡JACKPOT! 🎉\nTres ${reel1Symbol.name} iguales`,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
                         hint: hints[hintsFound - 1]
                     };
                 } else {
+                    const shapeNames = {
+                        'circle': 'Círculos',
+                        'triangle': 'Triángulos', 
+                        'square': 'Cuadrados'
+                    };
                     return {
                         win: true,
-                        message: `¡JACKPOT! 🎉\nTres ${reel1Symbol.name} iguales\nYa tienes todas las pistas`,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales\nYa tienes todas las pistas`,
                         hint: null
                     };
                 }

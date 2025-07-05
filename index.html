@@ -2418,6 +2418,73 @@
     font-style: italic;
   }
 
+  /* Front Man Call Button Styles */
+  .frontman-call-container {
+    position: relative;
+    display: none;
+    margin: 15px 0;
+    animation: frontmanCallShake 2s infinite;
+  }
+
+  .frontman-call-container.visible {
+    display: block;
+  }
+
+  @keyframes frontmanCallShake {
+    0%, 100% { 
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% { 
+      transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% { 
+      transform: translateX(5px);
+    }
+  }
+
+  .frontman-call-btn {
+    background: linear-gradient(45deg, #ff6600, #cc5500);
+    border: 3px solid #ff6600;
+    border-radius: 15px;
+    padding: 20px 30px;
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 10px #ffffff;
+    box-shadow: 0 0 30px rgba(255, 102, 0, 0.5);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .frontman-call-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+  }
+
+  .frontman-call-btn:hover::before {
+    left: 100%;
+  }
+
+  .frontman-call-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 50px rgba(255, 102, 0, 0.8);
+    background: linear-gradient(45deg, #ff7733, #dd6600);
+  }
+
+  .frontman-call-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 0 20px rgba(255, 102, 0, 0.4);
+  }
+
   /* Simple ALL IN Modal Styles */
   .simple-all-in-modal {
     position: fixed;
@@ -2528,6 +2595,99 @@
   .all-in-close-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+  }
+
+  /* Front Man Modal Styles */
+  .frontman-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: modalFadeIn 0.3s ease-out;
+  }
+
+  .frontman-content {
+    background: linear-gradient(135deg, #1a1a00, #333300);
+    border: 3px solid #ff6600;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 50px rgba(255, 102, 0, 0.5);
+    animation: modalSlideIn 0.3s ease-out;
+  }
+
+  .frontman-content h2 {
+    color: #ff6600;
+    font-size: 2.5rem;
+    margin: 0 0 20px 0;
+    text-shadow: 0 0 20px #ff6600;
+  }
+
+  .frontman-question {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin: 20px 0;
+    line-height: 1.5;
+    font-weight: bold;
+  }
+
+  .frontman-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+
+  .frontman-yes-btn, .frontman-no-btn, .frontman-close-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+  }
+
+  .frontman-yes-btn {
+    background: linear-gradient(45deg, #ff6600, #cc5500);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 102, 0, 0.5);
+  }
+
+  .frontman-yes-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(255, 102, 0, 0.8);
+  }
+
+  .frontman-no-btn {
+    background: linear-gradient(45deg, #666666, #444444);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(102, 102, 102, 0.5);
+  }
+
+  .frontman-no-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(102, 102, 102, 0.8);
+  }
+
+  .frontman-close-btn {
+    background: linear-gradient(45deg, #ff6600, #cc5500);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 102, 0, 0.5);
+  }
+
+  .frontman-close-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(255, 102, 0, 0.8);
   }
 
   .all-in-btn:hover {
@@ -3821,10 +3981,17 @@
       </button>
     </div>
 
-    <!-- ALL IN Game Button (Only for players with 40000+ coins) -->
+    <!-- ALL IN Game Button (Only for players with 15000+ coins) -->
     <div class="all-in-container" id="allInContainer">
       <button class="all-in-btn" id="allInBtn">
         🎰 ALL IN - TODO O NADA 🎰
+      </button>
+    </div>
+
+    <!-- Front Man Call Button (Only for players with 20000+ coins) -->
+    <div class="frontman-call-container" id="frontmanCallContainer">
+      <button class="frontman-call-btn" id="frontmanCallBtn">
+        📞 FRONT MAN TE LLAMA 📞
       </button>
     </div>
     
@@ -6994,10 +7161,10 @@
       const allInContainer = document.getElementById('allInContainer');
       const allInBtn = document.getElementById('allInBtn');
       
-      // Check if player has 40000+ coins and show/hide button
+      // Check if player has 15000+ coins and show/hide button
       function checkAllInVisibility() {
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        if (totalCoins >= 40000) {
+        if (totalCoins >= 15000) {
           allInContainer.classList.add('visible');
           console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins');
         } else {
@@ -7020,7 +7187,7 @@
         console.log('🎰 ALL IN button clicked!');
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
         
-        if (totalCoins < 40000) {
+        if (totalCoins < 15000) {
           console.log('❌ Player does not have enough coins for ALL IN');
           return;
         }
@@ -7105,6 +7272,141 @@
       }
     }
 
+    // FRONT MAN CALL FUNCTIONS
+    function initializeFrontManCall() {
+      console.log('📞 Initializing Front Man call...');
+      
+      const frontmanContainer = document.getElementById('frontmanCallContainer');
+      const frontmanBtn = document.getElementById('frontmanCallBtn');
+      
+      // Check if player has 20000+ coins and show/hide button
+      function checkFrontManVisibility() {
+        const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        if (totalCoins >= 20000) {
+          frontmanContainer.classList.add('visible');
+          console.log('📞 Front Man call button visible - player has', totalCoins, 'coins');
+        } else {
+          frontmanContainer.classList.remove('visible');
+        }
+      }
+      
+      // Check visibility on page load
+      checkFrontManVisibility();
+      
+      // Check visibility when coins change
+      const originalLoadTotalCoins = window.loadTotalCoins;
+      window.loadTotalCoins = function() {
+        if (originalLoadTotalCoins) originalLoadTotalCoins();
+        checkFrontManVisibility();
+      };
+      
+      // Front Man button click - show modal
+      frontmanBtn.addEventListener('click', () => {
+        console.log('📞 Front Man call button clicked!');
+        const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        
+        if (totalCoins < 20000) {
+          console.log('❌ Player does not have enough coins for Front Man call');
+          return;
+        }
+        
+        showFrontManModal();
+      });
+    }
+    
+    function showFrontManModal() {
+      // Create modal HTML
+      const modalHTML = `
+        <div class="frontman-modal" id="frontmanModal">
+          <div class="frontman-content">
+            <h2>📞 FRONT MAN</h2>
+            <p class="frontman-question">¿Somos caballos?</p>
+            <div class="frontman-buttons">
+              <button class="frontman-yes-btn" id="frontmanYesBtn">🐎 SÍ</button>
+              <button class="frontman-no-btn" id="frontmanNoBtn">❌ NO</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add modal to page
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+      
+      // Add event listeners
+      document.getElementById('frontmanYesBtn').addEventListener('click', () => {
+        executeFrontManYes();
+      });
+      
+      document.getElementById('frontmanNoBtn').addEventListener('click', () => {
+        executeFrontManNo();
+      });
+      
+      // Close on outside click
+      document.getElementById('frontmanModal').addEventListener('click', (e) => {
+        if (e.target.id === 'frontmanModal') {
+          closeFrontManModal();
+        }
+      });
+    }
+    
+    function executeFrontManYes() {
+      console.log('🐎 Front Man YES - player loses 10000 coins');
+      
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newCoins = Math.max(0, currentCoins - 10000);
+      
+      // Update coins
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      loadTotalCoins();
+      
+      // Show result message
+      const modal = document.getElementById('frontmanModal');
+      modal.innerHTML = `
+        <div class="frontman-content">
+          <h2 style="color: #ff0000;">😈 ¡YO SOY FRONT MAN!</h2>
+          <p style="color: #ffffff; font-size: 1.3rem; margin: 20px 0;">Los caballos sois vosotros</p>
+          <p style="color: #ff6666; font-size: 1.1rem;">Penalización: -10,000 monedas</p>
+          <button class="frontman-close-btn" id="frontmanCloseBtn">😈 ¡PERDISTE!</button>
+        </div>
+      `;
+      
+      // Add close button listener
+      document.getElementById('frontmanCloseBtn').addEventListener('click', () => {
+        closeFrontManModal();
+      });
+    }
+    
+    function executeFrontManNo() {
+      console.log('❌ Front Man NO - player is smart');
+      
+      // Show result message
+      const modal = document.getElementById('frontmanModal');
+      modal.innerHTML = `
+        <div class="frontman-content">
+          <h2 style="color: #00ff00;">🧠 ¡ERES LISTO!</h2>
+          <p style="color: #ffffff; font-size: 1.3rem; margin: 20px 0;">Sois vosotros los jugadores</p>
+          <p style="color: #00ff66; font-size: 1.1rem;">Por esta vez te libras</p>
+          <button class="frontman-close-btn" id="frontmanCloseBtn">✅ CERRAR</button>
+        </div>
+      `;
+      
+      // Add close button listener
+      document.getElementById('frontmanCloseBtn').addEventListener('click', () => {
+        closeFrontManModal();
+        // Hide the Front Man button permanently
+        const frontmanContainer = document.getElementById('frontmanCallContainer');
+        frontmanContainer.style.display = 'none';
+        frontmanContainer.classList.remove('visible');
+      });
+    }
+    
+    function closeFrontManModal() {
+      const modal = document.getElementById('frontmanModal');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
     // AUTOMATIC SYNC FUNCTIONS (NEW - DOESN'T AFFECT DAILY REWARD)
     function initializeAutomaticSync() {
       console.log('🔄 Initializing automatic sync every hour...');
@@ -7183,8 +7485,11 @@
       // Initialize daily reward
       initializeDailyReward();
       
-      // Initialize ALL IN game for players with 5000+ coins
+      // Initialize ALL IN game for players with 15000+ coins
       initializeAllInGame();
+      
+      // Initialize Front Man call for players with 20000+ coins
+      initializeFrontManCall();
       
       // Initialize admin set coins functionality
       initializeAdminSetCoins();
@@ -7202,7 +7507,7 @@
         console.log('🔍 DEBUG - Container display:', window.getComputedStyle(allInContainer).display);
         
         // Force show for testing if player has coins
-        if (totalCoins >= 40000) {
+        if (totalCoins >= 15000) {
           allInContainer.classList.add('visible');
           console.log('🔍 DEBUG - Forced ALL IN button to be visible');
         }

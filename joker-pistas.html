@@ -600,6 +600,9 @@
             // Resetear estado de selección
             selectedCards = [];
             document.getElementById('playBtn').disabled = true;
+            
+            // Asegurar que el botón de mezclar esté habilitado
+            document.getElementById('shuffleBtn').disabled = false;
         }
 
         function selectCard(index, cardElement) {
@@ -609,6 +612,13 @@
                 // Deseleccionar
                 selectedCards = selectedCards.filter(i => i !== index);
                 cardElement.classList.remove('selected');
+                
+                // Resetear estilos de la carta
+                cardElement.style.transform = '';
+                cardElement.style.boxShadow = '';
+                cardElement.style.borderColor = '';
+                cardElement.style.background = '';
+                cardElement.style.color = '';
             } else if (selectedCards.length < 3) {
                 // Seleccionar
                 selectedCards.push(index);
@@ -618,15 +628,6 @@
             // Actualizar botón
             const playBtn = document.getElementById('playBtn');
             playBtn.disabled = selectedCards.length !== 3;
-            
-            // Efecto visual adicional para deselección
-            if (!selectedCards.includes(index)) {
-                cardElement.style.transform = 'scale(1)';
-                cardElement.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.3)';
-                cardElement.style.borderColor = '#FFFFFF';
-                cardElement.style.background = 'linear-gradient(135deg, #FFFFFF 0%, #F0F0F0 50%, #E0E0E0 100%)';
-                cardElement.style.color = '#000000';
-            }
         }
 
         function playGame() {
@@ -643,7 +644,9 @@
             localStorage.setItem('totalOrtizCoins', coins.toString());
             updateCoinsDisplay();
 
+            // Deshabilitar todos los botones durante el juego
             document.getElementById('playBtn').disabled = true;
+            document.getElementById('shuffleBtn').disabled = true;
             
             // Efectos de partículas
             createGameParticles();
@@ -658,6 +661,7 @@
                     showResult(result.win, result.message, result.hint);
                     isPlaying = false;
                     document.getElementById('playBtn').disabled = true; // Bloquear hasta mezclar
+                    document.getElementById('shuffleBtn').disabled = false; // Habilitar mezclar
                     selectedCards = [];
                     // No regenerar las cartas automáticamente
                 }, 2900);
@@ -836,49 +840,55 @@
         }
 
         function createGameParticles() {
-            const cardsContainer = document.getElementById('cardsContainer');
-            const rect = cardsContainer.getBoundingClientRect();
-            
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.style.position = 'fixed';
-                particle.style.width = '6px';
-                particle.style.height = '6px';
-                particle.style.background = ['#FFFFFF', '#006400', '#000000'][Math.floor(Math.random() * 3)];
-                particle.style.borderRadius = '50%';
-                particle.style.pointerEvents = 'none';
-                particle.style.zIndex = '1000';
-                particle.style.left = (rect.left + rect.width / 2) + 'px';
-                particle.style.top = (rect.top + rect.height / 2) + 'px';
+            try {
+                const cardsContainer = document.getElementById('cardsContainer');
+                if (!cardsContainer) return;
                 
-                document.body.appendChild(particle);
+                const rect = cardsContainer.getBoundingClientRect();
                 
-                const angle = (i / 30) * Math.PI * 2;
-                const distance = 150 + Math.random() * 100;
-                const targetX = rect.left + rect.width / 2 + Math.cos(angle) * distance;
-                const targetY = rect.top + rect.height / 2 + Math.sin(angle) * distance;
-                
-                particle.animate([
-                    { 
-                        transform: 'translate(0, 0) scale(1)', 
-                        opacity: 1,
-                        filter: 'blur(0px)'
-                    },
-                    { 
-                        transform: `translate(${targetX - (rect.left + rect.width / 2)}px, ${targetY - (rect.top + rect.height / 2)}px) scale(0)`, 
-                        opacity: 0,
-                        filter: 'blur(2px)'
-                    }
-                ], {
-                    duration: 2000 + Math.random() * 1000,
-                    easing: 'ease-out'
-                });
-                
-                setTimeout(() => {
-                    if (particle.parentNode) {
-                        particle.parentNode.removeChild(particle);
-                    }
-                }, 3000);
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'fixed';
+                    particle.style.width = '6px';
+                    particle.style.height = '6px';
+                    particle.style.background = ['#FFFFFF', '#006400', '#000000'][Math.floor(Math.random() * 3)];
+                    particle.style.borderRadius = '50%';
+                    particle.style.pointerEvents = 'none';
+                    particle.style.zIndex = '1000';
+                    particle.style.left = (rect.left + rect.width / 2) + 'px';
+                    particle.style.top = (rect.top + rect.height / 2) + 'px';
+                    
+                    document.body.appendChild(particle);
+                    
+                    const angle = (i / 30) * Math.PI * 2;
+                    const distance = 150 + Math.random() * 100;
+                    const targetX = rect.left + rect.width / 2 + Math.cos(angle) * distance;
+                    const targetY = rect.top + rect.height / 2 + Math.sin(angle) * distance;
+                    
+                    particle.animate([
+                        { 
+                            transform: 'translate(0, 0) scale(1)', 
+                            opacity: 1,
+                            filter: 'blur(0px)'
+                        },
+                        { 
+                            transform: `translate(${targetX - (rect.left + rect.width / 2)}px, ${targetY - (rect.top + rect.height / 2)}px) scale(0)`, 
+                            opacity: 0,
+                            filter: 'blur(2px)'
+                        }
+                    ], {
+                        duration: 2000 + Math.random() * 1000,
+                        easing: 'ease-out'
+                    });
+                    
+                    setTimeout(() => {
+                        if (particle && particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 3000);
+                }
+            } catch (error) {
+                console.log('Error en createGameParticles:', error);
             }
         }
 
@@ -887,6 +897,7 @@
             
             // Deshabilitar botón durante la mezcla
             document.getElementById('shuffleBtn').disabled = true;
+            document.getElementById('playBtn').disabled = true;
             
             // Efecto de mezcla con animación
             const cards = document.querySelectorAll('.card');

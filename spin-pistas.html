@@ -525,6 +525,9 @@
             
             <button class="spin-btn" id="spinBtn" onclick="spin()">🎰 GIRAR</button>
             
+            <!-- Botón de prueba temporal -->
+            <button onclick="testWin()" style="background: #FF0000; color: white; border: none; padding: 10px; margin: 10px; border-radius: 5px; cursor: pointer;">🧪 PRUEBA GANAR</button>
+            
             <div class="back-box">
                 <button onclick="goBack()" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #FFFFFF 0%, #006400 100%); border: none; border-radius: 10px; color: #000; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">← VOLVER AL MENÚ PRINCIPAL</button>
             </div>
@@ -786,14 +789,19 @@
             const reel2Text = document.getElementById('reel2').textContent;
             const reel3Text = document.getElementById('reel3').textContent;
             
-            // Encontrar los objetos de símbolos correspondientes
-            const reel1Symbol = symbols.find(s => s.symbol === reel1Text);
-            const reel2Symbol = symbols.find(s => s.symbol === reel2Text);
-            const reel3Symbol = symbols.find(s => s.symbol === reel3Text);
-
-            // Verificar si son iguales (misma forma, no necesariamente color)
-            if (reel1Symbol && reel2Symbol && reel3Symbol && 
-                reel1Symbol.shape === reel2Symbol.shape && reel2Symbol.shape === reel3Symbol.shape) {
+            console.log('Símbolos en pantalla:', reel1Text, reel2Text, reel3Text);
+            
+            // Obtener las formas de cada símbolo
+            const shape1 = getShapeFromEmoji(reel1Text);
+            const shape2 = getShapeFromEmoji(reel2Text);
+            const shape3 = getShapeFromEmoji(reel3Text);
+            
+            console.log('Formas detectadas:', shape1, shape2, shape3);
+            
+            // Verificar si las tres formas son iguales
+            if (shape1 === shape2 && shape2 === shape3 && shape1 !== 'unknown') {
+                console.log('¡JACKPOT! Tres formas iguales detectadas');
+                
                 // ¡JACKPOT! - Dar pista
                 const shapeNames = {
                     'circle': 'Círculos',
@@ -812,7 +820,7 @@
                     hintsFound++;
                     return {
                         win: true,
-                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[shape1]} iguales`,
                         hint: hints[0]
                     };
                 } else if (!pista2Mostrada) {
@@ -821,7 +829,7 @@
                     hintsFound++;
                     return {
                         win: true,
-                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[shape1]} iguales`,
                         hint: hints[1]
                     };
                 } else if (!pista3Mostrada) {
@@ -830,7 +838,7 @@
                     hintsFound++;
                     return {
                         win: true,
-                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[shape1]} iguales`,
                         hint: hints[2]
                     };
                 } else if (hintsFound < totalHints) {
@@ -838,20 +846,21 @@
                     hintsFound++;
                     return {
                         win: true,
-                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[shape1]} iguales`,
                         hint: hints[3]
                     };
                 } else {
                     return {
                         win: true,
-                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales\nYa tienes todas las pistas`,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[shape1]} iguales\nYa tienes todas las pistas`,
                         hint: null
                     };
                 }
             } else {
+                console.log('No hay coincidencia de formas');
                 return {
                     win: false,
-                    message: `¡No hay coincidencia!\n${reel1Symbol.name} - ${reel2Symbol.name} - ${reel3Symbol.name}`,
+                    message: `¡No hay coincidencia!\n${reel1Text} - ${reel2Text} - ${reel3Text}`,
                     hint: null
                 };
             }
@@ -917,8 +926,55 @@
             }
         }
 
+        // Función de prueba para verificar símbolos
+        function testSymbols() {
+            console.log('=== PRUEBA DE SÍMBOLOS ===');
+            symbols.forEach(symbol => {
+                console.log(`${symbol.symbol} - ${symbol.name} - Forma: ${symbol.shape}`);
+            });
+            
+            console.log('=== PRUEBA DE DETECCIÓN DE FORMAS ===');
+            const testEmojis = ['🔴', '🟡', '🔵', '🟢', '🟣', '🔺', '🟨', '🔷', '🟩', '🟪', '🟥', '🟦', '🟧', '🟫', '⬛'];
+            testEmojis.forEach(emoji => {
+                const shape = getShapeFromEmoji(emoji);
+                console.log(`${emoji} -> ${shape}`);
+            });
+        }
+
+        function testWin() {
+            // Forzar tres cuadrados para probar
+            document.getElementById('reel1').textContent = '🟥';
+            document.getElementById('reel2').textContent = '🟦';
+            document.getElementById('reel3').textContent = '⬛';
+            
+            console.log('Forzando combinación ganadora: 🟥🟦⬛ (tres cuadrados)');
+            
+            setTimeout(() => {
+                const result = generateResult();
+                console.log('Resultado de la prueba:', result);
+                showResult(result.win, result.message, result.hint);
+            }, 1000);
+        }
+
+        function getShapeFromEmoji(emoji) {
+            // Círculos: 🔴🟡🔵🟢🟣
+            if (['🔴', '🟡', '🔵', '🟢', '🟣'].includes(emoji)) {
+                return 'circle';
+            }
+            // Triángulos: 🔺🟨🔷🟩🟪
+            if (['🔺', '🟨', '🔷', '🟩', '🟪'].includes(emoji)) {
+                return 'triangle';
+            }
+            // Cuadrados: 🟥🟦🟧🟫⬛
+            if (['🟥', '🟦', '🟧', '🟫', '⬛'].includes(emoji)) {
+                return 'square';
+            }
+            return 'unknown';
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             initSlotMachine();
+            testSymbols(); // Ejecutar prueba al cargar
             
             // Event listener para cerrar modal
             document.getElementById('closeModalBtn').addEventListener('click', closeResultModal);

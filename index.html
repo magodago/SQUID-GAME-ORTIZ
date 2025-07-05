@@ -4394,10 +4394,10 @@
         clearTimeout(fusionSequenceTimeout);
       }
       
-      // Check for coins counter (any part of it)
-      if (target.closest('#coinsCounter') || target.closest('.coins-counter')) {
-        console.log('Coins counter clicked for fusion!');
-        addToFusionSequence('coinsCounter', now);
+      // Check for triangle shape
+      if (target.closest('.triangle-shape') || target.closest('.floating-triangle') || target.closest('.floating-triangle-2')) {
+        console.log('Triangle clicked for fusion!');
+        addToFusionSequence('triangle', now);
       }
       
       // Set timeout to reset sequence after 5 seconds
@@ -4415,8 +4415,8 @@
         console.log('📋 Current fusion sequence:', fusionSequence.map(item => item.element));
         
         // Check if sequence is complete
-        if (fusionSequence.length === 3) {
-          const expectedSequence = ['coinsCounter', 'coinsCounter', 'coinsCounter'];
+        if (fusionSequence.length === 6) {
+          const expectedSequence = ['triangle', 'triangle', 'triangle', 'triangle', 'triangle', 'triangle'];
           const actualSequence = fusionSequence.map(item => item.element);
           
           console.log('🎯 Expected sequence:', expectedSequence);

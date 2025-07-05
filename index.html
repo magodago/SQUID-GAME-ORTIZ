@@ -1972,6 +1972,63 @@
       }
     }
     
+    /* Plus One Coin Effect Styles */
+    .plus-one-effect {
+      position: fixed;
+      pointer-events: none;
+      z-index: 10000;
+    }
+    
+    .plus-one-content {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      border: 2px solid #FFD700;
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      box-shadow: 0 0 20px #FFD700, inset 0 0 10px rgba(255, 215, 0, 0.3);
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .plus-one-icon {
+      font-size: 1.2rem;
+      animation: coinSpin 1s ease-out;
+    }
+    
+    .plus-one-text {
+      color: #000;
+      font-size: 1.1rem;
+      font-weight: bold;
+      animation: textGlow 1.5s ease-out;
+    }
+    
+    @keyframes coinSpin {
+      0% {
+        transform: rotate(0deg) scale(0.5);
+      }
+      50% {
+        transform: rotate(180deg) scale(1.2);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+    
+    @keyframes textGlow {
+      0% {
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      }
+      50% {
+        text-shadow: 0 0 15px #FFD700, 0 0 25px #FFD700;
+      }
+      100% {
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      }
+    }
+    
     /* Ortiz Coins Counter */
     .coins-counter {
       display: flex;
@@ -3866,6 +3923,13 @@
             soldierNameDisplay.style.boxShadow = '';
           }, 300);
         }
+        
+        // Check for +1 coin Easter Egg: 3 clicks on soldier name
+        if (soldierNameClicks >= 3) {
+          console.log('+1 coin Easter Egg activated!');
+          addOneCoin();
+          soldierNameClicks = 0; // Reset counter
+        }
       }
       
       // Check if clicked on coins counter
@@ -3911,6 +3975,74 @@
       
       // Create lightning effects
       createLightningEffects();
+    }
+    
+    function addOneCoin() {
+      // Add 1 coin to total
+      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      totalCoins += 1;
+      localStorage.setItem('totalOrtizCoins', totalCoins);
+      
+      // Update display
+      loadTotalCoins();
+      
+      // Create +1 coin effect
+      createPlusOneEffect();
+    }
+    
+    function createPlusOneEffect() {
+      // Create the +1 effect element
+      const plusOneEffect = document.createElement('div');
+      plusOneEffect.className = 'plus-one-effect';
+      plusOneEffect.innerHTML = `
+        <div class="plus-one-content">
+          <span class="plus-one-icon">🪙</span>
+          <span class="plus-one-text">+1</span>
+        </div>
+      `;
+      
+      // Position it near the soldier name
+      const soldierNameDisplay = document.getElementById('soldierNameDisplay');
+      if (soldierNameDisplay) {
+        const rect = soldierNameDisplay.getBoundingClientRect();
+        plusOneEffect.style.position = 'fixed';
+        plusOneEffect.style.left = (rect.left + rect.width / 2) + 'px';
+        plusOneEffect.style.top = (rect.top - 20) + 'px';
+        plusOneEffect.style.transform = 'translate(-50%, -50%)';
+        plusOneEffect.style.zIndex = '10000';
+        plusOneEffect.style.pointerEvents = 'none';
+      }
+      
+      document.body.appendChild(plusOneEffect);
+      
+      // Animate the effect
+      plusOneEffect.animate([
+        { 
+          opacity: 0, 
+          transform: 'translate(-50%, -50%) scale(0.5)',
+          filter: 'brightness(1)'
+        },
+        { 
+          opacity: 1, 
+          transform: 'translate(-50%, -50%) scale(1.2)',
+          filter: 'brightness(1.5)'
+        },
+        { 
+          opacity: 0, 
+          transform: 'translate(-50%, -100px) scale(0.8)',
+          filter: 'brightness(1)'
+        }
+      ], {
+        duration: 1500,
+        easing: 'ease-out'
+      });
+      
+      // Remove the effect after animation
+      setTimeout(() => {
+        if (plusOneEffect.parentNode) {
+          plusOneEffect.parentNode.removeChild(plusOneEffect);
+        }
+      }, 1500);
     }
     
     function createLightningEffects() {

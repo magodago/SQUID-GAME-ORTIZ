@@ -5736,43 +5736,68 @@
     }
     
     const forceSyncBtn = document.getElementById('forceSyncBtn');
-    forceSyncBtn.addEventListener('click', () => {
+    forceSyncBtn.addEventListener('click', async () => {
       console.log('🔄 Forzando sincronización con Firebase...');
-      // Force sync current data to Firebase
-      if (window.PlayerDataManager) {
-        const playerName = localStorage.getItem('soldierName') || 'Unknown';
-        const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
-        const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
-        const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
-        
-        PlayerDataManager.savePlayerData(playerName, totalCoins, {
-          gamesPlayed: gamesPlayed,
-          totalWins: totalWins,
-          cluesFound: cluesFound,
-          forcedSync: true,
-          syncTimestamp: new Date().toISOString()
-        }).then(result => {
-          if (result) {
-            console.log('✅ Sincronización forzada exitosa');
-            showDailyRewardMessage('✅ Sincronización forzada exitosa');
-          } else {
-            console.log('❌ Sincronización forzada falló');
-            showDailyRewardMessage('❌ Sincronización forzada falló');
+      
+      // First, load data from Firebase
+      if (window.firebase && window.firebase.database) {
+        try {
+          const database = window.firebase.database();
+          const playersRef = database.ref('players');
+          
+          console.log('📥 Cargando datos de Firebase...');
+          const snapshot = await playersRef.once('value');
+          const playersData = snapshot.val() || {};
+          
+          console.log('📊 Datos cargados de Firebase:', playersData);
+          
+          // Update admin panel with Firebase data
+          updateAdminPanelWithFirebaseData(playersData);
+          
+          // Also sync current player data to Firebase
+          if (window.PlayerDataManager) {
+            const playerName = localStorage.getItem('soldierName') || 'Unknown';
+            const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+            const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+            const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+            
+            PlayerDataManager.savePlayerData(playerName, totalCoins, {
+              gamesPlayed: gamesPlayed,
+              totalWins: totalWins,
+              cluesFound: cluesFound,
+              forcedSync: true,
+              syncTimestamp: new Date().toISOString()
+            }).then(result => {
+              if (result) {
+                console.log('✅ Sincronización forzada exitosa');
+                showDailyRewardMessage('✅ Datos cargados y sincronizados');
+              } else {
+                console.log('❌ Sincronización forzada falló');
+                showDailyRewardMessage('❌ Error al sincronizar');
+              }
+            }).catch(error => {
+              console.error('❌ Error en sincronización forzada:', error);
+              showDailyRewardMessage('❌ Error en sincronización');
+            });
           }
-        }).catch(error => {
-          console.error('❌ Error en sincronización forzada:', error);
-          showDailyRewardMessage('❌ Error en sincronización');
-        });
+          
+        } catch (error) {
+          console.error('❌ Error cargando datos de Firebase:', error);
+          showDailyRewardMessage('❌ Error cargando datos');
+        }
       } else {
-        console.log('❌ PlayerDataManager no disponible');
-        showDailyRewardMessage('❌ PlayerDataManager no disponible');
+        console.log('❌ Firebase no disponible');
+        showDailyRewardMessage('❌ Firebase no disponible');
       }
     });
     
     closeAdminBtn.addEventListener('click', () => {
-      adminPanel.style.display = 'none';
-      document.body.style.overflow = 'auto';
+      const adminPanel = document.getElementById('adminPanel');
+      if (adminPanel) {
+        adminPanel.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
     });
     
     // Close admin panel when clicking outside
@@ -6723,6 +6748,52 @@
       `;
       
       console.log('✅ Admin data loaded from localStorage');
+    }
+
+    function updateAdminPanelWithFirebaseData(playersData) {
+      console.log('📊 Updating admin panel with Firebase data...');
+      
+      const players = Object.keys(playersData);
+      let totalCoins = 0;
+      
+      // Calculate total coins
+      players.forEach(playerName => {
+        const playerData = playersData[playerName];
+        totalCoins += parseInt(playerData.coins || playerData.totalCoins || 0);
+      });
+      
+      // Update admin stats
+      document.getElementById('totalPlayers').textContent = players.length.toString();
+      document.getElementById('totalCoinsAdmin').textContent = totalCoins.toLocaleString();
+      
+      // Create player entries
+      const playersContainer = document.getElementById('playersContainer');
+      let playersHTML = '';
+      
+      players.forEach(playerName => {
+        const playerData = playersData[playerName];
+        const coins = parseInt(playerData.coins || playerData.totalCoins || 0);
+        const gamesPlayed = parseInt(playerData.gamesPlayed || 0);
+        const totalWins = parseInt(playerData.totalWins || 0);
+        const cluesFound = parseInt(playerData.cluesFound || 0);
+        
+        playersHTML += `
+          <div class="player-entry">
+            <div class="player-info">
+              <span class="player-name">${playerName}</span>
+              <span class="player-coins">🪙 ${coins.toLocaleString()}</span>
+            </div>
+            <div class="player-stats">
+              <span>🎮 ${gamesPlayed} juegos</span>
+              <span>🏆 ${totalWins} victorias</span>
+              <span>🔍 ${cluesFound} pistas</span>
+            </div>
+          </div>
+        `;
+      });
+      
+      playersContainer.innerHTML = playersHTML;
+      console.log('✅ Admin panel updated with Firebase data');
     }
 
     function checkFirebaseStatus() {

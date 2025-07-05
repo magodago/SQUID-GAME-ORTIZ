@@ -657,7 +657,7 @@
                 setTimeout(() => {
                     showResult(result.win, result.message, result.hint);
                     isPlaying = false;
-                    document.getElementById('playBtn').disabled = false;
+                    document.getElementById('playBtn').disabled = true; // Bloquear hasta mezclar
                     selectedCards = [];
                     // No regenerar las cartas automáticamente
                 }, 2900);
@@ -665,131 +665,74 @@
         }
 
         function generateResult() {
-            // 5% de probabilidad de ganar (probabilidad real)
-            const isWin = Math.random() < 0.05;
+            // Generar posiciones aleatorias para los Jokers (verdaderamente aleatorio)
+            const allPositions = [0, 1, 2, 3, 4, 5];
+            const jokerPositions = [];
             
-            if (isWin) {
+            // Seleccionar 3 posiciones aleatorias para los Jokers
+            for (let i = 0; i < 3; i++) {
+                const randomIndex = Math.floor(Math.random() * allPositions.length);
+                jokerPositions.push(allPositions[randomIndex]);
+                allPositions.splice(randomIndex, 1);
+            }
+            
+            // Verificar si las cartas seleccionadas coinciden con los Jokers
+            const correctSelections = selectedCards.filter(pos => jokerPositions.includes(pos)).length;
+            const isActuallyWin = correctSelections === 3;
+            
+            // 5% de probabilidad de ganar (para dar pistas)
+            const shouldGiveHint = Math.random() < 0.05;
+            
+            if (isActuallyWin || shouldGiveHint) {
                 // Verificar qué pista mostrar
                 const pista1Mostrada = localStorage.getItem('jokerPista1Mostrada') === 'true';
                 const pista2Mostrada = localStorage.getItem('jokerPista2Mostrada') === 'true';
                 const pista3Mostrada = localStorage.getItem('jokerPista3Mostrada') === 'true';
                 
-                // Generar posiciones aleatorias para los Jokers (verdaderamente aleatorio)
-                const allPositions = [0, 1, 2, 3, 4, 5];
-                const jokerPositions = [];
-                
-                // Seleccionar 3 posiciones aleatorias para los Jokers
-                for (let i = 0; i < 3; i++) {
-                    const randomIndex = Math.floor(Math.random() * allPositions.length);
-                    jokerPositions.push(allPositions[randomIndex]);
-                    allPositions.splice(randomIndex, 1);
-                }
-                
-                // Verificar si las cartas seleccionadas coinciden con los Jokers
-                const correctSelections = selectedCards.filter(pos => jokerPositions.includes(pos)).length;
-                const isActuallyWin = correctSelections === 3;
-                
-                if (!pista1Mostrada && isActuallyWin) {
+                if (!pista1Mostrada) {
                     localStorage.setItem('jokerPista1Mostrada', 'true');
                     hintsFound++;
                     return {
-                        win: true,
-                        message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers',
+                        win: isActuallyWin,
+                        message: isActuallyWin ? '¡JACKPOT! 🎉\nEncontraste los 3 Jokers' : '¡Buena suerte!\nAquí tienes una pista',
                         hint: hints[0],
                         jokerPositions: jokerPositions
                     };
-                } else if (!pista2Mostrada && isActuallyWin) {
+                } else if (!pista2Mostrada) {
                     localStorage.setItem('jokerPista2Mostrada', 'true');
                     hintsFound++;
                     return {
-                        win: true,
-                        message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers',
+                        win: isActuallyWin,
+                        message: isActuallyWin ? '¡JACKPOT! 🎉\nEncontraste los 3 Jokers' : '¡Buena suerte!\nAquí tienes una pista',
                         hint: hints[1],
                         jokerPositions: jokerPositions
                     };
-                } else if (!pista3Mostrada && isActuallyWin) {
+                } else if (!pista3Mostrada) {
                     localStorage.setItem('jokerPista3Mostrada', 'true');
                     hintsFound++;
                     return {
-                        win: true,
-                        message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers',
+                        win: isActuallyWin,
+                        message: isActuallyWin ? '¡JACKPOT! 🎉\nEncontraste los 3 Jokers' : '¡Buena suerte!\nAquí tienes una pista',
                         hint: hints[2],
                         jokerPositions: jokerPositions
                     };
-                } else if (hintsFound < totalHints && isActuallyWin) {
+                } else if (hintsFound < totalHints) {
                     hintsFound++;
                     return {
-                        win: true,
-                        message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers',
+                        win: isActuallyWin,
+                        message: isActuallyWin ? '¡JACKPOT! 🎉\nEncontraste los 3 Jokers' : '¡Buena suerte!\nAquí tienes una pista',
                         hint: hints[3],
                         jokerPositions: jokerPositions
                     };
-                } else if (isActuallyWin) {
+                } else {
                     return {
-                        win: true,
-                        message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers\nYa tienes todas las pistas',
+                        win: isActuallyWin,
+                        message: isActuallyWin ? '¡JACKPOT! 🎉\nEncontraste los 3 Jokers\nYa tienes todas las pistas' : '¡Buena suerte!\nYa tienes todas las pistas',
                         hint: null,
                         jokerPositions: jokerPositions
                     };
-                } else {
-                    // No ganó realmente, pero se le da la pista de todas formas (5% de probabilidad)
-                    if (!pista1Mostrada) {
-                        localStorage.setItem('jokerPista1Mostrada', 'true');
-                        hintsFound++;
-                        return {
-                            win: true,
-                            message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers',
-                            hint: hints[0],
-                            jokerPositions: jokerPositions
-                        };
-                    } else if (!pista2Mostrada) {
-                        localStorage.setItem('jokerPista2Mostrada', 'true');
-                        hintsFound++;
-                        return {
-                            win: true,
-                            message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers',
-                            hint: hints[1],
-                            jokerPositions: jokerPositions
-                        };
-                    } else if (!pista3Mostrada) {
-                        localStorage.setItem('jokerPista3Mostrada', 'true');
-                        hintsFound++;
-                        return {
-                            win: true,
-                            message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers',
-                            hint: hints[2],
-                            jokerPositions: jokerPositions
-                        };
-                    } else if (hintsFound < totalHints) {
-                        hintsFound++;
-                        return {
-                            win: true,
-                            message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers',
-                            hint: hints[3],
-                            jokerPositions: jokerPositions
-                        };
-                    } else {
-                        return {
-                            win: true,
-                            message: '¡JACKPOT! 🎉\nEncontraste los 3 Jokers\nYa tienes todas las pistas',
-                            hint: null,
-                            jokerPositions: jokerPositions
-                        };
-                    }
                 }
             } else {
-                // Generar posiciones aleatorias para los Jokers (no en las seleccionadas)
-                const allPositions = [0, 1, 2, 3, 4, 5];
-                const availablePositions = allPositions.filter(pos => !selectedCards.includes(pos));
-                const jokerPositions = [];
-                
-                // Seleccionar 3 posiciones aleatorias para los Jokers
-                for (let i = 0; i < 3; i++) {
-                    const randomIndex = Math.floor(Math.random() * availablePositions.length);
-                    jokerPositions.push(availablePositions[randomIndex]);
-                    availablePositions.splice(randomIndex, 1);
-                }
-                
                 return {
                     win: false,
                     message: '¡No encontraste los 3 Jokers!\nLos Jokers estaban en otras tarjetas',
@@ -871,6 +814,9 @@
             // Solo resetear el estado del juego
             isPlaying = false;
             selectedCards = [];
+            
+            // El botón de jugar permanece bloqueado hasta mezclar
+            document.getElementById('playBtn').disabled = true;
             
             // Habilitar el botón de mezclar
             document.getElementById('shuffleBtn').disabled = false;

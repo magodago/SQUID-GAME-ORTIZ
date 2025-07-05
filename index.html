@@ -392,19 +392,19 @@
     .particle:nth-child(20) { left: 85%; animation-delay: 0.75s; }
     
     @keyframes particleFloat {
-      0% {
+      0% { 
         transform: translateY(100vh) scale(0);
         opacity: 0;
       }
-      10% {
+      10% { 
         opacity: 0.6;
         transform: translateY(90vh) scale(1);
       }
-      90% {
+      90% { 
         opacity: 0.6;
         transform: translateY(10vh) scale(1);
       }
-      100% {
+      100% { 
         transform: translateY(0vh) scale(0);
         opacity: 0;
       }
@@ -1529,10 +1529,10 @@
     }
     
     @keyframes powerTitlePulse {
-      0%, 100% {
+      0%, 100% { 
         text-shadow: 0 0 40px #FF6B35;
       }
-      50% {
+      50% { 
         text-shadow: 0 0 60px #FF6B35, 0 0 100px #FF6B35;
       }
     }
@@ -1730,7 +1730,7 @@
     
     .squid-bubble {
       position: absolute;
-      font-size: 1.5rem;
+        font-size: 1.5rem;
       color: #00FFFF;
       text-shadow: 0 0 15px #00FFFF;
       animation: squidBubbleFloat 3s ease-out forwards;
@@ -1798,7 +1798,7 @@
     
     .squid-description {
       color: #FFD700;
-      font-size: 1.3rem;
+        font-size: 1.3rem; 
       font-weight: bold;
       margin-bottom: 1.2rem;
       text-shadow: 0 0 25px #FFD700;
@@ -1826,7 +1826,7 @@
       color: #000;
       border: 3px solid #00FFFF;
       padding: 1.3rem 3.5rem;
-      font-size: 1.3rem;
+        font-size: 1.3rem;
       font-weight: bold;
       border-radius: 18px;
       cursor: pointer;
@@ -2778,8 +2778,8 @@
           font-size: 1.8rem;
           letter-spacing: 0.1em;
           flex-wrap: wrap;
-          text-align: center;
-        }
+      text-align: center;
+    }
         
         .clickable-letter {
           font-size: 1.8rem;
@@ -3346,7 +3346,7 @@
         <div class="coordinate-item">
           <span class="coord-label">NIVEL:</span>
           <span class="coord-value">MÁXIMO</span>
-        </div>
+      </div>
       </div>
       <div class="secret-message" id="secretMessage">
         🏝️ UBICACIÓN: ISLA JEJU, COREA DEL SUR<br>
@@ -3418,14 +3418,14 @@
       // Check if clicked on "ORTIZ" text specifically
       if (target.id === 'ortizText' || target.classList.contains('ortiz-text')) {
         console.log('ORTIZ clicked!');
-        const now = Date.now();
-        if (now - lastOrtizClick < 2000) { // Within 2 seconds
-          ortizClicks++;
-          lastOrtizClick = now;
-        } else {
-          ortizClicks = 1;
-          lastOrtizClick = now;
-        }
+          const now = Date.now();
+          if (now - lastOrtizClick < 2000) { // Within 2 seconds
+            ortizClicks++;
+            lastOrtizClick = now;
+          } else {
+            ortizClicks = 1;
+            lastOrtizClick = now;
+          }
         console.log('ORTIZ clicks:', ortizClicks);
       }
       
@@ -3601,7 +3601,7 @@
         }
       });
     }
-
+    
     codeInputs.forEach((input, index) => {
       input.addEventListener('input', (e) => {
         const value = e.target.value;
@@ -3618,7 +3618,7 @@
         }
         
         // Check if code is complete
-        checkCode();
+          checkCode();
       });
       
       input.addEventListener('keydown', (e) => {
@@ -3628,32 +3628,32 @@
         }
       });
     });
-
+    
     function checkCode() {
       const enteredCode = Array.from(codeInputs).map(input => input.value).join('');
       
       if (enteredCode.length === 4) {
         if (enteredCode === secretCode) {
           accessStatus.textContent = '✅ CÓDIGO CORRECTO - ACCESO PERMITIDO';
-          accessStatus.style.color = '#00ff7f';
-          accessStatus.style.textShadow = '0 0 10px #00ff7f';
-          
+        accessStatus.style.color = '#00ff7f';
+        accessStatus.style.textShadow = '0 0 10px #00ff7f';
+        
           // Mostrar ventana de vida extra
           showExtraLifeModal();
           
           // Hide access panel after success
-          setTimeout(() => {
-            accessPanel.style.display = 'none';
-          }, 2000);
-        } else {
+        setTimeout(() => {
+          accessPanel.style.display = 'none';
+        }, 2000);
+      } else {
           accessStatus.textContent = '❌ CÓDIGO INCORRECTO - ACCESO DENEGADO';
           accessStatus.style.color = '#ff4757';
           accessStatus.style.textShadow = '0 0 10px #ff4757';
-          
-          // Clear inputs after error
-          setTimeout(() => {
-            codeInputs.forEach(input => input.value = '');
-            codeInputs[0].focus();
+        
+        // Clear inputs after error
+        setTimeout(() => {
+          codeInputs.forEach(input => input.value = '');
+          codeInputs[0].focus();
           }, 2000);
         }
       }
@@ -4682,8 +4682,8 @@
         if (plusOneEffect.parentNode) {
           plusOneEffect.parentNode.removeChild(plusOneEffect);
         }
-      }, 1500);
-    }
+        }, 1500);
+      }
     
     function createPlusTwentyEffect() {
       // Create the +20 effect element

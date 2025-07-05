@@ -833,7 +833,7 @@
             console.log('🎯 Bet result:', won ? 'WON' : 'LOST');
             console.log('💰 Winnings:', winnings);
             
-            // Update coins
+            // Update coins and statistics
             if (won) {
                 // Safe coin addition
                 if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
@@ -848,6 +848,23 @@
                     console.log('⚠️ PlayerDataManager not available, using direct addition');
                     vipCoins += winnings;
                     localStorage.setItem('totalOrtizCoins', vipCoins.toString());
+                }
+            }
+            
+            // Update game statistics
+            const currentGamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+            const currentWins = parseInt(localStorage.getItem('totalWins') || '0');
+            
+            localStorage.setItem('gamesPlayed', (currentGamesPlayed + 1).toString());
+            if (won) {
+                localStorage.setItem('totalWins', (currentWins + 1).toString());
+            }
+            
+            // Update achievements progress
+            if (typeof updateAchievementProgress === 'function') {
+                updateAchievementProgress('games', 1);
+                if (won) {
+                    updateAchievementProgress('wins', 1);
                 }
             }
             
@@ -934,13 +951,18 @@
             
             const playerName = localStorage.getItem('soldierName');
             const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+            const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+            const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+            
+            console.log('📊 Current stats - Games:', gamesPlayed, 'Wins:', totalWins, 'Clues:', cluesFound);
             
             if (playerName && window.PlayerDataManager && PlayerDataManager.savePlayerData) {
                 console.log('☁️ Syncing to Firebase...');
                 PlayerDataManager.savePlayerData(playerName, totalCoins, {
-                    gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-                    totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-                    cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+                    gamesPlayed: gamesPlayed,
+                    totalWins: totalWins,
+                    cluesFound: cluesFound,
                     lastSync: new Date().toISOString(),
                     autoSync: true,
                     gameType: 'vip'

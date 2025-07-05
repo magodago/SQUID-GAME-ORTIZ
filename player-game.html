@@ -504,6 +504,19 @@
           localStorage.setItem('totalOrtizCoins', totalCoins);
         }
         
+        // Update game statistics
+        const currentGamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+        const currentWins = parseInt(localStorage.getItem('totalWins') || '0');
+        
+        localStorage.setItem('gamesPlayed', (currentGamesPlayed + 1).toString());
+        localStorage.setItem('totalWins', (currentWins + 1).toString());
+        
+        // Update achievements progress
+        if (typeof updateAchievementProgress === 'function') {
+          updateAchievementProgress('games', 1);
+          updateAchievementProgress('wins', 1);
+        }
+        
         // Lanzar evento para actualizar en home
         window.parent && window.parent.postMessage({ type: 'ortizCoinsUpdated', totalCoins: coins }, '*');
         window.dispatchEvent(new CustomEvent('ortizCoinsUpdated', { detail: { totalCoins: coins } }));

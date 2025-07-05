@@ -814,6 +814,15 @@
       });
       targets = [];
       
+      // Update game statistics
+      const currentGamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+      localStorage.setItem('gamesPlayed', (currentGamesPlayed + 1).toString());
+      
+      // Update achievements progress
+      if (typeof updateAchievementProgress === 'function') {
+        updateAchievementProgress('games', 1);
+      }
+      
       // Show game over screen
       finalScoreElement.textContent = `ORTIZ COINS: ${score} 🪙`;
       

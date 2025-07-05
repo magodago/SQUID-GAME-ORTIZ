@@ -847,6 +847,15 @@
             console.log('Juego terminado');
             gameState = 'gameOver';
             
+            // Actualizar estadísticas
+            const currentGamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+            localStorage.setItem('gamesPlayed', (currentGamesPlayed + 1).toString());
+
+            // Actualizar logros diarios
+            if (typeof updateAchievementProgress === 'function') {
+                updateAchievementProgress('games', 1);
+            }
+
             // Sincronizar monedas con Firebase
             autoSyncFrontmanData();
             

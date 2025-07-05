@@ -2418,38 +2418,27 @@
     font-style: italic;
   }
 
-  /* ALL IN Modal Styles */
-  .all-in-modal {
+  /* Simple ALL IN Modal Styles */
+  .simple-all-in-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100vh;
-    background: linear-gradient(135deg, #000000 0%, #1a0000 50%, #000000 100%);
-    display: none;
-    flex-direction: column;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 5000;
+    z-index: 10000;
+    animation: modalFadeIn 0.3s ease-out;
   }
 
-  .all-in-modal.active {
-    display: flex;
-    animation: allInModalEntrance 0.8s ease-out;
+  @keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
-  @keyframes allInModalEntrance {
-    0% {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  .all-in-content {
+  .simple-all-in-content {
     background: linear-gradient(135deg, #1a0000, #330000);
     border: 3px solid #ff0000;
     border-radius: 20px;
@@ -2458,93 +2447,87 @@
     max-width: 500px;
     width: 90%;
     box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
-    position: relative;
-    overflow: hidden;
+    animation: modalSlideIn 0.3s ease-out;
   }
 
-  .all-in-content::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="40" fill="rgba(255,0,0,0.1)">🎰</text></svg>') repeat;
-    pointer-events: none;
+  @keyframes modalSlideIn {
+    from { 
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to { 
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 
-  .all-in-header h2 {
+  .simple-all-in-content h2 {
     color: #ff0000;
     font-size: 2.5rem;
-    margin: 0 0 10px 0;
+    margin: 0 0 20px 0;
     text-shadow: 0 0 20px #ff0000;
-    animation: allInTitleGlow 2s infinite;
   }
 
-  @keyframes allInTitleGlow {
-    0%, 100% { text-shadow: 0 0 20px #ff0000; }
-    50% { text-shadow: 0 0 40px #ff0000, 0 0 60px #ff0000; }
-  }
-
-  .all-in-subtitle {
-    color: #ff6666;
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-    font-style: italic;
-  }
-
-  .all-in-roulette {
-    width: 200px;
-    height: 200px;
-    border: 5px solid #ff0000;
-    border-radius: 50%;
-    margin: 30px auto;
-    position: relative;
-    background: conic-gradient(from 0deg, #ff0000, #8b0000, #ff0000, #8b0000);
-    animation: rouletteSpin 3s ease-out;
-  }
-
-  @keyframes rouletteSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(1440deg); }
-  }
-
-  .all-in-roulette::after {
-    content: '🎰';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3rem;
-    color: #ffffff;
-    text-shadow: 0 0 10px #000000;
-  }
-
-  .all-in-message {
+  .all-in-question {
     color: #ffffff;
     font-size: 1.3rem;
-    margin: 30px 0;
-    text-shadow: 0 0 10px #ff0000;
+    margin: 20px 0;
+    line-height: 1.5;
   }
 
-  .all-in-footer {
+  .all-in-question strong {
+    color: #ff6666;
+  }
+
+  .all-in-buttons {
     display: flex;
-    justify-content: center;
     gap: 20px;
+    justify-content: center;
     margin-top: 30px;
   }
 
-  .all-in-btn {
-    background: linear-gradient(45deg, #ff0000, #8b0000);
+  .all-in-yes-btn, .all-in-no-btn, .all-in-close-btn {
+    padding: 15px 30px;
     border: none;
     border-radius: 10px;
-    padding: 15px 30px;
-    color: #ffffff;
+    font-size: 1.2rem;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 1.1rem;
-    text-shadow: 0 0 5px #ffffff;
+    min-width: 120px;
+  }
+
+  .all-in-yes-btn {
+    background: linear-gradient(45deg, #ff0000, #cc0000);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  }
+
+  .all-in-yes-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+  }
+
+  .all-in-no-btn {
+    background: linear-gradient(45deg, #666666, #444444);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(102, 102, 102, 0.5);
+  }
+
+  .all-in-no-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(102, 102, 102, 0.8);
+  }
+
+  .all-in-close-btn {
+    background: linear-gradient(45deg, #ff0000, #cc0000);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  }
+
+  .all-in-close-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
   }
 
   .all-in-btn:hover {
@@ -7005,15 +6988,12 @@
       }
     }
 
-    // ALL IN GAME FUNCTIONS (NEW - FOR PLAYERS WITH 5000+ COINS)
+    // ALL IN GAME FUNCTIONS (SIMPLE VERSION)
     function initializeAllInGame() {
       console.log('🎰 Initializing ALL IN game...');
       
       const allInContainer = document.getElementById('allInContainer');
       const allInBtn = document.getElementById('allInBtn');
-      const allInModal = document.getElementById('allInModal');
-      const cancelAllInBtn = document.getElementById('cancelAllIn');
-      const confirmAllInBtn = document.getElementById('confirmAllIn');
       
       // Check if player has 40000+ coins and show/hide button
       function checkAllInVisibility() {
@@ -7036,7 +7016,7 @@
         checkAllInVisibility();
       };
       
-      // ALL IN button click
+      // ALL IN button click - show simple modal
       allInBtn.addEventListener('click', () => {
         console.log('🎰 ALL IN button clicked!');
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
@@ -7046,43 +7026,48 @@
           return;
         }
         
-        // Show modal with current amount
-        document.getElementById('allInAmount').textContent = totalCoins.toLocaleString();
-        allInModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        showAllInModal(totalCoins);
+      });
+    }
+    
+    function showAllInModal(totalCoins) {
+      // Create modal HTML
+      const modalHTML = `
+        <div class="simple-all-in-modal" id="simpleAllInModal">
+          <div class="simple-all-in-content">
+            <h2>🎰 ¿TE JUEGAS TODO?</h2>
+            <p class="all-in-question">¿Quieres jugarte <strong>${totalCoins.toLocaleString()} monedas</strong> a <strong>DOBLE O NADA</strong>?</p>
+            <div class="all-in-buttons">
+              <button class="all-in-yes-btn" id="allInYesBtn">🎰 ¡SÍ!</button>
+              <button class="all-in-no-btn" id="allInNoBtn">❌ NO</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add modal to page
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+      
+      // Add event listeners
+      document.getElementById('allInYesBtn').addEventListener('click', () => {
+        executeAllIn(totalCoins);
       });
       
-      // Cancel button
-      cancelAllInBtn.addEventListener('click', () => {
-        console.log('❌ ALL IN cancelled');
-        closeAllInModal();
+      document.getElementById('allInNoBtn').addEventListener('click', () => {
+        closeSimpleAllInModal();
       });
       
-      // Confirm ALL IN button
-      confirmAllInBtn.addEventListener('click', () => {
-        console.log('🎰 ALL IN confirmed! Player will lose everything!');
-        executeAllIn();
-      });
-      
-      // Close modal when clicking outside
-      allInModal.addEventListener('click', (e) => {
-        if (e.target === allInModal) {
-          closeAllInModal();
-        }
-      });
-      
-      // ESC key to close modal
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && allInModal.classList.contains('active')) {
-          closeAllInModal();
+      // Close on outside click
+      document.getElementById('simpleAllInModal').addEventListener('click', (e) => {
+        if (e.target.id === 'simpleAllInModal') {
+          closeSimpleAllInModal();
         }
       });
     }
     
-    function executeAllIn() {
-      console.log('🎰 Executing ALL IN - player loses everything!');
+    function executeAllIn(totalCoins) {
+      console.log('🎰 ALL IN executed - player loses everything!');
       
-      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const playerName = localStorage.getItem('soldierName') || 'Unknown';
       
       // Reset coins to 0
@@ -7097,73 +7082,28 @@
         console.log('🥚 ALL IN Easter Egg tracked: lost', totalCoins, 'coins');
       }
       
-      // Show result message
-      const messageEl = document.getElementById('allInMessage');
-      messageEl.innerHTML = `
-        <div class="all-in-title" style="color: #ff0000; font-size: 2rem;">🎰 ¡NADA!</div>
-        <div class="all-in-description" style="color: #ffffff; font-size: 1.5rem;">¡Perdiste ${totalCoins.toLocaleString()} monedas!</div>
-        <div class="all-in-subtitle" style="color: #ff6666; font-size: 1.2rem;">😈 ¡La casa siempre gana!</div>
-        <div style="color: #ff9999; font-size: 1rem; margin-top: 10px;">¿Pensabas que podrías duplicar? ¡Jajaja!</div>
+      // Show lose message
+      const modal = document.getElementById('simpleAllInModal');
+      modal.innerHTML = `
+        <div class="simple-all-in-content">
+          <h2 style="color: #ff0000; font-size: 2.5rem;">😈 ¡CREÍAS QUE GANARÍAS?</h2>
+          <p style="color: #ffffff; font-size: 1.5rem; margin: 20px 0;">¡Perdiste ${totalCoins.toLocaleString()} monedas!</p>
+          <p style="color: #ff6666; font-size: 1.2rem;">¡La casa siempre gana! 😈</p>
+          <button class="all-in-close-btn" id="allInCloseBtn">😈 ¡PERDISTE!</button>
+        </div>
       `;
       
-      // Hide confirm button, show only close
-      document.getElementById('confirmAllIn').style.display = 'none';
-      document.getElementById('cancelAllIn').textContent = '😈 ¡PERDISTE!';
-      document.getElementById('cancelAllIn').className = 'all-in-btn';
-      
-      // Create dramatic effect
-      createAllInLoseEffect();
-    }
-    
-    function createAllInLoseEffect() {
-      // Create dramatic losing effect
-      const loseEffect = document.createElement('div');
-      loseEffect.style.position = 'fixed';
-      loseEffect.style.top = '0';
-      loseEffect.style.left = '0';
-      loseEffect.style.width = '100%';
-      loseEffect.style.height = '100%';
-      loseEffect.style.background = 'radial-gradient(circle, rgba(255,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%)';
-      loseEffect.style.zIndex = '4999';
-      loseEffect.style.pointerEvents = 'none';
-      
-      document.body.appendChild(loseEffect);
-      
-      // Animate the effect
-      loseEffect.animate([
-        { opacity: 0 },
-        { opacity: 1 },
-        { opacity: 0 }
-      ], {
-        duration: 2000,
-        easing: 'ease-in-out'
+      // Add close button listener
+      document.getElementById('allInCloseBtn').addEventListener('click', () => {
+        closeSimpleAllInModal();
       });
-      
-      // Remove effect after animation
-      setTimeout(() => {
-        if (loseEffect.parentNode) {
-          loseEffect.parentNode.removeChild(loseEffect);
-        }
-      }, 2000);
     }
     
-    function closeAllInModal() {
-      const allInModal = document.getElementById('allInModal');
-      allInModal.classList.remove('active');
-      document.body.style.overflow = '';
-      
-      // Reset modal state
-      const messageEl = document.getElementById('allInMessage');
-      messageEl.innerHTML = `
-        <div class="all-in-title">¿TE JUEGAS TODO?</div>
-        <div class="all-in-description">Apuestas <span id="allInAmount">0</span> monedas</div>
-        <div class="all-in-subtitle">🎰 DOBLE O NADA 🎰</div>
-        <div class="all-in-warning">⚠️ ¡Una sola oportunidad!</div>
-      `;
-      
-      document.getElementById('confirmAllIn').style.display = 'inline-block';
-      document.getElementById('cancelAllIn').textContent = '🚪 SALIR';
-      document.getElementById('cancelAllIn').className = 'all-in-btn cancel';
+    function closeSimpleAllInModal() {
+      const modal = document.getElementById('simpleAllInModal');
+      if (modal) {
+        modal.remove();
+      }
     }
 
     // AUTOMATIC SYNC FUNCTIONS (NEW - DOESN'T AFFECT DAILY REWARD)
@@ -7563,29 +7503,7 @@
     </div>
   </div>
 
-      <!-- ALL IN Game Modal -->
-    <div class="all-in-modal" id="allInModal">
-      <div class="all-in-content">
-        <div class="all-in-header">
-          <h2>🎰 ALL IN - TODO O NADA</h2>
-          <div class="all-in-subtitle">¡Para los ansiosos que quieren apostar todo!</div>
-        </div>
-        
-        <div class="all-in-roulette" id="allInRoulette"></div>
-        
-        <div class="all-in-message" id="allInMessage">
-          <div class="all-in-title">¿TE JUEGAS TODO?</div>
-          <div class="all-in-description">Apuestas <span id="allInAmount">0</span> monedas</div>
-          <div class="all-in-subtitle">🎰 DOBLE O NADA 🎰</div>
-          <div class="all-in-warning">⚠️ ¡Una sola oportunidad!</div>
-        </div>
-        
-        <div class="all-in-footer">
-          <button class="all-in-btn cancel" id="cancelAllIn">🚪 SALIR</button>
-          <button class="all-in-btn" id="confirmAllIn">🎰 ¡ACEPTAR!</button>
-        </div>
-      </div>
-    </div>
+
 
     <!-- Fusion Power Modal -->
 </body>

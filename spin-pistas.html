@@ -505,7 +505,7 @@
     <div class="slot-main">
         <div class="slot-machine">
             <div class="coins-display">💰 Ortiz Coins: <span id="coinsDisplay">0</span></div>
-            <div class="cost-info">💸 Costo por giro: 35 Ortiz Coins</div>
+            <div class="cost-info">💸 Costo por giro: <span id="costDisplay">35</span> Ortiz Coins</div>
             <div class="game-info" style="color: #FFFFFF; font-size: 1rem; margin: 10px 0; background: rgba(0, 100, 0, 0.2); padding: 10px; border-radius: 8px; border: 1px solid rgba(0, 100, 0, 0.3);">
                 🎯 <strong>Objetivo:</strong> Consigue 3 figuras iguales (círculos, triángulos o cuadrados)<br>
                 📊 <strong>Probabilidad de ganar:</strong> 20% por giro
@@ -545,7 +545,7 @@
         let coins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
         let isSpinning = false;
         let hintsFound = 0;
-        const totalHints = 3; // Ahora 3 pistas disponibles
+        const totalHints = 4; // Ahora 4 pistas disponibles
 
         const symbols = [
             { symbol: '🔴', name: 'Círculo Rojo', shape: 'circle', color: 'red' },
@@ -570,11 +570,13 @@
         const hints = [
             "Si una medalla con tu nombre y tu verdadero nombre quieres ganar? esta secuencia has de usar.",
             "El primer dígito de la caja fuerte es: 6",
-            "Si 20 monedas quieres ganar, VEINTE deberás marcar..."
+            "Si 20 monedas quieres ganar, VEINTE deberás marcar...",
+            "Los ortiz son cuadriculados al cubo"
         ];
 
         function initSlotMachine() {
             updateCoinsDisplay();
+            updateCostDisplay();
             // Generar símbolos iniciales aleatorios
             document.getElementById('reel1').textContent = symbols[Math.floor(Math.random() * symbols.length)].symbol;
             document.getElementById('reel2').textContent = symbols[Math.floor(Math.random() * symbols.length)].symbol;
@@ -585,16 +587,37 @@
             document.getElementById('coinsDisplay').textContent = coins;
         }
 
+        function getCurrentCost() {
+            const pista3Mostrada = localStorage.getItem('spinPista3Mostrada') === 'true';
+            return pista3Mostrada ? 50 : 35;
+        }
+
+        function updateCostDisplay() {
+            const currentCost = getCurrentCost();
+            document.getElementById('costDisplay').textContent = currentCost;
+            
+            // Si el costo es 50, mostrar advertencia
+            if (currentCost === 50) {
+                const gameInfo = document.querySelector('.game-info');
+                gameInfo.innerHTML = `
+                    🎯 <strong>Objetivo:</strong> Consigue 3 figuras iguales (círculos, triángulos o cuadrados)<br>
+                    📊 <strong>Probabilidad de ganar:</strong> 20% por giro<br>
+                    ⚠️ <strong>¡ADVERTENCIA!</strong> El costo ha aumentado a 50 monedas
+                `;
+            }
+        }
+
         function spin() {
             if (isSpinning) return;
             
-            if (coins < 35) {
+            const cost = getCurrentCost();
+            if (coins < cost) {
                 showResult(false, "No tienes suficientes Ortiz Coins para girar");
                 return;
             }
 
             isSpinning = true;
-            coins -= 35;
+            coins -= cost;
             localStorage.setItem('totalOrtizCoins', coins.toString());
             updateCoinsDisplay();
 
@@ -781,6 +804,7 @@
                 // Verificar si ya se mostró la pista 1
                 const pista1Mostrada = localStorage.getItem('spinPista1Mostrada') === 'true';
                 const pista2Mostrada = localStorage.getItem('spinPista2Mostrada') === 'true';
+                const pista3Mostrada = localStorage.getItem('spinPista3Mostrada') === 'true';
                 
                 if (!pista1Mostrada) {
                     // Mostrar pista 1 por primera vez
@@ -800,13 +824,22 @@
                         message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
                         hint: hints[1]
                     };
-                } else if (hintsFound < totalHints) {
+                } else if (!pista3Mostrada) {
                     // Mostrar pista 3
+                    localStorage.setItem('spinPista3Mostrada', 'true');
                     hintsFound++;
                     return {
                         win: true,
                         message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
                         hint: hints[2]
+                    };
+                } else if (hintsFound < totalHints) {
+                    // Mostrar pista 4 (costo aumenta a 50)
+                    hintsFound++;
+                    return {
+                        win: true,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
+                        hint: hints[3]
                     };
                 } else {
                     return {
@@ -860,6 +893,11 @@
             // Efectos especiales para victoria
             if (won) {
                 createVictoryEffects();
+            }
+
+            // Actualizar el costo después de mostrar una pista
+            if (hint) {
+                updateCostDisplay();
             }
 
             // El modal solo se cierra cuando el usuario pulse el botón "Cerrar"

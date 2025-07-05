@@ -4397,22 +4397,22 @@
       console.log('Checking fusion sequence for:', target.textContent, target.className, target.id);
       
       // Check for medal (soldier icon) - 🎖️
-      if (target.textContent === '🎖️') {
+      if (target.textContent === '🎖️' || target.classList.contains('soldier-icon')) {
         console.log('Medal detected!');
         addToFusionSequence('medal', now);
       }
       // Check for player (soldier name display container)
-      else if (target.closest('#soldierNameDisplay')) {
+      else if (target.closest('#soldierNameDisplay') || target.classList.contains('soldier-name')) {
         console.log('Player container detected!');
         addToFusionSequence('player', now);
       }
       // Check for player name (soldier name text)
-      else if (target.id === 'soldierNameText') {
+      else if (target.id === 'soldierNameText' || target.closest('#soldierNameText')) {
         console.log('Player name detected!');
         addToFusionSequence('playerName', now);
       }
       // Check for total coins number
-      else if (target.id === 'totalCoins') {
+      else if (target.id === 'totalCoins' || target.closest('#totalCoins')) {
         console.log('Total coins number detected!');
         addToFusionSequence('totalCoins', now);
       }
@@ -4422,7 +4422,7 @@
         addToFusionSequence('coins', now);
       }
       // Check for coin emoji - 🪙
-      else if (target.textContent === '🪙') {
+      else if (target.textContent === '🪙' || target.classList.contains('coin-icon')) {
         console.log('Coin emoji detected!');
         addToFusionSequence('coinEmoji', now);
       }
@@ -4438,25 +4438,32 @@
       // Only add if not already in sequence
       if (!fusionSequence.find(item => item.element === element)) {
         fusionSequence.push({ element, timestamp });
-        console.log('Added to fusion sequence:', element);
-        console.log('Current fusion sequence:', fusionSequence.map(item => item.element));
+        console.log('✅ Added to fusion sequence:', element);
+        console.log('📋 Current fusion sequence:', fusionSequence.map(item => item.element));
         
         // Check if sequence is complete
         if (fusionSequence.length === 6) {
           const expectedSequence = ['medal', 'player', 'playerName', 'totalCoins', 'coins', 'coinEmoji'];
           const actualSequence = fusionSequence.map(item => item.element);
           
+          console.log('🎯 Expected sequence:', expectedSequence);
+          console.log('🎯 Actual sequence:', actualSequence);
+          
           if (JSON.stringify(expectedSequence) === JSON.stringify(actualSequence)) {
-            console.log('Fusion power sequence completed!');
+            console.log('🎉 Fusion power sequence completed!');
             activateFusionPower();
             fusionSequence = []; // Reset sequence
           } else {
-            console.log('Fusion sequence incorrect, resetting');
+            console.log('❌ Fusion sequence incorrect, resetting');
+            console.log('❌ Expected:', expectedSequence);
+            console.log('❌ Got:', actualSequence);
             fusionSequence = [];
           }
-                 }
-       }
-     }
+        }
+      } else {
+        console.log('⚠️ Element already in sequence:', element);
+      }
+    }
     
     function activateGodsPower() {
       // Show gods power modal
@@ -4780,6 +4787,13 @@
       activateFusionPower();
     }
     
+    // Debug function to show current sequence
+    function debugFusionSequence() {
+      console.log('Current fusion sequence:', fusionSequence.map(item => item.element));
+      console.log('Sequence length:', fusionSequence.length);
+      console.log('Expected sequence:', ['medal', 'player', 'playerName', 'totalCoins', 'coins', 'coinEmoji']);
+    }
+    
     // Add test button (temporary)
     setTimeout(() => {
       const testBtn = document.createElement('button');
@@ -4796,6 +4810,21 @@
       testBtn.style.cursor = 'pointer';
       testBtn.onclick = testFusionPower;
       document.body.appendChild(testBtn);
+      
+      const debugBtn = document.createElement('button');
+      debugBtn.textContent = 'DEBUG SEQ';
+      debugBtn.style.position = 'fixed';
+      debugBtn.style.top = '50px';
+      debugBtn.style.left = '10px';
+      debugBtn.style.zIndex = '10000';
+      debugBtn.style.background = '#ff9933';
+      debugBtn.style.color = 'white';
+      debugBtn.style.border = 'none';
+      debugBtn.style.padding = '10px';
+      debugBtn.style.borderRadius = '5px';
+      debugBtn.style.cursor = 'pointer';
+      debugBtn.onclick = debugFusionSequence;
+      document.body.appendChild(debugBtn);
     }, 1000);
     
     // Easter Egg 3 - Squid Power Detection

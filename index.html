@@ -2029,6 +2029,91 @@
       }
     }
     
+    /* Plus Twenty Coins Effect Styles */
+    .plus-twenty-effect {
+      position: fixed;
+      pointer-events: none;
+      z-index: 10000;
+    }
+    
+    .plus-twenty-content {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B35 100%);
+      border: 3px solid #FFD700;
+      border-radius: 25px;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 0 40px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.4);
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-weight: bold;
+      text-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+      animation: plusTwentyPulse 2.5s ease-out;
+    }
+    
+    .plus-twenty-icon {
+      font-size: 1.8rem;
+      animation: coinSpinFast 1.5s ease-out;
+    }
+    
+    .plus-twenty-text {
+      color: #000;
+      font-size: 1.8rem;
+      font-weight: bold;
+      animation: textGlowIntense 2.5s ease-out;
+    }
+    
+    @keyframes coinSpinFast {
+      0% {
+        transform: rotate(0deg) scale(0.5);
+      }
+      25% {
+        transform: rotate(90deg) scale(1.3);
+      }
+      50% {
+        transform: rotate(180deg) scale(1.5);
+      }
+      75% {
+        transform: rotate(270deg) scale(1.3);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+      }
+    }
+    
+    @keyframes textGlowIntense {
+      0% {
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+      }
+      25% {
+        text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700;
+      }
+      50% {
+        text-shadow: 0 0 30px #FFD700, 0 0 50px #FFD700, 0 0 70px #FFD700;
+      }
+      75% {
+        text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700;
+      }
+      100% {
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+      }
+    }
+    
+    @keyframes plusTwentyPulse {
+      0% {
+        transform: scale(0.5);
+        box-shadow: 0 0 20px #FFD700, inset 0 0 10px rgba(255, 215, 0, 0.2);
+      }
+      50% {
+        transform: scale(1.3);
+        box-shadow: 0 0 60px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.6);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 40px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.4);
+      }
+    }
+    
     /* Ortiz Coins Counter */
     .coins-counter {
       display: flex;
@@ -3990,6 +4075,19 @@
       createPlusOneEffect();
     }
     
+    function addTwentyCoins() {
+      // Add 20 coins to total
+      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      totalCoins += 20;
+      localStorage.setItem('totalOrtizCoins', totalCoins);
+      
+      // Update display
+      loadTotalCoins();
+      
+      // Create +20 coins effect
+      createPlusTwentyEffect();
+    }
+    
     function createPlusOneEffect() {
       // Create the +1 effect element
       const plusOneEffect = document.createElement('div');
@@ -4043,6 +4141,111 @@
           plusOneEffect.parentNode.removeChild(plusOneEffect);
         }
       }, 1500);
+    }
+    
+    function createPlusTwentyEffect() {
+      // Create the +20 effect element
+      const plusTwentyEffect = document.createElement('div');
+      plusTwentyEffect.className = 'plus-twenty-effect';
+      plusTwentyEffect.innerHTML = `
+        <div class="plus-twenty-content">
+          <span class="plus-twenty-icon">🪙</span>
+          <span class="plus-twenty-text">+20</span>
+        </div>
+      `;
+      
+      // Position it in the center of the screen
+      plusTwentyEffect.style.position = 'fixed';
+      plusTwentyEffect.style.left = '50%';
+      plusTwentyEffect.style.top = '50%';
+      plusTwentyEffect.style.transform = 'translate(-50%, -50%)';
+      plusTwentyEffect.style.zIndex = '10000';
+      plusTwentyEffect.style.pointerEvents = 'none';
+      
+      document.body.appendChild(plusTwentyEffect);
+      
+      // Create multiple coin particles
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          const coinParticle = document.createElement('div');
+          coinParticle.className = 'coin-particle';
+          coinParticle.textContent = '🪙';
+          coinParticle.style.position = 'fixed';
+          coinParticle.style.left = '50%';
+          coinParticle.style.top = '50%';
+          coinParticle.style.transform = 'translate(-50%, -50%)';
+          coinParticle.style.zIndex = '9999';
+          coinParticle.style.pointerEvents = 'none';
+          coinParticle.style.fontSize = '1.5rem';
+          coinParticle.style.color = '#FFD700';
+          coinParticle.style.textShadow = '0 0 10px #FFD700';
+          
+          document.body.appendChild(coinParticle);
+          
+          // Animate coin particle
+          const angle = (i / 8) * Math.PI * 2;
+          const distance = 150;
+          const targetX = Math.cos(angle) * distance;
+          const targetY = Math.sin(angle) * distance;
+          
+          coinParticle.animate([
+            { 
+              opacity: 1, 
+              transform: 'translate(-50%, -50%) scale(1)',
+              filter: 'brightness(1)'
+            },
+            { 
+              opacity: 0.8, 
+              transform: `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(0.8)`,
+              filter: 'brightness(1.5)'
+            },
+            { 
+              opacity: 0, 
+              transform: `translate(calc(-50% + ${targetX * 1.5}px), calc(-50% + ${targetY * 1.5}px)) scale(0.5)`,
+              filter: 'brightness(1)'
+            }
+          ], {
+            duration: 2000,
+            easing: 'ease-out'
+          });
+          
+          // Remove coin particle after animation
+          setTimeout(() => {
+            if (coinParticle.parentNode) {
+              coinParticle.parentNode.removeChild(coinParticle);
+            }
+          }, 2000);
+        }, i * 100);
+      }
+      
+      // Animate the main +20 effect
+      plusTwentyEffect.animate([
+        { 
+          opacity: 0, 
+          transform: 'translate(-50%, -50%) scale(0.5)',
+          filter: 'brightness(1)'
+        },
+        { 
+          opacity: 1, 
+          transform: 'translate(-50%, -50%) scale(1.5)',
+          filter: 'brightness(2)'
+        },
+        { 
+          opacity: 0, 
+          transform: 'translate(-50%, -50%) scale(1)',
+          filter: 'brightness(1)'
+        }
+      ], {
+        duration: 2500,
+        easing: 'ease-out'
+      });
+      
+      // Remove the effect after animation
+      setTimeout(() => {
+        if (plusTwentyEffect.parentNode) {
+          plusTwentyEffect.parentNode.removeChild(plusTwentyEffect);
+        }
+      }, 2500);
     }
     
     function createLightningEffects() {
@@ -4108,6 +4311,10 @@
     const closeSquidPowerBtn = document.getElementById('closeSquidPower');
     const totalLetters = 20; // Total letters in "BIENVENIDO AL SISTEMA" (excluding spaces)
     
+    // Easter Egg 6 - VEINTE Sequence Detection
+    let veinteSequence = [];
+    const veinteTarget = ['V', 'E', 'I', 'N', 'T', 'E'];
+    
     // Detect clicks on individual letters
     document.addEventListener('click', (e) => {
       const target = e.target;
@@ -4120,6 +4327,7 @@
         // Reset if more than 5 seconds between clicks
         if (now - lastLetterClick > 5000) {
           clickedLetters.clear();
+          veinteSequence = []; // Reset VEINTE sequence
           // Remove clicked class from all letters
           document.querySelectorAll('.clickable-letter').forEach(letter => {
             letter.classList.remove('clicked');
@@ -4144,6 +4352,22 @@
             target.style.transform = '';
             target.style.textShadow = '';
           }, 500);
+          
+          // Special Easter Egg: VEINTE sequence gives +20 coins
+          veinteSequence.push(letter);
+          
+          // Check if we have enough letters to check the sequence
+          if (veinteSequence.length >= 6) {
+            // Keep only the last 6 letters
+            veinteSequence = veinteSequence.slice(-6);
+            
+            // Check if the sequence matches VEINTE
+            if (veinteSequence.join('') === 'VEINTE') {
+              console.log('VEINTE sequence completed! +20 coins Easter Egg activated!');
+              addTwentyCoins();
+              veinteSequence = []; // Reset sequence
+            }
+          }
         }
         
         // Check if all letters have been clicked

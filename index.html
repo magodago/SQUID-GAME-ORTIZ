@@ -2218,43 +2218,80 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
-    margin: 8px 0;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    border-left: 3px solid #00ff00;
+    padding: 20px;
+    margin: 12px 0;
+    background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 200, 0, 0.05));
+    border-radius: 12px;
+    border: 2px solid rgba(0, 255, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .player-entry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 255, 0, 0.4);
+    border-color: rgba(0, 255, 0, 0.6);
+  }
+  
+  .player-entry::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #00ff00, #00cc00);
+    box-shadow: 0 0 10px #00ff00;
   }
   
   .player-info {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
+    flex: 1;
   }
   
   .player-name {
     color: #ffffff;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.5px;
   }
   
   .player-coins {
     color: #ffd700;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    text-shadow: 0 0 15px #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
   
   .player-stats {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     font-size: 0.9rem;
-    color: #cccccc;
+    flex-wrap: wrap;
   }
   
   .player-stats span {
-    background: rgba(0, 255, 0, 0.1);
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: 1px solid rgba(0, 255, 0, 0.3);
+    background: linear-gradient(45deg, rgba(0, 255, 0, 0.2), rgba(0, 200, 0, 0.1));
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 0, 0.4);
+    color: #ffffff;
+    font-weight: 500;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+  
+  .player-stats span:hover {
+    background: linear-gradient(45deg, rgba(0, 255, 0, 0.3), rgba(0, 200, 0, 0.2));
+    transform: scale(1.05);
   }
   
   .admin-footer {
@@ -2279,6 +2316,32 @@
   .admin-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 255, 0, 0.4);
+  }
+  
+  /* Admin Panel Animations */
+  @keyframes statUpdate {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+      color: #00ff00;
+      text-shadow: 0 0 20px #00ff00;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes playerEntrySlide {
+    0% {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
   /* Fusion Power Modal Styles */
@@ -4340,6 +4403,25 @@
                 } else {
                   console.error('❌ Force sync button not found when panel opened!');
                   alert('❌ Botón de sincronización no encontrado!');
+                }
+                
+                // Add event listener to close button when panel opens
+                const closeAdminBtn = document.getElementById('closeAdminBtn');
+                if (closeAdminBtn) {
+                  console.log('🔍 Close admin button found, adding event listener...');
+                  closeAdminBtn.onclick = function() {
+                    console.log('❌ Close admin button clicked!');
+                    const adminPanel = document.getElementById('adminPanel');
+                    if (adminPanel) {
+                      adminPanel.style.display = 'none';
+                      document.body.style.overflow = 'auto';
+                      console.log('✅ Admin panel closed');
+                    } else {
+                      console.error('❌ Admin panel element not found for closing!');
+                    }
+                  };
+                } else {
+                  console.error('❌ Close admin button not found when panel opened!');
                 }
               } else {
                 console.error('❌ Admin panel element not found!');
@@ -6761,35 +6843,67 @@
         totalCoins += parseInt(playerData.coins || playerData.totalCoins || 0);
       });
       
-      // Update admin stats
-      document.getElementById('totalPlayers').textContent = players.length.toString();
-      document.getElementById('totalCoinsAdmin').textContent = totalCoins.toLocaleString();
+      // Update admin stats with animation
+      const totalPlayersEl = document.getElementById('totalPlayers');
+      const totalCoinsEl = document.getElementById('totalCoinsAdmin');
       
-      // Create player entries
+      totalPlayersEl.textContent = players.length.toString();
+      totalCoinsEl.textContent = totalCoins.toLocaleString();
+      
+      // Add animation to stats
+      totalPlayersEl.style.animation = 'statUpdate 0.5s ease-out';
+      totalCoinsEl.style.animation = 'statUpdate 0.5s ease-out';
+      
+      // Create player entries with enhanced design
       const playersContainer = document.getElementById('playersContainer');
       let playersHTML = '';
       
-      players.forEach(playerName => {
-        const playerData = playersData[playerName];
-        const coins = parseInt(playerData.coins || playerData.totalCoins || 0);
-        const gamesPlayed = parseInt(playerData.gamesPlayed || 0);
-        const totalWins = parseInt(playerData.totalWins || 0);
-        const cluesFound = parseInt(playerData.cluesFound || 0);
-        
-        playersHTML += `
-          <div class="player-entry">
+      if (players.length === 0) {
+        playersHTML = `
+          <div class="player-entry" style="text-align: center; justify-content: center;">
             <div class="player-info">
-              <span class="player-name">${playerName}</span>
-              <span class="player-coins">🪙 ${coins.toLocaleString()}</span>
-            </div>
-            <div class="player-stats">
-              <span>🎮 ${gamesPlayed} juegos</span>
-              <span>🏆 ${totalWins} victorias</span>
-              <span>🔍 ${cluesFound} pistas</span>
+              <span class="player-name" style="color: #888;">📭 No hay jugadores registrados</span>
+              <span style="color: #666; font-size: 0.9rem;">Los datos aparecerán cuando los jugadores usen el juego</span>
             </div>
           </div>
         `;
-      });
+      } else {
+        // Sort players by coins (highest first)
+        const sortedPlayers = players.sort((a, b) => {
+          const coinsA = parseInt(playersData[a].coins || playersData[a].totalCoins || 0);
+          const coinsB = parseInt(playersData[b].coins || playersData[b].totalCoins || 0);
+          return coinsB - coinsA;
+        });
+        
+        sortedPlayers.forEach((playerName, index) => {
+          const playerData = playersData[playerName];
+          const coins = parseInt(playerData.coins || playerData.totalCoins || 0);
+          const gamesPlayed = parseInt(playerData.gamesPlayed || 0);
+          const totalWins = parseInt(playerData.totalWins || 0);
+          const cluesFound = parseInt(playerData.cluesFound || 0);
+          
+          // Calculate win rate
+          const winRate = gamesPlayed > 0 ? ((totalWins / gamesPlayed) * 100).toFixed(1) : 0;
+          
+          // Get rank emoji
+          const rankEmoji = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅';
+          
+          playersHTML += `
+            <div class="player-entry" style="animation: playerEntrySlide 0.3s ease-out ${index * 0.1}s both;">
+              <div class="player-info">
+                <span class="player-name">${rankEmoji} ${playerName}</span>
+                <span class="player-coins">🪙 ${coins.toLocaleString()} monedas</span>
+              </div>
+              <div class="player-stats">
+                <span title="Juegos jugados">🎮 ${gamesPlayed}</span>
+                <span title="Victorias totales">🏆 ${totalWins}</span>
+                <span title="Pistas encontradas">🔍 ${cluesFound}</span>
+                <span title="Porcentaje de victoria" style="background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.1)); border-color: rgba(255, 215, 0, 0.4);">📊 ${winRate}%</span>
+              </div>
+            </div>
+          `;
+        });
+      }
       
       playersContainer.innerHTML = playersHTML;
       console.log('✅ Admin panel updated with Firebase data');

@@ -40,6 +40,10 @@
             transform: translateX(-50%);
             text-align: center;
             z-index: 10;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
         }
 
         .vip-title {
@@ -85,7 +89,7 @@
 
         .vip-main {
             position: relative;
-            margin: 120px auto 100px auto;
+            margin: 140px auto 100px auto;
             width: 90%;
             max-width: 1200px;
             min-height: 70vh;
@@ -535,17 +539,17 @@
                     <div style="font-weight: bold; margin-bottom: 5px;">🏆 APUESTA GANADOR</div>
                     <div style="font-size: 0.8rem; color: #FFA500;">Selecciona qué jugador ganará (2x ganancia)</div>
                     <div class="bet-options" id="winnerOptions" style="display: none;">
-                        <div class="bet-option" onclick="selectBetOption('playerA', this)">
-                            <div style="font-weight: bold;">🎮 Jugador A</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que Jugador A ganará</div>
+                        <div class="bet-option" data-option="playerA" onclick="selectBetOption('playerA', this)">
+                            <div style="font-weight: bold;">🎮 001</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que 001 ganará</div>
                         </div>
-                        <div class="bet-option" onclick="selectBetOption('playerB', this)">
-                            <div style="font-weight: bold;">🎯 Jugador B</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que Jugador B ganará</div>
+                        <div class="bet-option" data-option="playerB" onclick="selectBetOption('playerB', this)">
+                            <div style="font-weight: bold;">🎯 002</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que 002 ganará</div>
                         </div>
-                        <div class="bet-option" onclick="selectBetOption('playerC', this)">
-                            <div style="font-weight: bold;">⚡ Jugador C</div>
-                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que Jugador C ganará</div>
+                        <div class="bet-option" data-option="playerC" onclick="selectBetOption('playerC', this)">
+                            <div style="font-weight: bold;">⚡ 003</div>
+                            <div style="font-size: 0.7rem; color: #FFA500;">Apostar a que 003 ganará</div>
                         </div>
                     </div>
                 </div>
@@ -554,15 +558,15 @@
                     <div style="font-weight: bold; margin-bottom: 5px;">📊 APUESTA PUNTUACIÓN</div>
                     <div style="font-size: 0.8rem; color: #FFA500;">Predice la puntuación total (1.5x ganancia)</div>
                     <div class="bet-options" id="scoreOptions" style="display: none;">
-                        <div class="bet-option" onclick="selectBetOption('high', this)">
+                        <div class="bet-option" data-option="high" onclick="selectBetOption('high', this)">
                             <div style="font-weight: bold;">📈 Alta (>100)</div>
                             <div style="font-size: 0.7rem; color: #FFA500;">Puntuación total será alta</div>
                         </div>
-                        <div class="bet-option" onclick="selectBetOption('medium', this)">
+                        <div class="bet-option" data-option="medium" onclick="selectBetOption('medium', this)">
                             <div style="font-weight: bold;">📊 Media (50-100)</div>
                             <div style="font-size: 0.7rem; color: #FFA500;">Puntuación total será media</div>
                         </div>
-                        <div class="bet-option" onclick="selectBetOption('low', this)">
+                        <div class="bet-option" data-option="low" onclick="selectBetOption('low', this)">
                             <div style="font-weight: bold;">📉 Baja (<50)</div>
                             <div style="font-size: 0.7rem; color: #FFA500;">Puntuación total será baja</div>
                         </div>
@@ -573,11 +577,11 @@
                     <div style="font-weight: bold; margin-bottom: 5px;">⚡ APUESTA DIFERENCIA</div>
                     <div style="font-size: 0.8rem; color: #FFA500;">Predice si será reñido o no (3x ganancia)</div>
                     <div class="bet-options" id="differenceOptions" style="display: none;">
-                        <div class="bet-option" onclick="selectBetOption('close', this)">
+                        <div class="bet-option" data-option="close" onclick="selectBetOption('close', this)">
                             <div style="font-weight: bold;">⚡ Reñido (<20)</div>
                             <div style="font-size: 0.7rem; color: #FFA500;">Diferencia pequeña entre ganadores</div>
                         </div>
-                        <div class="bet-option" onclick="selectBetOption('wide', this)">
+                        <div class="bet-option" data-option="wide" onclick="selectBetOption('wide', this)">
                             <div style="font-weight: bold;">🏆 Dominante (>20)</div>
                             <div style="font-size: 0.7rem; color: #FFA500;">Diferencia grande entre ganadores</div>
                         </div>
@@ -613,7 +617,7 @@
             const playersContainer = document.getElementById('playersContainer');
             playersContainer.innerHTML = '';
             
-            const playerNames = ['Jugador A', 'Jugador B', 'Jugador C'];
+            const playerNames = ['001', '002', '003'];
             const playerEmojis = ['🎮', '🎯', '⚡'];
             
             players = playerNames.map((name, index) => ({
@@ -680,9 +684,9 @@
             
             // Mostrar confirmación visual
             const optionNames = {
-                'playerA': 'Jugador A 🎮',
-                'playerB': 'Jugador B 🎯', 
-                'playerC': 'Jugador C ⚡',
+                'playerA': '001 🎮',
+                'playerB': '002 🎯', 
+                'playerC': '003 ⚡',
                 'high': 'Puntuación Alta 📈',
                 'medium': 'Puntuación Media 📊',
                 'low': 'Puntuación Baja 📉',
@@ -701,6 +705,14 @@
                 return;
             }
             
+            // Verificar que se haya seleccionado una opción específica
+            const selectedOption = document.querySelector('.bet-option.selected');
+            if (!selectedOption) {
+                alert('⚠️ ¡Selecciona una opción específica primero!');
+                return;
+            }
+            
+            currentBetOption = selectedOption.getAttribute('data-option');
             if (!currentBetOption) {
                 alert('⚠️ ¡Selecciona una opción específica primero!');
                 return;
@@ -720,9 +732,9 @@
             };
             
             const optionNames = {
-                'playerA': 'Jugador A 🎮',
-                'playerB': 'Jugador B 🎯', 
-                'playerC': 'Jugador C ⚡',
+                'playerA': '001 🎮',
+                'playerB': '002 🎯', 
+                'playerC': '003 ⚡',
                 'high': 'Puntuación Alta 📈',
                 'medium': 'Puntuación Media 📊',
                 'low': 'Puntuación Baja 📉',
@@ -813,12 +825,12 @@
             let resultMessage = '';
             
             if (currentBetType === 'winner') {
-                // Winner bets
-                const playerNames = {
-                    'playerA': 'Jugador A',
-                    'playerB': 'Jugador B',
-                    'playerC': 'Jugador C'
-                };
+                            // Winner bets
+            const playerNames = {
+                'playerA': '001',
+                'playerB': '002',
+                'playerC': '003'
+            };
                 
                 if (winner.name === playerNames[currentBetOption]) {
                     winnings = betAmount * 2;

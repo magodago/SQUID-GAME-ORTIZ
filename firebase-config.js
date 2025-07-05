@@ -50,14 +50,27 @@ const PlayerDataManager = {
       const snapshot = await playerRef.once('value');
       const existingData = snapshot.val() || {};
       
-      // Prepare new data
+      // Always use the highest values from localStorage or existing data
+      // This prevents overwriting with lower values from individual games
+      const currentLocalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const currentLocalGames = parseInt(localStorage.getItem('gamesPlayed') || '0');
+      const currentLocalWins = parseInt(localStorage.getItem('totalWins') || '0');
+      const currentLocalClues = parseInt(localStorage.getItem('cluesFound') || '0');
+      
+      // Use the maximum value between local storage and existing data
+      const finalCoins = Math.max(coins, currentLocalCoins, existingData.coins || 0);
+      const finalGames = Math.max(gameData.gamesPlayed || 0, currentLocalGames, existingData.gamesPlayed || 0);
+      const finalWins = Math.max(gameData.totalWins || 0, currentLocalWins, existingData.totalWins || 0);
+      const finalClues = Math.max(gameData.cluesFound || 0, currentLocalClues, existingData.cluesFound || 0);
+      
+      // Prepare new data with the highest values
       const newData = {
         name: playerName,
-        coins: coins,
+        coins: finalCoins,
         lastUpdated: Date.now(),
-        gamesPlayed: gameData.gamesPlayed || existingData.gamesPlayed || 0,
-        totalWins: gameData.totalWins || existingData.totalWins || 0,
-        cluesFound: gameData.cluesFound || existingData.cluesFound || 0,
+        gamesPlayed: finalGames,
+        totalWins: finalWins,
+        cluesFound: finalClues,
         deviceInfo: {
           userAgent: navigator.userAgent,
           platform: navigator.platform,
@@ -70,12 +83,27 @@ const PlayerDataManager = {
         newData.migrationInfo = {
           migratedAt: gameData.migratedAt,
           note: gameData.migrationNote,
-          originalCoins: gameData.originalCoins || coins
+          originalCoins: gameData.originalCoins || finalCoins
+        };
+      }
+      
+      // Add auto-sync info
+      if (gameData.autoSync) {
+        newData.lastAutoSync = {
+          timestamp: new Date().toISOString(),
+          gameType: gameData.gameType || 'unknown',
+          syncedCoins: coins,
+          finalCoins: finalCoins
         };
       }
       
       await playerRef.set(newData);
-      console.log('✅ Player data saved to Firebase Realtime Database:', playerName);
+      console.log('✅ Player data saved to Firebase Realtime Database:', playerName, {
+        syncedCoins: coins,
+        finalCoins: finalCoins,
+        syncedGames: gameData.gamesPlayed || 0,
+        finalGames: finalGames
+      });
       return true;
     } catch (error) {
       console.error('❌ Error saving player data:', error);

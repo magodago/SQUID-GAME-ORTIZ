@@ -6352,6 +6352,14 @@
         localStorage.setItem('totalOrtizCoins', totalCoins);
       }
       
+      // Increment easter eggs found counter
+      const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
+      localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
+      console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
+      
+      // Update statistics display
+      loadStats();
+      
       // Track Easter Egg in Firebase
       const playerName = localStorage.getItem('soldierName');
       if (playerName && window.PlayerDataManager) {
@@ -6719,6 +6727,14 @@
         localStorage.setItem('totalOrtizCoins', totalCoins);
       }
       
+      // Increment easter eggs found counter
+      const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
+      localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
+      console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
+      
+      // Update statistics display
+      loadStats();
+      
       // Update display
       loadTotalCoins();
       
@@ -6736,6 +6752,14 @@
         totalCoins += 20;
         localStorage.setItem('totalOrtizCoins', totalCoins);
       }
+      
+      // Increment easter eggs found counter
+      const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
+      localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
+      console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
+      
+      // Update statistics display
+      loadStats();
       
       // Track Easter Egg in Firebase
       const playerName = localStorage.getItem('soldierName');

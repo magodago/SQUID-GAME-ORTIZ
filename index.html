@@ -4292,6 +4292,20 @@
           if (adminPanelBtn) {
             adminPanelBtn.style.display = 'flex';
             console.log('✅ Admin panel button displayed');
+            
+            // Add click event listener when button is shown
+            adminPanelBtn.addEventListener('click', () => {
+              console.log('🔐 Admin panel button clicked!');
+              const adminPanel = document.getElementById('adminPanel');
+              if (adminPanel) {
+                adminPanel.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                loadAdminData();
+                console.log('✅ Admin panel opened');
+              } else {
+                console.error('❌ Admin panel element not found!');
+              }
+            });
           } else {
             console.error('❌ Admin panel button not found when trying to show it');
           }

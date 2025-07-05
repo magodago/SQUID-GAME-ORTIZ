@@ -3824,6 +3824,12 @@
         if (e.key === 'Backspace' && !e.target.value && index > 0) {
           codeInputs[index - 1].focus();
         }
+        
+        // Check code when Enter is pressed
+        if (e.key === 'Enter') {
+          console.log('Enter pressed, checking code...');
+          checkCode();
+        }
       });
       
       // Asegurar que el teclado se abra al hacer clic
@@ -5617,6 +5623,11 @@
     
     // Detect clicks on lock icon
     lockIcon.addEventListener('click', () => {
+      console.log('🔒 Lock icon clicked!');
+      
+      // Check the code first
+      checkCode();
+      
       const now = Date.now();
       
       // Reset counter if more than 5 seconds between clicks

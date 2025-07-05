@@ -13,8 +13,14 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+try {
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  console.log('✅ Firebase initialized successfully');
+  console.log('📊 Database URL:', firebaseConfig.databaseURL);
+} catch (error) {
+  console.error('❌ Firebase initialization error:', error);
+}
 
 // Player data management functions
 const PlayerDataManager = {

@@ -5850,9 +5850,23 @@
         const oldTotalWins = localStorage.getItem('totalWins');
         const oldCluesFound = localStorage.getItem('cluesFound');
         
+        console.log('📊 Found localStorage data:', {
+          name: oldName,
+          coins: oldCoins,
+          gamesPlayed: oldGamesPlayed,
+          totalWins: oldTotalWins,
+          cluesFound: oldCluesFound
+        });
+        
         // Check if we have old data and haven't migrated yet
         const hasOldData = oldName && (oldCoins || oldGamesPlayed || oldTotalWins || oldCluesFound);
         const alreadyMigrated = localStorage.getItem('dataMigratedToFirebase');
+        
+        console.log('🔍 Migration check:', {
+          hasOldData: hasOldData,
+          alreadyMigrated: alreadyMigrated,
+          PlayerDataManager: !!window.PlayerDataManager
+        });
         
         if (hasOldData && !alreadyMigrated) {
           console.log('📦 Found old player data, migrating to Firebase...');

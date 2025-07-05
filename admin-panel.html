@@ -347,6 +347,7 @@
     <!-- Buttons -->
     <div class="button-container">
         <button class="admin-btn" id="refreshBtn">🔄 Actualizar Datos</button>
+        <button class="admin-btn" id="migrateBtn" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24);">📦 Migrar Datos Antiguos</button>
         <button class="admin-btn back-btn" id="backBtn">⬅️ Volver al Inicio</button>
     </div>
 
@@ -438,6 +439,11 @@
             loadAdminData();
         });
 
+        document.getElementById('migrateBtn').addEventListener('click', () => {
+            console.log('📦 Manual migration triggered from admin panel');
+            migrateOldDataFromAdmin();
+        });
+
         document.getElementById('backBtn').addEventListener('click', () => {
             console.log('⬅️ Going back to main page...');
             window.location.href = 'index.html';
@@ -458,6 +464,159 @@
             console.log('🔄 Auto-refreshing admin data...');
             loadAdminData();
         }, 30000);
+
+        // Migration function for admin panel
+        async function migrateOldDataFromAdmin() {
+            try {
+                console.log('📦 Starting manual migration from admin panel...');
+                
+                // Check for old data in localStorage
+                const oldName = localStorage.getItem('soldierName');
+                const oldCoins = localStorage.getItem('totalOrtizCoins');
+                const oldGamesPlayed = localStorage.getItem('gamesPlayed');
+                const oldTotalWins = localStorage.getItem('totalWins');
+                const oldCluesFound = localStorage.getItem('cluesFound');
+                
+                console.log('📊 Found localStorage data:', {
+                    name: oldName,
+                    coins: oldCoins,
+                    gamesPlayed: oldGamesPlayed,
+                    totalWins: oldTotalWins,
+                    cluesFound: oldCluesFound
+                });
+                
+                // Check if we have old data
+                const hasOldData = oldName && (oldCoins || oldGamesPlayed || oldTotalWins || oldCluesFound);
+                
+                if (hasOldData) {
+                    console.log('📦 Found old player data, migrating to Firebase...');
+                    
+                    // Prepare migration data
+                    const migrationData = {
+                        name: oldName,
+                        coins: parseInt(oldCoins || '0'),
+                        gamesPlayed: parseInt(oldGamesPlayed || '0'),
+                        totalWins: parseInt(oldTotalWins || '0'),
+                        cluesFound: parseInt(oldCluesFound || '0'),
+                        migratedAt: new Date().toISOString(),
+                        migrationNote: 'Migrated from admin panel'
+                    };
+                    
+                    // Save to Firebase
+                    if (window.PlayerDataManager) {
+                        await PlayerDataManager.savePlayerData(
+                            migrationData.name, 
+                            migrationData.coins, 
+                            {
+                                gamesPlayed: migrationData.gamesPlayed,
+                                totalWins: migrationData.totalWins,
+                                cluesFound: migrationData.cluesFound,
+                                migrationNote: migrationData.migrationNote,
+                                migratedAt: migrationData.migratedAt,
+                                originalCoins: migrationData.coins
+                            }
+                        );
+                        
+                        // Mark as migrated
+                        localStorage.setItem('dataMigratedToFirebase', 'true');
+                        localStorage.setItem('migrationTimestamp', new Date().toISOString());
+                        
+                        console.log('✅ Old player data successfully migrated to Firebase:', migrationData);
+                        
+                        // Show success message
+                        showMigrationSuccess(migrationData);
+                        
+                        // Refresh admin data
+                        setTimeout(() => {
+                            loadAdminData();
+                        }, 1000);
+                    } else {
+                        console.error('❌ PlayerDataManager not available');
+                        showMigrationError('PlayerDataManager no disponible');
+                    }
+                } else {
+                    console.log('📭 No old player data found to migrate');
+                    showMigrationError('No se encontraron datos antiguos para migrar');
+                }
+            } catch (error) {
+                console.error('❌ Error during data migration:', error);
+                showMigrationError('Error durante la migración: ' + error.message);
+            }
+        }
+
+        // Show migration success message
+        function showMigrationSuccess(migrationData) {
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, #00ff00, #00cc00);
+                color: #000;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0, 255, 0, 0.3);
+                z-index: 10000;
+                font-family: 'Orbitron', Arial, sans-serif;
+                font-weight: bold;
+                text-align: center;
+                max-width: 300px;
+            `;
+            
+            message.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 10px;">✅</div>
+                <div style="margin-bottom: 10px;">Datos Migrados Exitosamente</div>
+                <div style="font-size: 0.9rem; opacity: 0.8;">
+                    ${migrationData.name}: ${migrationData.coins} monedas
+                </div>
+            `;
+            
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                if (message.parentNode) {
+                    message.parentNode.removeChild(message);
+                }
+            }, 3000);
+        }
+
+        // Show migration error message
+        function showMigrationError(errorText) {
+            const message = document.createElement('div');
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(255, 107, 107, 0.3);
+                z-index: 10000;
+                font-family: 'Orbitron', Arial, sans-serif;
+                font-weight: bold;
+                text-align: center;
+                max-width: 300px;
+            `;
+            
+            message.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 10px;">❌</div>
+                <div style="margin-bottom: 10px;">Error de Migración</div>
+                <div style="font-size: 0.9rem; opacity: 0.8;">
+                    ${errorText}
+                </div>
+            `;
+            
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                if (message.parentNode) {
+                    message.parentNode.removeChild(message);
+                }
+            }, 3000);
+        }
     </script>
 </body>
 </html> 

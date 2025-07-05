@@ -505,9 +505,10 @@
     <div class="slot-main">
         <div class="slot-machine">
             <div class="coins-display">💰 Ortiz Coins: <span id="coinsDisplay">0</span></div>
-            <div class="cost-info">💸 Costo por giro: 5 Ortiz Coins</div>
+            <div class="cost-info">💸 Costo por giro: 35 Ortiz Coins</div>
             <div class="game-info" style="color: #FFFFFF; font-size: 1rem; margin: 10px 0; background: rgba(0, 100, 0, 0.2); padding: 10px; border-radius: 8px; border: 1px solid rgba(0, 100, 0, 0.3);">
-                🎯 <strong>Objetivo:</strong> Consigue 3 figuras iguales (círculos, triángulos o cuadrados)
+                🎯 <strong>Objetivo:</strong> Consigue 3 figuras iguales (círculos, triángulos o cuadrados)<br>
+                📊 <strong>Probabilidad de ganar:</strong> 20% por giro
             </div>
             
             <div class="slot-reels">
@@ -544,7 +545,7 @@
         let coins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
         let isSpinning = false;
         let hintsFound = 0;
-        const totalHints = 1; // Por ahora solo 1 pista
+        const totalHints = 2; // Ahora 2 pistas disponibles
 
         const symbols = [
             { symbol: '🔴', name: 'Círculo Rojo', shape: 'circle', color: 'red' },
@@ -564,22 +565,15 @@
             { symbol: '⬛', name: 'Cuadrado Negro', shape: 'square', color: 'black' }
         ];
 
-        // Función para debuggear símbolos
-        function debugSymbols() {
-            console.log('Todos los símbolos disponibles:');
-            symbols.forEach((s, i) => {
-                console.log(`${i}: ${s.symbol} - ${s.name} - ${s.shape}`);
-            });
-        }
+
 
         const hints = [
-            "Si una medalla con tu nombre y tu verdadero nombre quieres ganar? esta secuencia has de usar."
+            "Si una medalla con tu nombre y tu verdadero nombre quieres ganar? esta secuencia has de usar.",
+            "El primer dígito de la caja fuerte es: 6"
         ];
 
         function initSlotMachine() {
             updateCoinsDisplay();
-            // Debug: mostrar todos los símbolos disponibles
-            debugSymbols();
             // Generar símbolos iniciales aleatorios
             document.getElementById('reel1').textContent = symbols[Math.floor(Math.random() * symbols.length)].symbol;
             document.getElementById('reel2').textContent = symbols[Math.floor(Math.random() * symbols.length)].symbol;
@@ -593,13 +587,13 @@
         function spin() {
             if (isSpinning) return;
             
-            if (coins < 5) {
+            if (coins < 35) {
                 showResult(false, "No tienes suficientes Ortiz Coins para girar");
                 return;
             }
 
             isSpinning = true;
-            coins -= 5;
+            coins -= 35;
             localStorage.setItem('totalOrtizCoins', coins.toString());
             updateCoinsDisplay();
 
@@ -768,40 +762,42 @@
             const reel2Text = document.getElementById('reel2').textContent;
             const reel3Text = document.getElementById('reel3').textContent;
             
-            // Debug: mostrar qué símbolos están en pantalla
-            console.log('Símbolos en pantalla:', reel1Text, reel2Text, reel3Text);
-            
             // Encontrar los objetos de símbolos correspondientes
             const reel1Symbol = symbols.find(s => s.symbol === reel1Text);
             const reel2Symbol = symbols.find(s => s.symbol === reel2Text);
             const reel3Symbol = symbols.find(s => s.symbol === reel3Text);
-            
-            // Debug: mostrar los objetos encontrados
-            console.log('Objetos encontrados:', reel1Symbol, reel2Symbol, reel3Symbol);
-            console.log('Formas:', reel1Symbol?.shape, reel2Symbol?.shape, reel3Symbol?.shape);
 
             // Verificar si son iguales (misma forma, no necesariamente color)
             if (reel1Symbol && reel2Symbol && reel3Symbol && 
                 reel1Symbol.shape === reel2Symbol.shape && reel2Symbol.shape === reel3Symbol.shape) {
                 // ¡JACKPOT! - Dar pista
-                if (hintsFound < totalHints) {
+                const shapeNames = {
+                    'circle': 'Círculos',
+                    'triangle': 'Triángulos', 
+                    'square': 'Cuadrados'
+                };
+                
+                // Verificar si ya se mostró la pista 1
+                const pista1Mostrada = localStorage.getItem('spinPista1Mostrada') === 'true';
+                
+                if (!pista1Mostrada) {
+                    // Mostrar pista 1 por primera vez
+                    localStorage.setItem('spinPista1Mostrada', 'true');
                     hintsFound++;
-                    const shapeNames = {
-                        'circle': 'Círculos',
-                        'triangle': 'Triángulos', 
-                        'square': 'Cuadrados'
-                    };
                     return {
                         win: true,
                         message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
-                        hint: hints[hintsFound - 1]
+                        hint: hints[0]
+                    };
+                } else if (hintsFound < totalHints) {
+                    // Mostrar pista 2
+                    hintsFound++;
+                    return {
+                        win: true,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
+                        hint: hints[1]
                     };
                 } else {
-                    const shapeNames = {
-                        'circle': 'Círculos',
-                        'triangle': 'Triángulos', 
-                        'square': 'Cuadrados'
-                    };
                     return {
                         win: true,
                         message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales\nYa tienes todas las pistas`,

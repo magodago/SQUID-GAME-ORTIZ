@@ -3740,18 +3740,61 @@
       }, 3000);
     }
     
-    // Aplicar dígitos ya revelados al cargar la página
+    // Variables para el sistema de presión larga
+    let pressTimers = {};
+    let pressStartTimes = {};
+    
+    // Aplicar dígitos ya revelados al cargar la página (solo visual, no funcional)
     function applyRevealedDigits() {
+      // No aplicar automáticamente los dígitos revelados
+      // Solo marcar visualmente que están disponibles
       revealedDigits.forEach(index => {
         if (index < codeInputs.length) {
-          codeInputs[index].value = digitsToReveal[index];
-          codeInputs[index].style.background = 'linear-gradient(135deg, #00ff7f 0%, #00cc66 100%)';
-          codeInputs[index].style.color = '#000';
-          codeInputs[index].style.fontWeight = 'bold';
-          codeInputs[index].style.boxShadow = '0 0 20px #00ff7f';
-          codeInputs[index].readOnly = true;
+          codeInputs[index].setAttribute('data-revealed', 'true');
+          codeInputs[index].style.border = '2px solid #00ff7f';
+          codeInputs[index].style.boxShadow = '0 0 10px rgba(0, 255, 127, 0.3)';
         }
       });
+    }
+    
+    function showDigitRevealNotification(index, digit) {
+      // Mostrar notificación dramática
+      const notification = document.createElement('div');
+      notification.className = 'digit-reveal-notification';
+      notification.innerHTML = `
+        <div class="reveal-content">
+          <div class="reveal-icon">🔓</div>
+          <div class="reveal-text">¡DÍGITO REVELADO!</div>
+          <div class="reveal-digit">${digit}</div>
+          <div class="reveal-position">Posición ${index + 1}</div>
+        </div>
+      `;
+      
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+        border: 3px solid #e60073;
+        border-radius: 15px;
+        padding: 30px;
+        color: #fff;
+        font-family: 'Orbitron', Arial, sans-serif;
+        text-align: center;
+        z-index: 10000;
+        box-shadow: 0 0 50px #e60073, inset 0 0 20px rgba(230, 0, 115, 0.3);
+        animation: revealPulse 2s ease-in-out;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remover notificación después de 3 segundos
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
     }
     
     codeInputs.forEach((input, index) => {
@@ -3770,13 +3813,101 @@
         }
         
         // Check if code is complete
-          checkCode();
+        checkCode();
       });
       
       input.addEventListener('keydown', (e) => {
         // Move to previous input on backspace if current is empty
         if (e.key === 'Backspace' && !e.target.value && index > 0) {
           codeInputs[index - 1].focus();
+        }
+      });
+      
+      // Sistema de presión larga para revelar dígitos
+      input.addEventListener('mousedown', (e) => {
+        // Solo si el dígito está disponible para revelar
+        if (input.getAttribute('data-revealed') === 'true' && !input.value) {
+          pressStartTimes[index] = Date.now();
+          
+          pressTimers[index] = setTimeout(() => {
+            // Revelar el dígito después de 2 segundos
+            input.value = digitsToReveal[index];
+            input.style.background = 'linear-gradient(135deg, #00ff7f 0%, #00cc66 100%)';
+            input.style.color = '#000';
+            input.style.fontWeight = 'bold';
+            input.style.boxShadow = '0 0 20px #00ff7f';
+            input.readOnly = true;
+            
+            // Mostrar notificación
+            showDigitRevealNotification(index, digitsToReveal[index]);
+          }, 2000);
+          
+          // Feedback visual durante la presión
+          input.style.transform = 'scale(0.95)';
+          input.style.boxShadow = '0 0 15px rgba(0, 255, 127, 0.5)';
+        }
+      });
+      
+      input.addEventListener('mouseup', (e) => {
+        // Cancelar el timer si se suelta antes de 2 segundos
+        if (pressTimers[index]) {
+          clearTimeout(pressTimers[index]);
+          delete pressTimers[index];
+        }
+        
+        // Restaurar estilo visual
+        if (input.getAttribute('data-revealed') === 'true' && !input.value) {
+          input.style.transform = '';
+          input.style.boxShadow = '0 0 10px rgba(0, 255, 127, 0.3)';
+        }
+      });
+      
+      input.addEventListener('mouseleave', (e) => {
+        // Cancelar el timer si el mouse sale del input
+        if (pressTimers[index]) {
+          clearTimeout(pressTimers[index]);
+          delete pressTimers[index];
+        }
+        
+        // Restaurar estilo visual
+        if (input.getAttribute('data-revealed') === 'true' && !input.value) {
+          input.style.transform = '';
+          input.style.boxShadow = '0 0 10px rgba(0, 255, 127, 0.3)';
+        }
+      });
+      
+      // Para dispositivos táctiles
+      input.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (input.getAttribute('data-revealed') === 'true' && !input.value) {
+          pressStartTimes[index] = Date.now();
+          
+          pressTimers[index] = setTimeout(() => {
+            input.value = digitsToReveal[index];
+            input.style.background = 'linear-gradient(135deg, #00ff7f 0%, #00cc66 100%)';
+            input.style.color = '#000';
+            input.style.fontWeight = 'bold';
+            input.style.boxShadow = '0 0 20px #00ff7f';
+            input.readOnly = true;
+            
+            showDigitRevealNotification(index, digitsToReveal[index]);
+          }, 2000);
+          
+          input.style.transform = 'scale(0.95)';
+          input.style.boxShadow = '0 0 15px rgba(0, 255, 127, 0.5)';
+        }
+      });
+      
+      input.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        if (pressTimers[index]) {
+          clearTimeout(pressTimers[index]);
+          delete pressTimers[index];
+        }
+        
+        if (input.getAttribute('data-revealed') === 'true' && !input.value) {
+          input.style.transform = '';
+          input.style.boxShadow = '0 0 10px rgba(0, 255, 127, 0.3)';
         }
       });
     });

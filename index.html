@@ -4396,35 +4396,25 @@
       
       console.log('Checking fusion sequence for:', target.textContent, target.className, target.id);
       
-      // Check for medal (soldier icon) - 🎖️
-      if (target.textContent === '🎖️' || target.classList.contains('soldier-icon')) {
-        console.log('Medal detected!');
-        addToFusionSequence('medal', now);
+      // Check for coin emoji - 🪙
+      if (target.textContent === '🪙' || target.classList.contains('coin-icon')) {
+        console.log('Coin emoji detected!');
+        addToFusionSequence('coinEmoji', now);
       }
-      // Check for player (soldier name display container)
-      else if (target.closest('#soldierNameDisplay') || target.classList.contains('soldier-name')) {
-        console.log('Player container detected!');
-        addToFusionSequence('player', now);
-      }
-      // Check for player name (soldier name text)
-      else if (target.id === 'soldierNameText' || target.closest('#soldierNameText')) {
-        console.log('Player name detected!');
-        addToFusionSequence('playerName', now);
-      }
-      // Check for total coins number
-      else if (target.id === 'totalCoins' || target.closest('#totalCoins')) {
-        console.log('Total coins number detected!');
-        addToFusionSequence('totalCoins', now);
+      // Check for "ORTIZ" text
+      else if (target.textContent && target.textContent.includes('ORTIZ')) {
+        console.log('ORTIZ text detected!');
+        addToFusionSequence('ortiz', now);
       }
       // Check for "COINS" text
       else if (target.textContent && target.textContent.includes('COINS')) {
         console.log('COINS text detected!');
         addToFusionSequence('coins', now);
       }
-      // Check for coin emoji - 🪙
-      else if (target.textContent === '🪙' || target.classList.contains('coin-icon')) {
-        console.log('Coin emoji detected!');
-        addToFusionSequence('coinEmoji', now);
+      // Check for total coins number
+      else if (target.id === 'totalCoins' || target.closest('#totalCoins')) {
+        console.log('Total coins number detected!');
+        addToFusionSequence('totalCoins', now);
       }
       
       // Set timeout to reset sequence after 5 seconds
@@ -4442,8 +4432,8 @@
         console.log('📋 Current fusion sequence:', fusionSequence.map(item => item.element));
         
         // Check if sequence is complete
-        if (fusionSequence.length === 6) {
-          const expectedSequence = ['medal', 'player', 'playerName', 'totalCoins', 'coins', 'coinEmoji'];
+        if (fusionSequence.length === 8) {
+          const expectedSequence = ['coinEmoji', 'ortiz', 'coins', 'totalCoins', 'totalCoins', 'coins', 'ortiz', 'coinEmoji'];
           const actualSequence = fusionSequence.map(item => item.element);
           
           console.log('🎯 Expected sequence:', expectedSequence);
@@ -4791,7 +4781,7 @@
     function debugFusionSequence() {
       console.log('Current fusion sequence:', fusionSequence.map(item => item.element));
       console.log('Sequence length:', fusionSequence.length);
-      console.log('Expected sequence:', ['medal', 'player', 'playerName', 'totalCoins', 'coins', 'coinEmoji']);
+      console.log('Expected sequence:', ['coinEmoji', 'ortiz', 'coins', 'totalCoins', 'totalCoins', 'coins', 'ortiz', 'coinEmoji']);
     }
     
     // Add test button (temporary)

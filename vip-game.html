@@ -126,6 +126,8 @@
             margin-bottom: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .bet-type:hover {
@@ -134,8 +136,20 @@
         }
 
         .bet-type.selected {
-            background: rgba(255, 215, 0, 0.3);
-            border-color: #FFA500;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #FF0000;
+            color: #000;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .bet-type.selected::before {
+            content: '✅';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.2rem;
+            color: #000;
         }
 
         .bet-options {
@@ -151,15 +165,31 @@
             margin: 5px 0;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .bet-option:hover {
             background: rgba(255, 165, 0, 0.2);
+            transform: translateY(-1px);
         }
 
         .bet-option.selected {
-            background: rgba(255, 165, 0, 0.3);
-            border-color: #FFD700;
+            background: linear-gradient(135deg, #00FF00 0%, #00CC00 100%);
+            border: 2px solid #00FF00;
+            color: #000;
+            font-weight: bold;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+        }
+
+        .bet-option.selected::before {
+            content: '🎯';
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            font-size: 0.9rem;
+            color: #000;
         }
 
         .bet-input {
@@ -486,6 +516,22 @@
             
             console.log('🎯 Selecting bet type:', betType);
             
+            // If clicking the same type, deselect it
+            if (currentBetType === betType) {
+                console.log('🔄 Deselecting bet type:', betType);
+                document.querySelectorAll('.bet-type').forEach(bt => bt.classList.remove('selected'));
+                document.querySelectorAll('.bet-options').forEach(bo => bo.style.display = 'none');
+                currentBetType = null;
+                currentBetOption = null;
+                
+                const statusText = document.getElementById('statusText');
+                if (statusText) {
+                    statusText.textContent = 'Selecciona una opción de apuesta';
+                    statusText.style.color = '#FFD700';
+                }
+                return;
+            }
+            
             // Remove previous selections
             document.querySelectorAll('.bet-type').forEach(bt => bt.classList.remove('selected'));
             document.querySelectorAll('.bet-options').forEach(bo => bo.style.display = 'none');
@@ -494,10 +540,8 @@
             element.classList.add('selected');
             currentBetType = betType;
             
-            // Don't reset currentBetOption if it's still valid for this bet type
-            if (currentBetOption) {
-                console.log('⚠️ Keeping existing bet option:', currentBetOption);
-            }
+            // Reset bet option when changing type
+            currentBetOption = null;
             
             // Show options
             const optionsId = betType + 'Options';
@@ -508,14 +552,11 @@
             
             const statusText = document.getElementById('statusText');
             if (statusText) {
-                if (currentBetOption) {
-                    statusText.textContent = `✅ Seleccionado: ${betType.toUpperCase()} - Opción: ${currentBetOption}`;
-                } else {
-                    statusText.textContent = `✅ Seleccionado: ${betType.toUpperCase()}`;
-                }
+                statusText.textContent = `✅ Tipo seleccionado: ${betType.toUpperCase()}`;
+                statusText.style.color = '#00FF00';
             }
             
-            console.log('✅ Bet type selected:', betType, 'Current option:', currentBetOption);
+            console.log('✅ Bet type selected:', betType);
         }
 
         function selectBetOption(option, element) {
@@ -553,179 +594,107 @@
         }
 
         function startGame() {
-            console.log('🎮 ===== START GAME CALLED =====');
-            console.log('🎯 Current bet type:', currentBetType);
-            console.log('🎲 Current bet option:', currentBetOption);
-            console.log('💰 Current coins:', vipCoins);
-            console.log('🎮 Game in progress:', gameInProgress);
+            console.log('🎮 Starting VIP game...');
             
-            // Check if game is already in progress
-            if (gameInProgress) {
-                console.log('⚠️ Game already in progress, returning');
-                alert('⚠️ Juego ya en progreso');
+            // Validate bet selection
+            if (!currentBetType || !currentBetOption) {
+                console.log('⚠️ No bet selected');
+                const statusText = document.getElementById('statusText');
+                if (statusText) {
+                    statusText.textContent = '❌ Selecciona una opción de apuesta primero';
+                    statusText.style.color = '#FF0000';
+                }
                 return;
             }
-            
-            // Validate bet type and option
-            if (!currentBetType) {
-                console.log('❌ No bet type selected');
-                alert('❌ Selecciona un tipo de apuesta primero');
-                return;
-            }
-            
-            if (!currentBetOption) {
-                console.log('❌ No bet option selected');
-                alert('❌ Selecciona una opción de apuesta primero');
-                return;
-            }
-            
-            console.log('✅ Bet validation passed');
-            
-            // Get bet amount
-            const betInput = document.getElementById('betAmount');
-            if (!betInput) {
-                console.error('❌ Bet amount input not found');
-                alert('❌ Error: Campo de apuesta no encontrado');
-                return;
-            }
-            
-            const betAmount = parseInt(betInput.value);
-            console.log('💎 Bet amount from input:', betAmount);
             
             // Validate bet amount
-            if (isNaN(betAmount) || betAmount <= 0) {
-                console.log('❌ Invalid bet amount:', betAmount);
-                alert('❌ Apuesta debe ser un número mayor a 0');
+            const betInput = document.getElementById('betAmount');
+            const betAmount = parseInt(betInput ? betInput.value : '10');
+            
+            if (!betAmount || betAmount < 1 || betAmount > 1000) {
+                console.log('⚠️ Invalid bet amount:', betAmount);
+                const statusText = document.getElementById('statusText');
+                if (statusText) {
+                    statusText.textContent = '❌ Cantidad de apuesta inválida (1-1000)';
+                    statusText.style.color = '#FF0000';
+                }
                 return;
             }
             
             if (betAmount > vipCoins) {
-                console.log('❌ Insufficient coins:', betAmount, '>', vipCoins);
-                alert('❌ No tienes suficientes Ortiz Coins');
+                console.log('⚠️ Not enough coins:', betAmount, '>', vipCoins);
+                const statusText = document.getElementById('statusText');
+                if (statusText) {
+                    statusText.textContent = '❌ No tienes suficientes Ortiz Coins';
+                    statusText.style.color = '#FF0000';
+                }
                 return;
             }
             
-            console.log('✅ Bet amount validation passed');
+            if (gameInProgress) {
+                console.log('⚠️ Game already in progress');
+                // Remove popup and just scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
             
-            // Confirm bet (skip confirmation for testing)
-            console.log('✅ Skipping confirmation for testing');
+            console.log('✅ Starting game with bet:', currentBetType, currentBetOption, betAmount);
             
-            // Start the actual game
-            console.log('🎮 Starting actual game...');
+            // Deduct coins
+            vipCoins -= betAmount;
+            localStorage.setItem('totalOrtizCoins', vipCoins.toString());
+            updateCoinsDisplay();
             
-            try {
-                // Set game state
-                gameInProgress = true;
-                console.log('✅ Game state set to in progress');
+            // Start game
+            gameInProgress = true;
+            
+            const playButton = document.getElementById('playButton');
+            const statusText = document.getElementById('statusText');
+            const gameProgress = document.getElementById('gameProgress');
+            const progressBar = document.getElementById('progressBar');
+            
+            if (playButton) playButton.disabled = true;
+            if (statusText) {
+                statusText.textContent = '🎮 ¡Juego en progreso!';
+                statusText.style.color = '#FFD700';
+            }
+            if (gameProgress) gameProgress.style.display = 'block';
+            
+            // Scroll to top to show arena
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Reset players
+            players.forEach(player => player.score = 0);
+            updatePlayersDisplay();
+            
+            // Simulate game rounds
+            let round = 0;
+            const totalRounds = 5;
+            
+            const gameInterval = setInterval(() => {
+                round++;
+                console.log(`🎯 Round ${round}/${totalRounds}`);
                 
-                // Deduct coins
-                console.log('💰 Deducting coins...');
-                if (window.PlayerDataManager && PlayerDataManager.safeDeductCoins) {
-                    console.log('🔒 Using safe coin deduction');
-                    if (PlayerDataManager.safeDeductCoins(betAmount, 'vip-betting')) {
-                        vipCoins -= betAmount;
-                        console.log('✅ Coins deducted safely:', betAmount);
-                    } else {
-                        console.log('❌ Safe coin deduction failed, using direct method');
-                        vipCoins -= betAmount;
-                        localStorage.setItem('totalOrtizCoins', vipCoins.toString());
-                    }
-                } else {
-                    console.log('⚠️ PlayerDataManager not available, using direct deduction');
-                    vipCoins -= betAmount;
-                    localStorage.setItem('totalOrtizCoins', vipCoins.toString());
+                // Update progress bar
+                if (progressBar) {
+                    const progress = (round / totalRounds) * 100;
+                    progressBar.style.width = progress + '%';
                 }
                 
-                console.log('💰 New coin balance:', vipCoins);
+                // Add random scores to players
+                players.forEach(player => {
+                    const scoreIncrease = Math.floor(Math.random() * 20) + 5;
+                    player.score += scoreIncrease;
+                    console.log(`👤 ${player.name}: +${scoreIncrease} = ${player.score}`);
+                });
                 
-                // Update UI
-                console.log('🎨 Updating UI...');
-                const playButton = document.getElementById('playButton');
-                const statusText = document.getElementById('statusText');
-                const gameProgress = document.getElementById('gameProgress');
-                
-                if (playButton) {
-                    playButton.disabled = true;
-                    console.log('✅ Play button disabled');
-                }
-                
-                if (statusText) {
-                    statusText.textContent = '🎮 ¡Juego en progreso!';
-                    console.log('✅ Status text updated');
-                }
-                
-                if (gameProgress) {
-                    gameProgress.style.display = 'block';
-                    console.log('✅ Game progress shown');
-                }
-                
-                // Reset scores
-                console.log('🔄 Resetting player scores...');
-                players.forEach(player => player.score = 0);
                 updatePlayersDisplay();
                 
-                console.log('🎮 Starting game loop...');
-                
-                // Start game loop
-                let round = 0;
-                const maxRounds = 15;
-                let gameTimer = null;
-                
-                function gameLoop() {
-                    try {
-                        round++;
-                        console.log(`🎮 Round ${round}/${maxRounds}`);
-                        
-                        // Update progress bar
-                        const progress = (round / maxRounds) * 100;
-                        const progressBar = document.getElementById('progressBar');
-                        if (progressBar) {
-                            progressBar.style.width = progress + '%';
-                        }
-                        
-                        // Update player scores
-                        players.forEach((player, index) => {
-                            const points = Math.floor(Math.random() * 15) + 1;
-                            player.score += points;
-                            console.log(`👤 ${player.name}: +${points} = ${player.score}`);
-                        });
-                        
-                        updatePlayersDisplay();
-                        
-                        // End game
-                        if (round >= maxRounds) {
-                            console.log('🏁 Game finished, calculating results...');
-                            if (gameTimer) {
-                                clearInterval(gameTimer);
-                                gameTimer = null;
-                            }
-                            endGame(betAmount);
-                        }
-                    } catch (error) {
-                        console.error('❌ Error in game loop:', error);
-                        if (gameTimer) {
-                            clearInterval(gameTimer);
-                            gameTimer = null;
-                        }
-                        alert('❌ Error en el juego. Intenta de nuevo.');
-                        gameInProgress = false;
-                    }
+                if (round >= totalRounds) {
+                    clearInterval(gameInterval);
+                    endGame(betAmount);
                 }
-                
-                // Start the timer
-                console.log('⏰ Starting game timer...');
-                gameTimer = setInterval(gameLoop, 800);
-                console.log('✅ Game timer started successfully');
-                
-                // Force first round immediately
-                console.log('🚀 Forcing first round...');
-                gameLoop();
-                
-            } catch (error) {
-                console.error('❌ Error starting game:', error);
-                alert('❌ Error al iniciar el juego: ' + error.message);
-                gameInProgress = false;
-            }
+            }, 1000);
         }
 
         function endGame(betAmount) {

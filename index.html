@@ -6630,7 +6630,11 @@
       alert('🎁 CLAIM DAILY REWARD - Función ejecutada');
       
       // Double check if already claimed today
-      if (!isDailyRewardAvailable()) {
+      const isAvailable = isDailyRewardAvailable();
+      console.log('🔍 Daily reward available:', isAvailable);
+      alert(`🔍 Daily reward available: ${isAvailable}`);
+      
+      if (!isAvailable) {
         console.log('⚠️ Daily reward already claimed today');
         alert('⚠️ Daily reward already claimed today');
         showDailyRewardMessage('Ya has cobrado tu recompensa diaria. Vuelve mañana.');
@@ -6658,6 +6662,8 @@
       modal.style.display = 'none';
       
       // Sync to Firebase with player data collection
+      alert('📤 Llamando a collectAndSyncPlayerData...');
+      console.log('📤 Calling collectAndSyncPlayerData with amount:', amount);
       collectAndSyncPlayerData(amount);
       
       // Show success message

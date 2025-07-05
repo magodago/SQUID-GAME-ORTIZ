@@ -5674,6 +5674,9 @@
       
       // Verificar si se debe revelar algún dígito
       checkDigitRevelation(totalCoins);
+      
+      // Check all button visibility
+      checkAllButtonVisibility();
     }
 
     // Escuchar evento ortizCoinsUpdated y actualizar el contador
@@ -7360,13 +7363,6 @@
       // Check visibility on page load
       checkAllInVisibility();
       
-      // Check visibility when coins change
-      const originalLoadTotalCoins = window.loadTotalCoins;
-      window.loadTotalCoins = function() {
-        if (originalLoadTotalCoins) originalLoadTotalCoins();
-        checkAllInVisibility();
-      };
-      
       // ALL IN button click - show simple modal
       allInBtn.addEventListener('click', () => {
         console.log('🎰 ALL IN button clicked!');
@@ -7477,13 +7473,6 @@
       
       // Check visibility on page load
       checkFrontManVisibility();
-      
-      // Check visibility when coins change
-      const originalLoadTotalCoins = window.loadTotalCoins;
-      window.loadTotalCoins = function() {
-        if (originalLoadTotalCoins) originalLoadTotalCoins();
-        checkFrontManVisibility();
-      };
       
       // Front Man button click - show modal
       frontmanBtn.addEventListener('click', () => {
@@ -7612,13 +7601,6 @@
       
       // Check visibility on page load
       checkPlayerFightVisibility();
-      
-      // Check visibility when coins change
-      const originalLoadTotalCoins = window.loadTotalCoins;
-      window.loadTotalCoins = function() {
-        if (originalLoadTotalCoins) originalLoadTotalCoins();
-        checkPlayerFightVisibility();
-      };
       
       // Player Fight button click - show RPS modal
       playerFightBtn.addEventListener('click', () => {
@@ -8111,6 +8093,46 @@
             }, 2000);
           }
         });
+      }
+    }
+
+    // UNIFIED BUTTON VISIBILITY CHECKER
+    function checkAllButtonVisibility() {
+      console.log('🔍 Checking all button visibility...');
+      
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      
+      // Check ALL IN button (15000+ coins)
+      const allInContainer = document.getElementById('allInContainer');
+      if (allInContainer) {
+        if (totalCoins >= 15000) {
+          allInContainer.classList.add('visible');
+          console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins');
+        } else {
+          allInContainer.classList.remove('visible');
+        }
+      }
+      
+      // Check Front Man button (20000+ coins)
+      const frontmanContainer = document.getElementById('frontmanCallContainer');
+      if (frontmanContainer) {
+        if (totalCoins >= 20000) {
+          frontmanContainer.classList.add('visible');
+          console.log('📞 Front Man button visible - player has', totalCoins, 'coins');
+        } else {
+          frontmanContainer.classList.remove('visible');
+        }
+      }
+      
+      // Check Player Fight button (25000+ coins)
+      const playerFightContainer = document.getElementById('playerFightContainer');
+      if (playerFightContainer) {
+        if (totalCoins >= 25000) {
+          playerFightContainer.classList.add('visible');
+          console.log('⚔️ Player Fight button visible - player has', totalCoins, 'coins');
+        } else {
+          playerFightContainer.classList.remove('visible');
+        }
       }
     }
   </script>

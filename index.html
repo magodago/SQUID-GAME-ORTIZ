@@ -6642,22 +6642,28 @@
       }
       
       // Add coins to player (only the exact amount shown)
+      alert('💰 Agregando monedas al jugador...');
       const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const newCoins = currentCoins + amount;
       localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      alert(`💰 Monedas actualizadas: ${currentCoins} → ${newCoins}`);
       
       // Mark as claimed today IMMEDIATELY to prevent multiple claims
+      alert('📅 Marcando como reclamado hoy...');
       localStorage.setItem('lastDailyRewardDate', new Date().toDateString());
       
       // Update display
+      alert('🔄 Actualizando display...');
       updateCoinsDisplay();
       
       // Disable button immediately
+      alert('🔒 Deshabilitando botón...');
       const dailyRewardBtn = document.getElementById('dailyRewardBtn');
       dailyRewardBtn.classList.add('disabled');
       dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
       
       // Close modal immediately
+      alert('❌ Cerrando modal...');
       const modal = document.getElementById('dailyRewardModal');
       modal.style.display = 'none';
       

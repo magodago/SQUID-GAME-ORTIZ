@@ -5994,6 +5994,47 @@
       syncPlayerDataToFirebase();
     }
 
+    // Auto-sync function that runs whenever player data changes
+    function autoSyncPlayerData() {
+      console.log('🔄 Auto-syncing player data to Firebase...');
+      
+      const playerName = localStorage.getItem('soldierName');
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+      const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+      const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+      
+      if (playerName && window.PlayerDataManager) {
+        PlayerDataManager.savePlayerData(playerName, totalCoins, {
+          gamesPlayed: gamesPlayed,
+          totalWins: totalWins,
+          cluesFound: cluesFound,
+          lastSync: new Date().toISOString(),
+          autoSync: true
+        }).then(result => {
+          if (result) {
+            console.log('✅ Auto-sync successful:', { playerName, totalCoins, gamesPlayed, totalWins, cluesFound });
+          } else {
+            console.log('⚠️ Auto-sync failed, will retry later');
+          }
+        }).catch(error => {
+          console.error('❌ Auto-sync error:', error);
+        });
+      }
+    }
+
+    // Override localStorage.setItem to auto-sync when data changes
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = function(key, value) {
+      originalSetItem.apply(this, arguments);
+      
+      // Auto-sync when important player data changes
+      if (['totalOrtizCoins', 'gamesPlayed', 'totalWins', 'cluesFound'].includes(key)) {
+        console.log('📊 Player data changed:', key, '=', value);
+        setTimeout(autoSyncPlayerData, 1000); // Sync after 1 second
+      }
+    };
+
     // Sync data periodically
     setInterval(syncPlayerDataToFirebase, 30000); // Every 30 seconds
 

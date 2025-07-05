@@ -641,6 +641,9 @@
             }
         }
     </style>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
 </head>
 <body>
     <div class="vip-bg"></div>
@@ -1142,11 +1145,56 @@
             }
         }
 
+        // Auto-sync function for VIP game
+        function autoSyncVIPData() {
+            console.log('🔄 Auto-syncing VIP game data to Firebase...');
+            
+            const playerName = localStorage.getItem('soldierName');
+            const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+            const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+            const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+            
+            if (playerName && window.PlayerDataManager) {
+                PlayerDataManager.savePlayerData(playerName, totalCoins, {
+                    gamesPlayed: gamesPlayed,
+                    totalWins: totalWins,
+                    cluesFound: cluesFound,
+                    lastSync: new Date().toISOString(),
+                    autoSync: true,
+                    gameType: 'vip'
+                }).then(result => {
+                    if (result) {
+                        console.log('✅ VIP auto-sync successful');
+                    } else {
+                        console.log('⚠️ VIP auto-sync failed');
+                    }
+                }).catch(error => {
+                    console.error('❌ VIP auto-sync error:', error);
+                });
+            }
+        }
+
+        // Override localStorage.setItem for VIP game
+        const originalVIPSetItem = localStorage.setItem;
+        localStorage.setItem = function(key, value) {
+            originalVIPSetItem.apply(this, arguments);
+            
+            // Auto-sync when VIP game data changes
+            if (['totalOrtizCoins', 'gamesPlayed', 'totalWins', 'cluesFound'].includes(key)) {
+                console.log('📊 VIP game data changed:', key, '=', value);
+                setTimeout(autoSyncVIPData, 1000);
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             initVIPGame();
             
             // Event listener para cerrar modal
             document.getElementById('closeModalBtn').addEventListener('click', closeResultModal);
+            
+            // Initial sync
+            setTimeout(autoSyncVIPData, 2000);
         });
     </script>
 </body>

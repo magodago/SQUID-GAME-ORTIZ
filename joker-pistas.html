@@ -288,6 +288,34 @@
             box-shadow: none;
         }
 
+        .buttons-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .shuffle-btn {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 20px 40px;
+            color: #FFFFFF;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .shuffle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+        }
+
         .back-box {
             background: rgba(0, 0, 0, 0.9);
             border: 2px solid #FFFFFF;
@@ -454,7 +482,11 @@
                 border-radius: 10px;
             }
             
-            .play-btn {
+            .buttons-container {
+                gap: 15px;
+            }
+            
+            .play-btn, .shuffle-btn {
                 padding: 15px 30px;
                 font-size: 1.2rem;
             }
@@ -489,7 +521,10 @@
             <!-- Las tarjetas se generarán dinámicamente -->
         </div>
         
-        <button class="play-btn" id="playBtn" onclick="playGame()" disabled>🎭 JUGAR</button>
+        <div class="buttons-container">
+            <button class="play-btn" id="playBtn" onclick="playGame()" disabled>🎭 JUGAR</button>
+            <button class="shuffle-btn" id="shuffleBtn" onclick="shuffleCards()">🔄 MEZCLAR</button>
+        </div>
         
         <div class="back-box">
             <button class="back-btn" onclick="window.location.href='index.html'">← VOLVER AL MENÚ PRINCIPAL</button>
@@ -561,6 +596,10 @@
                 card.onclick = () => selectCard(i, card);
                 container.appendChild(card);
             }
+            
+            // Resetear estado de selección
+            selectedCards = [];
+            document.getElementById('playBtn').disabled = true;
         }
 
         function selectCard(index, cardElement) {
@@ -614,14 +653,14 @@
                 const result = generateResult();
                 revealCards(result.jokerPositions);
                 
-                // Esperar a que todas las cartas se revelen (6 cartas * 200ms = 1200ms) + 2 segundos extra
+                // Esperar a que todas las cartas seleccionadas se revelen (3 cartas * 300ms = 900ms) + 2 segundos extra
                 setTimeout(() => {
                     showResult(result.win, result.message, result.hint);
                     isPlaying = false;
                     document.getElementById('playBtn').disabled = false;
                     selectedCards = [];
-                    createCards(); // Regenerar tarjetas
-                }, 3200);
+                    // No regenerar las cartas automáticamente
+                }, 2900);
             }, 1000);
         }
 
@@ -703,18 +742,20 @@
         function revealCards(jokerPositions) {
             const cards = document.querySelectorAll('.card');
             
-            cards.forEach((card, index) => {
+            // Solo revelar las cartas seleccionadas
+            selectedCards.forEach((selectedIndex, arrayIndex) => {
                 setTimeout(() => {
+                    const card = cards[selectedIndex];
                     card.classList.add('revealed');
                     
-                    if (jokerPositions.includes(index)) {
+                    if (jokerPositions.includes(selectedIndex)) {
                         card.innerHTML = '🃏';
                         card.classList.add('joker');
                     } else {
                         card.innerHTML = '❌';
                         card.classList.add('x-mark');
                     }
-                }, index * 200);
+                }, arrayIndex * 300);
             });
         }
 
@@ -765,6 +806,14 @@
 
             modal.style.display = 'none';
             overlay.style.display = 'none';
+            
+            // No regenerar las cartas, mantenerlas reveladas
+            // Solo resetear el estado del juego
+            isPlaying = false;
+            selectedCards = [];
+            
+            // Habilitar el botón de mezclar
+            document.getElementById('shuffleBtn').disabled = false;
         }
 
         function createParticles() {
@@ -824,6 +873,74 @@
                         particle.parentNode.removeChild(particle);
                     }
                 }, 3000);
+            }
+        }
+
+        function shuffleCards() {
+            if (isPlaying) return;
+            
+            // Deshabilitar botón durante la mezcla
+            document.getElementById('shuffleBtn').disabled = true;
+            
+            // Efecto de mezcla con animación
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transform = 'rotateY(180deg) scale(0.8)';
+                    card.style.opacity = '0.5';
+                }, index * 100);
+            });
+            
+            // Después de la animación, regenerar las cartas
+            setTimeout(() => {
+                createCards();
+                
+                // Resetear estado
+                selectedCards = [];
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('shuffleBtn').disabled = false;
+                
+                // Efecto de partículas de mezcla
+                createShuffleEffects();
+            }, cards.length * 100 + 500);
+        }
+
+        function createShuffleEffects() {
+            const cardsContainer = document.getElementById('cardsContainer');
+            const rect = cardsContainer.getBoundingClientRect();
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '4px';
+                particle.style.height = '4px';
+                particle.style.background = '#FFFFFF';
+                particle.style.borderRadius = '50%';
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '1000';
+                particle.style.left = (rect.left + rect.width / 2) + 'px';
+                particle.style.top = (rect.top + rect.height / 2) + 'px';
+                
+                document.body.appendChild(particle);
+                
+                const angle = (i / 20) * Math.PI * 2;
+                const distance = 100 + Math.random() * 50;
+                const targetX = rect.left + rect.width / 2 + Math.cos(angle) * distance;
+                const targetY = rect.top + rect.height / 2 + Math.sin(angle) * distance;
+                
+                particle.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${targetX - (rect.left + rect.width / 2)}px, ${targetY - (rect.top + rect.height / 2)}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                });
+                
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, 1000);
             }
         }
 

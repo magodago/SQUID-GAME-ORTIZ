@@ -4943,9 +4943,11 @@
     
     function handleDailyRewardClick() {
       console.log('DAILY REWARD seleccionado');
+      alert('🎁 DAILY REWARD CLICK - Botón pulsado');
       
       // Check if daily reward is available
       if (!isDailyRewardAvailable()) {
+        alert('⚠️ Daily reward not available today');
         showDailyRewardMessage('Ya has cobrado tu recompensa diaria. Vuelve mañana.');
         return;
       }
@@ -6615,10 +6617,12 @@
 
     function claimDailyReward(amount) {
       console.log('🎁 Claiming daily reward:', amount, 'coins');
+      alert('🎁 CLAIM DAILY REWARD - Función ejecutada');
       
       // Double check if already claimed today
       if (!isDailyRewardAvailable()) {
         console.log('⚠️ Daily reward already claimed today');
+        alert('⚠️ Daily reward already claimed today');
         showDailyRewardMessage('Ya has cobrado tu recompensa diaria. Vuelve mañana.');
         return;
       }

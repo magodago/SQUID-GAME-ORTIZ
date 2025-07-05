@@ -5839,9 +5839,22 @@
     }
 
     // Migration function for old player data
-    function migrateOldPlayerData() {
+    async function migrateOldPlayerData() {
       try {
         console.log('🔄 Checking for player data to sync...');
+        
+        // Wait for Firebase to be ready
+        let attempts = 0;
+        while (!window.PlayerDataManager && attempts < 10) {
+          console.log('⏳ Waiting for Firebase to initialize...', attempts + 1);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          attempts++;
+        }
+        
+        if (!window.PlayerDataManager) {
+          console.error('❌ Firebase not ready after 10 attempts');
+          return;
+        }
         
         // Check for current data in localStorage
         const playerName = localStorage.getItem('soldierName');
@@ -5884,7 +5897,7 @@
           
           // Save to Firebase
           if (window.PlayerDataManager) {
-            PlayerDataManager.savePlayerData(
+            const result = await PlayerDataManager.savePlayerData(
               syncData.name, 
               syncData.coins, 
               {
@@ -5894,16 +5907,20 @@
               }
             );
             
-            // Mark as synced
-            if (!alreadyMigrated) {
-              localStorage.setItem('dataMigratedToFirebase', 'true');
-              localStorage.setItem('migrationTimestamp', new Date().toISOString());
-              console.log('✅ Player data successfully migrated to Firebase:', syncData);
-              
-              // Show migration notification only for first time
-              showMigrationNotification(syncData);
+            if (result) {
+              // Mark as synced
+              if (!alreadyMigrated) {
+                localStorage.setItem('dataMigratedToFirebase', 'true');
+                localStorage.setItem('migrationTimestamp', new Date().toISOString());
+                console.log('✅ Player data successfully migrated to Firebase:', syncData);
+                
+                // Show migration notification only for first time
+                showMigrationNotification(syncData);
+              } else {
+                console.log('✅ Player data synced to Firebase (update):', syncData);
+              }
             } else {
-              console.log('✅ Player data synced to Firebase (update):', syncData);
+              console.error('❌ Failed to save data to Firebase');
             }
           }
         } else {
@@ -5980,10 +5997,17 @@
     // Sync data periodically
     setInterval(syncPlayerDataToFirebase, 30000); // Every 30 seconds
 
+
+
     // Sync data when page loads
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 Page loaded, starting Firebase sync...');
+      console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
+      console.log('🔍 Firebase available:', !!window.firebase);
+      
       // Sync player data to Firebase
       setTimeout(() => {
+        console.log('⏰ 2 seconds passed, calling migrateOldPlayerData...');
         migrateOldPlayerData(); // Sync current data to Firebase
       }, 2000);
     });

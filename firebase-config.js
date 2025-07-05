@@ -12,14 +12,31 @@ const firebaseConfig = {
   appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
 };
 
-// Initialize Firebase
-try {
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  console.log('✅ Firebase initialized successfully');
-  console.log('📊 Database URL:', firebaseConfig.databaseURL);
-} catch (error) {
-  console.error('❌ Firebase initialization error:', error);
+// Initialize Firebase when DOM is ready
+let db;
+function initializeFirebase() {
+  try {
+    if (window.firebase) {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+      console.log('✅ Firebase initialized successfully');
+      console.log('📊 Database URL:', firebaseConfig.databaseURL);
+      return true;
+    } else {
+      console.error('❌ Firebase not loaded yet');
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Firebase initialization error:', error);
+    return false;
+  }
+}
+
+// Try to initialize immediately
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeFirebase);
+} else {
+  initializeFirebase();
 }
 
 // Player data management functions

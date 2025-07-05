@@ -2505,28 +2505,40 @@
     
     /* Daily Reward Container */
     .daily-reward-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 0.5rem 0;
+      padding: 0.6rem 1.2rem;
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #FF6B35;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #FF6B35;
+      backdrop-filter: blur(5px);
+      max-width: 280px;
+      margin-left: auto;
+      margin-right: auto;
     }
     
     .daily-reward-container .envelope-btn {
-      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
-      border: 2px solid #FF6B35;
-      border-radius: 15px;
-      padding: 0.8rem 1.2rem;
+      background: transparent;
+      border: none;
       cursor: pointer;
       transition: all 0.3s;
-      box-shadow: 0 0 20px #FF6B35;
       font-family: 'Orbitron', Arial, sans-serif;
       font-weight: bold;
-      font-size: 0.9rem;
+      font-size: 1rem;
+      color: #FF6B35;
+      text-shadow: 0 0 10px #FF6B35;
+      padding: 0;
+      width: auto;
+      height: auto;
     }
     
     .daily-reward-container .envelope-btn:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 30px #FF6B35;
+      text-shadow: 0 0 20px #FF6B35;
     }
     
     .daily-reward-container .envelope-btn.disabled {
@@ -6392,8 +6404,6 @@
       closeBtn.onclick = () => {
         claimDailyReward(rewardAmount);
         modal.style.display = 'none';
-        // Return to main page
-        window.location.href = 'index.html';
       };
     }
 
@@ -6419,7 +6429,7 @@
     function claimDailyReward(amount) {
       console.log('🎁 Claiming daily reward:', amount, 'coins');
       
-      // Add coins to player
+      // Add coins to player (only the exact amount shown)
       const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const newCoins = currentCoins + amount;
       localStorage.setItem('totalOrtizCoins', newCoins.toString());
@@ -6440,15 +6450,18 @@
       
       // Show success message
       showDailyRewardMessage(`¡Recompensa cobrada! +${amount} monedas`);
-      
-      // Force Firebase sync
-      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
-        PlayerDataManager.safeAddCoins(amount, 'daily-reward');
-      }
     }
 
     function collectAndSyncPlayerData(rewardAmount) {
       console.log('📊 Collecting player data for Firebase sync...');
+      
+      // Collect all localStorage data
+      const allLocalStorageData = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        const value = localStorage.getItem(key);
+        allLocalStorageData[key] = value;
+      }
       
       const playerData = {
         name: localStorage.getItem('soldierName') || 'Unknown',
@@ -6458,6 +6471,7 @@
         cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
         lastDailyReward: new Date().toISOString(),
         dailyRewardAmount: rewardAmount,
+        allLocalStorageData: allLocalStorageData, // Send all localStorage data
         userAgent: navigator.userAgent,
         screenResolution: `${screen.width}x${screen.height}`,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -6467,6 +6481,8 @@
         online: navigator.onLine,
         timestamp: new Date().toISOString()
       };
+      
+      console.log('📊 Player data collected:', playerData);
       
       // Save to Firebase
       if (window.PlayerDataManager && PlayerDataManager.savePlayerData) {
@@ -6485,6 +6501,20 @@
         });
       } else {
         console.log('⚠️ PlayerDataManager not available for daily reward sync');
+        // Fallback: try to sync with basic Firebase
+        if (window.firebase && window.firebase.database) {
+          try {
+            const database = window.firebase.database();
+            const playerRef = database.ref(`players/${playerData.name.replace(/[.#$[\]]/g, '_')}`);
+            playerRef.set({
+              ...playerData,
+              lastUpdate: new Date().toISOString()
+            });
+            console.log('✅ Fallback Firebase sync completed');
+          } catch (error) {
+            console.error('❌ Fallback Firebase sync failed:', error);
+          }
+        }
       }
     }
 

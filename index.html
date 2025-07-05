@@ -5706,8 +5706,39 @@
       console.error('❌ Admin panel button not found!');
     }
     
-    refreshAdminBtn.addEventListener('click', () => {
-      loadAdminData();
+    const forceSyncBtn = document.getElementById('forceSyncBtn');
+    forceSyncBtn.addEventListener('click', () => {
+      console.log('🔄 Forzando sincronización con Firebase...');
+      // Force sync current data to Firebase
+      if (window.PlayerDataManager) {
+        const playerName = localStorage.getItem('soldierName') || 'Unknown';
+        const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+        const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+        const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+        
+        PlayerDataManager.savePlayerData(playerName, totalCoins, {
+          gamesPlayed: gamesPlayed,
+          totalWins: totalWins,
+          cluesFound: cluesFound,
+          forcedSync: true,
+          syncTimestamp: new Date().toISOString()
+        }).then(result => {
+          if (result) {
+            console.log('✅ Sincronización forzada exitosa');
+            showDailyRewardMessage('✅ Sincronización forzada exitosa');
+          } else {
+            console.log('❌ Sincronización forzada falló');
+            showDailyRewardMessage('❌ Sincronización forzada falló');
+          }
+        }).catch(error => {
+          console.error('❌ Error en sincronización forzada:', error);
+          showDailyRewardMessage('❌ Error en sincronización');
+        });
+      } else {
+        console.log('❌ PlayerDataManager no disponible');
+        showDailyRewardMessage('❌ PlayerDataManager no disponible');
+      }
     });
     
     closeAdminBtn.addEventListener('click', () => {
@@ -6366,20 +6397,11 @@
       }
     }
 
-    // Override localStorage.setItem to auto-sync when data changes
-    const originalSetItem = localStorage.setItem;
-    localStorage.setItem = function(key, value) {
-      originalSetItem.apply(this, arguments);
-      
-      // Auto-sync when important player data changes
-      if (['totalOrtizCoins', 'gamesPlayed', 'totalWins', 'cluesFound'].includes(key)) {
-        console.log('📊 Player data changed:', key, '=', value);
-        setTimeout(autoSyncPlayerData, 1000); // Sync after 1 second
-      }
-    };
+    // No automatic sync - only manual sync through admin panel
+    // localStorage.setItem override removed to prevent auto-sync
 
-    // Sync data periodically
-    setInterval(syncPlayerDataToFirebase, 30000); // Every 30 seconds
+    // No periodic sync - only manual sync through admin panel
+    // setInterval removed to prevent auto-sync
 
 
 
@@ -6626,9 +6648,9 @@
       }
     }
 
-    // Sync data when page loads
+    // Initialize page
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('🚀 Page loaded, starting Firebase sync...');
+      console.log('🚀 Page loaded...');
       console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
       console.log('🔍 Firebase available:', !!window.firebase);
       
@@ -6638,11 +6660,7 @@
       // Initialize daily reward
       initializeDailyReward();
       
-      // Sync player data to Firebase
-      setTimeout(() => {
-        console.log('⏰ 2 seconds passed, calling migrateOldPlayerData...');
-        migrateOldPlayerData(); // Sync current data to Firebase
-      }, 2000);
+      // No automatic sync - only manual sync through admin panel
     });
 
     function checkFirebaseStatus() {
@@ -6713,8 +6731,8 @@
       </div>
       
       <div class="admin-footer">
-        <button class="admin-btn" id="refreshAdminBtn">🔄 Actualizar</button>
-        <button class="admin-btn" id="closeAdminBtn">❌ Cerrar</button>
+        <button class="admin-btn" id="forceSyncBtn">🔄 Forzar Sincronización</button>
+        <button class="admin-btn" id="closeAdminBtn">❌ Volver</button>
       </div>
     </div>
   </div>

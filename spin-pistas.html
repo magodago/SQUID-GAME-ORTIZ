@@ -545,7 +545,7 @@
         let coins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
         let isSpinning = false;
         let hintsFound = 0;
-        const totalHints = 2; // Ahora 2 pistas disponibles
+        const totalHints = 3; // Ahora 3 pistas disponibles
 
         const symbols = [
             { symbol: '🔴', name: 'Círculo Rojo', shape: 'circle', color: 'red' },
@@ -569,7 +569,8 @@
 
         const hints = [
             "Si una medalla con tu nombre y tu verdadero nombre quieres ganar? esta secuencia has de usar.",
-            "El primer dígito de la caja fuerte es: 6"
+            "El primer dígito de la caja fuerte es: 6",
+            "Si 20 monedas quieres ganar, VEINTE deberás marcar..."
         ];
 
         function initSlotMachine() {
@@ -779,6 +780,7 @@
                 
                 // Verificar si ya se mostró la pista 1
                 const pista1Mostrada = localStorage.getItem('spinPista1Mostrada') === 'true';
+                const pista2Mostrada = localStorage.getItem('spinPista2Mostrada') === 'true';
                 
                 if (!pista1Mostrada) {
                     // Mostrar pista 1 por primera vez
@@ -789,13 +791,22 @@
                         message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
                         hint: hints[0]
                     };
-                } else if (hintsFound < totalHints) {
+                } else if (!pista2Mostrada) {
                     // Mostrar pista 2
+                    localStorage.setItem('spinPista2Mostrada', 'true');
                     hintsFound++;
                     return {
                         win: true,
                         message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
                         hint: hints[1]
+                    };
+                } else if (hintsFound < totalHints) {
+                    // Mostrar pista 3
+                    hintsFound++;
+                    return {
+                        win: true,
+                        message: `¡JACKPOT! 🎉\nTres ${shapeNames[reel1Symbol.shape]} iguales`,
+                        hint: hints[2]
                     };
                 } else {
                     return {

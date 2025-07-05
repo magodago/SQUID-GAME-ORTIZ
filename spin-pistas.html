@@ -551,21 +551,25 @@
         const totalHints = 4; // Ahora 4 pistas disponibles
 
         const symbols = [
+            // CÍRCULOS
             { symbol: '🔴', name: 'Círculo Rojo', shape: 'circle', color: 'red' },
             { symbol: '🟡', name: 'Círculo Amarillo', shape: 'circle', color: 'yellow' },
             { symbol: '🔵', name: 'Círculo Azul', shape: 'circle', color: 'blue' },
             { symbol: '🟢', name: 'Círculo Verde', shape: 'circle', color: 'green' },
             { symbol: '🟣', name: 'Círculo Morado', shape: 'circle', color: 'purple' },
+            
+            // TRIÁNGULOS
             { symbol: '🔺', name: 'Triángulo Rojo', shape: 'triangle', color: 'red' },
-            { symbol: '🟨', name: 'Triángulo Amarillo', shape: 'triangle', color: 'yellow' },
-            { symbol: '🔷', name: 'Triángulo Azul', shape: 'triangle', color: 'blue' },
             { symbol: '🟩', name: 'Triángulo Verde', shape: 'triangle', color: 'green' },
             { symbol: '🟪', name: 'Triángulo Morado', shape: 'triangle', color: 'purple' },
+            
+            // CUADRADOS
             { symbol: '🟥', name: 'Cuadrado Rojo', shape: 'square', color: 'red' },
             { symbol: '🟦', name: 'Cuadrado Azul', shape: 'square', color: 'blue' },
             { symbol: '🟧', name: 'Cuadrado Naranja', shape: 'square', color: 'orange' },
             { symbol: '🟫', name: 'Cuadrado Marrón', shape: 'square', color: 'brown' },
-            { symbol: '⬛', name: 'Cuadrado Negro', shape: 'square', color: 'black' }
+            { symbol: '⬛', name: 'Cuadrado Negro', shape: 'square', color: 'black' },
+            { symbol: '🔷', name: 'Diamante Azul', shape: 'square', color: 'blue' }
         ];
 
 
@@ -934,7 +938,7 @@
             });
             
             console.log('=== PRUEBA DE DETECCIÓN DE FORMAS ===');
-            const testEmojis = ['🔴', '🟡', '🔵', '🟢', '🟣', '🔺', '🟨', '🔷', '🟩', '🟪', '🟥', '🟦', '🟧', '🟫', '⬛'];
+            const testEmojis = ['🔴', '🟡', '🔵', '🟢', '🟣', '🔺', '🟩', '🟪', '🟥', '🟦', '🟧', '🟫', '⬛', '🔷', '🟨'];
             testEmojis.forEach(emoji => {
                 const shape = getShapeFromEmoji(emoji);
                 console.log(`${emoji} -> ${shape}`);
@@ -942,12 +946,12 @@
         }
 
         function testWin() {
-            // Forzar tres cuadrados para probar
+            // Forzar tres cuadrados para probar (incluyendo cuadrado amarillo)
             document.getElementById('reel1').textContent = '🟥';
-            document.getElementById('reel2').textContent = '🟦';
+            document.getElementById('reel2').textContent = '🟨';
             document.getElementById('reel3').textContent = '⬛';
             
-            console.log('Forzando combinación ganadora: 🟥🟦⬛ (tres cuadrados)');
+            console.log('Forzando combinación ganadora: 🟥🟨⬛ (tres cuadrados)');
             
             setTimeout(() => {
                 const result = generateResult();
@@ -961,12 +965,12 @@
             if (['🔴', '🟡', '🔵', '🟢', '🟣'].includes(emoji)) {
                 return 'circle';
             }
-            // Triángulos: 🔺🟨🔷🟩🟪
-            if (['🔺', '🟨', '🔷', '🟩', '🟪'].includes(emoji)) {
+            // Triángulos: 🔺🟩🟪
+            if (['🔺', '🟩', '🟪'].includes(emoji)) {
                 return 'triangle';
             }
-            // Cuadrados: 🟥🟦🟧🟫⬛
-            if (['🟥', '🟦', '🟧', '🟫', '⬛'].includes(emoji)) {
+            // Cuadrados: 🟥🟦🟧🟫⬛🔷🟨
+            if (['🟥', '🟦', '🟧', '🟫', '⬛', '🔷', '🟨'].includes(emoji)) {
                 return 'square';
             }
             return 'unknown';

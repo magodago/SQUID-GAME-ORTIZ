@@ -5757,6 +5757,7 @@
     if (forceSyncBtn) {
       forceSyncBtn.addEventListener('click', () => {
         console.log('🔄 Forzando sincronización con Firebase...');
+        alert('🔄 Cargando datos de Firebase...');
         
         // First, load data from Firebase
         if (window.firebase && window.firebase.database) {
@@ -5767,6 +5768,10 @@
           playersRef.once('value').then(snapshot => {
             const playersData = snapshot.val() || {};
             console.log('📊 Datos cargados de Firebase:', playersData);
+            
+            // Show data in alert for debugging
+            const playerCount = Object.keys(playersData).length;
+            alert(`📊 Datos cargados: ${playerCount} jugadores encontrados`);
             
             // Update admin panel with Firebase data
             updateAdminPanelWithFirebaseData(playersData);
@@ -5788,22 +5793,27 @@
               }).then(result => {
                 if (result) {
                   console.log('✅ Sincronización forzada exitosa');
+                  alert('✅ Datos cargados y sincronizados correctamente');
                   showDailyRewardMessage('✅ Datos cargados y sincronizados');
                 } else {
                   console.log('❌ Sincronización forzada falló');
+                  alert('❌ Error al sincronizar datos');
                   showDailyRewardMessage('❌ Error al sincronizar');
                 }
               }).catch(error => {
                 console.error('❌ Error en sincronización forzada:', error);
+                alert('❌ Error en sincronización: ' + error.message);
                 showDailyRewardMessage('❌ Error en sincronización');
               });
             }
           }).catch(error => {
             console.error('❌ Error cargando datos de Firebase:', error);
+            alert('❌ Error cargando datos: ' + error.message);
             showDailyRewardMessage('❌ Error cargando datos');
           });
         } else {
           console.log('❌ Firebase no disponible');
+          alert('❌ Firebase no disponible');
           showDailyRewardMessage('❌ Firebase no disponible');
         }
       });

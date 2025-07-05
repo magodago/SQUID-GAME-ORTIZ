@@ -7102,13 +7102,13 @@
       messageEl.innerHTML = `
         <div class="all-in-title" style="color: #ff0000; font-size: 2rem;">🎰 ¡NADA!</div>
         <div class="all-in-description" style="color: #ffffff; font-size: 1.5rem;">¡Perdiste ${totalCoins.toLocaleString()} monedas!</div>
-        <div class="all-in-warning" style="color: #ff6666; font-size: 1.2rem;">😈 ¡Para los ansiosos... ¡Siempre pierdes!</div>
-        <div style="color: #ff9999; font-size: 1rem; margin-top: 10px;">¿Pensabas que podrías ganar? ¡Jajaja!</div>
+        <div class="all-in-subtitle" style="color: #ff6666; font-size: 1.2rem;">😈 ¡La casa siempre gana!</div>
+        <div style="color: #ff9999; font-size: 1rem; margin-top: 10px;">¿Pensabas que podrías duplicar? ¡Jajaja!</div>
       `;
       
       // Hide confirm button, show only close
       document.getElementById('confirmAllIn').style.display = 'none';
-      document.getElementById('cancelAllIn').textContent = '😈 ¡ACEPTADO!';
+      document.getElementById('cancelAllIn').textContent = '😈 ¡PERDISTE!';
       document.getElementById('cancelAllIn').className = 'all-in-btn';
       
       // Create dramatic effect
@@ -7155,13 +7155,14 @@
       // Reset modal state
       const messageEl = document.getElementById('allInMessage');
       messageEl.innerHTML = `
-        <div class="all-in-title">¿ESTÁS SEGURO?</div>
+        <div class="all-in-title">¿TE JUEGAS TODO?</div>
         <div class="all-in-description">Apuestas <span id="allInAmount">0</span> monedas</div>
-        <div class="all-in-warning">⚠️ ¡Siempre pierdes! ¡Es para los ansiosos!</div>
+        <div class="all-in-subtitle">🎰 DOBLE O NADA 🎰</div>
+        <div class="all-in-warning">⚠️ ¡Una sola oportunidad!</div>
       `;
       
       document.getElementById('confirmAllIn').style.display = 'inline-block';
-      document.getElementById('cancelAllIn').textContent = '❌ CANCELAR';
+      document.getElementById('cancelAllIn').textContent = '🚪 SALIR';
       document.getElementById('cancelAllIn').className = 'all-in-btn cancel';
     }
 
@@ -7557,14 +7558,15 @@
         <div class="all-in-roulette" id="allInRoulette"></div>
         
         <div class="all-in-message" id="allInMessage">
-          <div class="all-in-title">¿ESTÁS SEGURO?</div>
+          <div class="all-in-title">¿TE JUEGAS TODO?</div>
           <div class="all-in-description">Apuestas <span id="allInAmount">0</span> monedas</div>
-          <div class="all-in-warning">⚠️ ¡Siempre pierdes! ¡Es para los ansiosos!</div>
+          <div class="all-in-subtitle">🎰 DOBLE O NADA 🎰</div>
+          <div class="all-in-warning">⚠️ ¡Una sola oportunidad!</div>
         </div>
         
         <div class="all-in-footer">
-          <button class="all-in-btn cancel" id="cancelAllIn">❌ CANCELAR</button>
-          <button class="all-in-btn" id="confirmAllIn">🎰 ¡ALL IN!</button>
+          <button class="all-in-btn cancel" id="cancelAllIn">🚪 SALIR</button>
+          <button class="all-in-btn" id="confirmAllIn">🎰 ¡ACEPTAR!</button>
         </div>
       </div>
     </div>

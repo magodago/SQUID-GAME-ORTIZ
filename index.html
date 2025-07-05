@@ -7015,10 +7015,10 @@
       const cancelAllInBtn = document.getElementById('cancelAllIn');
       const confirmAllInBtn = document.getElementById('confirmAllIn');
       
-      // Check if player has 5000+ coins and show/hide button
+      // Check if player has 40000+ coins and show/hide button
       function checkAllInVisibility() {
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        if (totalCoins >= 5000) {
+        if (totalCoins >= 40000) {
           allInContainer.classList.add('visible');
           console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins');
         } else {
@@ -7041,7 +7041,7 @@
         console.log('🎰 ALL IN button clicked!');
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
         
-        if (totalCoins < 5000) {
+        if (totalCoins < 40000) {
           console.log('❌ Player does not have enough coins for ALL IN');
           return;
         }
@@ -7263,7 +7263,7 @@
         console.log('🔍 DEBUG - Container display:', window.getComputedStyle(allInContainer).display);
         
         // Force show for testing if player has coins
-        if (totalCoins >= 5000) {
+        if (totalCoins >= 40000) {
           allInContainer.classList.add('visible');
           console.log('🔍 DEBUG - Forced ALL IN button to be visible');
         }

@@ -511,6 +511,12 @@
                 📊 <strong>Probabilidad de ganar:</strong> 20% por giro
             </div>
             
+            <!-- Área de debug visible -->
+            <div id="debugArea" style="background: rgba(0, 0, 0, 0.8); color: #00FF00; font-family: monospace; font-size: 0.8rem; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #00FF00; display: none;">
+                <strong>🔍 DEBUG:</strong><br>
+                <span id="debugText">Esperando giro...</span>
+            </div>
+            
             <div class="slot-reels">
                 <div class="slot-reel">
                     <div class="slot-symbol" id="reel1">🔴</div>
@@ -524,6 +530,9 @@
             </div>
             
             <button class="spin-btn" id="spinBtn" onclick="spin()">🎰 GIRAR</button>
+            
+            <!-- Botón para mostrar debug -->
+            <button onclick="toggleDebug()" style="background: #FF6B35; color: white; border: none; padding: 8px 15px; margin: 5px; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">🔍 DEBUG</button>
             
             <div class="back-box">
                 <button onclick="goBack()" style="width: 100%; padding: 15px; font-size: 1.1rem; background: linear-gradient(135deg, #FFFFFF 0%, #006400 100%); border: none; border-radius: 10px; color: #000; font-family: 'Orbitron', monospace; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">← VOLVER AL MENÚ PRINCIPAL</button>
@@ -794,6 +803,11 @@
             console.log('Símbolos en pantalla:', reel1Text, reel2Text, reel3Text);
             console.log('Códigos Unicode:', reel1Text.charCodeAt(0), reel2Text.charCodeAt(0), reel3Text.charCodeAt(0));
             
+            // Actualizar debug visible si está activo
+            if (document.getElementById('debugArea').style.display !== 'none') {
+                updateDebugInfo();
+            }
+            
             // Obtener las formas de cada símbolo
             const shape1 = getShapeFromEmoji(reel1Text);
             const shape2 = getShapeFromEmoji(reel2Text);
@@ -951,6 +965,36 @@
                 const shape = getShapeFromEmoji(emoji);
                 console.log(`${emoji} -> ${shape}`);
             });
+        }
+
+        function toggleDebug() {
+            const debugArea = document.getElementById('debugArea');
+            if (debugArea.style.display === 'none') {
+                debugArea.style.display = 'block';
+                updateDebugInfo();
+            } else {
+                debugArea.style.display = 'none';
+            }
+        }
+
+        function updateDebugInfo() {
+            const debugText = document.getElementById('debugText');
+            const reel1Text = document.getElementById('reel1').textContent;
+            const reel2Text = document.getElementById('reel2').textContent;
+            const reel3Text = document.getElementById('reel3').textContent;
+            
+            const shape1 = getShapeFromEmoji(reel1Text);
+            const shape2 = getShapeFromEmoji(reel2Text);
+            const shape3 = getShapeFromEmoji(reel3Text);
+            
+            const isWin = shape1 === shape2 && shape2 === shape3 && shape1 !== 'unknown';
+            
+            debugText.innerHTML = `
+                Símbolos: ${reel1Text} ${reel2Text} ${reel3Text}<br>
+                Formas: ${shape1} | ${shape2} | ${shape3}<br>
+                ¿Ganó?: ${isWin ? '✅ SÍ' : '❌ NO'}<br>
+                Estado: ${isWin ? 'JACKPOT!' : 'No coinciden'}
+            `;
         }
 
         function getShapeFromEmoji(emoji) {

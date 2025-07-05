@@ -3826,13 +3826,24 @@
         }
       });
       
+      // Asegurar que el teclado se abra al hacer clic
+      input.addEventListener('click', (e) => {
+        input.focus();
+      });
+      
       // Sistema de presión larga para revelar dígitos
       input.addEventListener('mousedown', (e) => {
+        console.log('Mouse down on input', index);
+        console.log('Data revealed:', input.getAttribute('data-revealed'));
+        console.log('Current value:', input.value);
+        
         // Solo si el dígito está disponible para revelar
         if (input.getAttribute('data-revealed') === 'true' && !input.value) {
+          console.log('Starting long press timer for digit:', digitsToReveal[index]);
           pressStartTimes[index] = Date.now();
           
           pressTimers[index] = setTimeout(() => {
+            console.log('Long press completed! Revealing digit:', digitsToReveal[index]);
             // Revelar el dígito después de 2 segundos
             input.value = digitsToReveal[index];
             input.style.background = 'linear-gradient(135deg, #00ff7f 0%, #00cc66 100%)';
@@ -3881,11 +3892,17 @@
       
       // Para dispositivos táctiles
       input.addEventListener('touchstart', (e) => {
-        e.preventDefault();
+        console.log('Touch start on input', index);
+        console.log('Data revealed:', input.getAttribute('data-revealed'));
+        console.log('Current value:', input.value);
+        
+        // No prevenir el comportamiento por defecto para permitir el teclado
         if (input.getAttribute('data-revealed') === 'true' && !input.value) {
+          console.log('Starting long press timer for digit:', digitsToReveal[index]);
           pressStartTimes[index] = Date.now();
           
           pressTimers[index] = setTimeout(() => {
+            console.log('Long press completed! Revealing digit:', digitsToReveal[index]);
             input.value = digitsToReveal[index];
             input.style.background = 'linear-gradient(135deg, #00ff7f 0%, #00cc66 100%)';
             input.style.color = '#000';
@@ -3902,7 +3919,7 @@
       });
       
       input.addEventListener('touchend', (e) => {
-        e.preventDefault();
+        // No prevenir el comportamiento por defecto
         if (pressTimers[index]) {
           clearTimeout(pressTimers[index]);
           delete pressTimers[index];

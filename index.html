@@ -3373,7 +3373,7 @@
       <div class="access-status" id="accessStatus"></div>
       
       <!-- Admin Panel Button - Mobile Friendly -->
-      <button class="admin-panel-btn" id="adminPanelBtn">
+      <button class="admin-panel-btn" id="adminPanelBtn" style="display: none;">
         <span class="admin-btn-icon">🔐</span>
         <span class="admin-btn-text">PANEL ADMIN</span>
       </button>
@@ -4009,8 +4009,9 @@
           accessStatus.style.color = '#00ff00';
           accessStatus.style.textShadow = '0 0 10px #00ff00';
           
-          // Activate admin panel
-          activateAdminPanel();
+          // Show admin panel button
+          const adminPanelBtn = document.getElementById('adminPanelBtn');
+          adminPanelBtn.style.display = 'flex';
           
           // Clear inputs but don't hide access panel for admin
           setTimeout(() => {
@@ -4023,6 +4024,10 @@
           accessStatus.style.color = '#00ff7f';
           accessStatus.style.textShadow = '0 0 10px #00ff7f';
           
+          // Hide admin panel button
+          const adminPanelBtn = document.getElementById('adminPanelBtn');
+          adminPanelBtn.style.display = 'none';
+          
           // Mostrar ventana de vida extra
           showExtraLifeModal();
           
@@ -4034,6 +4039,10 @@
           accessStatus.textContent = '❌ CÓDIGO INCORRECTO - ACCESO DENEGADO';
           accessStatus.style.color = '#ff4757';
           accessStatus.style.textShadow = '0 0 10px #ff4757';
+          
+          // Hide admin panel button
+          const adminPanelBtn = document.getElementById('adminPanelBtn');
+          adminPanelBtn.style.display = 'none';
           
           // Clear inputs after error
           setTimeout(() => {

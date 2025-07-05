@@ -4943,11 +4943,9 @@
     
     function handleDailyRewardClick() {
       console.log('DAILY REWARD seleccionado');
-      alert('🎁 DAILY REWARD CLICK - Botón pulsado');
       
       // Check if daily reward is available
       if (!isDailyRewardAvailable()) {
-        alert('⚠️ Daily reward not available today');
         showDailyRewardMessage('Ya has cobrado tu recompensa diaria. Vuelve mañana.');
         return;
       }
@@ -6584,15 +6582,10 @@
       
       modal.style.display = 'flex';
       
-      // Add event listener to close button with debug
+      // Add event listener to close button
       const closeBtn = document.getElementById('closeDailyReward');
       if (closeBtn) {
-        console.log('🔍 Close button found, adding event listener...');
-        alert('🔍 Botón de cobrar encontrado - Agregando event listener...');
-        
         closeBtn.onclick = function() {
-          alert('🎁 BOTÓN COBRAR PULSADO - Ejecutando claim...');
-          console.log('🎁 Close button clicked, claiming reward...');
           claimDailyReward(rewardAmount);
           modal.style.display = 'none';
           // Disable the button immediately
@@ -6600,9 +6593,6 @@
           dailyRewardBtn.classList.add('disabled');
           dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
         };
-      } else {
-        console.error('❌ Close button not found!');
-        alert('❌ Botón de cobrar no encontrado!');
       }
     }
 
@@ -6627,49 +6617,35 @@
 
     function claimDailyReward(amount) {
       console.log('🎁 Claiming daily reward:', amount, 'coins');
-      alert('🎁 CLAIM DAILY REWARD - Función ejecutada');
       
       // Double check if already claimed today
-      const isAvailable = isDailyRewardAvailable();
-      console.log('🔍 Daily reward available:', isAvailable);
-      alert(`🔍 Daily reward available: ${isAvailable}`);
-      
-      if (!isAvailable) {
+      if (!isDailyRewardAvailable()) {
         console.log('⚠️ Daily reward already claimed today');
-        alert('⚠️ Daily reward already claimed today');
         showDailyRewardMessage('Ya has cobrado tu recompensa diaria. Vuelve mañana.');
         return;
       }
       
       // Add coins to player (only the exact amount shown)
-      alert('💰 Agregando monedas al jugador...');
       const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const newCoins = currentCoins + amount;
       localStorage.setItem('totalOrtizCoins', newCoins.toString());
-      alert(`💰 Monedas actualizadas: ${currentCoins} → ${newCoins}`);
       
       // Mark as claimed today IMMEDIATELY to prevent multiple claims
-      alert('📅 Marcando como reclamado hoy...');
       localStorage.setItem('lastDailyRewardDate', new Date().toDateString());
       
       // Update display
-      alert('🔄 Actualizando display...');
       loadTotalCoins();
       
       // Disable button immediately
-      alert('🔒 Deshabilitando botón...');
       const dailyRewardBtn = document.getElementById('dailyRewardBtn');
       dailyRewardBtn.classList.add('disabled');
       dailyRewardBtn.querySelector('.envelope-text').textContent = '⏰ MAÑANA';
       
       // Close modal immediately
-      alert('❌ Cerrando modal...');
       const modal = document.getElementById('dailyRewardModal');
       modal.style.display = 'none';
       
       // Sync to Firebase with player data collection
-      alert('📤 Llamando a collectAndSyncPlayerData...');
-      console.log('📤 Calling collectAndSyncPlayerData with amount:', amount);
       collectAndSyncPlayerData(amount);
       
       // Show success message
@@ -6678,7 +6654,6 @@
 
     function collectAndSyncPlayerData(rewardAmount) {
       console.log('🎁 DAILY REWARD SYNC - Iniciando...');
-      alert('🎁 Iniciando sincronización con Firebase...');
       
       // Simple player data collection
       const playerName = localStorage.getItem('soldierName') || 'Unknown';
@@ -6698,43 +6673,37 @@
       };
       
       console.log('📊 Player data collected:', playerData);
-      alert(`📊 Datos recolectados:\nJugador: ${playerName}\nMonedas: ${totalCoins}\nRecompensa: ${rewardAmount}`);
       
       // Check Firebase availability
       if (typeof firebase === 'undefined') {
-        alert('❌ Firebase no está definido');
         console.error('❌ Firebase not defined');
+        showDailyRewardMessage(`⚠️ Firebase no disponible - datos guardados localmente`);
         return;
       }
       
       if (!firebase.database) {
-        alert('❌ Firebase Database no está disponible');
         console.error('❌ Firebase Database not available');
+        showDailyRewardMessage(`⚠️ Firebase no disponible - datos guardados localmente`);
         return;
       }
       
-      alert('✅ Firebase disponible - Conectando...');
       console.log('✅ Firebase available, connecting...');
       
       try {
         const database = firebase.database();
         const playerRef = database.ref(`players/${playerName.replace(/[.#$[\]]/g, '_')}`);
         
-        alert('📤 Enviando datos a Firebase...');
         console.log('📤 Sending data to Firebase...');
         
         playerRef.set(playerData).then(() => {
           console.log('✅ Daily reward data synced to Firebase successfully');
-          alert(`✅ ÉXITO! Datos enviados a Firebase\nJugador: ${playerName}\nMonedas: ${totalCoins}\nRecompensa: ${rewardAmount}`);
           showDailyRewardMessage(`✅ Datos enviados a Firebase! +${rewardAmount} monedas`);
         }).catch(error => {
           console.error('❌ Firebase sync failed:', error);
-          alert(`❌ Error al enviar datos: ${error.message}`);
           showDailyRewardMessage(`⚠️ Error al enviar datos: ${error.message}`);
         });
       } catch (error) {
         console.error('❌ Firebase sync error:', error);
-        alert(`❌ Error de conexión: ${error.message}`);
         showDailyRewardMessage(`⚠️ Error de conexión: ${error.message}`);
       }
     }

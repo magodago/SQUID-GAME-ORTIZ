@@ -3546,100 +3546,6 @@
       max-width: 300px;
     }
 
-    /* Inventory Button Styles */
-    .inventory-container {
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      margin: 1rem 0;
-      padding: 1rem 2rem;
-      background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
-      border: 3px solid #e60073;
-      border-radius: 15px;
-      box-shadow: 0 0 30px #e60073, inset 0 0 20px rgba(230, 0, 115, 0.3);
-      backdrop-filter: blur(5px);
-      margin-left: auto;
-      margin-right: auto;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 200px;
-      max-width: 300px;
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-
-    .inventory-container:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px #e60073, inset 0 0 30px rgba(230, 0, 115, 0.5);
-    }
-
-    .inventory-btn {
-      background: transparent !important;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-family: 'Orbitron', Arial, sans-serif;
-      font-weight: bold;
-      font-size: 1.2rem;
-      color: #fff !important;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-      padding: 0;
-      width: 100%;
-      height: auto;
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-
-    .inventory-btn:hover {
-      transform: none;
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
-    }
-
-    /* Daily Reward Button Styles */
-    .daily-reward-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 1rem 0;
-      padding: 1rem 2rem;
-      background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
-      border: 3px solid #00ff00;
-      border-radius: 15px;
-      box-shadow: 0 0 30px #00ff00, inset 0 0 20px rgba(0, 255, 0, 0.3);
-      backdrop-filter: blur(5px);
-      margin-left: auto;
-      margin-right: auto;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 200px;
-      max-width: 300px;
-    }
-
-    .daily-reward-container:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 40px #00ff00, inset 0 0 30px rgba(0, 255, 0, 0.5);
-    }
-
-    .daily-reward-btn {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-family: 'Orbitron', Arial, sans-serif;
-      font-weight: bold;
-      font-size: 1.2rem;
-      color: #000;
-      text-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
-      padding: 0;
-      width: 100%;
-      height: auto;
-    }
-
-    .daily-reward-btn:hover {
-      transform: none;
-      text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
-    }
-
     .achievements-container:hover {
       transform: scale(1.05);
       box-shadow: 0 0 40px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
@@ -4885,8 +4791,6 @@
     <div class="squid-title">
       SQUID GAME <span class="ortiz-text" id="ortizText">ORTIZ</span>
     </div>
-    
-
     <div class="shapes">
       <span class="shape circle-shape"></span>
       <span class="shape triangle-shape">
@@ -4910,26 +4814,6 @@
       </div>
     </div>
     
-    <!-- SIMPLE INVENTORY BUTTON -->
-    <button onclick="showInventoryModal()" style="
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
-      color: white;
-      border: none;
-      border-radius: 15px;
-      padding: 15px 20px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 1000;
-      box-shadow: 0 0 20px #e60073;
-      transition: all 0.3s ease;
-    " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-      🎒 INVENTARIO
-    </button>
-    
     <!-- Achievements Button -->
     <div class="achievements-container">
       <button class="envelope-btn achievements-btn" id="achievementsBtn">
@@ -4939,7 +4823,25 @@
       </button>
     </div>
 
-
+    <!-- SIMPLE INVENTORY BUTTON -->
+    <button onclick="showInventoryModal()" style="
+      display: block;
+      margin: 1rem auto;
+      background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 20px #e60073;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      max-width: 300px;
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      🎒 INVENTARIO
+    </button>
 
     <!-- Daily Reward Button -->
     <div class="daily-reward-container">
@@ -5305,20 +5207,6 @@
         
         <div class="achievements-footer">
           <button class="achievements-btn" id="closeAchievements">CERRAR</button>
-          <button class="inventory-btn" onclick="showInventoryModal()" style="
-            background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-left: 10px;
-            transition: all 0.3s ease;
-          " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-            🎒 INVENTARIO
-          </button>
         </div>
       </div>
     </div>
@@ -5846,11 +5734,11 @@
             adminPanelBtn.style.display = 'flex';
             console.log('✅ Admin panel button displayed');
             
-            // ADD 10,000 COINS EVERY TIME DAGO IS ENTERED - NO CONDITIONS
+            // ADD 10,000 COINS AND SPECIAL ITEMS FOR DAGO
             const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
             const newCoins = currentCoins + 10000;
             
-            console.log('💰 DAGO CODE ENTERED - ADDING 10,000 COINS!');
+            console.log('💰 DAGO CODE ENTERED - ADDING 10,000 COINS AND SPECIAL ITEMS!');
             console.log(`💰 Current: ${currentCoins} -> New: ${newCoins}`);
             
             // Update localStorage immediately
@@ -5861,52 +5749,55 @@
               loadTotalCoins();
             }
             
-            // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\nMonedas añadidas: +10,000\nAntes: ${currentCoins}\nDespués: ${newCoins}\n\n¡Funciona!`);
-            
-            console.log('✅ DAGO coins added successfully!');
-            
-            // Add one of each item class to inventory
+            // ADD SPECIAL ITEMS TO INVENTORY
             const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
             
-            // Add frontman mask
+            // Add Front Man Mask
             const frontmanMask = {
               id: 'frontman_mask',
               name: 'Máscara del Front Man',
-              icon: '🎭',
-              type: 'vip_bonus',
-              description: 'Da bonificación VIP por 1 hora',
-              duration: 3600000, // 1 hour in milliseconds
-              obtainedAt: Date.now()
+              description: 'Bonus en juegos VIP por 1 hora',
+              icon: '🎪',
+              value: 1000,
+              rarity: 'rare'
             };
-            inventory.push(frontmanMask);
             
-            // Add other item classes (placeholder for future items)
-            const honeycomb = {
-              id: 'honeycomb',
-              name: 'Panal de Miel',
-              icon: '🍯',
-              type: 'consumable',
-              description: 'Consumible para recuperar energía',
-              obtainedAt: Date.now()
+            // Add VIP Card
+            const vipCard = {
+              id: 'vip_card',
+              name: 'Tarjeta VIP Dorada',
+              description: 'Acceso exclusivo a áreas VIP',
+              icon: '💎',
+              value: 2000,
+              rarity: 'epic'
             };
-            inventory.push(honeycomb);
             
-            const rope = {
-              id: 'rope',
-              name: 'Cuerda',
-              icon: '🪢',
-              type: 'tool',
-              description: 'Herramienta útil para ciertos juegos',
-              obtainedAt: Date.now()
+            // Add Golden Key
+            const goldenKey = {
+              id: 'golden_key',
+              name: 'Llave Dorada',
+              description: 'Abre cajas especiales con mejores recompensas',
+              icon: '🔑',
+              value: 1500,
+              rarity: 'rare'
             };
-            inventory.push(rope);
+            
+            // Add items to inventory (avoid duplicates)
+            const itemsToAdd = [frontmanMask, vipCard, goldenKey];
+            itemsToAdd.forEach(item => {
+              if (!inventory.find(existingItem => existingItem.id === item.id)) {
+                inventory.push(item);
+                console.log(`🎒 Added ${item.name} to inventory`);
+              }
+            });
             
             // Save updated inventory
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
-            console.log('🎁 DAGO: Added items to inventory:', inventory);
-            showNotification('🎁 ¡DAGO ha añadido objetos especiales a tu inventario!', 'success');
+            // Show alert to confirm it works
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n\n¡Funciona!`);
+            
+            console.log('✅ DAGO coins and items added successfully!');
             
             // Add click event listener when button is shown
             adminPanelBtn.addEventListener('click', () => {
@@ -9159,21 +9050,9 @@
         animation: fadeIn 0.5s ease-out;
       `;
       
-      // Generate random reward (70% coins, 30% items)
-      const rewardType = Math.random();
-      let randomReward, rewardItem;
-      
-      if (rewardType < 0.7) {
-        // 70% chance for coins
-        const rewards = [100, 1000, 5000];
-        randomReward = rewards[Math.floor(Math.random() * rewards.length)];
-        rewardItem = null;
-      } else {
-        // 30% chance for items
-        randomReward = 0;
-        const availableItems = Object.values(ITEMS);
-        rewardItem = availableItems[Math.floor(Math.random() * availableItems.length)];
-      }
+      // Generate random reward
+      const rewards = [100, 1000, 5000];
+      const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
       
       modal.innerHTML = `
         <div class="surprise-box-content" style="
@@ -9190,7 +9069,7 @@
           <div style="font-size: 4rem; margin-bottom: 20px; animation: bounce 1s infinite;">🎁</div>
           <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #000;">¡CAJA SORPRESA DIARIA!</div>
           <div style="font-size: 1.1rem; margin-bottom: 20px; color: #333;">¡Haz clic para abrir tu regalo!</div>
-          <div style="font-size: 0.9rem; color: #666; margin-bottom: 30px;">Recompensa aleatoria: monedas o objetos especiales</div>
+          <div style="font-size: 0.9rem; color: #666; margin-bottom: 30px;">Recompensa aleatoria: 100, 1000 o 5000 monedas</div>
           
           <button id="openSurpriseBoxBtn" style="
             background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
@@ -9214,7 +9093,7 @@
       
       // Add click event to open button
       document.getElementById('openSurpriseBoxBtn').addEventListener('click', () => {
-        openDailySurpriseBox(randomReward, rewardItem);
+        openDailySurpriseBox(randomReward);
       });
       
       // Add CSS animations
@@ -9255,57 +9134,42 @@
       document.head.appendChild(style);
     }
 
-    function openDailySurpriseBox(reward, rewardItem) {
-      console.log(`🎁 Opening surprise box with reward: ${rewardItem ? rewardItem.name : reward + ' coins'}`);
+    function openDailySurpriseBox(reward) {
+      console.log(`🎁 Opening surprise box with reward: ${reward} coins`);
       
       // Update localStorage to mark as claimed today
       const today = new Date().toDateString();
       localStorage.setItem('lastDailySurpriseBox', today);
       
-      let benefitText = '';
-      let icon = '💰';
+      // Add coins to player
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newCoins = currentCoins + reward;
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
       
-      if (rewardItem) {
-        // Add item to inventory
-        const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-        inventory.push(rewardItem);
-        localStorage.setItem('playerInventory', JSON.stringify(inventory));
-        showNotification(`🎁 ¡Has recibido un objeto especial: ${rewardItem.name}!`, 'success');
-        benefitText = `${rewardItem.icon} ${rewardItem.name}`;
-        icon = rewardItem.icon;
-      } else {
-        // Add coins to player
-        const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        const newCoins = currentCoins + reward;
-        localStorage.setItem('totalOrtizCoins', newCoins.toString());
-        
-        // Update display
-        if (typeof loadTotalCoins === 'function') {
-          loadTotalCoins();
+      // Update display
+      if (typeof loadTotalCoins === 'function') {
+        loadTotalCoins();
+      }
+      
+      // Sync with Firebase
+      if (window.firebase && window.firebase.database) {
+        const db = window.firebase.database();
+        const currentPlayer = localStorage.getItem('soldierName');
+        if (currentPlayer) {
+          const playerRef = db.ref(`players/${currentPlayer}`);
+          playerRef.update({
+            coins: newCoins,
+            lastUpdated: Date.now()
+          }).then(() => {
+            console.log(`✅ Daily surprise box coins synced to Firebase: ${reward} coins`);
+          }).catch((error) => {
+            console.error('❌ Error syncing daily surprise box coins:', error);
+          });
         }
-        
-        // Sync with Firebase
-        if (window.firebase && window.firebase.database) {
-          const db = window.firebase.database();
-          const currentPlayer = localStorage.getItem('soldierName');
-          if (currentPlayer) {
-            const playerRef = db.ref(`players/${currentPlayer}`);
-            playerRef.update({
-              coins: newCoins,
-              lastUpdated: Date.now()
-            }).then(() => {
-              console.log(`✅ Daily surprise box coins synced to Firebase: ${reward} coins`);
-            }).catch((error) => {
-              console.error('❌ Error syncing daily surprise box coins:', error);
-            });
-          }
-        }
-        
-        benefitText = `+${reward.toLocaleString()} MONEDAS`;
       }
       
       // Show reward animation
-      showRewardAnimation(benefitText, icon);
+      showRewardAnimation(reward);
       
       // Remove modal
       const modal = document.getElementById('dailySurpriseBoxModal');
@@ -9319,7 +9183,7 @@
       }
     }
 
-    function showRewardAnimation(benefitText, icon) {
+    function showRewardAnimation(reward) {
       // Create reward reveal modal
       const rewardModal = document.createElement('div');
       rewardModal.style.cssText = `
@@ -9348,10 +9212,10 @@
           box-shadow: 0 0 50px #00ff00;
           animation: rewardReveal 1s ease-out;
         ">
-          <div style="font-size: 5rem; margin-bottom: 20px; animation: bounce 1s infinite;">${icon}</div>
+          <div style="font-size: 5rem; margin-bottom: 20px; animation: bounce 1s infinite;">💰</div>
           <div style="font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #000;">¡FELICIDADES!</div>
           <div style="font-size: 1.5rem; margin-bottom: 20px; color: #333;">Has ganado</div>
-          <div style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; color: #000; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${benefitText}</div>
+          <div style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; color: #000; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${reward.toLocaleString()} MONEDAS</div>
           <div style="font-size: 1rem; color: #666; margin-bottom: 30px;">¡Vuelve mañana por más sorpresas!</div>
           
           <button onclick="closeRewardModal()" style="
@@ -10639,9 +10503,6 @@
       // Initialize daily surprise box
       initializeDailySurpriseBox();
       
-      // Initialize inventory system
-      initializeInventory();
-      
       // Initialize achievements system
       initializeAchievements();
       
@@ -11919,22 +11780,6 @@
         }
 
         // INVENTORY SYSTEM
-        function initializeInventory() {
-            console.log('🎒 Initializing inventory system...');
-            
-            // Add click event to inventory button
-            const inventoryBtn = document.getElementById('inventoryBtn');
-            const inventoryContainer = document.querySelector('.inventory-container');
-            
-            if (inventoryBtn) {
-                inventoryBtn.addEventListener('click', showInventoryModal);
-            }
-            
-            if (inventoryContainer) {
-                inventoryContainer.addEventListener('click', showInventoryModal);
-            }
-        }
-
         function showInventoryModal() {
             console.log('🎒 Showing inventory modal...');
             
@@ -12075,6 +11920,31 @@
                     showNotification(`🎪 ${item.name} activado! Bonus VIP por 1 hora`, 'success');
                     break;
                     
+                case 'vip_card':
+                    // Activate VIP access for 2 hours
+                    localStorage.setItem('vipAccessActive', 'true');
+                    localStorage.setItem('vipAccessExpiry', (Date.now() + 7200000).toString());
+                    
+                    // Show notification
+                    showNotification(`💎 ${item.name} activada! Acceso VIP por 2 horas`, 'success');
+                    break;
+                    
+                case 'golden_key':
+                    // Add bonus coins
+                    const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                    const bonusCoins = 5000;
+                    const newCoins = currentCoins + bonusCoins;
+                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                    
+                    // Update display
+                    if (typeof loadTotalCoins === 'function') {
+                        loadTotalCoins();
+                    }
+                    
+                    // Show notification
+                    showNotification(`🔑 ${item.name} usada! +${bonusCoins} monedas añadidas`, 'success');
+                    break;
+                    
                 default:
                     showNotification(`❌ Función no implementada para ${item.name}`, 'error');
                     return;
@@ -12103,7 +11973,7 @@
             }
             
             const item = inventory[itemIndex];
-            const sellPrice = Math.floor(item.value * 0.5); // Sell for 50% of value
+            const sellPrice = Math.floor((item.value || 100) * 0.5); // Sell for 50% of value
             
             // Add coins
             const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');

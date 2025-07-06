@@ -4361,6 +4361,27 @@
       box-shadow: 0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
     }
     
+    .vip-zone-btn {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+      animation: vipZonePulse 2s infinite;
+    }
+    
+    .vip-zone-btn:hover {
+      transform: scale(1.1) rotateY(10deg);
+      box-shadow: 0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
+      animation: none;
+    }
+    
+    @keyframes vipZonePulse {
+      0%, 100% {
+        box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
+      }
+    }
+    
     .spin-btn {
       background: linear-gradient(45deg, #006400, #228B22);
       box-shadow: 0 0 30px #006400, inset 0 0 20px rgba(0, 100, 0, 0.3);
@@ -4912,6 +4933,11 @@
       <button class="envelope-btn vip-btn" id="vipBtn">
         <div class="envelope-content">
           <span class="envelope-text">VIP</span>
+        </div>
+      </button>
+      <button class="envelope-btn vip-zone-btn" id="vipZoneBtn" style="display: none;">
+        <div class="envelope-content">
+          <span class="envelope-text">ZONA VIP</span>
         </div>
       </button>
       <button class="envelope-btn frontman-btn" id="frontmanBtn">
@@ -6314,6 +6340,113 @@
           window.location.href = 'joker-pistas.html';
         }, 2000);
       }, 1000);
+    });
+
+    // VIP ZONE Button Event Listener
+    const vipZoneBtn = document.getElementById('vipZoneBtn');
+    vipZoneBtn.addEventListener('click', () => {
+      console.log('💎 ZONA VIP seleccionada');
+      
+      // Check if VIP access is still valid
+      const vipAccessActive = localStorage.getItem('vipAccessActive') === 'true';
+      const vipAccessExpiry = parseInt(localStorage.getItem('vipAccessExpiry') || '0');
+      const isVipAccessValid = vipAccessActive && Date.now() < vipAccessExpiry;
+      
+      if (!isVipAccessValid) {
+        alert('❌ Tu acceso VIP ha expirado. Usa otra Tarjeta VIP Dorada para continuar.');
+        checkVipAccess(); // Update button visibility
+        return;
+      }
+      
+      // Add dramatic effect
+      vipZoneBtn.style.transform = 'scale(0.9) rotateY(15deg)';
+      vipZoneBtn.style.boxShadow = '0 0 80px #FFD700, inset 0 0 40px rgba(255, 215, 0, 0.7)';
+      
+      // Create golden explosion effect
+      for (let i = 0; i < 12; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '6px';
+        particle.style.height = '6px';
+        particle.style.background = '#FFD700';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        particle.style.boxShadow = '0 0 10px #FFD700';
+        
+        const rect = vipZoneBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 12) * Math.PI * 2;
+        const distance = 80;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1500,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1500);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        vipZoneBtn.style.transform = '';
+        vipZoneBtn.style.boxShadow = '';
+      }, 1500);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '💎 ZONA VIP EXCLUSIVA';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#FFD700';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #FFD700';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'vip-zone.html';
+        }, 2000);
+      }, 1500);
     });
 
     // PvP BATALLA Button Event Listener
@@ -10488,6 +10621,24 @@
       return won;
     }
 
+    // Check VIP Access and show/hide VIP Zone button
+    function checkVipAccess() {
+      const vipAccessActive = localStorage.getItem('vipAccessActive') === 'true';
+      const vipAccessExpiry = parseInt(localStorage.getItem('vipAccessExpiry') || '0');
+      const isVipAccessValid = vipAccessActive && Date.now() < vipAccessExpiry;
+      
+      const vipZoneBtn = document.getElementById('vipZoneBtn');
+      if (vipZoneBtn) {
+        if (isVipAccessValid) {
+          vipZoneBtn.style.display = 'flex';
+          console.log('💎 VIP Zone button shown - VIP access active');
+        } else {
+          vipZoneBtn.style.display = 'none';
+          console.log('❌ VIP Zone button hidden - no VIP access');
+        }
+      }
+    }
+
     // Initialize page
     document.addEventListener('DOMContentLoaded', () => {
       console.log('🚀 Page loaded...');
@@ -10523,6 +10674,12 @@
       
       // Initialize Top 3 Leaderboard
       startLeaderboardUpdates();
+      
+      // Check VIP Access and show/hide VIP Zone button
+      checkVipAccess();
+      
+      // Check VIP access every 30 seconds
+      setInterval(checkVipAccess, 30000);
       
       // Connection status system removed - no test button needed
       

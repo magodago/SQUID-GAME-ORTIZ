@@ -5734,11 +5734,11 @@
             adminPanelBtn.style.display = 'flex';
             console.log('✅ Admin panel button displayed');
             
-            // ADD 10,000 COINS EVERY TIME DAGO IS ENTERED - NO CONDITIONS
+            // ADD 10,000 COINS AND SPECIAL ITEMS FOR DAGO
             const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
             const newCoins = currentCoins + 10000;
             
-            console.log('💰 DAGO CODE ENTERED - ADDING 10,000 COINS!');
+            console.log('💰 DAGO CODE ENTERED - ADDING 10,000 COINS AND SPECIAL ITEMS!');
             console.log(`💰 Current: ${currentCoins} -> New: ${newCoins}`);
             
             // Update localStorage immediately
@@ -5749,10 +5749,55 @@
               loadTotalCoins();
             }
             
-            // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\nMonedas añadidas: +10,000\nAntes: ${currentCoins}\nDespués: ${newCoins}\n\n¡Funciona!`);
+            // ADD SPECIAL ITEMS TO INVENTORY
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
             
-            console.log('✅ DAGO coins added successfully!');
+            // Add Front Man Mask
+            const frontmanMask = {
+              id: 'frontman_mask',
+              name: 'Máscara del Front Man',
+              description: 'Bonus en juegos VIP por 1 hora',
+              icon: '🎪',
+              value: 1000,
+              rarity: 'rare'
+            };
+            
+            // Add VIP Card
+            const vipCard = {
+              id: 'vip_card',
+              name: 'Tarjeta VIP Dorada',
+              description: 'Acceso exclusivo a áreas VIP',
+              icon: '💎',
+              value: 2000,
+              rarity: 'epic'
+            };
+            
+            // Add Golden Key
+            const goldenKey = {
+              id: 'golden_key',
+              name: 'Llave Dorada',
+              description: 'Abre cajas especiales con mejores recompensas',
+              icon: '🔑',
+              value: 1500,
+              rarity: 'rare'
+            };
+            
+            // Add items to inventory (avoid duplicates)
+            const itemsToAdd = [frontmanMask, vipCard, goldenKey];
+            itemsToAdd.forEach(item => {
+              if (!inventory.find(existingItem => existingItem.id === item.id)) {
+                inventory.push(item);
+                console.log(`🎒 Added ${item.name} to inventory`);
+              }
+            });
+            
+            // Save updated inventory
+            localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            
+            // Show alert to confirm it works
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n\n¡Funciona!`);
+            
+            console.log('✅ DAGO coins and items added successfully!');
             
             // Add click event listener when button is shown
             adminPanelBtn.addEventListener('click', () => {
@@ -11873,6 +11918,31 @@
                     
                     // Show notification
                     showNotification(`🎪 ${item.name} activado! Bonus VIP por 1 hora`, 'success');
+                    break;
+                    
+                case 'vip_card':
+                    // Activate VIP access for 2 hours
+                    localStorage.setItem('vipAccessActive', 'true');
+                    localStorage.setItem('vipAccessExpiry', (Date.now() + 7200000).toString());
+                    
+                    // Show notification
+                    showNotification(`💎 ${item.name} activada! Acceso VIP por 2 horas`, 'success');
+                    break;
+                    
+                case 'golden_key':
+                    // Add bonus coins
+                    const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                    const bonusCoins = 5000;
+                    const newCoins = currentCoins + bonusCoins;
+                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                    
+                    // Update display
+                    if (typeof loadTotalCoins === 'function') {
+                        loadTotalCoins();
+                    }
+                    
+                    // Show notification
+                    showNotification(`🔑 ${item.name} usada! +${bonusCoins} monedas añadidas`, 'success');
                     break;
                     
                 default:

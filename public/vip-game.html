@@ -466,7 +466,7 @@
                 </div>
             </div>
             
-                            <input type="number" class="bet-input" id="betAmount" min="1" max="1000" value="10" placeholder="Mínimo: 1 Ortiz Coins">
+            <input type="number" class="bet-input" id="betAmount" min="1" max="1000" value="10" placeholder="Cantidad de Ortiz Coins">
             <button class="play-button" id="playButton">🎮 JUGAR</button>
             <button onclick="window.location.href='index.html'" class="back-button" style="position: static; margin-top: 15px; width: 100%;">⬅️ VOLVER</button>
         </div>
@@ -731,24 +731,15 @@
                 return;
             }
             
-            // Validate bet amount with wealth-based minimum
+            // Validate bet amount
             const betInput = document.getElementById('betAmount');
             const betAmount = parseInt(betInput ? betInput.value : '10');
-            const minBet = calculateMinimumBet();
-            const maxBet = Math.min(1000, vipCoins); // Cap at 1000 or available coins
             
-            if (!betAmount || betAmount < minBet || betAmount > maxBet) {
-                console.log('⚠️ Invalid bet amount:', betAmount, 'Min:', minBet, 'Max:', maxBet);
+            if (!betAmount || betAmount < 1 || betAmount > 1000) {
+                console.log('⚠️ Invalid bet amount:', betAmount);
                 const statusText = document.getElementById('statusText');
                 if (statusText) {
-                    const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                    if (totalCoins >= 100000) {
-                        statusText.textContent = `❌ Apuesta inválida (10,000-${maxBet.toLocaleString()})`;
-                    } else if (totalCoins >= 50000) {
-                        statusText.textContent = `❌ Apuesta inválida (5,000-${maxBet.toLocaleString()})`;
-                    } else {
-                        statusText.textContent = `❌ Apuesta inválida (1-${maxBet.toLocaleString()})`;
-                    }
+                    statusText.textContent = '❌ Cantidad de apuesta inválida (1-1000)';
                     statusText.style.color = '#FF0000';
                 }
                 return;
@@ -838,6 +829,19 @@
         function endGame(betAmount) {
             console.log('🏁 Ending game with bet amount:', betAmount);
             
+            // Check for VIP bonus activation
+            const vipBonusActive = localStorage.getItem('vipBonusActive') === 'true';
+            const vipBonusExpiry = parseInt(localStorage.getItem('vipBonusExpiry') || '0');
+            const isVipBonusValid = vipBonusActive && Date.now() < vipBonusExpiry;
+            
+            if (isVipBonusValid) {
+                console.log('🎪 VIP BONUS ACTIVE! Front Man Mask is working!');
+                // Show VIP bonus notification
+                showVipBonusNotification();
+            } else {
+                console.log('❌ No VIP bonus active');
+            }
+            
             // Find winner
             const winner = players.reduce((prev, current) => 
                 (prev.score > current.score) ? prev : current
@@ -860,37 +864,23 @@
             console.log('📊 Total score:', totalScore);
             console.log('📈 Score difference:', difference);
             
-            // Check if player won with wealth factor
+            // Check if player won with VIP bonus consideration
             let won = false;
             let winnings = 0;
-            let shouldWin = false;
-            
-            // Calculate wealth factor
-            const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-            let wealthFactor = 0.5; // Default 50%
-            
-            if (totalCoins >= 50001) {
-                wealthFactor = 0.25; // Rico: 25%
-            } else if (totalCoins >= 20001) {
-                wealthFactor = 0.40; // Clase media-alta: 40%
-            } else if (totalCoins >= 10001) {
-                wealthFactor = 0.50; // Clase media: 50%
-            } else if (totalCoins >= 5001) {
-                wealthFactor = 0.60; // Clase media-baja: 60%
-            } else {
-                wealthFactor = 0.70; // Pobre: 70%
-            }
-            
-            const random = Math.random();
-            shouldWin = random < wealthFactor;
-            
-            console.log(`💰 VIP Wealth Factor - Coins: ${totalCoins.toLocaleString()}, Factor: ${(wealthFactor * 100).toFixed(0)}%, Random: ${(random * 100).toFixed(1)}%, Should Win: ${shouldWin}`);
             
             if (currentBetType === 'winner') {
-                if (winner.name === currentBetOption && shouldWin) {
+                if (winner.name === currentBetOption) {
                     won = true;
                     winnings = betAmount * 2;
                     console.log('🏆 Winner bet won!');
+                } else if (isVipBonusValid) {
+                    // VIP bonus: 30% chance to win even if wrong prediction
+                    const vipChance = Math.random();
+                    if (vipChance < 0.3) {
+                        won = true;
+                        winnings = Math.floor(betAmount * 1.5); // Reduced winnings for VIP bonus
+                        console.log('🎪 VIP BONUS: Won despite wrong prediction!');
+                    }
                 }
             } else if (currentBetType === 'score') {
                 let predicted = false;
@@ -898,20 +888,36 @@
                 if (currentBetOption === 'medium' && totalScore >= 50 && totalScore <= 100) predicted = true;
                 if (currentBetOption === 'low' && totalScore < 50) predicted = true;
                 
-                if (predicted && shouldWin) {
+                if (predicted) {
                     won = true;
                     winnings = Math.floor(betAmount * 1.5);
                     console.log('📊 Score bet won!');
+                } else if (isVipBonusValid) {
+                    // VIP bonus: 25% chance to win even if wrong prediction
+                    const vipChance = Math.random();
+                    if (vipChance < 0.25) {
+                        won = true;
+                        winnings = Math.floor(betAmount * 1.2); // Reduced winnings for VIP bonus
+                        console.log('🎪 VIP BONUS: Won despite wrong score prediction!');
+                    }
                 }
             } else if (currentBetType === 'difference') {
                 let predicted = false;
                 if (currentBetOption === 'close' && difference < 20) predicted = true;
                 if (currentBetOption === 'wide' && difference >= 20) predicted = true;
                 
-                if (predicted && shouldWin) {
+                if (predicted) {
                     won = true;
                     winnings = betAmount * 3;
                     console.log('⚡ Difference bet won!');
+                } else if (isVipBonusValid) {
+                    // VIP bonus: 20% chance to win even if wrong prediction
+                    const vipChance = Math.random();
+                    if (vipChance < 0.2) {
+                        won = true;
+                        winnings = Math.floor(betAmount * 2); // Reduced winnings for VIP bonus
+                        console.log('🎪 VIP BONUS: Won despite wrong difference prediction!');
+                    }
                 }
             }
             
@@ -1033,6 +1039,43 @@
             console.log('✅ Result modal closed');
         }
 
+        function showVipBonusNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                border: 3px solid #FFD700;
+                border-radius: 15px;
+                padding: 20px;
+                color: #000;
+                font-weight: bold;
+                z-index: 10001;
+                box-shadow: 0 0 30px #FFD700;
+                animation: pulse 1s ease-in-out;
+                text-align: center;
+                font-family: 'Orbitron', monospace;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 10px;">🎪</div>
+                <div style="font-size: 1.2rem; margin-bottom: 5px;">MÁSCARA DEL FRONT MAN</div>
+                <div style="font-size: 0.9rem;">¡BONUS VIP ACTIVO!</div>
+                <div style="font-size: 0.8rem; margin-top: 5px; color: #666;">Mejores probabilidades de victoria</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 2 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 2000);
+        }
+
         function updateAchievementProgress(type, amount = 1) {
           const today = new Date().toDateString();
           const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
@@ -1100,52 +1143,6 @@
           }, 3000);
         }
 
-        // Calculate minimum bet based on wealth
-        function calculateMinimumBet() {
-            const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-            
-            if (totalCoins >= 100000) {
-                return 10000; // Rico: 10,000 mínimo
-            } else if (totalCoins >= 50000) {
-                return 5000; // Clase alta: 5,000 mínimo
-            } else {
-                return 1; // Pobre: 1 mínimo
-            }
-        }
-
-        // Update bet input with minimum value
-        function updateBetInputMinimum() {
-            const betInput = document.getElementById('betAmount');
-            const minBet = calculateMinimumBet();
-            
-            if (betInput) {
-                betInput.min = minBet;
-                betInput.placeholder = `Mínimo: ${minBet.toLocaleString()} Ortiz Coins`;
-                
-                // Update current value if it's below minimum
-                const currentValue = parseInt(betInput.value) || 0;
-                if (currentValue < minBet) {
-                    betInput.value = minBet;
-                }
-            }
-            
-            // Update status text to show minimum bet
-            const statusText = document.getElementById('statusText');
-            if (statusText) {
-                const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                if (totalCoins >= 100000) {
-                    statusText.textContent = `💰 Apuesta mínima: 10,000 Ortiz Coins (RICO)`;
-                    statusText.style.color = '#FF0000';
-                } else if (totalCoins >= 50000) {
-                    statusText.textContent = `💰 Apuesta mínima: 5,000 Ortiz Coins (CLASE ALTA)`;
-                    statusText.style.color = '#FFA500';
-                } else {
-                    statusText.textContent = 'Esperando apuestas...';
-                    statusText.style.color = '#FFD700';
-                }
-            }
-        }
-
         // Auto-sync function for VIP game
         function autoSyncVIPData() {
             console.log('🔄 VIP auto-sync starting...');
@@ -1187,15 +1184,25 @@
             autoSyncVIPData();
         }, 3000);
 
-        // Update bet minimum when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            updateBetInputMinimum();
-        });
-
-        // Update bet minimum when coins change
-        window.addEventListener('ortizCoinsUpdated', () => {
-            updateBetInputMinimum();
-        });
+        // CSS Animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% {
+                    transform: translate(-50%, -50%) scale(1);
+                    box-shadow: 0 0 30px #FFD700;
+                }
+                50% {
+                    transform: translate(-50%, -50%) scale(1.1);
+                    box-shadow: 0 0 50px #FFD700;
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(1);
+                    box-shadow: 0 0 30px #FFD700;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html> 

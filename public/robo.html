@@ -1190,7 +1190,7 @@
             };
         }
 
-        // Update player coins in Firebase
+        // Update player coins in Firebase - FIXED VERSION
         function updatePlayerCoinsInFirebase(playerName, amount, isWin) {
             if (window.firebase && window.firebase.database) {
                 const db = window.firebase.database();
@@ -1200,19 +1200,30 @@
                     .then((snapshot) => {
                         const playerData = snapshot.val() || {};
                         const currentCoins = playerData.coins || 0;
-                        const newCoins = isWin ? currentCoins + amount : Math.max(0, currentCoins - amount);
+                        
+                        // FIXED LOGIC: Ensure correct coin calculation
+                        let newCoins;
+                        if (isWin) {
+                            newCoins = currentCoins + amount;
+                            console.log(`🎯 WIN: ${playerName} gets +${amount} coins (${currentCoins} -> ${newCoins})`);
+                        } else {
+                            newCoins = Math.max(0, currentCoins - amount);
+                            console.log(`💀 LOSS: ${playerName} loses -${amount} coins (${currentCoins} -> ${newCoins})`);
+                        }
                         
                         // Get current robbery stats
                         const currentRobberiesWon = playerData.robberiesWon || 0;
                         const currentRobberiesLost = playerData.robberiesLost || 0;
                         
-                        console.log(`🔄 Updating ${playerName}: ${currentCoins} -> ${newCoins} (${isWin ? 'WIN +' + amount : 'LOSS -' + amount})`);
-                        
                         // Update both coins and localStorage for the current player
                         if (playerName === currentPlayer) {
                             localStorage.setItem('totalOrtizCoins', newCoins.toString());
                             // Update display immediately
-                            document.getElementById('currentPlayerCoins').textContent = newCoins.toLocaleString() + ' monedas';
+                            const coinsDisplay = document.getElementById('currentPlayerCoins');
+                            if (coinsDisplay) {
+                                coinsDisplay.textContent = newCoins.toLocaleString() + ' monedas';
+                                console.log(`📊 Updated display for current player: ${newCoins.toLocaleString()} monedas`);
+                            }
                         }
                         
                         // Prepare update data
@@ -1229,19 +1240,48 @@
                         }
                         
                         playerRef.update(updateData).then(() => {
-                            console.log(`✅ Updated ${playerName} coins: ${currentCoins} -> ${newCoins} (${isWin ? 'WIN' : 'LOSS'})`);
-                            console.log(`✅ Updated ${playerName} robbery stats: ${isWin ? 'WON' : 'LOST'}`);
+                            console.log(`✅ SUCCESS: Updated ${playerName} coins: ${currentCoins} -> ${newCoins} (${isWin ? 'WIN' : 'LOSS'})`);
+                            console.log(`✅ SUCCESS: Updated ${playerName} robbery stats: ${isWin ? 'WON' : 'LOST'}`);
                             
-                            // Immediately sync if it's the current player
+                            // Show immediate notification for current player
                             if (playerName === currentPlayer) {
-                                syncCoinsToFirebase(newCoins);
+                                const message = isWin ? 
+                                    `🎉 ¡GANASTE ${amount.toLocaleString()} MONEDAS!` : 
+                                    `💸 Perdiste ${amount.toLocaleString()} monedas`;
+                                
+                                // Create notification
+                                const notification = document.createElement('div');
+                                notification.style.cssText = `
+                                    position: fixed;
+                                    top: 50%;
+                                    left: 50%;
+                                    transform: translate(-50%, -50%);
+                                    background: ${isWin ? 'linear-gradient(135deg, #00ff00, #00cc00)' : 'linear-gradient(135deg, #ff0000, #cc0000)'};
+                                    color: white;
+                                    padding: 20px 30px;
+                                    border-radius: 10px;
+                                    font-size: 1.2rem;
+                                    font-weight: bold;
+                                    z-index: 10000;
+                                    box-shadow: 0 0 20px ${isWin ? '#00ff00' : '#ff0000'};
+                                    animation: fadeInOut 2s ease-in-out;
+                                `;
+                                notification.textContent = message;
+                                document.body.appendChild(notification);
+                                
+                                // Remove notification after 2 seconds
+                                setTimeout(() => {
+                                    if (notification.parentNode) {
+                                        notification.parentNode.removeChild(notification);
+                                    }
+                                }, 2000);
                             }
                         }).catch((error) => {
-                            console.error(`❌ Error updating ${playerName} coins:`, error);
+                            console.error(`❌ ERROR updating ${playerName} coins:`, error);
                         });
                     })
                     .catch((error) => {
-                        console.error(`❌ Error reading ${playerName} data:`, error);
+                        console.error(`❌ ERROR reading ${playerName} data:`, error);
                     });
             }
         }

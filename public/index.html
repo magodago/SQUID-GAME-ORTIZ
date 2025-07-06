@@ -4940,7 +4940,7 @@
           <span class="envelope-text">ZONA VIP</span>
         </div>
       </button>
-      <button class="envelope-btn debug-btn" id="debugVipBtn" style="display: block; background: linear-gradient(45deg, #FF0000, #FF4444);" onclick="alert('DEBUG VIP clicked!'); console.log('Starting debug...'); debugVipAccess();">
+      <button class="envelope-btn debug-btn" id="debugVipBtn" style="display: block; background: linear-gradient(45deg, #FF0000, #FF4444);" onclick="alert('DEBUG VIP clicked!'); alert('Checking VIP status...'); const vip = localStorage.getItem('vipAccessActive'); const expiry = localStorage.getItem('vipAccessExpiry'); alert('VIP Active: ' + vip + '\\nExpiry: ' + expiry);">
         <div class="envelope-content">
           <span class="envelope-text">DEBUG VIP</span>
         </div>
@@ -4948,6 +4948,11 @@
       <button class="envelope-btn test-btn" id="testBtn" style="display: block; background: linear-gradient(45deg, #00FF00, #44FF44);" onclick="alert('TEST BUTTON WORKS!');">
         <div class="envelope-content">
           <span class="envelope-text">TEST</span>
+        </div>
+      </button>
+      <button class="envelope-btn force-btn" id="forceVipBtn" style="display: block; background: linear-gradient(45deg, #0000FF, #4444FF);" onclick="alert('FORCING VIP BUTTON!'); const btn = document.getElementById('vipZoneBtn'); if(btn) { btn.style.display = 'flex'; alert('VIP Zone button should be visible now!'); } else { alert('VIP Zone button not found!'); }">
+        <div class="envelope-content">
+          <span class="envelope-text">FORCE VIP</span>
         </div>
       </button>
       <button class="envelope-btn frontman-btn" id="frontmanBtn">

@@ -311,6 +311,32 @@
                     <div class="stat-label">Juego Frontman:</div>
                     <div class="stat-value" id="frontmanStats">Cargando...</div>
                 </div>
+                <div class="stat-item">
+                    <div class="stat-label">Juego Jugador:</div>
+                    <div class="stat-value" id="playerStats">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Sistema de Robo:</div>
+                    <div class="stat-value" id="roboStats">Cargando...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="terminal-section">
+            <div class="section-title">⏱️ TIEMPO DE JUEGO</div>
+            <div class="stats-grid" id="timeStats">
+                <div class="stat-item">
+                    <div class="stat-label">Tiempo Total Jugado:</div>
+                    <div class="stat-value" id="totalPlayTime">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Promedio por Jugador:</div>
+                    <div class="stat-value" id="avgPlayTime">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Jugador Más Activo:</div>
+                    <div class="stat-value" id="mostActivePlayer">Cargando...</div>
+                </div>
             </div>
         </div>
 
@@ -339,6 +365,7 @@
         function loadAllData() {
             loadPlayers();
             loadGameStats();
+            loadTimeStats();
             updateTimestamp();
         }
 
@@ -396,6 +423,7 @@
                             <th>Usuario</th>
                             <th>Monedas</th>
                             <th>Easter Eggs</th>
+                            <th>Tiempo Jugado</th>
                             <th>Última Actividad</th>
                             <th>Gestión Monedas</th>
                         </tr>
@@ -444,14 +472,34 @@
                 const vipWins = player.vipWins || 0;
                 const jokerWins = player.jokerWins || 0;
                 const frontmanWins = player.frontmanWins || 0;
+                const playerWins = player.playerWins || 0;
                 const robberiesWon = player.robberiesWon || 0;
                 const robberiesLost = player.robberiesLost || 0;
+                
+                // Obtener tiempo jugado
+                const playTime = player.totalPlayTime || player.playTime || 0;
+                
+                // Función para formatear tiempo
+                const formatPlayTime = (seconds) => {
+                    if (!seconds) return '0s';
+                    const hours = Math.floor(seconds / 3600);
+                    const minutes = Math.floor((seconds % 3600) / 60);
+                    const secs = seconds % 60;
+                    if (hours > 0) {
+                        return `${hours}h ${minutes}m`;
+                    } else if (minutes > 0) {
+                        return `${minutes}m ${secs}s`;
+                    } else {
+                        return `${secs}s`;
+                    }
+                };
                 
                 html += `
                     <tr>
                         <td>${displayName}</td>
                         <td>${coins.toLocaleString()} 🪙</td>
                         <td>${easterEggs} 🥚</td>
+                        <td>${formatPlayTime(playTime)}</td>
                         <td>${lastActivity}</td>
                         <td>
                             <div class="coin-controls">
@@ -537,11 +585,16 @@
             const vipWins = Object.values(allPlayers).reduce((sum, p) => sum + (p.vipWins || 0), 0);
             const jokerWins = Object.values(allPlayers).reduce((sum, p) => sum + (p.jokerWins || 0), 0);
             const frontmanWins = Object.values(allPlayers).reduce((sum, p) => sum + (p.frontmanWins || 0), 0);
+            const playerWins = Object.values(allPlayers).reduce((sum, p) => sum + (p.playerWins || 0), 0);
+            const robberiesWon = Object.values(allPlayers).reduce((sum, p) => sum + (p.robberiesWon || 0), 0);
+            const robberiesLost = Object.values(allPlayers).reduce((sum, p) => sum + (p.robberiesLost || 0), 0);
 
             document.getElementById('soldierStats').textContent = `${soldierWins} victorias`;
             document.getElementById('vipStats').textContent = `${vipWins} victorias`;
             document.getElementById('jokerStats').textContent = `${jokerWins} victorias`;
             document.getElementById('frontmanStats').textContent = `${frontmanWins} victorias`;
+            document.getElementById('playerStats').textContent = `${playerWins} victorias`;
+            document.getElementById('roboStats').textContent = `${robberiesWon} ganados / ${robberiesLost} perdidos`;
         }
 
         function addCoins(userId) {
@@ -640,6 +693,64 @@
             const now = new Date();
             document.getElementById('lastUpdate').textContent = 
                 `Última actualización: ${now.toLocaleString()}`;
+        }
+
+        function loadTimeStats() {
+            const players = Object.values(allPlayers);
+            
+            if (players.length === 0) {
+                document.getElementById('totalPlayTime').textContent = '0s';
+                document.getElementById('avgPlayTime').textContent = '0s';
+                document.getElementById('mostActivePlayer').textContent = 'N/A';
+                return;
+            }
+
+            // Calcular tiempo total jugado
+            const totalPlayTime = players.reduce((sum, p) => {
+                const playTime = p.totalPlayTime || p.playTime || 0;
+                return sum + playTime;
+            }, 0);
+
+            // Calcular promedio por jugador
+            const avgPlayTime = Math.round(totalPlayTime / players.length);
+
+            // Encontrar jugador más activo
+            const mostActivePlayer = players.reduce((max, p) => {
+                const maxPlayTime = max.totalPlayTime || max.playTime || 0;
+                const currentPlayTime = p.totalPlayTime || p.playTime || 0;
+                return currentPlayTime > maxPlayTime ? p : max;
+            });
+
+            // Función para formatear tiempo
+            const formatPlayTime = (seconds) => {
+                if (!seconds) return '0s';
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                if (hours > 0) {
+                    return `${hours}h ${minutes}m`;
+                } else if (minutes > 0) {
+                    return `${minutes}m ${secs}s`;
+                } else {
+                    return `${secs}s`;
+                }
+            };
+
+            // Obtener nombre del jugador más activo
+            let mostActivePlayerName = 'Sin nombre';
+            if (mostActivePlayer.username) {
+                mostActivePlayerName = mostActivePlayer.username;
+            } else if (mostActivePlayer.name) {
+                mostActivePlayerName = mostActivePlayer.name;
+            } else if (mostActivePlayer.displayName) {
+                mostActivePlayerName = mostActivePlayer.displayName;
+            }
+            
+            const mostActivePlayerTime = mostActivePlayer.totalPlayTime || mostActivePlayer.playTime || 0;
+
+            document.getElementById('totalPlayTime').textContent = formatPlayTime(totalPlayTime);
+            document.getElementById('avgPlayTime').textContent = formatPlayTime(avgPlayTime);
+            document.getElementById('mostActivePlayer').textContent = `${mostActivePlayerName} (${formatPlayTime(mostActivePlayerTime)})`;
         }
 
         // Actualizar timestamp cada minuto

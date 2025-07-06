@@ -4823,6 +4823,15 @@
       </button>
     </div>
 
+    <!-- Inventory Button -->
+    <div class="inventory-container">
+      <button class="envelope-btn inventory-btn" id="inventoryBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🎒 INVENTARIO</span>
+        </div>
+      </button>
+    </div>
+
     <!-- Daily Reward Button -->
     <div class="daily-reward-container">
       <button class="envelope-btn daily-reward-btn" id="dailyRewardBtn">
@@ -5733,6 +5742,48 @@
             alert(`🔐 DAGO CODE ACTIVATED!\n\nMonedas añadidas: +10,000\nAntes: ${currentCoins}\nDespués: ${newCoins}\n\n¡Funciona!`);
             
             console.log('✅ DAGO coins added successfully!');
+            
+            // Add one of each item class to inventory
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            
+            // Add frontman mask
+            const frontmanMask = {
+              id: 'frontman_mask',
+              name: 'Máscara del Front Man',
+              icon: '🎭',
+              type: 'vip_bonus',
+              description: 'Da bonificación VIP por 1 hora',
+              duration: 3600000, // 1 hour in milliseconds
+              obtainedAt: Date.now()
+            };
+            inventory.push(frontmanMask);
+            
+            // Add other item classes (placeholder for future items)
+            const honeycomb = {
+              id: 'honeycomb',
+              name: 'Panal de Miel',
+              icon: '🍯',
+              type: 'consumable',
+              description: 'Consumible para recuperar energía',
+              obtainedAt: Date.now()
+            };
+            inventory.push(honeycomb);
+            
+            const rope = {
+              id: 'rope',
+              name: 'Cuerda',
+              icon: '🪢',
+              type: 'tool',
+              description: 'Herramienta útil para ciertos juegos',
+              obtainedAt: Date.now()
+            };
+            inventory.push(rope);
+            
+            // Save updated inventory
+            localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            
+            console.log('🎁 DAGO: Added items to inventory:', inventory);
+            showNotification('🎁 ¡DAGO ha añadido objetos especiales a tu inventario!', 'success');
             
             // Add click event listener when button is shown
             adminPanelBtn.addEventListener('click', () => {
@@ -8985,9 +9036,21 @@
         animation: fadeIn 0.5s ease-out;
       `;
       
-      // Generate random reward
-      const rewards = [100, 1000, 5000];
-      const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+      // Generate random reward (70% coins, 30% items)
+      const rewardType = Math.random();
+      let randomReward, rewardItem;
+      
+      if (rewardType < 0.7) {
+        // 70% chance for coins
+        const rewards = [100, 1000, 5000];
+        randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+        rewardItem = null;
+      } else {
+        // 30% chance for items
+        randomReward = 0;
+        const availableItems = Object.values(ITEMS);
+        rewardItem = availableItems[Math.floor(Math.random() * availableItems.length)];
+      }
       
       modal.innerHTML = `
         <div class="surprise-box-content" style="
@@ -9004,7 +9067,7 @@
           <div style="font-size: 4rem; margin-bottom: 20px; animation: bounce 1s infinite;">🎁</div>
           <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #000;">¡CAJA SORPRESA DIARIA!</div>
           <div style="font-size: 1.1rem; margin-bottom: 20px; color: #333;">¡Haz clic para abrir tu regalo!</div>
-          <div style="font-size: 0.9rem; color: #666; margin-bottom: 30px;">Recompensa aleatoria: 100, 1000 o 5000 monedas</div>
+          <div style="font-size: 0.9rem; color: #666; margin-bottom: 30px;">Recompensa aleatoria: monedas o objetos especiales</div>
           
           <button id="openSurpriseBoxBtn" style="
             background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
@@ -9028,7 +9091,7 @@
       
       // Add click event to open button
       document.getElementById('openSurpriseBoxBtn').addEventListener('click', () => {
-        openDailySurpriseBox(randomReward);
+        openDailySurpriseBox(randomReward, rewardItem);
       });
       
       // Add CSS animations
@@ -9069,42 +9132,57 @@
       document.head.appendChild(style);
     }
 
-    function openDailySurpriseBox(reward) {
-      console.log(`🎁 Opening surprise box with reward: ${reward} coins`);
+    function openDailySurpriseBox(reward, rewardItem) {
+      console.log(`🎁 Opening surprise box with reward: ${rewardItem ? rewardItem.name : reward + ' coins'}`);
       
       // Update localStorage to mark as claimed today
       const today = new Date().toDateString();
       localStorage.setItem('lastDailySurpriseBox', today);
       
-      // Add coins to player
-      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      const newCoins = currentCoins + reward;
-      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      let benefitText = '';
+      let icon = '💰';
       
-      // Update display
-      if (typeof loadTotalCoins === 'function') {
-        loadTotalCoins();
-      }
-      
-      // Sync with Firebase
-      if (window.firebase && window.firebase.database) {
-        const db = window.firebase.database();
-        const currentPlayer = localStorage.getItem('soldierName');
-        if (currentPlayer) {
-          const playerRef = db.ref(`players/${currentPlayer}`);
-          playerRef.update({
-            coins: newCoins,
-            lastUpdated: Date.now()
-          }).then(() => {
-            console.log(`✅ Daily surprise box coins synced to Firebase: ${reward} coins`);
-          }).catch((error) => {
-            console.error('❌ Error syncing daily surprise box coins:', error);
-          });
+      if (rewardItem) {
+        // Add item to inventory
+        const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+        inventory.push(rewardItem);
+        localStorage.setItem('playerInventory', JSON.stringify(inventory));
+        showNotification(`🎁 ¡Has recibido un objeto especial: ${rewardItem.name}!`, 'success');
+        benefitText = `${rewardItem.icon} ${rewardItem.name}`;
+        icon = rewardItem.icon;
+      } else {
+        // Add coins to player
+        const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        const newCoins = currentCoins + reward;
+        localStorage.setItem('totalOrtizCoins', newCoins.toString());
+        
+        // Update display
+        if (typeof loadTotalCoins === 'function') {
+          loadTotalCoins();
         }
+        
+        // Sync with Firebase
+        if (window.firebase && window.firebase.database) {
+          const db = window.firebase.database();
+          const currentPlayer = localStorage.getItem('soldierName');
+          if (currentPlayer) {
+            const playerRef = db.ref(`players/${currentPlayer}`);
+            playerRef.update({
+              coins: newCoins,
+              lastUpdated: Date.now()
+            }).then(() => {
+              console.log(`✅ Daily surprise box coins synced to Firebase: ${reward} coins`);
+            }).catch((error) => {
+              console.error('❌ Error syncing daily surprise box coins:', error);
+            });
+          }
+        }
+        
+        benefitText = `+${reward.toLocaleString()} MONEDAS`;
       }
       
       // Show reward animation
-      showRewardAnimation(reward);
+      showRewardAnimation(benefitText, icon);
       
       // Remove modal
       const modal = document.getElementById('dailySurpriseBoxModal');
@@ -9118,7 +9196,7 @@
       }
     }
 
-    function showRewardAnimation(reward) {
+    function showRewardAnimation(benefitText, icon) {
       // Create reward reveal modal
       const rewardModal = document.createElement('div');
       rewardModal.style.cssText = `
@@ -9147,10 +9225,10 @@
           box-shadow: 0 0 50px #00ff00;
           animation: rewardReveal 1s ease-out;
         ">
-          <div style="font-size: 5rem; margin-bottom: 20px; animation: bounce 1s infinite;">💰</div>
+          <div style="font-size: 5rem; margin-bottom: 20px; animation: bounce 1s infinite;">${icon}</div>
           <div style="font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #000;">¡FELICIDADES!</div>
           <div style="font-size: 1.5rem; margin-bottom: 20px; color: #333;">Has ganado</div>
-          <div style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; color: #000; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${reward.toLocaleString()} MONEDAS</div>
+          <div style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; color: #000; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${benefitText}</div>
           <div style="font-size: 1rem; color: #666; margin-bottom: 30px;">¡Vuelve mañana por más sorpresas!</div>
           
           <button onclick="closeRewardModal()" style="
@@ -10438,6 +10516,9 @@
       // Initialize daily surprise box
       initializeDailySurpriseBox();
       
+      // Initialize inventory system
+      initializeInventory();
+      
       // Initialize achievements system
       initializeAchievements();
       
@@ -11713,6 +11794,253 @@
                 console.log('❌ Firebase not available for coins sync');
             }
         }
+
+        // INVENTORY SYSTEM
+        function initializeInventory() {
+            console.log('🎒 Initializing inventory system...');
+            
+            // Add click event to inventory button
+            const inventoryBtn = document.getElementById('inventoryBtn');
+            if (inventoryBtn) {
+                inventoryBtn.addEventListener('click', showInventoryModal);
+            }
+        }
+
+        function showInventoryModal() {
+            console.log('🎒 Showing inventory modal...');
+            
+            // Create inventory modal
+            const modal = document.createElement('div');
+            modal.id = 'inventoryModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.5s ease-out;
+            `;
+            
+            // Load inventory data
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            
+            modal.innerHTML = `
+                <div class="inventory-content" style="
+                    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+                    border: 3px solid #e60073;
+                    border-radius: 20px;
+                    padding: 30px;
+                    text-align: center;
+                    max-width: 90%;
+                    width: 600px;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                    box-shadow: 0 0 50px #e60073;
+                ">
+                    <div style="font-size: 2rem; margin-bottom: 20px; color: #e60073;">🎒 INVENTARIO</div>
+                    
+                    <div id="inventoryItems" style="
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                        gap: 15px;
+                        margin-bottom: 20px;
+                    ">
+                        ${inventory.length === 0 ? 
+                            '<div style="grid-column: 1 / -1; color: #888; font-size: 1.1rem; padding: 40px;">🎁 No tienes objetos. ¡Abre cajas sorpresa para obtener objetos!</div>' : 
+                            inventory.map(item => `
+                                <div class="inventory-item" style="
+                                    background: linear-gradient(135deg, #333 0%, #444 100%);
+                                    border: 2px solid #e60073;
+                                    border-radius: 15px;
+                                    padding: 15px;
+                                    text-align: center;
+                                    transition: all 0.3s ease;
+                                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                    <div style="font-size: 2.5rem; margin-bottom: 10px;">${item.icon}</div>
+                                    <div style="font-size: 1rem; font-weight: bold; color: #fff; margin-bottom: 5px;">${item.name}</div>
+                                    <div style="font-size: 0.8rem; color: #ccc; margin-bottom: 10px;">${item.description}</div>
+                                    <div style="display: flex; gap: 5px; justify-content: center;">
+                                        <button onclick="useItem('${item.id}')" style="
+                                            background: linear-gradient(135deg, #00ff00, #00cc00);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 8px;
+                                            padding: 8px 12px;
+                                            font-size: 0.8rem;
+                                            font-weight: bold;
+                                            cursor: pointer;
+                                        ">USAR</button>
+                                        <button onclick="sellItem('${item.id}')" style="
+                                            background: linear-gradient(135deg, #ffaa00, #ff8800);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 8px;
+                                            padding: 8px 12px;
+                                            font-size: 0.8rem;
+                                            font-weight: bold;
+                                            cursor: pointer;
+                                        ">VENDER</button>
+                                    </div>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                    
+                    <button onclick="closeInventoryModal()" style="
+                        background: linear-gradient(135deg, #e60073, #ff1493);
+                        color: white;
+                        border: none;
+                        border-radius: 15px;
+                        padding: 15px 30px;
+                        font-size: 1.1rem;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        ✅ CERRAR
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function closeInventoryModal() {
+            const modal = document.getElementById('inventoryModal');
+            if (modal) {
+                modal.style.animation = 'fadeOut 0.5s ease-out';
+                setTimeout(() => {
+                    if (modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
+                    }
+                }, 500);
+            }
+        }
+
+        function useItem(itemId) {
+            console.log(`🎒 Using item: ${itemId}`);
+            
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            const itemIndex = inventory.findIndex(item => item.id === itemId);
+            
+            if (itemIndex === -1) {
+                console.error('❌ Item not found in inventory');
+                return;
+            }
+            
+            const item = inventory[itemIndex];
+            
+            // Apply item effect
+            switch (item.id) {
+                case 'frontman_mask':
+                    // Activate VIP bonus for 1 hour
+                    localStorage.setItem('vipBonusActive', 'true');
+                    localStorage.setItem('vipBonusExpiry', (Date.now() + 3600000).toString());
+                    
+                    // Show notification
+                    showNotification(`🎪 ${item.name} activado! Bonus VIP por 1 hora`, 'success');
+                    break;
+                    
+                default:
+                    showNotification(`❌ Función no implementada para ${item.name}`, 'error');
+                    return;
+            }
+            
+            // Remove item from inventory
+            inventory.splice(itemIndex, 1);
+            localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            
+            // Refresh inventory display
+            const inventoryItems = document.getElementById('inventoryItems');
+            if (inventoryItems) {
+                showInventoryModal(); // Reopen modal with updated inventory
+            }
+        }
+
+        function sellItem(itemId) {
+            console.log(`🎒 Selling item: ${itemId}`);
+            
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            const itemIndex = inventory.findIndex(item => item.id === itemId);
+            
+            if (itemIndex === -1) {
+                console.error('❌ Item not found in inventory');
+                return;
+            }
+            
+            const item = inventory[itemIndex];
+            const sellPrice = Math.floor(item.value * 0.5); // Sell for 50% of value
+            
+            // Add coins
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const newCoins = currentCoins + sellPrice;
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            
+            // Update display
+            if (typeof loadTotalCoins === 'function') {
+                loadTotalCoins();
+            }
+            
+            // Remove item from inventory
+            inventory.splice(itemIndex, 1);
+            localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            
+            // Show notification
+            showNotification(`💰 Vendiste ${item.name} por ${sellPrice} monedas`, 'success');
+            
+            // Refresh inventory display
+            const inventoryItems = document.getElementById('inventoryItems');
+            if (inventoryItems) {
+                showInventoryModal(); // Reopen modal with updated inventory
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'linear-gradient(135deg, #00ff00, #00cc00)' : 
+                           type === 'error' ? 'linear-gradient(135deg, #ff0000, #cc0000)' : 
+                           'linear-gradient(135deg, #0066ff, #0044cc)'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                font-weight: bold;
+                z-index: 10001;
+                box-shadow: 0 0 20px ${type === 'success' ? '#00ff00' : 
+                                       type === 'error' ? '#ff0000' : '#0066ff'};
+                animation: slideInRight 0.5s ease-out;
+                font-family: 'Orbitron', Arial, sans-serif;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        // ITEM DEFINITIONS
+        const ITEMS = {
+            frontman_mask: {
+                id: 'frontman_mask',
+                name: 'Máscara del Front Man',
+                description: 'Bonus en juegos VIP por 1 hora',
+                icon: '🎪',
+                value: 1000,
+                rarity: 'rare'
+            }
+        };
 
 
     </script>

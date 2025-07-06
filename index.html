@@ -11326,81 +11326,8 @@
                 startRobberyListener();
                 startCoinsSync(); // Start coins synchronization
                 startAdminCoinsListener(); // Listen for admin coin updates
-                
-                // Add test button for debugging
-                addTestButton();
             }, 5000); // Wait longer for Firebase to load completely
         });
-        
-        // Add test button for debugging admin sync
-        function addTestButton() {
-            const testButton = document.createElement('button');
-            testButton.textContent = '🧪 Test Admin Sync';
-            testButton.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 20px;
-                background: #ff6b6b;
-                color: white;
-                border: none;
-                padding: 10px 15px;
-                border-radius: 5px;
-                cursor: pointer;
-                z-index: 1000;
-                font-family: 'Orbitron', Arial, sans-serif;
-            `;
-            
-            testButton.onclick = function() {
-                const currentPlayer = localStorage.getItem('soldierName');
-                const currentCoins = localStorage.getItem('totalOrtizCoins');
-                console.log('🧪 Test Admin Sync:');
-                console.log('- Jugador:', currentPlayer);
-                console.log('- Monedas actuales:', currentCoins);
-                
-                // Test localStorage update
-                const testUpdate = {
-                    userId: currentPlayer,
-                    newCoins: parseInt(currentCoins || '0') + 1000,
-                    timestamp: Date.now()
-                };
-                localStorage.setItem('adminCoinsUpdate', JSON.stringify(testUpdate));
-                console.log('🧪 Test update creado:', testUpdate);
-                
-                alert(`Test creado:\nJugador: ${currentPlayer}\nMonedas actuales: ${currentCoins}\nNuevas monedas: ${testUpdate.newCoins}`);
-            };
-            
-            document.body.appendChild(testButton);
-            
-            // Add VEINTE Easter Egg debug button
-            const veinteDebugButton = document.createElement('button');
-            veinteDebugButton.textContent = '🔍 VEINTE Debug';
-            veinteDebugButton.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 200px;
-                background: #ffa500;
-                color: white;
-                border: none;
-                padding: 10px 15px;
-                border-radius: 5px;
-                cursor: pointer;
-                z-index: 1000;
-                font-family: 'Orbitron', Arial, sans-serif;
-            `;
-            
-            veinteDebugButton.onclick = function() {
-                const veinteEasterEggUsed = localStorage.getItem('veinteEasterEggUsed');
-                const currentPlayer = localStorage.getItem('soldierName');
-                console.log('🔍 VEINTE Easter Egg Debug:');
-                console.log('- Jugador:', currentPlayer);
-                console.log('- veinteEasterEggUsed:', veinteEasterEggUsed);
-                console.log('- Estado:', veinteEasterEggUsed === 'true' ? 'USADO' : 'DISPONIBLE');
-                
-                alert(`VEINTE Easter Egg Debug:\nJugador: ${currentPlayer}\nEstado: ${veinteEasterEggUsed === 'true' ? 'USADO' : 'DISPONIBLE'}\nValor: ${veinteEasterEggUsed || 'null'}`);
-            };
-            
-            document.body.appendChild(veinteDebugButton);
-        }
 
         // Function to listen for admin coin updates
         function startAdminCoinsListener() {

@@ -3548,7 +3548,7 @@
 
     /* Inventory Button Styles */
     .inventory-container {
-      display: flex;
+      display: flex !important;
       align-items: center;
       justify-content: center;
       margin: 1rem 0;
@@ -3564,6 +3564,8 @@
       transition: all 0.3s ease;
       min-width: 200px;
       max-width: 300px;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .inventory-container:hover {
@@ -3572,18 +3574,20 @@
     }
 
     .inventory-btn {
-      background: transparent;
+      background: transparent !important;
       border: none;
       cursor: pointer;
       transition: all 0.3s;
       font-family: 'Orbitron', Arial, sans-serif;
       font-weight: bold;
       font-size: 1.2rem;
-      color: #fff;
+      color: #fff !important;
       text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
       padding: 0;
       width: 100%;
       height: auto;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .inventory-btn:hover {
@@ -4914,8 +4918,8 @@
     </div>
 
     <!-- Inventory Button -->
-    <div class="inventory-container">
-      <button class="envelope-btn inventory-btn" id="inventoryBtn">
+    <div class="inventory-container" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
+      <button class="envelope-btn inventory-btn" id="inventoryBtn" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
         <div class="envelope-content">
           <span class="envelope-text">🎒 INVENTARIO</span>
         </div>

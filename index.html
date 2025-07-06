@@ -4940,6 +4940,11 @@
           <span class="envelope-text">ZONA VIP</span>
         </div>
       </button>
+      <button class="envelope-btn debug-btn" id="debugVipBtn" style="display: block; background: linear-gradient(45deg, #FF0000, #FF4444);" onclick="debugVipAccess()">
+        <div class="envelope-content">
+          <span class="envelope-text">DEBUG VIP</span>
+        </div>
+      </button>
       <button class="envelope-btn frontman-btn" id="frontmanBtn">
         <div class="envelope-content">
           <span class="envelope-text">FRONT MAN</span>
@@ -10627,7 +10632,16 @@
       const vipAccessExpiry = parseInt(localStorage.getItem('vipAccessExpiry') || '0');
       const isVipAccessValid = vipAccessActive && Date.now() < vipAccessExpiry;
       
+      console.log('🔍 VIP Access Check:');
+      console.log('  - vipAccessActive:', vipAccessActive);
+      console.log('  - vipAccessExpiry:', vipAccessExpiry);
+      console.log('  - Current time:', Date.now());
+      console.log('  - Time remaining:', vipAccessExpiry - Date.now());
+      console.log('  - isVipAccessValid:', isVipAccessValid);
+      
       const vipZoneBtn = document.getElementById('vipZoneBtn');
+      console.log('  - vipZoneBtn found:', !!vipZoneBtn);
+      
       if (vipZoneBtn) {
         if (isVipAccessValid) {
           vipZoneBtn.style.display = 'flex';
@@ -10636,6 +10650,8 @@
           vipZoneBtn.style.display = 'none';
           console.log('❌ VIP Zone button hidden - no VIP access');
         }
+      } else {
+        console.error('❌ VIP Zone button not found in DOM');
       }
     }
 
@@ -10678,8 +10694,45 @@
       // Check VIP Access and show/hide VIP Zone button
       checkVipAccess();
       
-      // Check VIP access every 30 seconds
-      setInterval(checkVipAccess, 30000);
+          // Check VIP access every 30 seconds
+    setInterval(checkVipAccess, 30000);
+
+    // Debug function for VIP access
+    function debugVipAccess() {
+      console.log('🔍 DEBUG VIP ACCESS');
+      const vipAccessActive = localStorage.getItem('vipAccessActive');
+      const vipAccessExpiry = localStorage.getItem('vipAccessExpiry');
+      const currentTime = Date.now();
+      
+      console.log('VIP Access Active:', vipAccessActive);
+      console.log('VIP Access Expiry:', vipAccessExpiry);
+      console.log('Current Time:', currentTime);
+      
+      if (vipAccessActive && vipAccessExpiry) {
+        const timeRemaining = parseInt(vipAccessExpiry) - currentTime;
+        const minutesRemaining = Math.floor(timeRemaining / 60000);
+        const secondsRemaining = Math.floor((timeRemaining % 60000) / 1000);
+        
+        console.log('Time Remaining:', `${minutesRemaining}:${secondsRemaining.toString().padStart(2, '0')}`);
+        
+        if (timeRemaining > 0) {
+          alert(`✅ VIP Access is ACTIVE!\nTime remaining: ${minutesRemaining}:${secondsRemaining.toString().padStart(2, '0')}\n\nForcing button to show...`);
+          
+          // Force show the VIP Zone button
+          const vipZoneBtn = document.getElementById('vipZoneBtn');
+          if (vipZoneBtn) {
+            vipZoneBtn.style.display = 'flex';
+            console.log('✅ VIP Zone button forced to show');
+          } else {
+            alert('❌ VIP Zone button not found in DOM');
+          }
+        } else {
+          alert('❌ VIP Access has EXPIRED');
+        }
+      } else {
+        alert('❌ No VIP Access found in localStorage');
+      }
+    }
       
       // Connection status system removed - no test button needed
       
@@ -12084,6 +12137,12 @@
                     
                     // Show notification
                     showNotification(`💎 ${item.name} activada! Acceso VIP por 2 horas`, 'success');
+                    
+                    // Force check VIP access immediately
+                    setTimeout(() => {
+                        checkVipAccess();
+                        console.log('🔄 Forced VIP access check after card activation');
+                    }, 100);
                     break;
                     
                 case 'golden_key':

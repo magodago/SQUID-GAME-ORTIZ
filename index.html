@@ -2107,7 +2107,49 @@
       border: 3px solid #00FFFF;
     }
     
-      /* Admin Panel Styles */
+      /* Connection Status Styles */
+  .connection-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 10px;
+    font-size: 0.8rem;
+  }
+  
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: statusPulse 2s infinite;
+  }
+  
+  .status-dot.online {
+    background-color: #00ff00;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+  
+  .status-dot.offline {
+    background-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+  }
+  
+  @keyframes statusPulse {
+    0%, 100% { 
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.7;
+      transform: scale(1.2);
+    }
+  }
+  
+  .status-text {
+    font-weight: bold;
+  }
+  
+  /* Admin Panel Styles */
   .admin-panel {
     position: fixed;
     top: 0;
@@ -9168,6 +9210,12 @@
       // Initialize automatic sync every hour
       initializeAutomaticSync();
       
+      // Initialize presence system for real-time connection status
+      initializePresenceSystem();
+      
+      // Start presence listener for admin panel
+      startPresenceListener();
+      
       // Check Blood Screen trigger (30000+ coins and not triggered)
       const bloodScreenTriggered = localStorage.getItem('bloodScreenTriggered') === 'true';
       if (totalCoins >= 30000 && !bloodScreenTriggered) {
@@ -9248,8 +9296,18 @@
         }
       };
       
+      // Count online players
+      let onlineCount = 0;
+      players.forEach(playerName => {
+        const playerStatus = onlinePlayers.get(playerName);
+        if (playerStatus && playerStatus.state === 'online') {
+          onlineCount++;
+        }
+      });
+      
       // Update admin stats with animation
       const totalPlayersEl = document.getElementById('totalPlayers');
+      const onlinePlayersEl = document.getElementById('onlinePlayers');
       const totalCoinsEl = document.getElementById('totalCoinsAdmin');
       const totalEasterEggsEl = document.getElementById('totalEasterEggs');
       const totalPlayTimeEl = document.getElementById('totalPlayTime');
@@ -9257,6 +9315,7 @@
       const totalWinsEl = document.getElementById('totalWins');
       
       totalPlayersEl.textContent = players.length.toString();
+      onlinePlayersEl.textContent = onlineCount.toString();
       totalCoinsEl.textContent = totalCoins.toLocaleString();
       totalEasterEggsEl.textContent = totalEasterEggs.toString();
       totalPlayTimeEl.textContent = formatPlayTime(totalPlayTime);
@@ -9328,10 +9387,18 @@
             return `${type} (${timesFound}x)`;
           }).join(', ') : 'Ninguno';
           
+          // Check connection status
+          const playerStatus = onlinePlayers.get(playerName);
+          const isOnline = playerStatus && playerStatus.state === 'online';
+          const statusIndicator = isOnline ? 
+            '<span class="status-dot online" title="Conectado ahora"></span><span class="status-text">🟢 En línea</span>' :
+            '<span class="status-dot offline" title="No conectado"></span><span class="status-text">🔴 Desconectado</span>';
+          
           playersHTML += `
             <div class="player-entry" style="animation: playerEntrySlide 0.3s ease-out ${index * 0.1}s both;">
               <div class="player-info">
                 <span class="player-name">${rankEmoji} ${playerName}</span>
+                <div class="connection-status">${statusIndicator}</div>
                 <span class="player-coins">🪙 ${coins.toLocaleString()} monedas</span>
               </div>
                 <div class="player-stats">
@@ -9387,6 +9454,131 @@
       } else {
         console.log('❌ PlayerDataManager not available');
       }
+    }
+
+    // REAL-TIME CONNECTION STATUS SYSTEM
+    let onlinePlayers = new Map();
+    let presenceRef = null;
+    
+    function initializePresenceSystem() {
+      console.log('🌐 Initializing real-time presence system...');
+      
+      if (window.firebase && window.firebase.database) {
+        const database = window.firebase.database();
+        presenceRef = database.ref('.info/connected');
+        
+        presenceRef.on('value', (snapshot) => {
+          if (snapshot.val()) {
+            console.log('🌐 User is online, setting up presence...');
+            setupUserPresence();
+          }
+        });
+        
+        console.log('✅ Presence system initialized');
+      } else {
+        console.log('❌ Firebase not available for presence system');
+      }
+    }
+    
+    function setupUserPresence() {
+      const playerName = localStorage.getItem('soldierName');
+      if (!playerName) return;
+      
+      const database = window.firebase.database();
+      const userStatusRef = database.ref(`/status/${playerName}`);
+      const userStatusDatabaseRef = database.ref(`/status/${playerName}`);
+      
+      // Create a reference to this user's specific status node.
+      // This node will be set to true when the user is online, and removed when they disconnect.
+      const isOfflineForDatabase = {
+        state: 'offline',
+        lastSeen: new Date().toISOString()
+      };
+      
+      const isOnlineForDatabase = {
+        state: 'online',
+        lastSeen: new Date().toISOString()
+      };
+      
+      // When the client's connection state changes, update the database
+      presenceRef.on('value', (snapshot) => {
+        if (snapshot.val()) {
+          // User is online
+          userStatusDatabaseRef.set(isOnlineForDatabase);
+          console.log('🌐 User status set to online:', playerName);
+        } else {
+          // User is offline
+          userStatusDatabaseRef.set(isOfflineForDatabase);
+          console.log('🌐 User status set to offline:', playerName);
+        }
+      });
+      
+      // When the user disconnects, remove their status
+      window.addEventListener('beforeunload', () => {
+        userStatusDatabaseRef.set(isOfflineForDatabase);
+      });
+    }
+    
+    function startPresenceListener() {
+      if (!window.firebase || !window.firebase.database) return;
+      
+      console.log('👥 Starting presence listener for admin panel...');
+      const database = window.firebase.database();
+      const statusRef = database.ref('/status');
+      
+      statusRef.on('value', (snapshot) => {
+        const statusData = snapshot.val() || {};
+        onlinePlayers.clear();
+        
+        Object.keys(statusData).forEach(playerName => {
+          const status = statusData[playerName];
+          onlinePlayers.set(playerName, {
+            state: status.state || 'offline',
+            lastSeen: status.lastSeen || new Date().toISOString()
+          });
+        });
+        
+        console.log('👥 Online players updated:', onlinePlayers);
+        updateAdminPanelWithPresence();
+      });
+    }
+    
+    function updateAdminPanelWithPresence() {
+      // Update the player list with online status
+      const playerEntries = document.querySelectorAll('.player-entry');
+      
+      playerEntries.forEach(entry => {
+        const playerNameElement = entry.querySelector('.player-name');
+        if (playerNameElement) {
+          const playerName = playerNameElement.textContent.replace(/[🥇🥈🥉🏅]/g, '').trim();
+          const playerStatus = onlinePlayers.get(playerName);
+          
+          // Remove existing status indicator
+          const existingStatus = entry.querySelector('.connection-status');
+          if (existingStatus) {
+            existingStatus.remove();
+          }
+          
+          // Add new status indicator
+          const statusIndicator = document.createElement('div');
+          statusIndicator.className = 'connection-status';
+          
+          if (playerStatus && playerStatus.state === 'online') {
+            statusIndicator.innerHTML = `
+              <span class="status-dot online" title="Conectado ahora"></span>
+              <span class="status-text">🟢 En línea</span>
+            `;
+          } else {
+            statusIndicator.innerHTML = `
+              <span class="status-dot offline" title="No conectado"></span>
+              <span class="status-text">🔴 Desconectado</span>
+            `;
+          }
+          
+          // Insert status indicator after player name
+          playerNameElement.parentNode.insertBefore(statusIndicator, playerNameElement.nextSibling);
+        }
+      });
     }
 
     // Admin Set Coins Functionality
@@ -9599,6 +9791,11 @@
           <span class="stat-icon">👥</span>
           <span class="stat-label">Total Jugadores:</span>
           <span class="stat-value" id="totalPlayers">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">🟢</span>
+          <span class="stat-label">Conectados Ahora:</span>
+          <span class="stat-value" id="onlinePlayers">0</span>
         </div>
         <div class="stat-item">
           <span class="stat-icon">🪙</span>

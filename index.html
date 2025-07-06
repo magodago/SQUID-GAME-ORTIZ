@@ -9216,6 +9216,30 @@
       // Start presence listener for admin panel
       startPresenceListener();
       
+      // DEBUG: Add test button for presence system
+      setTimeout(() => {
+        const debugBtn = document.createElement('button');
+        debugBtn.textContent = '🌐 Test Presence';
+        debugBtn.style.cssText = 'position: fixed; top: 130px; right: 10px; z-index: 10000; background: blue; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;';
+        debugBtn.onclick = () => {
+          console.log('🌐 DEBUG - Online players:', window.onlinePlayers);
+          console.log('🌐 DEBUG - Online players size:', window.onlinePlayers.size);
+          console.log('🌐 DEBUG - Current player name:', localStorage.getItem('soldierName'));
+          
+          // Force update presence
+          const playerName = localStorage.getItem('soldierName');
+          if (playerName) {
+            window.onlinePlayers.set(playerName, {
+              state: 'online',
+              lastSeen: new Date().toISOString()
+            });
+            console.log('🌐 DEBUG - Forced player online:', playerName);
+            updateAdminPanelWithPresence();
+          }
+        };
+        document.body.appendChild(debugBtn);
+      }, 3000);
+      
       // Check Blood Screen trigger (30000+ coins and not triggered)
       const bloodScreenTriggered = localStorage.getItem('bloodScreenTriggered') === 'true';
       if (totalCoins >= 30000 && !bloodScreenTriggered) {
@@ -9299,7 +9323,7 @@
       // Count online players
       let onlineCount = 0;
       players.forEach(playerName => {
-        const playerStatus = onlinePlayers.get(playerName);
+        const playerStatus = window.onlinePlayers.get(playerName);
         if (playerStatus && playerStatus.state === 'online') {
           onlineCount++;
         }
@@ -9388,7 +9412,7 @@
           }).join(', ') : 'Ninguno';
           
           // Check connection status
-          const playerStatus = onlinePlayers.get(playerName);
+          const playerStatus = window.onlinePlayers.get(playerName);
           const isOnline = playerStatus && playerStatus.state === 'online';
           const statusIndicator = isOnline ? 
             '<span class="status-dot online" title="Conectado ahora"></span><span class="status-text">🟢 En línea</span>' :
@@ -9457,7 +9481,7 @@
     }
 
     // REAL-TIME CONNECTION STATUS SYSTEM
-    let onlinePlayers = new Map();
+    window.onlinePlayers = new Map();
     let presenceRef = null;
     
     function initializePresenceSystem() {
@@ -9528,17 +9552,17 @@
       
       statusRef.on('value', (snapshot) => {
         const statusData = snapshot.val() || {};
-        onlinePlayers.clear();
+        window.onlinePlayers.clear();
         
         Object.keys(statusData).forEach(playerName => {
           const status = statusData[playerName];
-          onlinePlayers.set(playerName, {
+          window.onlinePlayers.set(playerName, {
             state: status.state || 'offline',
             lastSeen: status.lastSeen || new Date().toISOString()
           });
         });
         
-        console.log('👥 Online players updated:', onlinePlayers);
+        console.log('👥 Online players updated:', window.onlinePlayers);
         updateAdminPanelWithPresence();
       });
     }
@@ -9551,7 +9575,7 @@
         const playerNameElement = entry.querySelector('.player-name');
         if (playerNameElement) {
           const playerName = playerNameElement.textContent.replace(/[🥇🥈🥉🏅]/g, '').trim();
-          const playerStatus = onlinePlayers.get(playerName);
+          const playerStatus = window.onlinePlayers.get(playerName);
           
           // Remove existing status indicator
           const existingStatus = entry.querySelector('.connection-status');

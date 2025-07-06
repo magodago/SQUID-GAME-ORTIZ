@@ -11905,15 +11905,15 @@
     <div id="votingModal" class="modal" style="display: none;">
         <div class="modal-content voting-modal">
             <div class="modal-header">
-                <h2>🗳️ VOTACIÓN MASIVA</h2>
+                <h2 style="font-size: 1.3em; margin: 8px 0;">🗳️ VOTACIÓN MASIVA</h2>
                 <div class="voting-timer">
-                    <span>Tiempo restante: </span>
+                    <span>Tiempo: </span>
                     <span id="votingTimer" class="timer">--:--</span>
                 </div>
             </div>
             
             <div class="modal-body">
-                <p class="voting-instruction">Selecciona al jugador que será eliminado:</p>
+                <p class="voting-instruction">Selecciona al jugador a eliminar:</p>
                 <div id="votingPlayers" class="voting-players">
                     <!-- Los jugadores se cargarán dinámicamente -->
                 </div>
@@ -11944,51 +11944,53 @@
         /* ===== ESTILOS PARA VOTACIÓN MASIVA ===== */
         
         .voting-modal {
-            max-width: 600px;
-            max-height: 80vh;
+            max-width: 500px;
+            max-height: 90vh;
             overflow-y: auto;
         }
         
         .voting-timer {
             background: linear-gradient(135deg, #ff6b6b, #ee5a24);
             color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 8px 15px;
+            border-radius: 8px;
             text-align: center;
-            margin: 10px 0;
+            margin: 8px 0;
             font-family: 'Orbitron', Arial, sans-serif;
+            font-size: 0.9em;
         }
         
         .timer {
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.1em;
             color: #fff;
         }
         
         .voting-instruction {
             text-align: center;
-            font-size: 1.1em;
-            margin: 20px 0;
+            font-size: 1em;
+            margin: 12px 0;
             color: #333;
         }
         
         .voting-players {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 12px 0;
         }
         
         .voting-player {
             background: linear-gradient(135deg, #74b9ff, #0984e3);
             color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
+            padding: 10px 15px;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Orbitron', Arial, sans-serif;
             font-weight: bold;
+            font-size: 0.9em;
             border: 2px solid transparent;
         }
         
@@ -12014,13 +12016,13 @@
             background: linear-gradient(135deg, #ff7675, #d63031);
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 10px 25px;
             border-radius: 8px;
             cursor: pointer;
             font-family: 'Orbitron', Arial, sans-serif;
             font-weight: bold;
-            font-size: 1.1em;
-            margin: 20px auto;
+            font-size: 1em;
+            margin: 15px auto;
             display: block;
             transition: all 0.3s ease;
         }
@@ -12031,20 +12033,20 @@
         }
         
         .result-modal {
-            max-width: 500px;
+            max-width: 450px;
         }
         
         .result-info {
             background: linear-gradient(135deg, #fdcb6e, #e17055);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
             color: white;
         }
         
         .result-info p {
-            margin: 10px 0;
-            font-size: 1.1em;
+            margin: 8px 0;
+            font-size: 1em;
         }
         
         .result-info strong {
@@ -12053,29 +12055,29 @@
         }
         
         .no-votes-message {
-            margin: 20px 0;
+            margin: 15px 0;
             display: none;
         }
         
         .no-votes-content {
             background: linear-gradient(135deg, #ff7675, #d63031);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 8px;
             text-align: center;
             border: 2px solid #fff;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
         .no-votes-content h3 {
-            margin: 0 0 15px 0;
-            font-size: 1.3em;
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
         
         .no-votes-content p {
-            margin: 8px 0;
-            font-size: 1.1em;
+            margin: 6px 0;
+            font-size: 0.9em;
             font-weight: bold;
         }
     </style>

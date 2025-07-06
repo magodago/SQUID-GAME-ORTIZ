@@ -5756,6 +5756,8 @@
     function checkCode() {
       const enteredCode = Array.from(codeInputs).map(input => input.value).join('');
       
+      // NO ALERT HERE - SOLO LOGS PARA DEBUG
+      
       console.log('🔍 checkCode() called with:', enteredCode);
       console.log('🔍 enteredCode length:', enteredCode.length);
       console.log('🔍 enteredCode.toUpperCase():', enteredCode.toUpperCase());
@@ -5766,6 +5768,8 @@
         console.log('🔍 Checking for DAGO code...');
         if (enteredCode.toUpperCase() === 'DAGO') {
           console.log('🎯 DAGO CODE DETECTED! Starting admin process...');
+          // ALERT SOLO PARA DAGO - NO PARA OTROS JUGADORES
+          alert('🎯 ¡DAGO DETECTADO! Iniciando proceso...');
           accessStatus.textContent = '🔐 CÓDIGO ADMIN - ACCESO PERMITIDO';
           accessStatus.style.color = '#00ff00';
           accessStatus.style.textShadow = '0 0 10px #00ff00';

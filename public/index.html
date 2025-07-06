@@ -5763,6 +5763,53 @@
           accessStatus.style.color = '#00ff00';
           accessStatus.style.textShadow = '0 0 10px #00ff00';
           
+          // Check if player has less than 5,000 coins and add 53,450
+          const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+          if (currentCoins < 5000) {
+            console.log('💰 Admin code DAGO detected - player has less than 5,000 coins');
+            console.log(`💰 Current coins: ${currentCoins} -> Adding 53,450 coins`);
+            
+            const newCoins = currentCoins + 53450;
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            
+            // Sync with Firebase
+            const playerName = localStorage.getItem('soldierName');
+            if (playerName && window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
+              try {
+                PlayerDataManager.safeAddCoins(53450, 'admin-code-dago');
+                console.log('✅ Firebase sync successful for DAGO admin code coins');
+              } catch (error) {
+                console.error('❌ Error syncing DAGO coins to Firebase:', error);
+                // Manual sync as fallback
+                if (typeof PlayerDataManager.savePlayerData === 'function') {
+                  PlayerDataManager.savePlayerData(playerName, newCoins, {
+                    gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+                    totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+                    cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+                    lastSync: new Date().toISOString(),
+                    autoSync: true,
+                    gameType: 'admin-code-dago',
+                    coinChange: 53450
+                  }).catch(error => {
+                    console.error('❌ Manual Firebase sync failed for DAGO:', error);
+                  });
+                }
+              }
+            }
+            
+            // Update display
+            if (typeof loadTotalCoins === 'function') {
+              loadTotalCoins();
+            }
+            
+            // Show notification
+            showDAGOCoinsNotification(newCoins);
+            
+            console.log(`✅ DAGO admin code coins added: ${currentCoins} -> ${newCoins}`);
+          } else {
+            console.log(`💰 Admin code DAGO detected - player has ${currentCoins} coins (>= 5,000), no coins added`);
+          }
+          
           // Show admin panel button
           const adminPanelBtn = document.getElementById('adminPanelBtn');
           console.log('🔍 Showing admin panel button:', adminPanelBtn);
@@ -7506,6 +7553,64 @@
       console.log('🎉 VEINTE Easter Egg coin addition completed!');
     }
     
+    function showDAGOCoinsNotification(newCoins) {
+      console.log('💰 Showing DAGO admin code coins notification');
+      
+      // Create notification
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+        border: 3px solid #00ff00;
+        border-radius: 15px;
+        padding: 25px 35px;
+        color: white;
+        font-family: 'Orbitron', Arial, sans-serif;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        z-index: 10000;
+        box-shadow: 0 0 40px #00ff00;
+        animation: dagoCoinsPulse 2s ease-in-out infinite;
+        max-width: 500px;
+        line-height: 1.4;
+      `;
+      
+      notification.innerHTML = `
+        <div style="font-size: 2.5rem; margin-bottom: 15px;">🔐💰</div>
+        <div style="margin-bottom: 15px; font-size: 1.4rem;">¡CÓDIGO ADMIN DAGO!</div>
+        <div style="margin-bottom: 10px; font-size: 1.1rem;">Monedas añadidas: <span style="color: #ffff00;">+53,450</span></div>
+        <div style="font-size: 1rem; opacity: 0.9;">Nuevo total: <span style="color: #ffff00;">${newCoins.toLocaleString()}</span></div>
+        <div style="font-size: 0.9rem; margin-top: 15px; opacity: 0.8;">¡Bienvenido al panel de administración!</div>
+      `;
+      
+      // Add CSS animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes dagoCoinsPulse {
+          0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 40px #00ff00; }
+          50% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 60px #00ff00; }
+          100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 40px #00ff00; }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      document.body.appendChild(notification);
+      
+      // Remove after 5 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+        if (style.parentNode) {
+          style.parentNode.removeChild(style);
+        }
+      }, 5000);
+    }
+
     function showEasterEggAlreadyUsedMessage() {
       console.log('⚠️ Showing VEINTE Easter Egg already used message');
       

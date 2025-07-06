@@ -561,7 +561,8 @@
         localStorage.setItem('totalWins', (currentWins + 1).toString());
         
         // Update achievements progress
-        const { achievementCompleted, completedAchievement } = updateAchievementProgress('games', 1);
+        updateAchievementProgress('games', 1);
+        updateAchievementProgress('wins', 1);
         
         // Lanzar evento para actualizar en home
         window.parent && window.parent.postMessage({ type: 'ortizCoinsUpdated', totalCoins: coins }, '*');

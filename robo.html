@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦹‍♂️ SISTEMA DE ROBO - Squid Game Ortiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #000000 0%, #1a0033 50%, #000000 100%);
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #00cc00;
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .player-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .player-coins {
+            font-size: 1.3rem;
+            color: #ffd700;
+        }
+
+        .back-button {
+            background: #000000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #00ff00;
+            color: #000000;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        .battle-section {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .battle-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00ff00;
+        }
+
+        .tab-button {
+            background: transparent;
+            color: #00ff00;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            border-bottom-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .tab-button:hover {
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .players-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .player-item:hover {
+            background: rgba(0, 255, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .player-details {
+            flex: 1;
+        }
+
+        .player-name-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .player-coins-display {
+            font-size: 1rem;
+            color: #ffd700;
+        }
+
+        .challenge-button {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .challenge-button:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+
+        .challenge-button:disabled {
+            background: #666666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .bet-input {
+            background: #000000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 1rem;
+            width: 120px;
+            margin-right: 10px;
+        }
+
+        .bet-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        .challenges-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .challenge-item {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .challenge-info {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .challenge-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .accept-button {
+            background: #00ff00;
+            color: #000000;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reject-button {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .history-result {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .history-details {
+            font-size: 0.9rem;
+            color: #00cc00;
+        }
+
+        .battle-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .battle-modal.active {
+            display: flex;
+        }
+
+        .battle-modal-content {
+            background: #000000;
+            border: 3px solid #00ff00;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .battle-game-area {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .battle-status {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: #333333;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffd700, #00ff00);
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-weight: bold;
+            transition: width 0.2s ease;
+        }
+
+        .battle-timer {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff0000;
+            margin: 15px 0;
+        }
+
+        .battle-result {
+            display: none;
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .winner-announcement {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+
+        .coins-won {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .battle-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .battle-btn {
+            background: #000000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .battle-btn:hover {
+            background: #00ff00;
+            color: #000000;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+            color: #00cc00;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .player-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .battle-tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                border-bottom: none;
+                border-right: 3px solid transparent;
+            }
+
+            .tab-button.active {
+                border-right-color: #00ff00;
+                border-bottom-color: transparent;
+            }
+
+            .challenge-actions {
+                flex-direction: column;
+            }
+
+            .battle-modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦹‍♂️ SISTEMA DE ROBO</h1>
+            <p>Desafía a otros jugadores y roba sus monedas</p>
+        </div>
+
+        <div class="player-info">
+            <div class="player-name" id="currentPlayerName">Jugador</div>
+            <div class="player-coins" id="currentPlayerCoins">0 monedas</div>
+            <button class="back-button" onclick="window.location.href='index.html'">← VOLVER</button>
+        </div>
+
+        <div class="battle-section">
+            <div class="battle-tabs">
+                <button class="tab-button active" onclick="showTab('challenge')">🦹‍♂️ DESAFIAR</button>
+                <button class="tab-button" onclick="showTab('challenges')">📨 DESAFÍOS</button>
+                <button class="tab-button" onclick="showTab('history')">📋 HISTORIAL</button>
+            </div>
+
+            <!-- Tab: Desafiar -->
+            <div id="challenge" class="tab-content active">
+                <h3>Selecciona un jugador para desafiar:</h3>
+                <div class="players-list" id="playersList">
+                    <div class="loading">Cargando jugadores...</div>
+                </div>
+            </div>
+
+            <!-- Tab: Desafíos -->
+            <div id="challenges" class="tab-content">
+                <h3>Desafíos pendientes:</h3>
+                <div class="challenges-list" id="challengesList">
+                    <div class="loading">Cargando desafíos...</div>
+                </div>
+            </div>
+
+            <!-- Tab: Historial -->
+            <div id="history" class="tab-content">
+                <h3>Historial de batallas:</h3>
+                <div class="history-list" id="historyList">
+                    <div class="loading">Cargando historial...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Battle Game Modal -->
+    <div class="battle-modal" id="battleModal">
+        <div class="battle-modal-content">
+            <h2>⚔️ BATALLA EN CURSO</h2>
+            
+            <div class="battle-game-area" id="battleGameArea">
+                <div class="battle-status" id="battleStatus">🔄 SIMULANDO BATALLA...</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 50%;">50%</div>
+                </div>
+            </div>
+
+            <div class="battle-timer" id="battleTimer">10</div>
+
+            <div class="battle-result" id="battleResult">
+                <div class="winner-announcement" id="winnerAnnouncement"></div>
+                <div class="coins-won" id="coinsWon"></div>
+                <div class="battle-buttons">
+                    <button class="battle-btn" id="battleResultBtn">NUEVO DESAFÍO</button>
+                    <button class="battle-btn" id="battleBackBtn">VOLVER</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // Global variables
+        let currentPlayer = '';
+        let currentCoins = 0;
+        let players = [];
+        let challenges = [];
+        let battleHistory = [];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPlayerInfo();
+            loadPlayers();
+            loadChallenges();
+            loadHistory();
+        });
+
+        // Load player information
+        function loadPlayerInfo() {
+            currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
+            currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            
+            document.getElementById('currentPlayerName').textContent = currentPlayer;
+            document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
+        }
+
+        // Show tab content
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Refresh data based on tab
+            switch(tabName) {
+                case 'challenge':
+                    loadPlayers();
+                    break;
+                case 'challenges':
+                    loadChallenges();
+                    break;
+                case 'history':
+                    loadHistory();
+                    break;
+            }
+        }
+
+        // Load players from Firebase
+        function loadPlayers() {
+            const playersList = document.getElementById('playersList');
+            playersList.innerHTML = '<div class="loading">Cargando jugadores...</div>';
+
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playersRef = db.ref('players');
+                
+                playersRef.once('value')
+                    .then((snapshot) => {
+                        players = [];
+                        let html = '';
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const player = childSnapshot.val();
+                            if (player.name !== currentPlayer) {
+                                players.push(player);
+                                html += `
+                                    <div class="player-item">
+                                        <div class="player-details">
+                                            <div class="player-name-display">${player.name}</div>
+                                            <div class="player-coins-display">${player.coins ? player.coins.toLocaleString() : 0} monedas</div>
+                                        </div>
+                                        <div>
+                                            <input type="number" class="bet-input" placeholder="Apuesta" min="1" max="${player.coins || 1000}">
+                                            <button class="challenge-button" onclick="challengePlayer('${player.name}', this.previousElementSibling.value)">
+                                                🦹‍♂️ DESAFIAR
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        
+                        if (html === '') {
+                            html = '<div class="loading">No hay otros jugadores disponibles</div>';
+                        }
+                        
+                        playersList.innerHTML = html;
+                    })
+                    .catch((error) => {
+                        console.error('Error loading players:', error);
+                        playersList.innerHTML = '<div class="loading">Error cargando jugadores</div>';
+                    });
+            } else {
+                playersList.innerHTML = '<div class="loading">Firebase no disponible</div>';
+            }
+        }
+
+        // Challenge a player
+        function challengePlayer(targetPlayer, betAmount) {
+            betAmount = parseInt(betAmount);
+            
+            if (!betAmount || betAmount <= 0) {
+                alert('Por favor ingresa una apuesta válida');
+                return;
+            }
+            
+            if (betAmount > currentCoins) {
+                alert('No tienes suficientes monedas para esta apuesta');
+                return;
+            }
+            
+            // Deduct bet amount immediately
+            currentCoins -= betAmount;
+            localStorage.setItem('totalOrtizCoins', currentCoins.toString());
+            loadPlayerInfo();
+            
+            // Create challenge in Firebase
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const challengesRef = db.ref('challenges');
+                
+                const challenge = {
+                    challenger: currentPlayer,
+                    target: targetPlayer,
+                    betAmount: betAmount,
+                    status: 'pending',
+                    createdAt: Date.now()
+                };
+                
+                challengesRef.push(challenge)
+                    .then(() => {
+                        alert(`Desafío enviado a ${targetPlayer} por ${betAmount} monedas`);
+                        loadChallenges();
+                    })
+                    .catch((error) => {
+                        console.error('Error creating challenge:', error);
+                        alert('Error enviando el desafío');
+                    });
+            } else {
+                // Fallback - start battle immediately
+                startBattle(currentPlayer, targetPlayer, betAmount);
+            }
+        }
+
+        // Load challenges
+        function loadChallenges() {
+            const challengesList = document.getElementById('challengesList');
+            challengesList.innerHTML = '<div class="loading">Cargando desafíos...</div>';
+
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const challengesRef = db.ref('challenges');
+                
+                challengesRef.orderByChild('status').equalTo('pending').once('value')
+                    .then((snapshot) => {
+                        challenges = [];
+                        let html = '';
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const challenge = childSnapshot.val();
+                            if (challenge.target === currentPlayer) {
+                                challenges.push({...challenge, id: childSnapshot.key});
+                                html += `
+                                    <div class="challenge-item">
+                                        <div class="challenge-header">
+                                            <div class="challenge-info">
+                                                ${challenge.challenger} te desafía por ${challenge.betAmount} monedas
+                                            </div>
+                                            <div class="challenge-actions">
+                                                <button class="accept-button" onclick="acceptChallenge('${childSnapshot.key}')">
+                                                    ✅ ACEPTAR
+                                                </button>
+                                                <button class="reject-button" onclick="rejectChallenge('${childSnapshot.key}')">
+                                                    ❌ RECHAZAR
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        
+                        if (html === '') {
+                            html = '<div class="loading">No hay desafíos pendientes</div>';
+                        }
+                        
+                        challengesList.innerHTML = html;
+                    })
+                    .catch((error) => {
+                        console.error('Error loading challenges:', error);
+                        challengesList.innerHTML = '<div class="loading">Error cargando desafíos</div>';
+                    });
+            } else {
+                challengesList.innerHTML = '<div class="loading">Firebase no disponible</div>';
+            }
+        }
+
+        // Accept challenge
+        function acceptChallenge(challengeId) {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const challengeRef = db.ref(`challenges/${challengeId}`);
+                
+                challengeRef.once('value')
+                    .then((snapshot) => {
+                        const challenge = snapshot.val();
+                        if (challenge && challenge.status === 'pending') {
+                            // Update challenge status
+                            challengeRef.update({
+                                status: 'accepted',
+                                acceptedAt: Date.now()
+                            }).then(() => {
+                                // Start battle
+                                startBattle(challenge.challenger, challenge.target, challenge.betAmount);
+                            });
+                        }
+                    });
+            }
+        }
+
+        // Reject challenge
+        function rejectChallenge(challengeId) {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const challengeRef = db.ref(`challenges/${challengeId}`);
+                
+                challengeRef.update({
+                    status: 'rejected',
+                    rejectedAt: Date.now()
+                }).then(() => {
+                    loadChallenges();
+                });
+            }
+        }
+
+        // Load battle history
+        function loadHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '<div class="loading">Cargando historial...</div>';
+
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const historyRef = db.ref('battleHistory');
+                
+                historyRef.orderByChild('timestamp').limitToLast(20).once('value')
+                    .then((snapshot) => {
+                        battleHistory = [];
+                        let html = '';
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const battle = childSnapshot.val();
+                            if (battle.player1 === currentPlayer || battle.player2 === currentPlayer) {
+                                battleHistory.push(battle);
+                                
+                                const isWinner = battle.winner === currentPlayer;
+                                const opponent = battle.player1 === currentPlayer ? battle.player2 : battle.player1;
+                                
+                                html += `
+                                    <div class="history-item">
+                                        <div class="history-result ${isWinner ? 'winner' : 'loser'}">
+                                            ${isWinner ? '🏆 VICTORIA' : '💀 DERROTA'} vs ${opponent}
+                                        </div>
+                                        <div class="history-details">
+                                            Apuesta: ${battle.betAmount} monedas | ${new Date(battle.timestamp).toLocaleString()}
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        
+                        if (html === '') {
+                            html = '<div class="loading">No hay historial de batallas</div>';
+                        }
+                        
+                        historyList.innerHTML = html;
+                    })
+                    .catch((error) => {
+                        console.error('Error loading history:', error);
+                        historyList.innerHTML = '<div class="loading">Error cargando historial</div>';
+                    });
+            } else {
+                historyList.innerHTML = '<div class="loading">Firebase no disponible</div>';
+            }
+        }
+
+        // Start battle
+        function startBattle(player1, player2, betAmount) {
+            const battleModal = document.getElementById('battleModal');
+            const battleGameArea = document.getElementById('battleGameArea');
+            const battleStatus = document.getElementById('battleStatus');
+            const progressBar = document.getElementById('progressBar');
+            const battleTimer = document.getElementById('battleTimer');
+            
+            // Reset game area
+            battleGameArea.innerHTML = `
+                <div class="battle-status" id="battleStatus">🔄 SIMULANDO BATALLA...</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 50%;">50%</div>
+                </div>
+            `;
+            
+            // Hide result section
+            document.getElementById('battleResult').style.display = 'none';
+            
+            // Show modal
+            battleModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Start countdown
+            let countdown = 3;
+            battleTimer.textContent = countdown;
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                battleTimer.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    startBattleGameplay(player1, player2, betAmount);
+                }
+            }, 1000);
+        }
+
+        // Battle gameplay
+        function startBattleGameplay(player1, player2, betAmount) {
+            const battleStatus = document.getElementById('battleStatus');
+            const progressBar = document.getElementById('progressBar');
+            const battleTimer = document.getElementById('battleTimer');
+            
+            let gameTime = 10;
+            let progress = 50;
+            let player1Advantage = Math.random() * 0.4 - 0.2;
+            
+            battleTimer.textContent = gameTime;
+            
+            const gameInterval = setInterval(() => {
+                gameTime--;
+                battleTimer.textContent = gameTime;
+                
+                if (gameTime <= 0) {
+                    clearInterval(gameInterval);
+                    clearInterval(progressInterval);
+                    endBattle(player1, player2, progress > 50 ? player1 : player2, progress <= 50 ? player2 : player1, betAmount);
+                }
+            }, 1000);
+            
+            const progressInterval = setInterval(() => {
+                if (gameTime <= 0) {
+                    clearInterval(progressInterval);
+                    return;
+                }
+                
+                const randomMove = (Math.random() - 0.5) * 10 + player1Advantage * 5;
+                progress += randomMove;
+                progress = Math.max(0, Math.min(100, progress));
+                
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = Math.round(progress) + '%';
+                
+                if (progress > 60) {
+                    battleStatus.textContent = `🦹‍♂️ ${player1} DOMINANDO`;
+                } else if (progress < 40) {
+                    battleStatus.textContent = `🛡️ ${player2} DEFENDIENDO`;
+                } else {
+                    battleStatus.textContent = '⚔️ BATALLA EQUILIBRADA';
+                }
+            }, 200);
+        }
+
+        // End battle
+        function endBattle(player1, player2, winner, loser, betAmount) {
+            const resultElement = document.getElementById('battleResult');
+            const winnerElement = document.getElementById('winnerAnnouncement');
+            const coinsElement = document.getElementById('coinsWon');
+            
+            if (winner === currentPlayer) {
+                const coinsWon = betAmount * 2;
+                winnerElement.textContent = `🦹‍♂️ ¡ROBO EXITOSO!`;
+                coinsElement.textContent = `💰 Robaste ${coinsWon.toLocaleString()} monedas de ${loser}`;
+                
+                // Add coins to winner
+                currentCoins += coinsWon;
+                localStorage.setItem('totalOrtizCoins', currentCoins.toString());
+                loadPlayerInfo();
+            } else {
+                winnerElement.textContent = `🛡️ ¡ROBO FRACASADO!`;
+                coinsElement.textContent = `💰 ${winner} te dice: "¡A MÍ NO ME ROBA NADIE!"`;
+            }
+            
+            // Save to history
+            saveBattleHistory(player1, player2, winner, loser, betAmount);
+            
+            // Show result
+            resultElement.style.display = 'block';
+            
+            // Add button listeners
+            document.getElementById('battleResultBtn').onclick = () => {
+                document.getElementById('battleModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+                showTab('challenge');
+            };
+            
+            document.getElementById('battleBackBtn').onclick = () => {
+                document.getElementById('battleModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            };
+        }
+
+        // Save battle history
+        function saveBattleHistory(player1, player2, winner, loser, betAmount) {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const historyRef = db.ref('battleHistory');
+                
+                const battleRecord = {
+                    player1: player1,
+                    player2: player2,
+                    winner: winner,
+                    loser: loser,
+                    betAmount: betAmount,
+                    timestamp: Date.now()
+                };
+                
+                historyRef.push(battleRecord);
+            }
+        }
+    </script>
+</body>
+</html> 

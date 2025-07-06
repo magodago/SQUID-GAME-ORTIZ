@@ -11234,18 +11234,18 @@
             const currentPlayer = localStorage.getItem('soldierName');
             console.log('👤 Jugador actual:', currentPlayer);
             
-            // Listen for custom events
-            window.addEventListener('adminCoinsUpdate', (event) => {
-                const eventData = event.detail;
-                console.log('📢 Evento de actualización recibido:', eventData);
-                
-                if (eventData.userId === currentPlayer) {
-                    console.log('🎯 Actualización para el jugador actual detectada');
-                    updateLocalCoinsFromAdmin(eventData.newCoins);
-                } else {
-                    console.log('⚠️ Actualización para otro jugador:', eventData.userId, 'vs', currentPlayer);
-                }
-            });
+            // DISABLED: Custom event listener to prevent conflicts with DAGO code
+            // window.addEventListener('adminCoinsUpdate', (event) => {
+            //     const eventData = event.detail;
+            //     console.log('📢 Evento de actualización recibido:', eventData);
+            //     
+            //     if (eventData.userId === currentPlayer) {
+            //         console.log('🎯 Actualización para el jugador actual detectada');
+            //         updateLocalCoinsFromAdmin(eventData.newCoins);
+            //     } else {
+            //         console.log('⚠️ Actualización para otro jugador:', eventData.userId, 'vs', currentPlayer);
+            //     }
+            // });
             
             // DISABLED: Admin coins update listener to prevent conflicts with DAGO code
             // setInterval(() => {
@@ -11353,8 +11353,8 @@
                     }
                 }
                 
-                // Show notification
-                showAdminUpdateNotification(newCoins);
+                // DISABLED: Show notification to prevent conflicts with DAGO code
+                // showAdminUpdateNotification(newCoins);
                 
                 // Dispatch event to notify other parts of the app
                 const event = new CustomEvent('coinsUpdated', {

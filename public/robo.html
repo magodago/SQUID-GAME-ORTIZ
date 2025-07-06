@@ -1105,18 +1105,18 @@
             const coinsElement = document.getElementById('coinsWon');
             
             if (player1Wins) {
-                // Player 1 wins - rob successful
+                // Player 1 (attacker) wins - rob successful
                 winnerElement.textContent = `🦹‍♂️ ¡ROBO EXITOSO!`;
                 coinsElement.textContent = `💰 Robaste ${betAmount.toLocaleString()} monedas de ${player2}`;
                 
                 // Update Firebase for both players
-                // Player 1 (attacker) gets the stolen coins from player 2 (already lost bet, so this is net gain)
+                // Player 1 (attacker) gets the stolen coins from player 2 (plus recovers their bet)
                 updatePlayerCoinsInFirebase(player1, betAmount, true);
                 // Player 2 (target) loses the stolen coins
                 updatePlayerCoinsInFirebase(player2, betAmount, false);
                 
             } else {
-                // Player 2 wins - rob failed
+                // Player 2 (defender) wins - rob failed
                 winnerElement.textContent = `🛡️ ¡ROBO FRACASADO!`;
                 coinsElement.textContent = `💰 ${player2} te dice: "¡A MÍ NO ME ROBA NADIE!"`;
                 

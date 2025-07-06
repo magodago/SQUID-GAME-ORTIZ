@@ -8611,11 +8611,17 @@
       // Check if player has 15000+ coins and show/hide button
       function checkAllInVisibility() {
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        if (totalCoins >= 15000) {
+        const allInUsed = localStorage.getItem('allInUsed') === 'true';
+        
+        // Show button if player has enough coins AND hasn't used it yet
+        if (totalCoins >= 15000 && !allInUsed) {
           allInContainer.classList.add('visible');
-          console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins');
+          allInContainer.style.display = 'block';
+          console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins and hasn\'t used it');
         } else {
           allInContainer.classList.remove('visible');
+          allInContainer.style.display = 'none';
+          console.log('🎰 ALL IN button hidden - coins:', totalCoins, 'used:', allInUsed);
         }
       }
       
@@ -8660,7 +8666,9 @@
       });
       
       document.getElementById('allInNoBtn').addEventListener('click', () => {
+        console.log('🎰 ALL IN rejected by player');
         closeSimpleAllInModal();
+        // Don't hide the button permanently - let player decide later
       });
       
       // Close on outside click
@@ -8679,10 +8687,10 @@
       // Reset coins to 0
       localStorage.setItem('totalOrtizCoins', '0');
       
-      // Mark ALL IN as used permanently
+      // Mark ALL IN as used permanently (only after losing)
       localStorage.setItem('allInUsed', 'true');
       
-      // Hide ALL IN button permanently
+      // Hide ALL IN button permanently (only after losing)
       const allInContainer = document.getElementById('allInContainer');
       allInContainer.style.display = 'none';
       allInContainer.classList.remove('visible');

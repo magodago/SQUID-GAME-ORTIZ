@@ -5405,73 +5405,9 @@
             // Add click event listener when button is shown
             adminPanelBtn.addEventListener('click', () => {
               console.log('🔐 Admin panel button clicked!');
-              const adminPanel = document.getElementById('adminPanel');
-              if (adminPanel) {
-                adminPanel.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-                loadAdminData();
-                console.log('✅ Admin panel opened');
-                
-                // Add event listener to force sync button when panel opens
-                const forceSyncBtn = document.getElementById('forceSyncBtn');
-                if (forceSyncBtn) {
-                  console.log('🔍 Force sync button found, adding event listener...');
-                  forceSyncBtn.onclick = function() {
-                    alert('🔄 BOTÓN PULSADO - Iniciando sincronización...');
-                    console.log('🔄 Forzando sincronización con Firebase...');
-                    
-                    // Simple Firebase connection test
-                    if (typeof firebase !== 'undefined' && firebase.database) {
-                      alert('✅ Firebase detectado - Conectando...');
-                      
-                      const database = firebase.database();
-                      const playersRef = database.ref('players');
-                      
-                      playersRef.once('value')
-                        .then(function(snapshot) {
-                          const data = snapshot.val() || {};
-                          const playerCount = Object.keys(data).length;
-                          
-                          alert(`✅ CONEXIÓN EXITOSA!\n\nJugadores encontrados: ${playerCount}\n\nDatos: ${JSON.stringify(data, null, 2)}`);
-                          
-                                                     // Update the admin panel display
-                           updateAdminPanelWithFirebaseData(data);
-                        })
-                        .catch(function(error) {
-                          alert(`❌ ERROR: ${error.message}`);
-                          console.error('Firebase error:', error);
-                        });
-                    } else {
-                      alert('❌ Firebase no está disponible');
-                      console.error('Firebase not available');
-                    }
-                  };
-                } else {
-                  console.error('❌ Force sync button not found when panel opened!');
-                  alert('❌ Botón de sincronización no encontrado!');
-                }
-                
-                // Add event listener to close button when panel opens
-                const closeAdminBtn = document.getElementById('closeAdminBtn');
-                if (closeAdminBtn) {
-                  console.log('🔍 Close admin button found, adding event listener...');
-                  closeAdminBtn.onclick = function() {
-                    console.log('❌ Close admin button clicked!');
-                    const adminPanel = document.getElementById('adminPanel');
-                    if (adminPanel) {
-                      adminPanel.style.display = 'none';
-                      document.body.style.overflow = 'auto';
-                      console.log('✅ Admin panel closed');
-                    } else {
-                      console.error('❌ Admin panel element not found for closing!');
-                    }
-                  };
-                } else {
-                  console.error('❌ Close admin button not found when panel opened!');
-                }
-              } else {
-                console.error('❌ Admin panel element not found!');
-              }
+              // Redirect to the new admin panel
+              window.location.href = 'admin-panel.html';
+              console.log('✅ Redirecting to admin panel');
             });
           } else {
             console.error('❌ Admin panel button not found when trying to show it');
@@ -8675,11 +8611,17 @@
       // Check if player has 15000+ coins and show/hide button
       function checkAllInVisibility() {
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        if (totalCoins >= 15000) {
+        const allInUsed = localStorage.getItem('allInUsed') === 'true';
+        
+        // Show button if player has enough coins AND hasn't used it yet
+        if (totalCoins >= 15000 && !allInUsed) {
           allInContainer.classList.add('visible');
-          console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins');
+          allInContainer.style.display = 'block';
+          console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins and hasn\'t used it');
         } else {
           allInContainer.classList.remove('visible');
+          allInContainer.style.display = 'none';
+          console.log('🎰 ALL IN button hidden - coins:', totalCoins, 'used:', allInUsed);
         }
       }
       
@@ -8724,7 +8666,9 @@
       });
       
       document.getElementById('allInNoBtn').addEventListener('click', () => {
+        console.log('🎰 ALL IN rejected by player');
         closeSimpleAllInModal();
+        // Don't hide the button permanently - let player decide later
       });
       
       // Close on outside click
@@ -8743,10 +8687,10 @@
       // Reset coins to 0
       localStorage.setItem('totalOrtizCoins', '0');
       
-      // Mark ALL IN as used permanently
+      // Mark ALL IN as used permanently (only after losing)
       localStorage.setItem('allInUsed', 'true');
       
-      // Hide ALL IN button permanently
+      // Hide ALL IN button permanently (only after losing)
       const allInContainer = document.getElementById('allInContainer');
       allInContainer.style.display = 'none';
       allInContainer.classList.remove('visible');
@@ -9384,14 +9328,14 @@
                 <span class="player-name">${rankEmoji} ${playerName}</span>
                 <span class="player-coins">🪙 ${coins.toLocaleString()} monedas</span>
               </div>
-              <div class="player-stats">
+                <div class="player-stats">
                 <span title="Juegos jugados">🎮 ${gamesPlayed}</span>
                 <span title="Victorias totales">🏆 ${totalWins}</span>
                 <span title="Pistas encontradas">🔍 ${cluesFound}</span>
                 <span title="Easter Eggs encontrados">🥚 ${easterEggs}</span>
                 <span title="Tiempo total jugado">⏱️ ${formatPlayTime(playTime)}</span>
                 <span title="Porcentaje de victoria" style="background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.1)); border-color: rgba(255, 215, 0, 0.4);">📊 ${winRate}%</span>
-              </div>
+                </div>
               <div class="player-easter-eggs" style="margin-top: 8px; font-size: 0.8rem; color: #ffd700; text-align: left;">
                 <span title="Easter Eggs específicos">🥚 ${easterEggsDetails}</span>
               </div>

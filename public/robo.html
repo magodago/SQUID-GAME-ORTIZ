@@ -1211,7 +1211,6 @@
                         // Update both coins and localStorage for the current player
                         if (playerName === currentPlayer) {
                             localStorage.setItem('totalOrtizCoins', newCoins.toString());
-                            currentCoins = newCoins;
                             // Update display immediately
                             document.getElementById('currentPlayerCoins').textContent = newCoins.toLocaleString() + ' monedas';
                         }

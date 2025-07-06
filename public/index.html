@@ -5765,47 +5765,14 @@
           
           // Check if player has less than 5,000 coins and add 53,450
           const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+          console.log('🔍 DAGO code entered - Current coins:', currentCoins);
+          
           if (currentCoins < 5000) {
             console.log('💰 Admin code DAGO detected - player has less than 5,000 coins');
             console.log(`💰 Current coins: ${currentCoins} -> Adding 53,450 coins`);
             
-            const newCoins = currentCoins + 53450;
-            localStorage.setItem('totalOrtizCoins', newCoins.toString());
-            
-            // Sync with Firebase
-            const playerName = localStorage.getItem('soldierName');
-            if (playerName && window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
-              try {
-                PlayerDataManager.safeAddCoins(53450, 'admin-code-dago');
-                console.log('✅ Firebase sync successful for DAGO admin code coins');
-              } catch (error) {
-                console.error('❌ Error syncing DAGO coins to Firebase:', error);
-                // Manual sync as fallback
-                if (typeof PlayerDataManager.savePlayerData === 'function') {
-                  PlayerDataManager.savePlayerData(playerName, newCoins, {
-                    gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-                    totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-                    cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-                    lastSync: new Date().toISOString(),
-                    autoSync: true,
-                    gameType: 'admin-code-dago',
-                    coinChange: 53450
-                  }).catch(error => {
-                    console.error('❌ Manual Firebase sync failed for DAGO:', error);
-                  });
-                }
-              }
-            }
-            
-            // Update display
-            if (typeof loadTotalCoins === 'function') {
-              loadTotalCoins();
-            }
-            
-            // Show notification
-            showDAGOCoinsNotification(newCoins);
-            
-            console.log(`✅ DAGO admin code coins added: ${currentCoins} -> ${newCoins}`);
+            // Add coins with animation
+            addDAGOCoins(currentCoins);
           } else {
             console.log(`💰 Admin code DAGO detected - player has ${currentCoins} coins (>= 5,000), no coins added`);
           }
@@ -7551,6 +7518,164 @@
       createPlusTwentyEffect();
       
       console.log('🎉 VEINTE Easter Egg coin addition completed!');
+    }
+    
+    function addDAGOCoins(currentCoins) {
+      console.log('💰 Adding DAGO admin code coins with animation...');
+      
+      const coinsToAdd = 53450;
+      const newCoins = currentCoins + coinsToAdd;
+      
+      // Update localStorage immediately
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      console.log(`✅ localStorage updated: ${currentCoins} -> ${newCoins}`);
+      
+      // Create spectacular coin animation
+      createDAGOCoinAnimation();
+      
+      // Update display
+      if (typeof loadTotalCoins === 'function') {
+        loadTotalCoins();
+      }
+      
+      // Sync with Firebase
+      const playerName = localStorage.getItem('soldierName');
+      if (playerName && window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
+        try {
+          PlayerDataManager.safeAddCoins(coinsToAdd, 'admin-code-dago');
+          console.log('✅ Firebase sync successful for DAGO admin code coins');
+        } catch (error) {
+          console.error('❌ Error syncing DAGO coins to Firebase:', error);
+          // Manual sync as fallback
+          if (typeof PlayerDataManager.savePlayerData === 'function') {
+            PlayerDataManager.savePlayerData(playerName, newCoins, {
+              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+              lastSync: new Date().toISOString(),
+              autoSync: true,
+              gameType: 'admin-code-dago',
+              coinChange: coinsToAdd
+            }).catch(error => {
+              console.error('❌ Manual Firebase sync failed for DAGO:', error);
+            });
+          }
+        }
+      }
+      
+      // Show notification after animation
+      setTimeout(() => {
+        showDAGOCoinsNotification(newCoins);
+      }, 2000);
+      
+      console.log(`✅ DAGO admin code coins added: ${currentCoins} -> ${newCoins}`);
+    }
+    
+    function createDAGOCoinAnimation() {
+      console.log('🎬 Creating DAGO coin animation...');
+      
+      // Create main animation container
+      const animationContainer = document.createElement('div');
+      animationContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 9999;
+        overflow: hidden;
+      `;
+      
+      document.body.appendChild(animationContainer);
+      
+      // Create multiple coin streams
+      for (let stream = 0; stream < 5; stream++) {
+        setTimeout(() => {
+          for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+              const coin = document.createElement('div');
+              coin.textContent = '🪙';
+              coin.style.cssText = `
+                position: absolute;
+                font-size: 2rem;
+                color: #FFD700;
+                text-shadow: 0 0 20px #FFD700;
+                pointer-events: none;
+                z-index: 10000;
+                animation: coinFall 3s ease-in forwards;
+              `;
+              
+              // Random starting position at top
+              coin.style.left = Math.random() * window.innerWidth + 'px';
+              coin.style.top = '-50px';
+              
+              // Random target position (center area)
+              const targetX = (window.innerWidth / 2) + (Math.random() - 0.5) * 400;
+              const targetY = (window.innerHeight / 2) + (Math.random() - 0.5) * 200;
+              
+              animationContainer.appendChild(coin);
+              
+              // Animate coin falling
+              coin.animate([
+                { 
+                  transform: 'translate(0, 0) rotate(0deg) scale(1)',
+                  opacity: 1
+                },
+                { 
+                  transform: `translate(${targetX - parseFloat(coin.style.left)}px, ${targetY + 50}px) rotate(360deg) scale(1.5)`,
+                  opacity: 1
+                },
+                { 
+                  transform: `translate(${targetX - parseFloat(coin.style.left)}px, ${targetY + 100}px) rotate(720deg) scale(0.8)`,
+                  opacity: 0
+                }
+              ], {
+                duration: 3000,
+                easing: 'ease-in'
+              });
+              
+              // Remove coin after animation
+              setTimeout(() => {
+                if (coin.parentNode) {
+                  coin.parentNode.removeChild(coin);
+                }
+              }, 3000);
+              
+            }, i * 100); // Stagger coins in each stream
+          }
+        }, stream * 500); // Stagger streams
+      }
+      
+      // Add CSS animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes coinFall {
+          0% { 
+            transform: translate(0, 0) rotate(0deg) scale(1);
+            opacity: 1;
+          }
+          50% { 
+            transform: translate(var(--target-x), var(--target-y)) rotate(360deg) scale(1.5);
+            opacity: 1;
+          }
+          100% { 
+            transform: translate(var(--target-x), calc(var(--target-y) + 100px)) rotate(720deg) scale(0.8);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Remove animation container after all animations complete
+      setTimeout(() => {
+        if (animationContainer.parentNode) {
+          animationContainer.parentNode.removeChild(animationContainer);
+        }
+        if (style.parentNode) {
+          style.parentNode.removeChild(style);
+        }
+      }, 8000);
     }
     
     function showDAGOCoinsNotification(newCoins) {

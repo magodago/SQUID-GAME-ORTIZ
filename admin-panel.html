@@ -255,6 +255,154 @@
             margin-top: 10px;
         }
 
+        /* Voting Modal Styles */
+        .voting-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            font-family: 'Courier New', monospace;
+        }
+
+        .voting-content {
+            background: #000000;
+            border: 3px solid #ff6600;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 30px #ff6600;
+            animation: votingPulse 2s infinite;
+        }
+
+        @keyframes votingPulse {
+            0%, 100% { box-shadow: 0 0 30px #ff6600; }
+            50% { box-shadow: 0 0 50px #ff6600, 0 0 70px #ff6600; }
+        }
+
+        .voting-title {
+            font-size: 1.8rem;
+            color: #ff6600;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff6600;
+        }
+
+        .voting-question {
+            font-size: 1.2rem;
+            color: #ffffff;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .voting-timer {
+            font-size: 2.5rem;
+            color: #ff0000;
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px #ff0000;
+            font-weight: bold;
+        }
+
+        .voting-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .voting-player {
+            background: #000000;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .voting-player:hover {
+            background: #00ff00;
+            color: #000000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        .voting-player.selected {
+            background: #ff6600;
+            color: #000000;
+            border-color: #ff6600;
+            box-shadow: 0 0 15px #ff6600;
+        }
+
+        .voting-player.voted {
+            background: #ff0000;
+            color: #ffffff;
+            border-color: #ff0000;
+            box-shadow: 0 0 15px #ff0000;
+            cursor: not-allowed;
+        }
+
+        .voting-result {
+            background: #000000;
+            border: 3px solid #ff6600;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 30px #ff6600;
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            color: #ff6600;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff6600;
+        }
+
+        .result-player {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #ffffff;
+        }
+
+        .result-action {
+            font-size: 1.3rem;
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .result-amount {
+            font-size: 1.2rem;
+            color: #ffff00;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px #ffff00;
+        }
+
+        .close-button {
+            background: #000000;
+            color: #ff6600;
+            border: 2px solid #ff6600;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-button:hover {
+            background: #ff6600;
+            color: #000000;
+            box-shadow: 0 0 15px #ff6600;
+        }
+
         @media (max-width: 768px) {
             .terminal-container {
                 padding: 10px;
@@ -272,6 +420,19 @@
                 flex-direction: column;
                 align-items: stretch;
             }
+
+            .voting-content, .voting-result {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .voting-title, .result-title {
+                font-size: 1.5rem;
+            }
+
+            .voting-players {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
         }
     </style>
 </head>
@@ -285,6 +446,7 @@
         <button class="back-button" onclick="window.location.href='index.html'">← VOLVER AL MENÚ PRINCIPAL</button>
         <button class="refresh-button" onclick="loadAllData()">🔄 REFRESCAR DATOS</button>
         <button class="refresh-button" onclick="debugPlayerData()" style="margin-left: 10px;">🐛 DEBUG DATOS</button>
+        <button class="refresh-button" onclick="startMassVoting()" style="margin-left: 10px; background: #ff6600; border-color: #ff6600; color: #000000;">🗳️ INICIAR VOTACIÓN MASIVA</button>
 
         <div class="terminal-section">
             <div class="section-title">📊 ESTADÍSTICAS GLOBALES</div>
@@ -375,7 +537,52 @@
             </div>
         </div>
 
+        <div class="terminal-section">
+            <div class="section-title">🗳️ SISTEMA DE VOTACIÓN MASIVA</div>
+            <div id="votingStatus">
+                <div class="stat-item">
+                    <div class="stat-label">Estado de Votación:</div>
+                    <div class="stat-value" id="votingState">Inactiva</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Tiempo Restante:</div>
+                    <div class="stat-value" id="votingTimer">--:--</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Votos Recibidos:</div>
+                    <div class="stat-value" id="votesReceived">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Jugador Más Votado:</div>
+                    <div class="stat-value" id="mostVotedPlayer">Ninguno</div>
+                </div>
+            </div>
+        </div>
+
         <div class="timestamp" id="lastUpdate">Última actualización: Nunca</div>
+    </div>
+
+    <!-- Voting Modal -->
+    <div id="votingModal" class="voting-modal">
+        <div class="voting-content" id="votingContent">
+            <div class="voting-title">🗳️ VOTACIÓN MASIVA</div>
+            <div class="voting-question">DEBÉIS ELEGIR A UNO<br>EL QUE MÁS VOTOS TENGA<br>PERDERÁ O GANARÁ MONEDAS</div>
+            <div class="voting-timer" id="votingTimer">01:00</div>
+            <div class="voting-players" id="votingPlayers">
+                <!-- Players will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Voting Result Modal -->
+    <div id="votingResultModal" class="voting-modal">
+        <div class="voting-result" id="votingResult">
+            <div class="result-title">🎯 RESULTADO DE LA VOTACIÓN</div>
+            <div class="result-player" id="resultPlayer">Jugador</div>
+            <div class="result-action" id="resultAction">Acción</div>
+            <div class="result-amount" id="resultAmount">Cantidad</div>
+            <button class="close-button" onclick="closeVotingResult()">CERRAR</button>
+        </div>
     </div>
 
     <!-- Firebase SDK -->
@@ -852,6 +1059,277 @@
             
             alert('Revisa la consola del navegador (F12) para ver los datos de debug');
         }
+
+        // ===== SISTEMA DE VOTACIÓN MASIVA =====
+        let votingActive = false;
+        let votingTimer = null;
+        let votingEndTime = null;
+        let votingVotes = {};
+
+        function startMassVoting() {
+            if (votingActive) {
+                alert('❌ Ya hay una votación activa. Espera a que termine.');
+                return;
+            }
+
+            // Confirmar inicio de votación
+            if (!confirm('🗳️ ¿INICIAR VOTACIÓN MASIVA?\n\nTodos los jugadores verán una pantalla de votación durante 1 minuto.\nEl jugador más votado recibirá una consecuencia aleatoria.')) {
+                return;
+            }
+
+            console.log('🗳️ Iniciando votación masiva...');
+            
+            // Crear votación en Firebase
+            const votingData = {
+                active: true,
+                startTime: Date.now(),
+                endTime: Date.now() + (60 * 1000), // 1 minuto
+                votes: {},
+                players: Object.keys(allPlayers).map(key => {
+                    const player = allPlayers[key];
+                    return {
+                        id: key,
+                        name: player.username || player.name || player.displayName || 'Sin nombre',
+                        coins: player.coins || player.totalCoins || player.totalOrtizCoins || 0
+                    };
+                })
+            };
+
+            // Guardar en Firebase
+            firebase.database().ref('massVoting').set(votingData).then(() => {
+                console.log('✅ Votación iniciada en Firebase');
+                votingActive = true;
+                votingEndTime = votingData.endTime;
+                votingVotes = {};
+                
+                // Actualizar estado en admin panel
+                document.getElementById('votingState').textContent = 'ACTIVA';
+                document.getElementById('votingState').style.color = '#ff6600';
+                
+                // Iniciar timer
+                startVotingTimer();
+                
+                alert('🗳️ ¡VOTACIÓN INICIADA!\n\nTodos los jugadores verán la pantalla de votación.\nLa votación durará 1 minuto.');
+            }).catch((error) => {
+                console.error('❌ Error iniciando votación:', error);
+                alert('❌ Error iniciando votación: ' + error.message);
+            });
+        }
+
+        function startVotingTimer() {
+            if (!votingTimer) {
+                votingTimer = setInterval(() => {
+                    const now = Date.now();
+                    const timeLeft = Math.max(0, votingEndTime - now);
+                    
+                    if (timeLeft <= 0) {
+                        endVoting();
+                        return;
+                    }
+                    
+                    const minutes = Math.floor(timeLeft / 60000);
+                    const seconds = Math.floor((timeLeft % 60000) / 1000);
+                    const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    document.getElementById('votingTimer').textContent = timeString;
+                }, 1000);
+            }
+        }
+
+        function endVoting() {
+            console.log('⏰ Votación terminada, procesando resultados...');
+            
+            clearInterval(votingTimer);
+            votingTimer = null;
+            
+            // Obtener votos de Firebase
+            firebase.database().ref('massVoting/votes').once('value').then((snapshot) => {
+                const votes = snapshot.val() || {};
+                
+                // Contar votos
+                const voteCount = {};
+                Object.values(votes).forEach(vote => {
+                    voteCount[vote.targetPlayer] = (voteCount[vote.targetPlayer] || 0) + 1;
+                });
+                
+                // Encontrar jugador más votado
+                let mostVotedPlayer = null;
+                let maxVotes = 0;
+                
+                Object.keys(voteCount).forEach(playerId => {
+                    if (voteCount[playerId] > maxVotes) {
+                        maxVotes = voteCount[playerId];
+                        mostVotedPlayer = playerId;
+                    }
+                });
+                
+                if (!mostVotedPlayer) {
+                    console.log('❌ No se recibieron votos');
+                    resetVoting();
+                    return;
+                }
+                
+                // Aplicar consecuencia aleatoria
+                applyVotingConsequence(mostVotedPlayer, maxVotes);
+                
+            }).catch((error) => {
+                console.error('❌ Error procesando votos:', error);
+                resetVoting();
+            });
+        }
+
+        function applyVotingConsequence(playerId, voteCount) {
+            const player = allPlayers[playerId];
+            if (!player) {
+                console.error('❌ Jugador no encontrado:', playerId);
+                resetVoting();
+                return;
+            }
+            
+            const currentCoins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
+            const playerName = player.username || player.name || player.displayName || 'Sin nombre';
+            
+            // Decidir si gana o pierde (50/50)
+            const isWin = Math.random() < 0.5;
+            
+            // Calcular cantidad (10% de sus monedas)
+            const amount = Math.floor(currentCoins * 0.1);
+            
+            let newCoins, action, resultMessage;
+            
+            if (isWin) {
+                newCoins = currentCoins + amount;
+                action = 'GANÓ';
+                resultMessage = `🎉 ¡${playerName} GANÓ ${amount.toLocaleString()} MONEDAS!`;
+            } else {
+                newCoins = Math.max(0, currentCoins - amount);
+                action = 'PERDIÓ';
+                resultMessage = `💀 ¡${playerName} PERDIÓ ${amount.toLocaleString()} MONEDAS!`;
+            }
+            
+            console.log(`🎯 Consecuencia aplicada: ${playerName} ${action} ${amount.toLocaleString()} monedas`);
+            
+            // Actualizar monedas en Firebase
+            const playerRef = firebase.database().ref(`players/${playerId}`);
+            const updateData = {
+                coins: newCoins,
+                totalCoins: newCoins,
+                totalOrtizCoins: newCoins,
+                lastActivity: Date.now(),
+                lastSync: Date.now()
+            };
+            
+            playerRef.update(updateData).then(() => {
+                // Actualizar datos locales
+                allPlayers[playerId].coins = newCoins;
+                allPlayers[playerId].totalCoins = newCoins;
+                allPlayers[playerId].totalOrtizCoins = newCoins;
+                
+                // Guardar resultado en Firebase para que todos lo vean
+                const resultData = {
+                    playerId: playerId,
+                    playerName: playerName,
+                    action: action,
+                    amount: amount,
+                    oldCoins: currentCoins,
+                    newCoins: newCoins,
+                    voteCount: voteCount,
+                    timestamp: Date.now()
+                };
+                
+                firebase.database().ref('massVoting/result').set(resultData).then(() => {
+                    console.log('✅ Resultado guardado en Firebase');
+                    
+                    // Mostrar resultado en admin panel
+                    document.getElementById('resultPlayer').textContent = playerName;
+                    document.getElementById('resultAction').textContent = action;
+                    document.getElementById('resultAmount').textContent = `${amount.toLocaleString()} monedas (${voteCount} votos)`;
+                    
+                    // Mostrar modal de resultado
+                    document.getElementById('votingResultModal').style.display = 'flex';
+                    
+                    // Limpiar votación después de 10 segundos
+                    setTimeout(() => {
+                        resetVoting();
+                    }, 10000);
+                    
+                }).catch((error) => {
+                    console.error('❌ Error guardando resultado:', error);
+                    resetVoting();
+                });
+                
+            }).catch((error) => {
+                console.error('❌ Error actualizando monedas:', error);
+                resetVoting();
+            });
+        }
+
+        function resetVoting() {
+            console.log('🔄 Reseteando votación...');
+            
+            clearInterval(votingTimer);
+            votingTimer = null;
+            votingActive = false;
+            votingEndTime = null;
+            votingVotes = {};
+            
+            // Limpiar Firebase
+            firebase.database().ref('massVoting').remove().then(() => {
+                console.log('✅ Votación limpiada de Firebase');
+            }).catch((error) => {
+                console.error('❌ Error limpiando votación:', error);
+            });
+            
+            // Actualizar estado en admin panel
+            document.getElementById('votingState').textContent = 'Inactiva';
+            document.getElementById('votingState').style.color = '#00ff00';
+            document.getElementById('votingTimer').textContent = '--:--';
+            document.getElementById('votesReceived').textContent = '0';
+            document.getElementById('mostVotedPlayer').textContent = 'Ninguno';
+            
+            // Ocultar modal de resultado
+            document.getElementById('votingResultModal').style.display = 'none';
+        }
+
+        function closeVotingResult() {
+            document.getElementById('votingResultModal').style.display = 'none';
+        }
+
+        // Escuchar cambios en la votación para actualizar contadores
+        function startVotingListener() {
+            firebase.database().ref('massVoting').on('value', (snapshot) => {
+                const votingData = snapshot.val();
+                
+                if (votingData && votingData.active) {
+                    // Actualizar contadores
+                    const voteCount = Object.keys(votingData.votes || {}).length;
+                    document.getElementById('votesReceived').textContent = voteCount;
+                    
+                    // Contar votos para encontrar el más votado
+                    const voteCounts = {};
+                    Object.values(votingData.votes || {}).forEach(vote => {
+                        voteCounts[vote.targetPlayer] = (voteCounts[vote.targetPlayer] || 0) + 1;
+                    });
+                    
+                    let mostVoted = 'Ninguno';
+                    let maxVotes = 0;
+                    Object.keys(voteCounts).forEach(playerId => {
+                        if (voteCounts[playerId] > maxVotes) {
+                            maxVotes = voteCounts[playerId];
+                            const player = allPlayers[playerId];
+                            mostVoted = player ? (player.username || player.name || player.displayName || 'Sin nombre') : 'Sin nombre';
+                        }
+                    });
+                    
+                    document.getElementById('mostVotedPlayer').textContent = mostVoted;
+                }
+            });
+        }
+
+        // Iniciar listener de votación
+        document.addEventListener('DOMContentLoaded', function() {
+            startVotingListener();
+        });
     </script>
 </body>
 </html> 

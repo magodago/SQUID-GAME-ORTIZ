@@ -3981,70 +3981,7 @@
       backdrop-filter: blur(5px);
     }
 
-    /* Wealth Factor Counter */
-    .wealth-factor-counter {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.8rem;
-      margin: 0.5rem 0;
-      padding: 0.6rem 1.2rem;
-      background: rgba(0, 0, 0, 0.6);
-      border: 2px solid #4CAF50;
-      border-radius: 10px;
-      box-shadow: 0 0 20px #4CAF50;
-      backdrop-filter: blur(5px);
-    }
 
-    .wealth-icon {
-      font-size: 1.2rem;
-      color: #4CAF50;
-      text-shadow: 0 0 10px #4CAF50;
-      animation: wealthGlow 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes wealthGlow {
-      0% { transform: scale(1) rotate(0deg); }
-      100% { transform: scale(1.1) rotate(5deg); }
-    }
-
-    .wealth-text {
-      color: #4CAF50;
-      font-size: 1rem;
-      font-weight: bold;
-      text-shadow: 0 0 10px #4CAF50;
-      font-family: 'Orbitron', Arial, sans-serif;
-    }
-
-    .wealth-factor {
-      font-weight: bold;
-      transition: all 0.3s ease;
-    }
-
-    .wealth-factor.wealth-poor {
-      color: #FFD700;
-      text-shadow: 0 0 10px #FFD700;
-    }
-
-    .wealth-factor.wealth-medium-low {
-      color: #FFA500;
-      text-shadow: 0 0 10px #FFA500;
-    }
-
-    .wealth-factor.wealth-medium {
-      color: #FF6B35;
-      text-shadow: 0 0 10px #FF6B35;
-    }
-
-    .wealth-factor.wealth-medium-high {
-      color: #FF4500;
-      text-shadow: 0 0 10px #FF4500;
-    }
-
-    .wealth-factor.wealth-rich {
-      color: #FF0000;
-      text-shadow: 0 0 10px #FF0000;
-    }
 
     /* VIP Trap Modal */
     .vip-trap-modal {
@@ -4928,11 +4865,7 @@
       <span class="coins-text">ORTIZ COINS: <span id="totalCoins">0</span></span>
     </div>
     
-    <!-- Wealth Factor Display -->
-    <div class="wealth-factor-counter" id="wealthFactorCounter">
-      <span class="wealth-icon">💰</span>
-      <span class="wealth-text">ESTADO: <span id="wealthFactor">POBRE (70% ganar)</span></span>
-    </div>
+
     
     <!-- Soldier Name Modal -->
     <div class="soldier-name-modal" id="soldierNameModal">
@@ -6677,41 +6610,6 @@
         } else {
           easterEgg6.style.display = 'none';
         }
-      }
-      
-      // Update wealth factor display
-      updateWealthFactorDisplay();
-
-    }
-
-    function updateWealthFactorDisplay() {
-      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      const wealthFactor = calculateWealthFactor();
-      const wealthDisplay = document.getElementById('wealthFactor');
-      
-      if (wealthDisplay) {
-        let wealthClass = '';
-        let wealthText = '';
-        
-        if (totalCoins >= 50001) {
-          wealthClass = 'wealth-rich';
-          wealthText = 'RICO';
-        } else if (totalCoins >= 20001) {
-          wealthClass = 'wealth-medium-high';
-          wealthText = 'CLASE MEDIA-ALTA';
-        } else if (totalCoins >= 10001) {
-          wealthClass = 'wealth-medium';
-          wealthText = 'CLASE MEDIA';
-        } else if (totalCoins >= 5001) {
-          wealthClass = 'wealth-medium-low';
-          wealthText = 'CLASE MEDIA-BAJA';
-        } else {
-          wealthClass = 'wealth-poor';
-          wealthText = 'POBRE';
-        }
-        
-        wealthDisplay.textContent = `${wealthText} (${(wealthFactor * 100).toFixed(0)}% ganar)`;
-        wealthDisplay.className = `wealth-factor ${wealthClass}`;
       }
       
       // Check for VIP trap at 150,000 coins

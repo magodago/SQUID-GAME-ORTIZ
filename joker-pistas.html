@@ -590,6 +590,11 @@
 
         function createCards() {
             const container = document.getElementById('cardsContainer');
+            if (!container) {
+                console.error('❌ Cards container not found');
+                return;
+            }
+            
             container.innerHTML = '';
             
             for (let i = 0; i < 6; i++) {
@@ -602,10 +607,15 @@
             
             // Resetear estado de selección
             selectedCards = [];
-            document.getElementById('playBtn').disabled = true;
             
-            // Asegurar que el botón de mezclar esté habilitado
-            document.getElementById('shuffleBtn').disabled = false;
+            // Actualizar botones
+            const playBtn = document.getElementById('playBtn');
+            const shuffleBtn = document.getElementById('shuffleBtn');
+            
+            if (playBtn) playBtn.disabled = true;
+            if (shuffleBtn) shuffleBtn.disabled = false;
+            
+            console.log('✅ Cards created successfully');
         }
 
         function selectCard(index, cardElement) {
@@ -644,12 +654,22 @@
 
             isPlaying = true;
             
-            // Safe coin deduction
-            if (window.PlayerDataManager && PlayerDataManager.safeDeductCoins(cost, 'joker-pistas')) {
+            // Deducción directa de monedas (más confiable)
+            try {
                 coins -= cost;
+                localStorage.setItem('totalOrtizCoins', coins.toString());
                 updateCoinsDisplay();
-            } else {
+                
+                // Intentar sincronizar con Firebase si está disponible
+                if (window.PlayerDataManager && typeof PlayerDataManager.safeDeductCoins === 'function') {
+                    PlayerDataManager.safeDeductCoins(cost, 'joker-pistas').catch(error => {
+                        console.log('⚠️ Firebase sync failed, but local deduction successful:', error);
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Error al deducir monedas:', error);
                 alert('❌ Error al deducir monedas. Intenta de nuevo.');
+                isPlaying = false;
                 return;
             }
 
@@ -841,19 +861,25 @@
             const modal = document.getElementById('resultModal');
             const overlay = document.getElementById('modalOverlay');
 
-            modal.style.display = 'none';
-            overlay.style.display = 'none';
+            if (modal) modal.style.display = 'none';
+            if (overlay) overlay.style.display = 'none';
             
             // No regenerar las cartas, mantenerlas reveladas
             // Solo resetear el estado del juego
             isPlaying = false;
             selectedCards = [];
             
+            // Actualizar botones
+            const playBtn = document.getElementById('playBtn');
+            const shuffleBtn = document.getElementById('shuffleBtn');
+            
             // El botón de jugar permanece bloqueado hasta mezclar
-            document.getElementById('playBtn').disabled = true;
+            if (playBtn) playBtn.disabled = true;
             
             // Habilitar el botón de mezclar
-            document.getElementById('shuffleBtn').disabled = false;
+            if (shuffleBtn) shuffleBtn.disabled = false;
+            
+            console.log('✅ Modal closed, shuffle button enabled');
         }
 
         function createParticles() {
@@ -923,11 +949,19 @@
         }
 
         function shuffleCards() {
-            if (isPlaying) return;
+            if (isPlaying) {
+                console.log('🔄 Shuffle blocked: game is playing');
+                return;
+            }
+            
+            console.log('🔄 Starting shuffle...');
             
             // Deshabilitar botón durante la mezcla
-            document.getElementById('shuffleBtn').disabled = true;
-            document.getElementById('playBtn').disabled = true;
+            const shuffleBtn = document.getElementById('shuffleBtn');
+            const playBtn = document.getElementById('playBtn');
+            
+            if (shuffleBtn) shuffleBtn.disabled = true;
+            if (playBtn) playBtn.disabled = true;
             
             // Efecto de mezcla con animación
             const cards = document.querySelectorAll('.card');
@@ -940,15 +974,20 @@
             
             // Después de la animación, regenerar las cartas
             setTimeout(() => {
+                console.log('🔄 Creating new cards...');
                 createCards();
                 
                 // Resetear estado
                 selectedCards = [];
-                document.getElementById('playBtn').disabled = true;
-                document.getElementById('shuffleBtn').disabled = false;
+                isPlaying = false;
+                
+                if (playBtn) playBtn.disabled = true;
+                if (shuffleBtn) shuffleBtn.disabled = false;
                 
                 // Efecto de partículas de mezcla
                 createShuffleEffects();
+                
+                console.log('✅ Shuffle completed');
             }, cards.length * 100 + 500);
         }
 
@@ -1079,7 +1118,19 @@
             initGame();
             
             // Event listener para cerrar modal
-            document.getElementById('closeModalBtn').addEventListener('click', closeResultModal);
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', closeResultModal);
+            }
+            
+            // Event listener adicional para el botón de mezclar
+            const shuffleBtn = document.getElementById('shuffleBtn');
+            if (shuffleBtn) {
+                shuffleBtn.addEventListener('click', function() {
+                    console.log('🔄 Shuffle button clicked');
+                    shuffleCards();
+                });
+            }
             
             // Initial sync
             setTimeout(autoSyncJokerData, 2000);

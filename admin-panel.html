@@ -328,6 +328,11 @@
 
         // Cargar todos los datos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Panel de Admin iniciando...');
+            console.log('Firebase disponible:', typeof firebase !== 'undefined');
+            if (typeof firebase !== 'undefined') {
+                console.log('Firebase database disponible:', typeof firebase.database !== 'undefined');
+            }
             loadAllData();
         });
 
@@ -338,16 +343,26 @@
         }
 
         function loadPlayers() {
+            console.log('🔄 Cargando jugadores desde Firebase...');
             const playersRef = firebase.database().ref('players');
             
             playersRef.once('value')
                 .then((snapshot) => {
                     allPlayers = snapshot.val() || {};
+                    console.log('📊 Datos de jugadores cargados:', allPlayers);
+                    console.log('👥 Número de jugadores:', Object.keys(allPlayers).length);
+                    
+                    // Debug: mostrar estructura de datos
+                    Object.keys(allPlayers).forEach(userId => {
+                        const player = allPlayers[userId];
+                        console.log(`Jugador ${userId}:`, player);
+                    });
+                    
                     displayPlayers();
                     calculateGlobalStats();
                 })
                 .catch((error) => {
-                    console.error('Error cargando jugadores:', error);
+                    console.error('❌ Error cargando jugadores:', error);
                     document.getElementById('playersList').innerHTML = 
                         '<div class="status-error">Error cargando jugadores: ' + error.message + '</div>';
                 });
@@ -392,9 +407,29 @@
                 const player = allPlayers[userId];
                 const lastActivity = player.lastActivity ? new Date(player.lastActivity).toLocaleString() : 'Nunca';
                 
+                // Debug: mostrar información del jugador
+                console.log(`Procesando jugador ${userId}:`, {
+                    username: player.username,
+                    coins: player.coins,
+                    easterEggs: player.easterEggsFound,
+                    lastActivity: player.lastActivity
+                });
+                
+                // Determinar el nombre a mostrar
+                let displayName = 'Sin nombre';
+                if (player.username) {
+                    displayName = player.username;
+                } else if (player.name) {
+                    displayName = player.name;
+                } else if (player.displayName) {
+                    displayName = player.displayName;
+                } else {
+                    displayName = `Usuario_${userId.substring(0, 8)}`;
+                }
+                
                 html += `
                     <tr>
-                        <td>${player.username || 'Sin nombre'}</td>
+                        <td>${displayName}</td>
                         <td>${player.coins || 0} 🪙</td>
                         <td>${player.easterEggsFound || 0} 🥚</td>
                         <td>${lastActivity}</td>

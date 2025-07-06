@@ -6388,6 +6388,16 @@
     });
     
     function activateEasterEgg() {
+      // Check if this easter egg has already been claimed
+      const sistemaActivoClaimed = localStorage.getItem('sistemaActivoEasterEggClaimed');
+      if (sistemaActivoClaimed === 'true') {
+        alert('🥚 Este Easter Egg ya ha sido reclamado. ¡Solo se puede obtener una vez!');
+        return;
+      }
+      
+      // Mark as claimed
+      localStorage.setItem('sistemaActivoEasterEggClaimed', 'true');
+      
       // Add 500 coins to total using safe addition
       if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(500, 'easter-egg-sistema-activo')) {
         console.log('✅ Easter Egg coins added safely: +500');

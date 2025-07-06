@@ -4940,7 +4940,7 @@
           <span class="envelope-text">ZONA VIP</span>
         </div>
       </button>
-      <button class="envelope-btn debug-btn" id="debugVipBtn" style="display: block; background: linear-gradient(45deg, #FF0000, #FF4444);" onclick="alert('DEBUG VIP clicked!'); debugVipAccess();">
+      <button class="envelope-btn debug-btn" id="debugVipBtn" style="display: block; background: linear-gradient(45deg, #FF0000, #FF4444);" onclick="alert('DEBUG VIP clicked!'); console.log('Starting debug...'); debugVipAccess();">
         <div class="envelope-content">
           <span class="envelope-text">DEBUG VIP</span>
         </div>
@@ -10729,7 +10729,8 @@
 
     // Debug function for VIP access
     function debugVipAccess() {
-      console.log('🔍 DEBUG VIP ACCESS');
+      alert('🔍 DEBUG VIP ACCESS - Starting...');
+      
       const vipAccessActive = localStorage.getItem('vipAccessActive');
       const vipAccessExpiry = localStorage.getItem('vipAccessExpiry');
       const currentTime = Date.now();
@@ -10738,30 +10739,40 @@
       console.log('VIP Access Expiry:', vipAccessExpiry);
       console.log('Current Time:', currentTime);
       
+      let debugMessage = '🔍 VIP DEBUG INFO:\n\n';
+      debugMessage += `VIP Access Active: ${vipAccessActive}\n`;
+      debugMessage += `VIP Access Expiry: ${vipAccessExpiry}\n`;
+      debugMessage += `Current Time: ${currentTime}\n\n`;
+      
       if (vipAccessActive && vipAccessExpiry) {
         const timeRemaining = parseInt(vipAccessExpiry) - currentTime;
         const minutesRemaining = Math.floor(timeRemaining / 60000);
         const secondsRemaining = Math.floor((timeRemaining % 60000) / 1000);
         
-        console.log('Time Remaining:', `${minutesRemaining}:${secondsRemaining.toString().padStart(2, '0')}`);
+        debugMessage += `Time Remaining: ${minutesRemaining}:${secondsRemaining.toString().padStart(2, '0')}\n\n`;
         
         if (timeRemaining > 0) {
-          alert(`✅ VIP Access is ACTIVE!\nTime remaining: ${minutesRemaining}:${secondsRemaining.toString().padStart(2, '0')}\n\nForcing button to show...`);
+          debugMessage += '✅ VIP Access is ACTIVE!\n';
+          debugMessage += '🔄 Forcing VIP Zone button to show...\n';
           
           // Force show the VIP Zone button
           const vipZoneBtn = document.getElementById('vipZoneBtn');
           if (vipZoneBtn) {
             vipZoneBtn.style.display = 'flex';
+            debugMessage += '✅ VIP Zone button forced to show!';
             console.log('✅ VIP Zone button forced to show');
           } else {
-            alert('❌ VIP Zone button not found in DOM');
+            debugMessage += '❌ VIP Zone button not found in DOM';
+            console.error('❌ VIP Zone button not found in DOM');
           }
         } else {
-          alert('❌ VIP Access has EXPIRED');
+          debugMessage += '❌ VIP Access has EXPIRED';
         }
       } else {
-        alert('❌ No VIP Access found in localStorage');
+        debugMessage += '❌ No VIP Access found in localStorage';
       }
+      
+      alert(debugMessage);
     }
       
       // Connection status system removed - no test button needed

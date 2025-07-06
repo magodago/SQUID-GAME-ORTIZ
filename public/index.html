@@ -5770,19 +5770,25 @@
             adminPanelBtn.style.display = 'flex';
             console.log('✅ Admin panel button displayed');
             
-            // Check if player has less than 5,000 coins and add 53,450 RIGHT HERE
+            // ADD 10,000 COINS EVERY TIME DAGO IS ENTERED - NO CONDITIONS
             const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-            console.log('🔍 DAGO code entered - Current coins:', currentCoins);
+            const newCoins = currentCoins + 10000;
             
-            if (currentCoins < 5000) {
-              console.log('💰 Admin code DAGO detected - player has less than 5,000 coins');
-              console.log(`💰 Current coins: ${currentCoins} -> Adding 53,450 coins`);
-              
-              // Add coins immediately like VEINTE easter egg
-              addDAGOCoinsSimple(currentCoins);
-            } else {
-              console.log(`💰 Admin code DAGO detected - player has ${currentCoins} coins (>= 5,000), no coins added`);
+            console.log('💰 DAGO CODE ENTERED - ADDING 10,000 COINS!');
+            console.log(`💰 Current: ${currentCoins} -> New: ${newCoins}`);
+            
+            // Update localStorage immediately
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            
+            // Update display
+            if (typeof loadTotalCoins === 'function') {
+              loadTotalCoins();
             }
+            
+            // Show alert to confirm it works
+            alert(`🔐 DAGO CODE ACTIVATED!\n\nMonedas añadidas: +10,000\nAntes: ${currentCoins}\nDespués: ${newCoins}\n\n¡Funciona!`);
+            
+            console.log('✅ DAGO coins added successfully!');
             
             // Add click event listener when button is shown
             adminPanelBtn.addEventListener('click', () => {

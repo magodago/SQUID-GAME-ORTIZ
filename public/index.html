@@ -10762,22 +10762,69 @@
                 startRobberyListener();
                 startCoinsSync(); // Start coins synchronization
                 startAdminCoinsListener(); // Listen for admin coin updates
+                
+                // Add test button for debugging
+                addTestButton();
             }, 5000); // Wait longer for Firebase to load completely
         });
+        
+        // Add test button for debugging admin sync
+        function addTestButton() {
+            const testButton = document.createElement('button');
+            testButton.textContent = '🧪 Test Admin Sync';
+            testButton.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                background: #ff6b6b;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000;
+                font-family: 'Orbitron', Arial, sans-serif;
+            `;
+            
+            testButton.onclick = function() {
+                const currentPlayer = localStorage.getItem('soldierName');
+                const currentCoins = localStorage.getItem('totalOrtizCoins');
+                console.log('🧪 Test Admin Sync:');
+                console.log('- Jugador:', currentPlayer);
+                console.log('- Monedas actuales:', currentCoins);
+                
+                // Test localStorage update
+                const testUpdate = {
+                    userId: currentPlayer,
+                    newCoins: parseInt(currentCoins || '0') + 1000,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('adminCoinsUpdate', JSON.stringify(testUpdate));
+                console.log('🧪 Test update creado:', testUpdate);
+                
+                alert(`Test creado:\nJugador: ${currentPlayer}\nMonedas actuales: ${currentCoins}\nNuevas monedas: ${testUpdate.newCoins}`);
+            };
+            
+            document.body.appendChild(testButton);
+        }
 
         // Function to listen for admin coin updates
         function startAdminCoinsListener() {
             console.log('👂 Iniciando listener para actualizaciones del admin...');
+            
+            const currentPlayer = localStorage.getItem('soldierName');
+            console.log('👤 Jugador actual:', currentPlayer);
             
             // Listen for custom events
             window.addEventListener('adminCoinsUpdate', (event) => {
                 const eventData = event.detail;
                 console.log('📢 Evento de actualización recibido:', eventData);
                 
-                const currentPlayer = localStorage.getItem('soldierName');
                 if (eventData.userId === currentPlayer) {
                     console.log('🎯 Actualización para el jugador actual detectada');
                     updateLocalCoinsFromAdmin(eventData.newCoins);
+                } else {
+                    console.log('⚠️ Actualización para otro jugador:', eventData.userId, 'vs', currentPlayer);
                 }
             });
             
@@ -10787,13 +10834,17 @@
                 if (adminUpdate) {
                     try {
                         const eventData = JSON.parse(adminUpdate);
-                        const currentPlayer = localStorage.getItem('soldierName');
+                        console.log('📢 Actualización del admin detectada en localStorage:', eventData);
                         
-                        // Only process if it's recent (within last 10 seconds) and for current player
+                        // Only process if it's recent (within last 30 seconds) and for current player
                         if (eventData.userId === currentPlayer && 
-                            (Date.now() - eventData.timestamp) < 10000) {
-                            console.log('📢 Actualización del admin detectada en localStorage:', eventData);
+                            (Date.now() - eventData.timestamp) < 30000) {
+                            console.log('🎯 Procesando actualización del admin para jugador actual');
                             updateLocalCoinsFromAdmin(eventData.newCoins);
+                        } else if (eventData.userId !== currentPlayer) {
+                            console.log('⚠️ Actualización para otro jugador:', eventData.userId, 'vs', currentPlayer);
+                        } else {
+                            console.log('⚠️ Actualización muy antigua:', Date.now() - eventData.timestamp, 'ms');
                         }
                         
                         // Clear the update after processing
@@ -10802,26 +10853,74 @@
                         console.error('❌ Error procesando actualización del admin:', error);
                     }
                 }
-            }, 2000); // Check every 2 seconds
+            }, 1000); // Check every 1 second for faster response
             
-            console.log('✅ Admin coins listener iniciado');
+            // Also force a Firebase sync every 5 seconds as backup
+            setInterval(() => {
+                if (window.firebase && window.firebase.database) {
+                    const db = window.firebase.database();
+                    const playerRef = db.ref(`players/${currentPlayer}`);
+                    
+                    playerRef.once('value')
+                        .then((snapshot) => {
+                            const playerData = snapshot.val();
+                            if (playerData && playerData.coins !== undefined) {
+                                const firebaseCoins = playerData.coins;
+                                const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                                
+                                if (firebaseCoins !== localCoins) {
+                                    console.log(`🔄 Backup sync detectó diferencia: ${localCoins} -> ${firebaseCoins}`);
+                                    updateLocalCoinsFromAdmin(firebaseCoins);
+                                }
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('❌ Error en backup sync:', error);
+                        });
+                }
+            }, 5000);
+            
+            console.log('✅ Admin coins listener iniciado con backup sync');
         }
 
         // Function to update local coins from admin update
         function updateLocalCoinsFromAdmin(newCoins) {
             const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
             
+            console.log(`🔄 Intentando actualizar monedas: ${currentCoins} -> ${newCoins}`);
+            
             if (newCoins !== currentCoins) {
-                console.log(`🔄 Actualizando monedas desde admin: ${currentCoins} -> ${newCoins}`);
+                console.log(`✅ Actualizando monedas desde admin: ${currentCoins} -> ${newCoins}`);
                 localStorage.setItem('totalOrtizCoins', newCoins.toString());
                 
                 // Update display
                 if (typeof loadTotalCoins === 'function') {
+                    console.log('📊 Llamando a loadTotalCoins()');
                     loadTotalCoins();
+                } else {
+                    console.log('⚠️ loadTotalCoins no está disponible');
+                    // Manual update as fallback
+                    const coinsDisplay = document.getElementById('totalCoins');
+                    if (coinsDisplay) {
+                        coinsDisplay.textContent = newCoins.toLocaleString();
+                        console.log('📊 Actualización manual del display');
+                    } else {
+                        console.log('❌ Elemento totalCoins no encontrado');
+                    }
                 }
                 
                 // Show notification
                 showAdminUpdateNotification(newCoins);
+                
+                // Dispatch event to notify other parts of the app
+                const event = new CustomEvent('coinsUpdated', {
+                    detail: { totalCoins: newCoins, source: 'admin' }
+                });
+                window.dispatchEvent(event);
+                
+                console.log('✅ Actualización completada exitosamente');
+            } else {
+                console.log('ℹ️ No hay diferencia en las monedas, no se actualiza');
             }
         }
 

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🖥️ ADMIN PANEL - Squid Game Ortiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000000;
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        .terminal-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .terminal-header {
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .terminal-header h1 {
+            font-size: 2rem;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 5px;
+        }
+
+        .terminal-header p {
+            font-size: 0.9rem;
+            color: #00aa00;
+        }
+
+        .back-button {
+            background: #000000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #00ff00;
+            color: #000000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        .terminal-section {
+            border: 1px solid #00ff00;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 0 0 8px #00ff00;
+            border-bottom: 1px solid #00ff00;
+            padding-bottom: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00aa00;
+            padding: 10px;
+            border-radius: 3px;
+        }
+
+        .stat-label {
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            color: #00dd00;
+        }
+
+        .players-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        .players-table th,
+        .players-table td {
+            border: 1px solid #00aa00;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .players-table th {
+            background: rgba(0, 255, 0, 0.2);
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        .players-table tr:nth-child(even) {
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .players-table tr:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .coin-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .coin-input {
+            background: #000000;
+            color: #00ff00;
+            border: 1px solid #00aa00;
+            padding: 5px 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            width: 100px;
+        }
+
+        .coin-button {
+            background: #000000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 5px 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .coin-button:hover {
+            background: #00ff00;
+            color: #000000;
+        }
+
+        .add-button {
+            border-color: #00ff00;
+        }
+
+        .remove-button {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .remove-button:hover {
+            background: #ff0000;
+            color: #000000;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .status-success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .status-error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+
+        .loading {
+            color: #00aa00;
+            font-style: italic;
+        }
+
+        .refresh-button {
+            background: #000000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .refresh-button:hover {
+            background: #00ff00;
+            color: #000000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        .timestamp {
+            color: #00aa00;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .terminal-container {
+                padding: 10px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .players-table {
+                font-size: 0.75rem;
+            }
+            
+            .coin-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <h1>🖥️ SQUID GAME ORTIZ - ADMIN PANEL</h1>
+            <p>Terminal de Administración - Acceso Restringido</p>
+        </div>
+
+        <button class="back-button" onclick="window.location.href='index.html'">← VOLVER AL MENÚ PRINCIPAL</button>
+        <button class="refresh-button" onclick="loadAllData()">🔄 REFRESCAR DATOS</button>
+
+        <div class="terminal-section">
+            <div class="section-title">📊 ESTADÍSTICAS GLOBALES</div>
+            <div class="stats-grid" id="globalStats">
+                <div class="stat-item">
+                    <div class="stat-label">Total Jugadores:</div>
+                    <div class="stat-value" id="totalPlayers">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Monedas:</div>
+                    <div class="stat-value" id="totalCoins">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Promedio Monedas:</div>
+                    <div class="stat-value" id="avgCoins">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Jugador Más Rico:</div>
+                    <div class="stat-value" id="richestPlayer">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Easter Eggs:</div>
+                    <div class="stat-value" id="totalEasterEggs">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Total Robos:</div>
+                    <div class="stat-value" id="totalRobberies">Cargando...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="terminal-section">
+            <div class="section-title">👥 GESTIÓN DE JUGADORES</div>
+            <div id="playersList">
+                <div class="loading">Cargando lista de jugadores...</div>
+            </div>
+        </div>
+
+        <div class="terminal-section">
+            <div class="section-title">🎮 ESTADÍSTICAS POR JUEGO</div>
+            <div class="stats-grid" id="gameStats">
+                <div class="stat-item">
+                    <div class="stat-label">Juego Soldado:</div>
+                    <div class="stat-value" id="soldierStats">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Juego VIP:</div>
+                    <div class="stat-value" id="vipStats">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Juego Joker:</div>
+                    <div class="stat-value" id="jokerStats">Cargando...</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Juego Frontman:</div>
+                    <div class="stat-value" id="frontmanStats">Cargando...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="timestamp" id="lastUpdate">Última actualización: Nunca</div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        let allPlayers = {};
+        let gameStats = {};
+
+        // Cargar todos los datos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllData();
+        });
+
+        function loadAllData() {
+            loadPlayers();
+            loadGameStats();
+            updateTimestamp();
+        }
+
+        function loadPlayers() {
+            const playersRef = firebase.database().ref('players');
+            
+            playersRef.once('value')
+                .then((snapshot) => {
+                    allPlayers = snapshot.val() || {};
+                    displayPlayers();
+                    calculateGlobalStats();
+                })
+                .catch((error) => {
+                    console.error('Error cargando jugadores:', error);
+                    document.getElementById('playersList').innerHTML = 
+                        '<div class="status-error">Error cargando jugadores: ' + error.message + '</div>';
+                });
+        }
+
+        function loadGameStats() {
+            const statsRef = firebase.database().ref('gameStats');
+            
+            statsRef.once('value')
+                .then((snapshot) => {
+                    gameStats = snapshot.val() || {};
+                    displayGameStats();
+                })
+                .catch((error) => {
+                    console.error('Error cargando estadísticas de juegos:', error);
+                });
+        }
+
+        function displayPlayers() {
+            const playersList = document.getElementById('playersList');
+            
+            if (Object.keys(allPlayers).length === 0) {
+                playersList.innerHTML = '<div class="loading">No hay jugadores registrados</div>';
+                return;
+            }
+
+            let html = `
+                <table class="players-table">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Monedas</th>
+                            <th>Easter Eggs</th>
+                            <th>Última Actividad</th>
+                            <th>Gestión Monedas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            Object.keys(allPlayers).forEach(userId => {
+                const player = allPlayers[userId];
+                const lastActivity = player.lastActivity ? new Date(player.lastActivity).toLocaleString() : 'Nunca';
+                
+                html += `
+                    <tr>
+                        <td>${player.username || 'Sin nombre'}</td>
+                        <td>${player.coins || 0} 🪙</td>
+                        <td>${player.easterEggsFound || 0} 🥚</td>
+                        <td>${lastActivity}</td>
+                        <td>
+                            <div class="coin-controls">
+                                <input type="number" class="coin-input" id="coins_${userId}" placeholder="Cantidad" min="0">
+                                <button class="coin-button add-button" onclick="addCoins('${userId}')">+ AÑADIR</button>
+                                <button class="coin-button remove-button" onclick="removeCoins('${userId}')">- QUITAR</button>
+                            </div>
+                            <div id="status_${userId}"></div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            playersList.innerHTML = html;
+        }
+
+        function calculateGlobalStats() {
+            const players = Object.values(allPlayers);
+            
+            if (players.length === 0) {
+                document.getElementById('totalPlayers').textContent = '0';
+                document.getElementById('totalCoins').textContent = '0';
+                document.getElementById('avgCoins').textContent = '0';
+                document.getElementById('richestPlayer').textContent = 'N/A';
+                document.getElementById('totalEasterEggs').textContent = '0';
+                document.getElementById('totalRobberies').textContent = '0';
+                return;
+            }
+
+            const totalPlayers = players.length;
+            const totalCoins = players.reduce((sum, p) => sum + (p.coins || 0), 0);
+            const avgCoins = Math.round(totalCoins / totalPlayers);
+            const richestPlayer = players.reduce((max, p) => (p.coins || 0) > (max.coins || 0) ? p : max);
+            const totalEasterEggs = players.reduce((sum, p) => sum + (p.easterEggsFound || 0), 0);
+            const totalRobberies = players.reduce((sum, p) => sum + (p.robberiesWon || 0) + (p.robberiesLost || 0), 0);
+
+            document.getElementById('totalPlayers').textContent = totalPlayers;
+            document.getElementById('totalCoins').textContent = totalCoins.toLocaleString();
+            document.getElementById('avgCoins').textContent = avgCoins.toLocaleString();
+            document.getElementById('richestPlayer').textContent = `${richestPlayer.username || 'Sin nombre'} (${richestPlayer.coins || 0})`;
+            document.getElementById('totalEasterEggs').textContent = totalEasterEggs;
+            document.getElementById('totalRobberies').textContent = totalRobberies;
+        }
+
+        function displayGameStats() {
+            const soldierWins = Object.values(allPlayers).reduce((sum, p) => sum + (p.soldierWins || 0), 0);
+            const vipWins = Object.values(allPlayers).reduce((sum, p) => sum + (p.vipWins || 0), 0);
+            const jokerWins = Object.values(allPlayers).reduce((sum, p) => sum + (p.jokerWins || 0), 0);
+            const frontmanWins = Object.values(allPlayers).reduce((sum, p) => sum + (p.frontmanWins || 0), 0);
+
+            document.getElementById('soldierStats').textContent = `${soldierWins} victorias`;
+            document.getElementById('vipStats').textContent = `${vipWins} victorias`;
+            document.getElementById('jokerStats').textContent = `${jokerWins} victorias`;
+            document.getElementById('frontmanStats').textContent = `${frontmanWins} victorias`;
+        }
+
+        function addCoins(userId) {
+            const input = document.getElementById(`coins_${userId}`);
+            const amount = parseInt(input.value);
+            const statusDiv = document.getElementById(`status_${userId}`);
+
+            if (!amount || amount <= 0) {
+                statusDiv.innerHTML = '<div class="status-error">Ingresa una cantidad válida</div>';
+                return;
+            }
+
+            const playerRef = firebase.database().ref(`players/${userId}`);
+            const currentCoins = allPlayers[userId].coins || 0;
+            const newCoins = currentCoins + amount;
+
+            playerRef.update({
+                coins: newCoins,
+                lastActivity: Date.now()
+            }).then(() => {
+                allPlayers[userId].coins = newCoins;
+                statusDiv.innerHTML = `<div class="status-success">+${amount} monedas añadidas. Total: ${newCoins}</div>`;
+                calculateGlobalStats();
+                displayPlayers();
+                input.value = '';
+                
+                setTimeout(() => {
+                    statusDiv.innerHTML = '';
+                }, 3000);
+            }).catch((error) => {
+                statusDiv.innerHTML = `<div class="status-error">Error: ${error.message}</div>`;
+            });
+        }
+
+        function removeCoins(userId) {
+            const input = document.getElementById(`coins_${userId}`);
+            const amount = parseInt(input.value);
+            const statusDiv = document.getElementById(`status_${userId}`);
+
+            if (!amount || amount <= 0) {
+                statusDiv.innerHTML = '<div class="status-error">Ingresa una cantidad válida</div>';
+                return;
+            }
+
+            const playerRef = firebase.database().ref(`players/${userId}`);
+            const currentCoins = allPlayers[userId].coins || 0;
+            const newCoins = Math.max(0, currentCoins - amount);
+
+            playerRef.update({
+                coins: newCoins,
+                lastActivity: Date.now()
+            }).then(() => {
+                allPlayers[userId].coins = newCoins;
+                statusDiv.innerHTML = `<div class="status-success">-${amount} monedas removidas. Total: ${newCoins}</div>`;
+                calculateGlobalStats();
+                displayPlayers();
+                input.value = '';
+                
+                setTimeout(() => {
+                    statusDiv.innerHTML = '';
+                }, 3000);
+            }).catch((error) => {
+                statusDiv.innerHTML = `<div class="status-error">Error: ${error.message}</div>`;
+            });
+        }
+
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = 
+                `Última actualización: ${now.toLocaleString()}`;
+        }
+
+        // Actualizar timestamp cada minuto
+        setInterval(updateTimestamp, 60000);
+    </script>
+</body>
+</html> 

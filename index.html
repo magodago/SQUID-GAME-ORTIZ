@@ -9168,34 +9168,19 @@
       // Initialize automatic sync every hour
       initializeAutomaticSync();
       
+      // Check Blood Screen trigger (30000+ coins and not triggered)
+      const bloodScreenTriggered = localStorage.getItem('bloodScreenTriggered') === 'true';
+      if (totalCoins >= 30000 && !bloodScreenTriggered) {
+        console.log('🩸 Blood Screen trigger activated - player has', totalCoins, 'coins');
+        activateBloodScreen();
+      }
+      
       // DEBUG: Check ALL IN button status
       setTimeout(() => {
         const allInContainer = document.getElementById('allInContainer');
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
         const allInUsed = localStorage.getItem('allInUsed') === 'true';
         console.log('🎰 ALL IN Status - Coins:', totalCoins, 'Used:', allInUsed, 'Visible:', allInContainer.classList.contains('visible'));
-        
-        // Add debug button to force show ALL IN
-        const debugBtn = document.createElement('button');
-        debugBtn.textContent = '🔍 Debug ALL IN';
-        debugBtn.style.cssText = 'position: fixed; top: 50px; right: 10px; z-index: 10000; background: orange; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;';
-        debugBtn.onclick = () => {
-          console.log('🔍 DEBUG - Forcing ALL IN button to be visible');
-          allInContainer.classList.add('visible');
-          allInContainer.style.display = 'block';
-          console.log('🔍 DEBUG - ALL IN button forced visible');
-        };
-        document.body.appendChild(debugBtn);
-        
-        // Add reset button
-        const resetBtn = document.createElement('button');
-        resetBtn.textContent = '🔄 Reset ALL IN';
-        resetBtn.style.cssText = 'position: fixed; top: 90px; right: 10px; z-index: 10000; background: red; color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;';
-        resetBtn.onclick = () => {
-          localStorage.removeItem('allInUsed');
-          location.reload();
-        };
-        document.body.appendChild(resetBtn);
       }, 2000);
     });
 
@@ -9435,61 +9420,7 @@
       }
     }
 
-    // UNIFIED BUTTON VISIBILITY CHECKER
-    function checkAllButtonVisibility() {
-      console.log('🔍 Checking all button visibility...');
-      
-      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      
-      // Check ALL IN button (15000+ coins and not used)
-      const allInContainer = document.getElementById('allInContainer');
-      if (allInContainer) {
-        const allInUsed = localStorage.getItem('allInUsed') === 'true';
-        if (totalCoins >= 15000 && !allInUsed) {
-          allInContainer.classList.add('visible');
-          allInContainer.style.display = 'block';
-          console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins');
-        } else {
-          allInContainer.classList.remove('visible');
-          allInContainer.style.display = 'none';
-        }
-      }
-      
-      // Check Front Man button (20000+ coins and not used)
-      const frontmanContainer = document.getElementById('frontmanCallContainer');
-      if (frontmanContainer) {
-        const frontManUsed = localStorage.getItem('frontManUsed') === 'true';
-        if (totalCoins >= 20000 && !frontManUsed) {
-          frontmanContainer.classList.add('visible');
-          frontmanContainer.style.display = 'block';
-          console.log('📞 Front Man button visible - player has', totalCoins, 'coins');
-        } else {
-          frontmanContainer.classList.remove('visible');
-          frontmanContainer.style.display = 'none';
-        }
-      }
-      
-      // Check Player Fight button (25000+ coins and not used)
-      const playerFightContainer = document.getElementById('playerFightContainer');
-      if (playerFightContainer) {
-        const playerFightUsed = localStorage.getItem('playerFightUsed') === 'true';
-        if (totalCoins >= 25000 && !playerFightUsed) {
-          playerFightContainer.classList.add('visible');
-          playerFightContainer.style.display = 'block';
-          console.log('⚔️ Player Fight button visible - player has', totalCoins, 'coins');
-        } else {
-          playerFightContainer.classList.remove('visible');
-          playerFightContainer.style.display = 'none';
-        }
-      }
-      
-      // Check Blood Screen trigger (30000+ coins and not triggered)
-      const bloodScreenTriggered = localStorage.getItem('bloodScreenTriggered') === 'true';
-      if (totalCoins >= 30000 && !bloodScreenTriggered) {
-        console.log('🩸 Blood Screen trigger activated - player has', totalCoins, 'coins');
-        activateBloodScreen();
-      }
-    }
+
     
     // BLOOD SCREEN FUNCTIONALITY
     function activateBloodScreen() {

@@ -7453,30 +7453,30 @@
       // Create simple coin effect (like VEINTE)
       createPlusDAGOEffect();
       
-      // Sync with Firebase
-      const playerName = localStorage.getItem('soldierName');
-      if (playerName && window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
-        try {
-          PlayerDataManager.safeAddCoins(coinsToAdd, 'admin-code-dago');
-          console.log('✅ Firebase sync successful for DAGO admin code coins');
-        } catch (error) {
-          console.error('❌ Error syncing DAGO coins to Firebase:', error);
-          // Manual sync as fallback
-          if (typeof PlayerDataManager.savePlayerData === 'function') {
-            PlayerDataManager.savePlayerData(playerName, newCoins, {
-              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-              lastSync: new Date().toISOString(),
-              autoSync: true,
-              gameType: 'admin-code-dago',
-              coinChange: coinsToAdd
-            }).catch(error => {
-              console.error('❌ Manual Firebase sync failed for DAGO:', error);
-            });
-          }
+              // Sync with Firebase manually to avoid conflicts
+        const playerName = localStorage.getItem('soldierName');
+        if (playerName && window.firebase && window.firebase.database) {
+            try {
+                const db = window.firebase.database();
+                const playerRef = db.ref(`players/${playerName}`);
+                
+                const updateData = {
+                    coins: newCoins,
+                    totalCoins: newCoins,
+                    totalOrtizCoins: newCoins,
+                    lastActivity: Date.now(),
+                    lastSync: Date.now()
+                };
+                
+                playerRef.update(updateData).then(() => {
+                    console.log('✅ Firebase sync successful for DAGO admin code coins');
+                }).catch(error => {
+                    console.error('❌ Error syncing DAGO coins to Firebase:', error);
+                });
+            } catch (error) {
+                console.error('❌ Error in Firebase sync for DAGO:', error);
+            }
         }
-      }
       
       console.log(`✅ DAGO admin code coins added: ${currentCoins} -> ${newCoins}`);
     }

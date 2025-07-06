@@ -641,7 +641,17 @@
         function loadPlayerInfo() {
             currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
             
-            // Always sync with Firebase first
+            // Use localStorage as primary source to avoid overwriting recent changes
+            const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            currentCoins = localCoins;
+            
+            // Update display immediately with local data
+            document.getElementById('currentPlayerName').textContent = currentPlayer;
+            document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
+            
+            console.log(`✅ Player info loaded from localStorage: ${currentPlayer} - ${currentCoins} coins`);
+            
+            // Only sync with Firebase if there's a significant difference (more than 1000 coins)
             if (window.firebase && window.firebase.database) {
                 const db = window.firebase.database();
                 const playerRef = db.ref(`players/${currentPlayer}`);
@@ -649,18 +659,15 @@
                 playerRef.once('value')
                     .then((snapshot) => {
                         const playerData = snapshot.val() || {};
-                        
-                        // Use Firebase data as source of truth
                         const firebaseCoins = playerData.coins || 0;
-                        const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
                         
-                        // If Firebase has different coins, update local storage
-                        if (firebaseCoins !== localCoins) {
+                        // Only sync if difference is significant (more than 1000 coins)
+                        if (Math.abs(firebaseCoins - localCoins) > 1000) {
                             localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
+                            currentCoins = firebaseCoins;
+                            document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
                             console.log(`🔄 Synced coins from Firebase: ${localCoins} -> ${firebaseCoins}`);
                         }
-                        
-                        currentCoins = firebaseCoins;
                         
                         // Also sync other data if available
                         if (playerData.gamesPlayed !== undefined) {
@@ -673,24 +680,11 @@
                             localStorage.setItem('cluesFound', playerData.cluesFound.toString());
                         }
                         
-                        // Update display
-                        document.getElementById('currentPlayerName').textContent = currentPlayer;
-                        document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
-                        
                         console.log(`✅ Player info synced from Firebase: ${currentPlayer} - ${currentCoins} coins`);
                     })
                     .catch((error) => {
                         console.error('❌ Error loading player info from Firebase:', error);
-                        // Fallback to localStorage
-                        currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                        document.getElementById('currentPlayerName').textContent = currentPlayer;
-                        document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
                     });
-            } else {
-                // Fallback to localStorage if Firebase not available
-                currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                document.getElementById('currentPlayerName').textContent = currentPlayer;
-                document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
             }
         }
 
@@ -1222,7 +1216,8 @@
             
             // Update local display and reload players list after Firebase update
             setTimeout(() => {
-                loadPlayerInfo();
+                // DON'T call loadPlayerInfo() here as it overwrites local changes
+                // Just reload the players list to show updated coins
                 loadPlayers(); // Reload the players list to show updated coins
             }, 1500);
             

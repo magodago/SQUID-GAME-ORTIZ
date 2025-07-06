@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦹‍♂️ SISTEMA DE ROBO - Squid Game Ortiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #2d0a00 0%, #ff7f50 50%, #2d0a00 100%);
+            color: #ffae42;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ffae42;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px #ffae42;
+            margin-bottom: 10px;
+            color: #ff7f50;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #ffae42;
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 127, 80, 0.1);
+            border: 1px solid #ffae42;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .player-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffae42;
+        }
+
+        .player-coins {
+            font-size: 1.3rem;
+            color: #ffd700;
+        }
+
+        .back-button {
+            background: #2d0a00;
+            color: #ffae42;
+            border: 2px solid #ffae42;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: #ffae42;
+            color: #2d0a00;
+            box-shadow: 0 0 20px #ffae42;
+        }
+
+        .battle-section {
+            background: rgba(255, 127, 80, 0.08);
+            border: 2px solid #ffae42;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .battle-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ffae42;
+        }
+
+        .tab-button {
+            background: transparent;
+            color: #ffae42;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            border-bottom-color: #ffae42;
+            background: rgba(255, 127, 80, 0.1);
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 127, 80, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .players-list {
+            max-height: 280px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .player-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            background: rgba(255, 127, 80, 0.1);
+            border: 2px solid #ffae42;
+            border-radius: 8px;
+            transition: all 0.3s;
+            min-height: 90px;
+            justify-content: space-between;
+        }
+
+        .player-item:hover {
+            background: rgba(255, 127, 80, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 174, 66, 0.4);
+        }
+
+        .player-details {
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        .player-name-display {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #000000;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .player-coins-display {
+            font-size: 0.8rem;
+            color: #000000;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .player-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .rob-button {
+            background: #ff7f50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.75rem;
+            width: 100%;
+        }
+
+        .rob-button:hover {
+            background: #ffae42;
+            color: #2d0a00;
+            transform: scale(1.05);
+        }
+
+        .rob-button:disabled {
+            background: #666666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .bet-input {
+            background: #ffffff;
+            color: #000000;
+            border: 2px solid #ffae42;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .bet-input:focus {
+            outline: none;
+            box-shadow: 0 0 15px #ffae42;
+            border-color: #ff7f50;
+        }
+
+        .bet-input::placeholder {
+            color: #666666;
+        }
+
+        .challenges-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .challenge-item {
+            background: rgba(255, 127, 80, 0.1);
+            border: 1px solid #ff7f50;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .challenge-info {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffae42;
+        }
+
+        .challenge-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .accept-button {
+            background: #ffae42;
+            color: #2d0a00;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reject-button {
+            background: #ff7f50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: rgba(255, 127, 80, 0.05);
+            border: 1px solid #ffae42;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .history-result {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffae42;
+        }
+
+        .history-details {
+            font-size: 0.9rem;
+            color: #ffae42;
+        }
+
+        .battle-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 127, 80, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .battle-modal.active {
+            display: flex;
+        }
+
+        .battle-modal-content {
+            background: #2d0a00;
+            border: 3px solid #ffae42;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 400px;
+            width: 95%;
+            text-align: center;
+            color: #000000;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .battle-modal-content h2 {
+            color: #000000;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .battle-game-area {
+            margin: 15px 0;
+            padding: 15px;
+            border: 2px solid #ffae42;
+            border-radius: 10px;
+            background: rgba(255, 127, 80, 0.05);
+            color: #000000;
+        }
+
+        .battle-status {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000000;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: #ffae42;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff7f50, #ffd700, #ffae42);
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2d0a00;
+            font-weight: bold;
+            transition: width 0.2s ease;
+        }
+
+        .battle-timer {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff7f50;
+            margin: 10px 0;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .battle-result {
+            display: none;
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ffae42;
+            border-radius: 10px;
+            background: rgba(255, 127, 80, 0.1);
+        }
+
+        .winner-announcement {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #000000;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .coins-won {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: #000000;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .battle-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .battle-btn {
+            background: #2d0a00;
+            color: #ffae42;
+            border: 2px solid #ffae42;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .battle-btn:hover {
+            background: #ffae42;
+            color: #2d0a00;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+            color: #ffae42;
+        }
+
+
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .player-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .battle-tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                border-bottom: none;
+                border-right: 3px solid transparent;
+            }
+
+            .tab-button.active {
+                border-right-color: #ffae42;
+                border-bottom-color: transparent;
+            }
+
+            .challenge-actions {
+                flex-direction: column;
+            }
+
+            .battle-modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦹‍♂️ SISTEMA DE ROBO</h1>
+            <p>Desafía a otros jugadores y roba sus monedas</p>
+        </div>
+
+        <div class="player-info">
+            <div class="player-name" id="currentPlayerName">Jugador</div>
+            <div class="player-coins" id="currentPlayerCoins">0 monedas</div>
+            <button class="back-button" onclick="window.location.href='index.html'">← VOLVER</button>
+        </div>
+
+        <div class="battle-section">
+            <div class="battle-tabs">
+                <button class="tab-button active" onclick="showTab('challenge')">🦹‍♂️ ROBAR</button>
+                <button class="tab-button" onclick="showTab('challenges')">📨 DESAFÍOS</button>
+                <button class="tab-button" onclick="showTab('history')">📋 HISTORIAL</button>
+            </div>
+
+            <!-- Tab: Desafiar -->
+            <div id="challenge" class="tab-content active">
+                <h3>Selecciona un jugador para robar:</h3>
+                <div class="players-list" id="playersList">
+                    <div class="loading">Cargando jugadores...</div>
+                </div>
+            </div>
+
+            <!-- Tab: Desafíos -->
+            <div id="challenges" class="tab-content">
+                <h3>Desafíos pendientes:</h3>
+                <div class="challenges-list" id="challengesList">
+                    <div class="loading">Cargando desafíos...</div>
+                </div>
+            </div>
+
+            <!-- Tab: Historial -->
+            <div id="history" class="tab-content">
+                <h3>Historial de batallas:</h3>
+                <div class="history-list" id="historyList">
+                    <div class="loading">Cargando historial...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Battle Game Modal -->
+    <div class="battle-modal" id="battleModal">
+        <div class="battle-modal-content">
+            <h2>🦹‍♂️ ROBO EN CURSO</h2>
+            
+            <div class="battle-game-area" id="battleGameArea">
+                <div class="battle-status" id="battleStatus">🔄 SIMULANDO BATALLA...</div>
+                <div style="display: flex; justify-content: space-between; margin: 15px 0; font-weight: bold; color: #000000;">
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.1rem; margin-bottom: 5px;">🦹‍♂️ ${player1}</div>
+                        <div style="font-size: 0.9rem; color: #ff7f50;">ATACANDO</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.1rem; margin-bottom: 5px;">🛡️ ${player2}</div>
+                        <div style="font-size: 0.9rem; color: #ffae42;">DEFENDIENDO</div>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 50%;">50%</div>
+                </div>
+            </div>
+
+            <div class="battle-timer" id="battleTimer">10</div>
+
+            <div class="battle-result" id="battleResult">
+                <div class="winner-announcement" id="winnerAnnouncement"></div>
+                <div class="coins-won" id="coinsWon"></div>
+                <div class="battle-buttons">
+                    <button class="battle-btn" id="battleResultBtn">NUEVO ROBO</button>
+                    <button class="battle-btn" id="battleBackBtn">VOLVER</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // Global variables
+        let currentPlayer = '';
+        let currentCoins = 0;
+        let players = [];
+        let challenges = [];
+        let battleHistory = [];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPlayerInfo();
+            loadPlayers();
+            loadChallenges();
+            loadHistory();
+            startAutoSync();
+            
+            // Clean up undefined players on page load
+            setTimeout(() => {
+                cleanupUndefinedPlayers();
+            }, 2000);
+        });
+
+        // Auto-sync player data with Firebase every 30 seconds
+        function startAutoSync() {
+            setInterval(() => {
+                if (window.firebase && window.firebase.database) {
+                    syncPlayerDataToFirebase();
+                    loadPlayerInfo();
+                    loadPlayers(); // Refresh player list
+                }
+            }, 30000); // Sync every 30 seconds
+        }
+
+        // Sync current player data to Firebase
+        function syncPlayerDataToFirebase() {
+            const playerName = localStorage.getItem('soldierName');
+            if (!playerName || !window.firebase || !window.firebase.database) {
+                return;
+            }
+
+            const db = window.firebase.database();
+            const playerRef = db.ref(`players/${playerName}`);
+            
+            // Get current data from localStorage
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
+            const totalWins = parseInt(localStorage.getItem('totalWins') || '0');
+            const cluesFound = parseInt(localStorage.getItem('cluesFound') || '0');
+            
+            const playerData = {
+                name: playerName,
+                coins: currentCoins,
+                gamesPlayed: gamesPlayed,
+                totalWins: totalWins,
+                cluesFound: cluesFound,
+                lastUpdated: Date.now(),
+                deviceInfo: {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    timestamp: new Date().toISOString()
+                }
+            };
+            
+            playerRef.update(playerData)
+                .then(() => {
+                    console.log(`✅ Player data synced to Firebase: ${playerName}`);
+                })
+                .catch((error) => {
+                    console.error('❌ Error syncing to Firebase:', error);
+                });
+        }
+
+        // Enhanced loadPlayerInfo with better Firebase sync and immediate synchronization
+        function loadPlayerInfo() {
+            currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
+            
+            // Always sync with Firebase first
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playerRef = db.ref(`players/${currentPlayer}`);
+                
+                playerRef.once('value')
+                    .then((snapshot) => {
+                        const playerData = snapshot.val() || {};
+                        
+                        // Use Firebase data as source of truth
+                        const firebaseCoins = playerData.coins || 0;
+                        const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                        
+                        // If Firebase has different coins, update local storage
+                        if (firebaseCoins !== localCoins) {
+                            localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
+                            console.log(`🔄 Synced coins from Firebase: ${localCoins} -> ${firebaseCoins}`);
+                        }
+                        
+                        currentCoins = firebaseCoins;
+                        
+                        // Also sync other data if available
+                        if (playerData.gamesPlayed !== undefined) {
+                            localStorage.setItem('gamesPlayed', playerData.gamesPlayed.toString());
+                        }
+                        if (playerData.totalWins !== undefined) {
+                            localStorage.setItem('totalWins', playerData.totalWins.toString());
+                        }
+                        if (playerData.cluesFound !== undefined) {
+                            localStorage.setItem('cluesFound', playerData.cluesFound.toString());
+                        }
+                        
+                        // Update display
+                        document.getElementById('currentPlayerName').textContent = currentPlayer;
+                        document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
+                        
+                        console.log(`✅ Player info synced from Firebase: ${currentPlayer} - ${currentCoins} coins`);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error loading player info from Firebase:', error);
+                        // Fallback to localStorage
+                        currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                        document.getElementById('currentPlayerName').textContent = currentPlayer;
+                        document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
+                    });
+            } else {
+                // Fallback to localStorage if Firebase not available
+                currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                document.getElementById('currentPlayerName').textContent = currentPlayer;
+                document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
+            }
+        }
+
+        // Function to immediately sync any coin change to Firebase
+        function syncCoinsToFirebase(newCoins) {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playerRef = db.ref(`players/${currentPlayer}`);
+                
+                playerRef.update({
+                    coins: newCoins,
+                    lastUpdated: Date.now()
+                }).then(() => {
+                    console.log(`✅ Coins immediately synced to Firebase: ${currentPlayer} - ${newCoins} coins`);
+                }).catch((error) => {
+                    console.error('❌ Error syncing coins to Firebase:', error);
+                });
+            }
+        }
+
+
+
+        // Show tab content
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Refresh data based on tab
+            switch(tabName) {
+                case 'challenge':
+                    loadPlayers();
+                    break;
+                case 'challenges':
+                    loadChallenges();
+                    break;
+                case 'history':
+                    loadHistory();
+                    break;
+            }
+        }
+
+        // Load players from Firebase
+        function loadPlayers() {
+            const playersList = document.getElementById('playersList');
+            playersList.innerHTML = '<div class="loading">Cargando jugadores...</div>';
+
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playersRef = db.ref('players');
+                
+                playersRef.once('value')
+                    .then((snapshot) => {
+                        players = [];
+                        let html = '';
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const player = childSnapshot.val();
+                            
+                            // Validate player data - only show players with valid names
+                            if (player && player.name && player.name !== 'undefined' && player.name !== currentPlayer) {
+                                players.push(player);
+                                const maxRobAmount = Math.min(player.coins || 0, currentCoins);
+                                html += `
+                                    <div class="player-item">
+                                        <div class="player-details">
+                                            <div class="player-name-display">${player.name}</div>
+                                            <div class="player-coins-display">${player.coins ? player.coins.toLocaleString() : 0} monedas</div>
+                                        </div>
+                                        <div class="player-controls">
+                                            <input type="number" class="bet-input" placeholder="Cantidad a robar" min="1" max="${maxRobAmount}">
+                                            <button class="rob-button" onclick="challengePlayer('${player.name}', this.previousElementSibling.value)">
+                                                🦹‍♂️ ROBAR
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        
+                        if (html === '') {
+                            html = '<div class="loading">No hay otros jugadores disponibles</div>';
+                        }
+                        
+                        playersList.innerHTML = html;
+                        console.log(`✅ Loaded ${players.length} valid players from Firebase`);
+                    })
+                    .catch((error) => {
+                        console.error('Error loading players:', error);
+                        playersList.innerHTML = '<div class="loading">Error cargando jugadores</div>';
+                    });
+            } else {
+                playersList.innerHTML = '<div class="loading">Firebase no disponible</div>';
+            }
+        }
+
+        // Rob a player (automatic, no notifications)
+        function challengePlayer(targetPlayer, betAmount) {
+            betAmount = parseInt(betAmount);
+            
+            if (!betAmount || betAmount <= 0) {
+                alert('Por favor ingresa una cantidad válida para robar');
+                return;
+            }
+            
+            // Check if current player has enough coins
+            if (betAmount > currentCoins) {
+                alert(`No tienes suficientes monedas para este robo. Tienes: ${currentCoins.toLocaleString()} monedas`);
+                return;
+            }
+            
+            // Find target player data to check their coins
+            const targetPlayerData = players.find(p => p.name === targetPlayer);
+            if (!targetPlayerData) {
+                alert('Jugador no encontrado');
+                return;
+            }
+            
+            // Check if target player has enough coins
+            if (betAmount > targetPlayerData.coins) {
+                alert(`No puedes robar más monedas de las que tiene ${targetPlayer}. Tiene: ${targetPlayerData.coins.toLocaleString()} monedas`);
+                return;
+            }
+            
+            // Deduct bet amount from attacker immediately
+            currentCoins -= betAmount;
+            localStorage.setItem('totalOrtizCoins', currentCoins.toString());
+            
+            // Update display immediately
+            document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
+            
+            // Update Firebase immediately
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playerRef = db.ref(`players/${currentPlayer}`);
+                playerRef.update({
+                    coins: currentCoins,
+                    lastUpdated: Date.now()
+                }).then(() => {
+                    console.log(`💰 Bet deducted from ${currentPlayer}: ${betAmount} coins`);
+                }).catch((error) => {
+                    console.error('❌ Error deducting bet:', error);
+                });
+            }
+            
+            // Start robbery immediately
+            startRobbery(currentPlayer, targetPlayer, betAmount);
+        }
+
+        // Load challenges
+        function loadChallenges() {
+            const challengesList = document.getElementById('challengesList');
+            challengesList.innerHTML = '<div class="loading">Cargando desafíos...</div>';
+
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const challengesRef = db.ref('challenges');
+                
+                challengesRef.orderByChild('status').equalTo('pending').once('value')
+                    .then((snapshot) => {
+                        challenges = [];
+                        let html = '';
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const challenge = childSnapshot.val();
+                            if (challenge.target === currentPlayer) {
+                                challenges.push({...challenge, id: childSnapshot.key});
+                                html += `
+                                    <div class="challenge-item">
+                                        <div class="challenge-header">
+                                            <div class="challenge-info">
+                                                ${challenge.challenger} te desafía por ${challenge.betAmount} monedas
+                                            </div>
+                                            <div class="challenge-actions">
+                                                <button class="accept-button" onclick="acceptChallenge('${childSnapshot.key}')">
+                                                    ✅ ACEPTAR
+                                                </button>
+                                                <button class="reject-button" onclick="rejectChallenge('${childSnapshot.key}')">
+                                                    ❌ RECHAZAR
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        
+                        if (html === '') {
+                            html = '<div class="loading">No hay desafíos pendientes</div>';
+                        }
+                        
+                        challengesList.innerHTML = html;
+                    })
+                    .catch((error) => {
+                        console.error('Error loading challenges:', error);
+                        challengesList.innerHTML = '<div class="loading">Error cargando desafíos</div>';
+                    });
+            } else {
+                challengesList.innerHTML = '<div class="loading">Firebase no disponible</div>';
+            }
+        }
+
+        // Accept challenge
+        function acceptChallenge(challengeId) {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const challengeRef = db.ref(`challenges/${challengeId}`);
+                
+                challengeRef.once('value')
+                    .then((snapshot) => {
+                        const challenge = snapshot.val();
+                        if (challenge && challenge.status === 'pending') {
+                            // Update challenge status
+                            challengeRef.update({
+                                status: 'accepted',
+                                acceptedAt: Date.now()
+                            }).then(() => {
+                                // Start battle
+                                startBattle(challenge.challenger, challenge.target, challenge.betAmount);
+                            });
+                        }
+                    });
+            }
+        }
+
+        // Reject challenge
+        function rejectChallenge(challengeId) {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const challengeRef = db.ref(`challenges/${challengeId}`);
+                
+                challengeRef.update({
+                    status: 'rejected',
+                    rejectedAt: Date.now()
+                }).then(() => {
+                    loadChallenges();
+                });
+            }
+        }
+
+        // Load battle history
+        function loadHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '<div class="loading">Cargando historial...</div>';
+
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const historyRef = db.ref('battleHistory');
+                
+                historyRef.orderByChild('timestamp').limitToLast(20).once('value')
+                    .then((snapshot) => {
+                        battleHistory = [];
+                        let html = '';
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const battle = childSnapshot.val();
+                            if (battle.player1 === currentPlayer || battle.player2 === currentPlayer) {
+                                battleHistory.push(battle);
+                                
+                                const isWinner = battle.winner === currentPlayer;
+                                const opponent = battle.player1 === currentPlayer ? battle.player2 : battle.player1;
+                                
+                                html += `
+                                    <div class="history-item">
+                                        <div class="history-result ${isWinner ? 'winner' : 'loser'}">
+                                            ${isWinner ? '🏆 VICTORIA' : '💀 DERROTA'} vs ${opponent}
+                                        </div>
+                                        <div class="history-details">
+                                            Apuesta: ${battle.betAmount} monedas | ${new Date(battle.timestamp).toLocaleString()}
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        
+                        if (html === '') {
+                            html = '<div class="loading">No hay historial de batallas</div>';
+                        }
+                        
+                        historyList.innerHTML = html;
+                    })
+                    .catch((error) => {
+                        console.error('Error loading history:', error);
+                        historyList.innerHTML = '<div class="loading">Error cargando historial</div>';
+                    });
+            } else {
+                historyList.innerHTML = '<div class="loading">Firebase no disponible</div>';
+            }
+        }
+
+        // Start robbery
+        function startRobbery(player1, player2, betAmount) {
+            const battleModal = document.getElementById('battleModal');
+            const battleGameArea = document.getElementById('battleGameArea');
+            const battleStatus = document.getElementById('battleStatus');
+            const progressBar = document.getElementById('progressBar');
+            const battleTimer = document.getElementById('battleTimer');
+            
+            // Reset game area
+            battleGameArea.innerHTML = `
+                <div class="battle-status" id="battleStatus">🦹‍♂️ INICIANDO ROBO...</div>
+                <div style="display: flex; justify-content: space-between; margin: 15px 0; font-weight: bold; color: #000000;">
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.1rem; margin-bottom: 5px;">🦹‍♂️ ${player1}</div>
+                        <div style="font-size: 0.9rem; color: #ff7f50;">ATACANDO</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.1rem; margin-bottom: 5px;">🛡️ ${player2}</div>
+                        <div style="font-size: 0.9rem; color: #ffae42;">DEFENDIENDO</div>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 50%;">50%</div>
+                </div>
+            `;
+            
+            // Hide result section
+            document.getElementById('battleResult').style.display = 'none';
+            
+            // Show modal
+            battleModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Start countdown
+            let countdown = 3;
+            battleTimer.textContent = countdown;
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                battleTimer.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    startRobberyGameplay(player1, player2, betAmount);
+                }
+            }, 1000);
+        }
+
+        // Robbery gameplay
+        function startRobberyGameplay(player1, player2, betAmount) {
+            const battleStatus = document.getElementById('battleStatus');
+            const progressBar = document.getElementById('progressBar');
+            const battleTimer = document.getElementById('battleTimer');
+            
+            let gameTime = 8;
+            let progress = 50;
+            let winner = null;
+            
+            battleTimer.textContent = gameTime;
+            
+            const gameInterval = setInterval(() => {
+                gameTime--;
+                battleTimer.textContent = gameTime;
+                
+                if (gameTime <= 0) {
+                    clearInterval(gameInterval);
+                    clearInterval(progressInterval);
+                    
+                    // Determine winner based on final progress
+                    if (progress > 50) {
+                        winner = player1;
+                        endRobbery(player1, player2, betAmount, true);
+                    } else {
+                        winner = player2;
+                        endRobbery(player1, player2, betAmount, false);
+                    }
+                }
+            }, 1000);
+            
+            const progressInterval = setInterval(() => {
+                if (gameTime <= 0) {
+                    clearInterval(progressInterval);
+                    return;
+                }
+                
+                // Random movement towards one side or the other
+                const randomMove = (Math.random() - 0.5) * 8;
+                progress += randomMove;
+                progress = Math.max(0, Math.min(100, progress));
+                
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = Math.round(progress) + '%';
+                
+                if (progress > 60) {
+                    battleStatus.textContent = `🦹‍♂️ ${player1} DOMINANDO EL ROBO`;
+                } else if (progress < 40) {
+                    battleStatus.textContent = `🛡️ ${player2} DEFENDIENDO EXITOSAMENTE`;
+                } else {
+                    battleStatus.textContent = '⚔️ ROBO EN CURSO - BATALLA EQUILIBRADA';
+                }
+            }, 300);
+        }
+
+        // End robbery
+        function endRobbery(player1, player2, betAmount, player1Wins) {
+            const resultElement = document.getElementById('battleResult');
+            const winnerElement = document.getElementById('winnerAnnouncement');
+            const coinsElement = document.getElementById('coinsWon');
+            
+            if (player1Wins) {
+                // Player 1 wins - rob successful
+                winnerElement.textContent = `🦹‍♂️ ¡ROBO EXITOSO!`;
+                coinsElement.textContent = `💰 Robaste ${betAmount.toLocaleString()} monedas de ${player2}`;
+                
+                // Update Firebase for both players
+                // Player 1 (attacker) gets the stolen coins from player 2 (already lost bet, so this is net gain)
+                updatePlayerCoinsInFirebase(player1, betAmount, true);
+                // Player 2 (target) loses the stolen coins
+                updatePlayerCoinsInFirebase(player2, betAmount, false);
+                
+            } else {
+                // Player 2 wins - rob failed
+                winnerElement.textContent = `🛡️ ¡ROBO FRACASADO!`;
+                coinsElement.textContent = `💰 ${player2} te dice: "¡A MÍ NO ME ROBA NADIE!"`;
+                
+                // Update Firebase for both players
+                // Player 1 (attacker) already lost bet at start, no additional loss needed
+                // Player 2 (target) gets the attacker's bet as reward for defending
+                updatePlayerCoinsInFirebase(player2, betAmount, true);
+            }
+            
+            // Update local display and reload players list after Firebase update
+            setTimeout(() => {
+                loadPlayerInfo();
+                loadPlayers(); // Reload the players list to show updated coins
+            }, 1500);
+            
+            // Save to history
+            saveBattleHistory(player1, player2, player1Wins ? player1 : player2, player1Wins ? player2 : player1, betAmount);
+            
+            // Show result
+            resultElement.style.display = 'block';
+            
+            // Add button listeners
+            document.getElementById('battleResultBtn').onclick = () => {
+                document.getElementById('battleModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+                showTab('challenge');
+            };
+            
+            document.getElementById('battleBackBtn').onclick = () => {
+                document.getElementById('battleModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            };
+        }
+
+        // Update player coins in Firebase
+        function updatePlayerCoinsInFirebase(playerName, amount, isWin) {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playerRef = db.ref(`players/${playerName}`);
+                
+                playerRef.once('value')
+                    .then((snapshot) => {
+                        const playerData = snapshot.val() || {};
+                        const currentCoins = playerData.coins || 0;
+                        const newCoins = isWin ? currentCoins + amount : Math.max(0, currentCoins - amount);
+                        
+                        console.log(`🔄 Updating ${playerName}: ${currentCoins} -> ${newCoins} (${isWin ? 'WIN +' + amount : 'LOSS -' + amount})`);
+                        
+                        // Update both coins and localStorage for the current player
+                        if (playerName === currentPlayer) {
+                            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                            currentCoins = newCoins;
+                            // Update display immediately
+                            document.getElementById('currentPlayerCoins').textContent = newCoins.toLocaleString() + ' monedas';
+                        }
+                        
+                        playerRef.update({
+                            coins: newCoins,
+                            lastUpdated: Date.now()
+                        }).then(() => {
+                            console.log(`✅ Updated ${playerName} coins: ${currentCoins} -> ${newCoins} (${isWin ? 'WIN' : 'LOSS'})`);
+                            
+                            // Immediately sync if it's the current player
+                            if (playerName === currentPlayer) {
+                                syncCoinsToFirebase(newCoins);
+                            }
+                        }).catch((error) => {
+                            console.error(`❌ Error updating ${playerName} coins:`, error);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error(`❌ Error reading ${playerName} data:`, error);
+                    });
+            }
+        }
+
+        // Save battle history
+        function saveBattleHistory(player1, player2, winner, loser, betAmount) {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const historyRef = db.ref('battleHistory');
+                
+                const battleRecord = {
+                    player1: player1,
+                    player2: player2,
+                    winner: winner,
+                    loser: loser,
+                    betAmount: betAmount,
+                    timestamp: Date.now()
+                };
+                
+                historyRef.push(battleRecord);
+            }
+        }
+
+        // Clean up undefined player names in Firebase
+        function cleanupUndefinedPlayers() {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playersRef = db.ref('players');
+                
+                playersRef.once('value')
+                    .then((snapshot) => {
+                        const updates = {};
+                        let cleanedCount = 0;
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const player = childSnapshot.val();
+                            if (player && (!player.name || player.name === 'undefined' || player.name === 'null')) {
+                                updates[childSnapshot.key] = null; // Remove invalid player
+                                cleanedCount++;
+                            }
+                        });
+                        
+                        if (cleanedCount > 0) {
+                            playersRef.update(updates)
+                                .then(() => {
+                                    console.log(`✅ Cleaned up ${cleanedCount} invalid players from Firebase`);
+                                    loadPlayers(); // Reload the list
+                                })
+                                .catch((error) => {
+                                    console.error('❌ Error cleaning up players:', error);
+                                });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error reading players for cleanup:', error);
+                    });
+            }
+        }
+    </script>
+</body>
+</html> 

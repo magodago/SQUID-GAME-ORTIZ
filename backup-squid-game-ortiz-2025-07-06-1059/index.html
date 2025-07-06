@@ -2107,191 +2107,149 @@
       border: 3px solid #00FFFF;
     }
     
-      /* Admin Panel Styles */
+      /* Admin Panel Styles - Terminal Green */
   .admin-panel {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: #000000;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10000;
-    backdrop-filter: blur(10px);
+    font-family: 'Courier New', monospace;
   }
   
   .admin-content {
-    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-    border: 2px solid #00ff00;
-    border-radius: 15px;
-    padding: 30px;
-    max-width: 800px;
-    width: 90%;
-    max-height: 80vh;
+    background: #000000;
+    border: 1px solid #00ff00;
+    padding: 20px;
+    max-width: 1200px;
+    width: 95%;
+    max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
-    animation: adminEntrance 0.8s ease-out;
+    color: #00ff00;
   }
   
-  @keyframes adminEntrance {
-    from {
-      opacity: 0;
-      transform: scale(0.8) translateY(-50px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
+
   
   .admin-header h3 {
     color: #00ff00;
     text-align: center;
-    margin: 0 0 10px 0;
-    font-size: 1.8rem;
-    text-shadow: 0 0 10px #00ff00;
+    margin: 0 0 15px 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 10px;
   }
   
   .admin-subtitle {
-    color: #ffffff;
+    color: #00ff00;
     text-align: center;
     margin-bottom: 25px;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    opacity: 0.8;
   }
   
   .admin-stats {
-    display: flex;
-    justify-content: space-around;
+    display: block;
     margin-bottom: 30px;
-    flex-wrap: wrap;
   }
   
   .stat-item {
-    background: rgba(0, 255, 0, 0.1);
-    border: 1px solid #00ff00;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    min-width: 150px;
-    margin: 5px;
+    margin-bottom: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
   }
   
   .stat-icon {
-    font-size: 1.5rem;
-    display: block;
-    margin-bottom: 5px;
+    display: none;
   }
   
   .stat-label {
-    color: #ffffff;
+    color: #00ff00;
     font-size: 0.9rem;
-    display: block;
-    margin-bottom: 5px;
+    display: inline-block;
+    width: 200px;
+    font-weight: bold;
   }
   
   .stat-value {
     color: #00ff00;
-    font-size: 1.3rem;
+    font-size: 1rem;
     font-weight: bold;
-    text-shadow: 0 0 5px #00ff00;
   }
   
   .players-list h4 {
     color: #00ff00;
     margin: 0 0 15px 0;
-    text-align: center;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #00ff00;
+    padding-bottom: 5px;
   }
   
   .players-container {
-    max-height: 300px;
+    max-height: 400px;
     overflow-y: auto;
     border: 1px solid #00ff00;
-    border-radius: 10px;
     padding: 10px;
-    background: rgba(0, 0, 0, 0.3);
+    background: #000000;
   }
   
   .player-entry {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    margin: 12px 0;
-    background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 200, 0, 0.05));
-    border-radius: 12px;
-    border: 2px solid rgba(0, 255, 0, 0.3);
-    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.2);
+    padding: 15px;
+    margin: 10px 0;
+    background: #000000;
+    border: 1px solid rgba(0, 255, 0, 0.3);
     transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
   }
   
   .player-entry:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 255, 0, 0.4);
-    border-color: rgba(0, 255, 0, 0.6);
-  }
-  
-  .player-entry::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(180deg, #00ff00, #00cc00);
-    box-shadow: 0 0 10px #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+    border-color: #00ff00;
   }
   
   .player-info {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
+    display: block;
   }
   
   .player-name {
-    color: #ffffff;
+    color: #00ff00;
     font-weight: bold;
-    font-size: 1.2rem;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    font-size: 1.1rem;
     letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
   }
   
   .player-coins {
-    color: #ffd700;
+    color: #00ff00;
     font-weight: bold;
-    font-size: 1.1rem;
-    text-shadow: 0 0 15px #ffd700;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
   }
   
   .player-stats {
-    display: flex;
-    gap: 12px;
-    font-size: 0.9rem;
-    flex-wrap: wrap;
+    display: block;
+    font-size: 0.85rem;
   }
   
   .player-stats span {
-    background: linear-gradient(45deg, rgba(0, 255, 0, 0.2), rgba(0, 200, 0, 0.1));
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 255, 0, 0.4);
-    color: #ffffff;
+    display: block;
+    padding: 2px 0;
+    color: #00ff00;
     font-weight: 500;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
+    background: #000000;
+    margin-bottom: 2px;
   }
   
   .player-stats span:hover {
-    background: linear-gradient(45deg, rgba(0, 255, 0, 0.3), rgba(0, 200, 0, 0.2));
-    transform: scale(1.05);
+    background: rgba(0, 255, 0, 0.1);
   }
   
   .admin-footer {
@@ -2299,50 +2257,29 @@
     justify-content: center;
     gap: 15px;
     margin-top: 25px;
+    border-top: 1px solid #00ff00;
+    padding-top: 15px;
   }
   
   .admin-btn {
-    background: linear-gradient(45deg, #00ff00, #00cc00);
-    border: none;
-    border-radius: 8px;
-    padding: 12px 20px;
-    color: #000000;
+    background: #000000;
+    border: 1px solid #00ff00;
+    padding: 8px 15px;
+    color: #00ff00;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
   }
   
   .admin-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.4);
+    background: #00ff00;
+    color: #000000;
   }
   
-  /* Admin Panel Animations */
-  @keyframes statUpdate {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.1);
-      color: #00ff00;
-      text-shadow: 0 0 20px #00ff00;
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  
-  @keyframes playerEntrySlide {
-    0% {
-      opacity: 0;
-      transform: translateX(-30px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
+
 
   /* ALL IN Game Styles */
   .all-in-container {
@@ -4094,16 +4031,6 @@
       box-shadow: 0 0 50px #006400, inset 0 0 30px rgba(0, 100, 0, 0.5);
     }
     
-    .pvp-btn {
-      background: linear-gradient(45deg, #FF4500, #FF6347);
-      box-shadow: 0 0 30px #FF4500, inset 0 0 20px rgba(255, 69, 0, 0.3);
-    }
-    
-    .pvp-btn:hover {
-      transform: scale(1.1) rotateY(8deg);
-      box-shadow: 0 0 50px #FF4500, inset 0 0 30px rgba(255, 69, 0, 0.5);
-    }
-    
     .frontman-btn {
       background: linear-gradient(45deg, #000000, #333333);
       box-shadow: 0 0 30px #000000, inset 0 0 20px rgba(0, 0, 0, 0.3);
@@ -4601,11 +4528,6 @@
       <button class="envelope-btn joker-btn" id="jokerBtn">
         <div class="envelope-content">
           <span class="envelope-text">JOKER PISTAS</span>
-        </div>
-      </button>
-      <button class="envelope-btn pvp-btn" id="pvpBtn">
-        <div class="envelope-content">
-          <span class="envelope-text">ROBO</span>
         </div>
       </button>
     </div>
@@ -5983,101 +5905,6 @@
       }, 1000);
     });
 
-    // PvP BATALLA Button Event Listener
-    const pvpBtn = document.getElementById('pvpBtn');
-    pvpBtn.addEventListener('click', () => {
-              console.log('ROBO seleccionado');
-      
-      // Add dramatic effect
-      pvpBtn.style.transform = 'scale(0.9) rotateY(8deg)';
-      pvpBtn.style.boxShadow = '0 0 80px #FF4500, inset 0 0 40px rgba(255, 69, 0, 0.7)';
-      
-      // Create simple explosion effect
-      for (let i = 0; i < 8; i++) {
-        const particle = document.createElement('div');
-        particle.style.position = 'absolute';
-        particle.style.width = '4px';
-        particle.style.height = '4px';
-        particle.style.background = '#FF4500';
-        particle.style.borderRadius = '50%';
-        particle.style.pointerEvents = 'none';
-        particle.style.zIndex = '1000';
-        
-        const rect = pvpBtn.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        
-        particle.style.left = centerX + 'px';
-        particle.style.top = centerY + 'px';
-        
-        document.body.appendChild(particle);
-        
-        // Animate particle
-        const angle = (i / 8) * Math.PI * 2;
-        const distance = 50;
-        const targetX = centerX + Math.cos(angle) * distance;
-        const targetY = centerY + Math.sin(angle) * distance;
-        
-        particle.animate([
-          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
-        ], {
-          duration: 1000,
-          easing: 'ease-out'
-        });
-        
-        // Remove particle after animation
-        setTimeout(() => {
-          if (particle.parentNode) {
-            particle.parentNode.removeChild(particle);
-          }
-        }, 1000);
-      }
-      
-      // Reset button after animation
-      setTimeout(() => {
-        pvpBtn.style.transform = '';
-        pvpBtn.style.boxShadow = '';
-      }, 1000);
-      
-      // Show message and redirect
-      setTimeout(() => {
-        const messageEl = document.createElement('div');
-        messageEl.textContent = '⚔️ SISTEMA DE ROBO ACTIVADO';
-        messageEl.style.position = 'fixed';
-        messageEl.style.top = '50%';
-        messageEl.style.left = '50%';
-        messageEl.style.transform = 'translate(-50%, -50%)';
-        messageEl.style.color = '#FF4500';
-        messageEl.style.fontSize = '1.5rem';
-        messageEl.style.fontWeight = 'bold';
-        messageEl.style.textShadow = '0 0 20px #FF4500';
-        messageEl.style.zIndex = '2000';
-        messageEl.style.pointerEvents = 'none';
-        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
-        
-        document.body.appendChild(messageEl);
-        
-        // Animate message
-        messageEl.animate([
-          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
-          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
-        ], {
-          duration: 2000,
-          easing: 'ease-in-out'
-        });
-        
-        // Remove message and redirect
-        setTimeout(() => {
-          if (messageEl.parentNode) {
-            messageEl.parentNode.removeChild(messageEl);
-          }
-          window.location.href = 'robo.html';
-        }, 2000);
-      }, 1000);
-    });
-
     // DAILY REWARD Button Event Listener
     const dailyRewardBtn = document.getElementById('dailyRewardBtn');
     const dailyRewardContainer = document.querySelector('.daily-reward-container');
@@ -6835,79 +6662,20 @@
     }
     
     function addOneCoin() {
-      console.log('🪙 Adding 1 coin from Easter Egg...');
-      
-      // Get current coins
-      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      const newTotal = totalCoins + 1;
-      
-      // Update localStorage first
-      localStorage.setItem('totalOrtizCoins', newTotal.toString());
-      console.log(`✅ Local coins updated: ${totalCoins} -> ${newTotal}`);
-      
-      // Try to sync with Firebase using PlayerDataManager
-      if (window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
-        try {
-          const success = PlayerDataManager.safeAddCoins(1, 'easter-egg-soldier-name');
-          if (success) {
-            console.log('✅ Firebase sync successful for Easter Egg coin');
-          } else {
-            console.log('⚠️ Firebase sync failed, but local update successful');
-            // Force manual sync
-            const playerName = localStorage.getItem('soldierName');
-            if (playerName) {
-              PlayerDataManager.savePlayerData(playerName, newTotal, {
-                gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-                totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-                cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-                lastSync: new Date().toISOString(),
-                autoSync: true,
-                gameType: 'easter-egg-soldier-name',
-                coinChange: 1
-              }).then(() => {
-                console.log('✅ Manual Firebase sync completed');
-              }).catch(error => {
-                console.error('❌ Manual Firebase sync failed:', error);
-              });
-            }
-          }
-        } catch (error) {
-          console.error('❌ Error in PlayerDataManager.safeAddCoins:', error);
-          // Force manual sync as fallback
-          const playerName = localStorage.getItem('soldierName');
-          if (playerName && typeof PlayerDataManager.savePlayerData === 'function') {
-            PlayerDataManager.savePlayerData(playerName, newTotal, {
-              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-              lastSync: new Date().toISOString(),
-              autoSync: true,
-              gameType: 'easter-egg-soldier-name',
-              coinChange: 1
-            }).catch(error => {
-              console.error('❌ Fallback Firebase sync failed:', error);
-            });
-          }
-        }
+      // Add 1 coin to total using safe addition
+      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(1, 'easter-egg-soldier-name')) {
+        console.log('✅ Easter Egg coin added safely: +1');
       } else {
-        console.log('⚠️ PlayerDataManager not available, local update only');
+        // Fallback if PlayerDataManager not available
+        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        totalCoins += 1;
+        localStorage.setItem('totalOrtizCoins', totalCoins);
       }
       
       // Increment easter eggs found counter
       const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
       localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
       console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
-      
-      // Track Easter Egg in Firebase
-      const playerName = localStorage.getItem('soldierName');
-      if (playerName && window.PlayerDataManager && typeof PlayerDataManager.trackEasterEgg === 'function') {
-        try {
-          PlayerDataManager.trackEasterEgg(playerName, 'soldier-name', 1);
-          console.log('🥚 Easter Egg tracked in Firebase: soldier-name');
-        } catch (error) {
-          console.error('❌ Error tracking Easter Egg:', error);
-        }
-      }
       
       // Update statistics display
       loadStats();
@@ -6917,67 +6685,17 @@
       
       // Create +1 coin effect
       createPlusOneEffect();
-      
-      console.log('🎉 Easter Egg coin addition completed!');
     }
     
     function addTwentyCoins() {
-      console.log('🪙 Adding 20 coins from Gods Power Easter Egg...');
-      
-      // Get current coins
-      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      const newTotal = totalCoins + 20;
-      
-      // Update localStorage first
-      localStorage.setItem('totalOrtizCoins', newTotal.toString());
-      console.log(`✅ Local coins updated: ${totalCoins} -> ${newTotal}`);
-      
-      // Try to sync with Firebase using PlayerDataManager
-      if (window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
-        try {
-          const success = PlayerDataManager.safeAddCoins(20, 'easter-egg-gods-power');
-          if (success) {
-            console.log('✅ Firebase sync successful for Gods Power Easter Egg coins');
-          } else {
-            console.log('⚠️ Firebase sync failed, but local update successful');
-            // Force manual sync
-            const playerName = localStorage.getItem('soldierName');
-            if (playerName) {
-              PlayerDataManager.savePlayerData(playerName, newTotal, {
-                gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-                totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-                cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-                lastSync: new Date().toISOString(),
-                autoSync: true,
-                gameType: 'easter-egg-gods-power',
-                coinChange: 20
-              }).then(() => {
-                console.log('✅ Manual Firebase sync completed for Gods Power');
-              }).catch(error => {
-                console.error('❌ Manual Firebase sync failed for Gods Power:', error);
-              });
-            }
-          }
-        } catch (error) {
-          console.error('❌ Error in PlayerDataManager.safeAddCoins for Gods Power:', error);
-          // Force manual sync as fallback
-          const playerName = localStorage.getItem('soldierName');
-          if (playerName && typeof PlayerDataManager.savePlayerData === 'function') {
-            PlayerDataManager.savePlayerData(playerName, newTotal, {
-              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-              lastSync: new Date().toISOString(),
-              autoSync: true,
-              gameType: 'easter-egg-gods-power',
-              coinChange: 20
-            }).catch(error => {
-              console.error('❌ Fallback Firebase sync failed for Gods Power:', error);
-            });
-          }
-        }
+      // Add 20 coins to total using safe addition
+      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(20, 'easter-egg-gods-power')) {
+        console.log('✅ Easter Egg coins added safely: +20');
       } else {
-        console.log('⚠️ PlayerDataManager not available, local update only');
+        // Fallback if PlayerDataManager not available
+        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        totalCoins += 20;
+        localStorage.setItem('totalOrtizCoins', totalCoins);
       }
       
       // Increment easter eggs found counter
@@ -6985,27 +6703,21 @@
       localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
       console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
       
-      // Track Easter Egg in Firebase
-      const playerName = localStorage.getItem('soldierName');
-      if (playerName && window.PlayerDataManager && typeof PlayerDataManager.trackEasterEgg === 'function') {
-        try {
-          PlayerDataManager.trackEasterEgg(playerName, 'gods-power', 20);
-          console.log('🥚 Easter Egg tracked in Firebase: gods-power');
-        } catch (error) {
-          console.error('❌ Error tracking Gods Power Easter Egg:', error);
-        }
-      }
-      
       // Update statistics display
       loadStats();
+      
+      // Track Easter Egg in Firebase
+      const playerName = localStorage.getItem('soldierName');
+      if (playerName && window.PlayerDataManager) {
+        PlayerDataManager.trackEasterEgg(playerName, 'gods-power', 20);
+        console.log('🥚 Easter Egg tracked: gods-power');
+      }
       
       // Update display
       loadTotalCoins();
       
       // Create +20 coins effect
       createPlusTwentyEffect();
-      
-      console.log('🎉 Gods Power Easter Egg coin addition completed!');
     }
     
     function createPlusOneEffect() {
@@ -9327,10 +9039,10 @@
       
       if (players.length === 0) {
         playersHTML = `
-          <div class="player-entry" style="text-align: center; justify-content: center;">
+          <div class="player-entry">
             <div class="player-info">
-              <span class="player-name" style="color: #888;">📭 No hay jugadores registrados</span>
-              <span style="color: #666; font-size: 0.9rem;">Los datos aparecerán cuando los jugadores usen el juego y se sincronicen con Firebase</span>
+              <div class="player-name" style="color: #888;">NO HAY JUGADORES REGISTRADOS:</div>
+              <div style="color: #666; font-size: 0.9rem;">- LOS DATOS APARECERÁN CUANDO LOS JUGADORES USEN EL JUEGO Y SE SINCRONICEN CON FIREBASE</div>
             </div>
           </div>
         `;
@@ -9379,21 +9091,21 @@
           }).join(', ') : 'Ninguno';
           
           playersHTML += `
-            <div class="player-entry" style="animation: playerEntrySlide 0.3s ease-out ${index * 0.1}s both;">
+            <div class="player-entry">
               <div class="player-info">
-                <span class="player-name">${rankEmoji} ${playerName}</span>
-                <span class="player-coins">🪙 ${coins.toLocaleString()} monedas</span>
-              </div>
-              <div class="player-stats">
-                <span title="Juegos jugados">🎮 ${gamesPlayed}</span>
-                <span title="Victorias totales">🏆 ${totalWins}</span>
-                <span title="Pistas encontradas">🔍 ${cluesFound}</span>
-                <span title="Easter Eggs encontrados">🥚 ${easterEggs}</span>
-                <span title="Tiempo total jugado">⏱️ ${formatPlayTime(playTime)}</span>
-                <span title="Porcentaje de victoria" style="background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.1)); border-color: rgba(255, 215, 0, 0.4);">📊 ${winRate}%</span>
-              </div>
-              <div class="player-easter-eggs" style="margin-top: 8px; font-size: 0.8rem; color: #ffd700; text-align: left;">
-                <span title="Easter Eggs específicos">🥚 ${easterEggsDetails}</span>
+                <div class="player-name">${playerName}:</div>
+                <div class="player-coins">- MONEDAS: ${coins.toLocaleString()}</div>
+                <div class="player-stats">
+                  <span>- PARTIDAS JUGADAS: ${gamesPlayed}</span>
+                  <span>- PARTIDAS GANADAS: ${totalWins}</span>
+                  <span>- PISTAS ENCONTRADAS: ${cluesFound}</span>
+                  <span>- EASTER EGGS: ${easterEggs}</span>
+                  <span>- TIEMPO TOTAL: ${formatPlayTime(playTime)}</span>
+                  <span>- PORCENTAJE VICTORIA: ${winRate}%</span>
+                </div>
+                <div class="player-easter-eggs" style="margin-top: 5px; font-size: 0.8rem; color: #00ff00;">
+                  <span>- EASTER EGGS ESPECÍFICOS: ${easterEggsDetails}</span>
+                </div>
               </div>
             </div>
           `;
@@ -9517,174 +9229,7 @@
           playerFightContainer.style.display = 'none';
         }
       }
-      
-      // Check Blood Screen trigger (30000+ coins and not triggered)
-      const bloodScreenTriggered = localStorage.getItem('bloodScreenTriggered') === 'true';
-      if (totalCoins >= 30000 && !bloodScreenTriggered) {
-        console.log('🩸 Blood Screen trigger activated - player has', totalCoins, 'coins');
-        activateBloodScreen();
-      }
     }
-    
-    // BLOOD SCREEN FUNCTIONALITY
-    function activateBloodScreen() {
-      console.log('🩸 Activating Blood Screen...');
-      
-      // Mark as triggered
-      localStorage.setItem('bloodScreenTriggered', 'true');
-      
-      // Deduct 5000 coins
-      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      const newCoins = Math.max(0, currentCoins - 5000);
-      localStorage.setItem('totalOrtizCoins', newCoins.toString());
-      
-      console.log(`🩸 Blood Screen: ${currentCoins} - 5000 = ${newCoins} coins`);
-      
-      // Sync with Firebase
-      const playerName = localStorage.getItem('soldierName');
-      if (playerName && window.PlayerDataManager && typeof PlayerDataManager.savePlayerData === 'function') {
-        PlayerDataManager.savePlayerData(playerName, newCoins, {
-          gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-          totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-          cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-          lastSync: new Date().toISOString(),
-          autoSync: true,
-          gameType: 'blood-screen-penalty',
-          coinChange: -5000
-        }).then(() => {
-          console.log('✅ Blood Screen penalty synced to Firebase');
-        }).catch(error => {
-          console.error('❌ Blood Screen Firebase sync failed:', error);
-        });
-      }
-      
-      // Show blood screen with delay to ensure it's visible
-      setTimeout(() => {
-        const bloodScreen = document.getElementById('bloodScreen');
-        console.log('🩸 Blood screen element:', bloodScreen);
-        
-        if (bloodScreen) {
-          bloodScreen.style.display = 'flex';
-          bloodScreen.style.zIndex = '15000';
-          bloodScreen.style.position = 'fixed';
-          bloodScreen.style.top = '0';
-          bloodScreen.style.left = '0';
-          bloodScreen.style.width = '100%';
-          bloodScreen.style.height = '100%';
-          document.body.style.overflow = 'hidden';
-          
-          console.log('🩸 Blood screen displayed, starting effects...');
-          
-          // Start blood effects
-          createBloodEffects();
-          
-          // Typewriter effect for message
-          typewriterEffect();
-          
-          console.log('🩸 Blood screen activation completed');
-        } else {
-          console.error('❌ Blood screen element not found!');
-        }
-      }, 100);
-      
-      // Update display
-      loadTotalCoins();
-    }
-    
-    function createBloodEffects() {
-      // Create blood drops
-      for (let i = 0; i < 50; i++) {
-        setTimeout(() => {
-          const bloodDrop = document.createElement('div');
-          bloodDrop.className = 'blood-drop';
-          bloodDrop.style.left = Math.random() * 100 + '%';
-          bloodDrop.style.animationDelay = Math.random() * 2 + 's';
-          document.body.appendChild(bloodDrop);
-          
-          // Remove after animation
-          setTimeout(() => {
-            if (bloodDrop.parentNode) {
-              bloodDrop.parentNode.removeChild(bloodDrop);
-            }
-          }, 4000);
-        }, i * 100);
-      }
-      
-      // Create blood splatter effects
-      for (let i = 0; i < 20; i++) {
-        setTimeout(() => {
-          const bloodSplatter = document.createElement('div');
-          bloodSplatter.className = 'blood-splatter';
-          bloodSplatter.style.left = Math.random() * 100 + '%';
-          bloodSplatter.style.top = Math.random() * 100 + '%';
-          document.body.appendChild(bloodSplatter);
-          
-          // Remove after animation
-          setTimeout(() => {
-            if (bloodSplatter.parentNode) {
-              bloodSplatter.parentNode.removeChild(bloodSplatter);
-            }
-          }, 3000);
-        }, i * 200);
-      }
-    }
-    
-    function typewriterEffect() {
-      const messageElement = document.getElementById('bloodMessage');
-      const fullMessage = 'HAS SIDO ACUCHILLADO\n\nPIERDES 5000 MONEDAS\n\nPERO SIGUES VIVO\n\nESTATE ATENTO...';
-      let currentIndex = 0;
-      
-      messageElement.innerHTML = '';
-      
-      function typeNextChar() {
-        if (currentIndex < fullMessage.length) {
-          if (fullMessage[currentIndex] === '\n') {
-            messageElement.innerHTML += '<br>';
-          } else {
-            messageElement.innerHTML += fullMessage[currentIndex];
-          }
-          currentIndex++;
-          setTimeout(typeNextChar, 80); // Faster typing
-        }
-      }
-      
-      typeNextChar();
-    }
-    
-    function closeBloodScreen() {
-      const bloodScreen = document.getElementById('bloodScreen');
-      if (bloodScreen) {
-        bloodScreen.style.display = 'none';
-        document.body.style.overflow = '';
-        console.log('🩸 Blood screen closed');
-      }
-    }
-    
-    // Function to reset blood screen trigger (for testing purposes)
-    function resetBloodScreenTrigger() {
-      localStorage.removeItem('bloodScreenTriggered');
-      console.log('🩸 Blood screen trigger reset - can be activated again');
-    }
-    
-    // Function to manually test blood screen (for testing purposes)
-    function testBloodScreen() {
-      console.log('🩸 Testing blood screen manually...');
-      const bloodScreen = document.getElementById('bloodScreen');
-      if (bloodScreen) {
-        bloodScreen.style.display = 'flex';
-        bloodScreen.style.zIndex = '15000';
-        document.body.style.overflow = 'hidden';
-        createBloodEffects();
-        typewriterEffect();
-        console.log('🩸 Blood screen test activated');
-      } else {
-        console.error('❌ Blood screen element not found for testing');
-      }
-    }
-    
-    // Make functions available globally for testing
-    window.resetBloodScreenTrigger = resetBloodScreenTrigger;
-    window.testBloodScreen = testBloodScreen;
   </script>
   
   <!-- Firebase Configuration -->
@@ -9732,11 +9277,11 @@
       </div>
       
       <!-- Campo para asignar monedas al jugador actual -->
-      <div class="admin-set-coins" style="margin: 20px 0; text-align: center; padding: 15px; background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; border-radius: 10px;">
-        <label for="adminSetCoinsInput" style="color: #fff; font-size: 1rem; margin-right: 10px;">🪙 Asignar monedas a este jugador:</label>
-        <input type="number" id="adminSetCoinsInput" min="0" placeholder="0" style="width: 120px; padding: 8px 12px; border-radius: 6px; border: 1px solid #00ff00; font-size: 1rem; background: rgba(0, 0, 0, 0.3); color: #fff;">
-        <button id="adminSetCoinsBtn" style="margin-left: 10px; padding: 8px 18px; border-radius: 6px; background: linear-gradient(45deg, #00ff00, #00cc00); color: #000; font-weight: bold; border: none; cursor: pointer; font-size: 1rem;">Actualizar</button>
-        <div id="adminSetCoinsMsg" style="display:none; color:#00ff00; margin-top:10px; font-size:0.95rem; font-weight: bold;">¡Monedas actualizadas!</div>
+      <div class="admin-set-coins" style="margin: 20px 0; padding: 15px; border: 1px solid #00ff00;">
+        <label for="adminSetCoinsInput" style="color: #00ff00; font-size: 0.9rem; margin-right: 10px;">ASIGNAR MONEDAS A ESTE JUGADOR:</label>
+        <input type="number" id="adminSetCoinsInput" min="0" placeholder="0" style="width: 120px; padding: 5px 8px; border: 1px solid #00ff00; font-size: 0.9rem; background: #000000; color: #00ff00; font-family: 'Courier New', monospace;">
+        <button id="adminSetCoinsBtn" style="margin-left: 10px; padding: 5px 15px; border: 1px solid #00ff00; background: #000000; color: #00ff00; font-weight: bold; cursor: pointer; font-size: 0.9rem; font-family: 'Courier New', monospace;">ACTUALIZAR</button>
+        <div id="adminSetCoinsMsg" style="display:none; color:#00ff00; margin-top:10px; font-size:0.9rem; font-weight: bold;">¡MONEDAS ACTUALIZADAS!</div>
       </div>
       
       <div class="players-list" id="playersList">
@@ -9756,348 +9301,5 @@
 
 
     <!-- Fusion Power Modal -->
-
-    <!-- Blood Screen Modal -->
-    <div class="blood-screen" id="bloodScreen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #8B0000 0%, #DC143C 50%, #8B0000 100%); z-index: 15000; justify-content: center; align-items: center; overflow: hidden;">
-        <div class="blood-content" style="text-align: center; color: #FFFFFF; z-index: 15001; position: relative; max-width: 90%; max-height: 90%;">
-            <div class="knife-icon" style="font-size: 4rem; margin-bottom: 1rem; animation: knifeGlow 2s ease-in-out infinite alternate;">🔪</div>
-            <div class="blood-message" id="bloodMessage" style="font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000; line-height: 1.3; margin-bottom: 1.5rem; font-family: 'Orbitron', Arial, sans-serif; max-width: 100%; word-wrap: break-word;"></div>
-            <button class="blood-back-btn" onclick="closeBloodScreen()" style="background: linear-gradient(45deg, #8B0000, #DC143C); color: white; border: 2px solid #FF0000; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.3s; box-shadow: 0 0 20px #FF0000; font-family: 'Orbitron', Arial, sans-serif;">VOLVER</button>
-        </div>
-    </div>
-
-    <!-- Notification Modal for Robbery Attempts -->
-    <div class="notification-modal" id="notificationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; justify-content: center; align-items: center;">
-        <div class="notification-content" style="background: linear-gradient(135deg, #2d0a00 0%, #ff7f50 50%, #2d0a00 100%); border: 3px solid #ffae42; border-radius: 20px; padding: 40px; max-width: 600px; width: 90%; text-align: center; position: relative; box-shadow: 0 0 50px rgba(255, 174, 66, 0.8); animation: notificationPulse 2s infinite;">
-            <div class="notification-title" id="notificationTitle" style="font-size: 2rem; font-weight: bold; margin-bottom: 20px; color: #ffae42; text-shadow: 0 0 20px #ffae42;">🚨 ¡ALERTA DE ROBO!</div>
-            <div class="notification-message" id="notificationMessage" style="font-size: 1.3rem; margin-bottom: 25px; color: #ffffff; line-height: 1.5;">
-                Alguien está intentando robarte...
-            </div>
-            <div class="notification-details" style="background: rgba(255, 174, 66, 0.1); border: 1px solid #ffae42; border-radius: 10px; padding: 20px; margin-bottom: 25px;">
-                <div id="notificationAttacker" style="color: #ffffff; font-size: 1.1rem; margin-bottom: 10px;">Atacante: Desconocido</div>
-                <div class="notification-amount" id="notificationAmount" style="font-size: 1.5rem; font-weight: bold; color: #ffd700; margin: 10px 0;">Cantidad: 0 monedas</div>
-                <div id="notificationResult" style="color: #ffffff; font-size: 1.1rem;">Resultado: En proceso...</div>
-            </div>
-            <button class="notification-back-btn" onclick="closeRobberyNotification()" style="background: #ff7f50; color: white; border: none; padding: 15px 30px; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: all 0.3s;">ENTENDIDO</button>
-        </div>
-    </div>
-
-    <style>
-        @keyframes notificationPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        /* Blood Screen Animations */
-        @keyframes knifeGlow {
-            0% { transform: scale(1) rotate(0deg); filter: brightness(1) drop-shadow(0 0 20px #FF0000); }
-            100% { transform: scale(1.1) rotate(5deg); filter: brightness(1.5) drop-shadow(0 0 40px #FF0000); }
-        }
-        
-        @keyframes bloodDrop {
-            0% { 
-                transform: translateY(-100px) scale(0); 
-                opacity: 0; 
-            }
-            10% { 
-                transform: translateY(0) scale(1); 
-                opacity: 1; 
-            }
-            90% { 
-                transform: translateY(calc(100vh + 50px)) scale(1); 
-                opacity: 1; 
-            }
-            100% { 
-                transform: translateY(calc(100vh + 100px)) scale(0); 
-                opacity: 0; 
-            }
-        }
-        
-        @keyframes bloodSplatter {
-            0% { 
-                transform: scale(0) rotate(0deg); 
-                opacity: 0; 
-            }
-            50% { 
-                transform: scale(1.5) rotate(180deg); 
-                opacity: 1; 
-            }
-            100% { 
-                transform: scale(2) rotate(360deg); 
-                opacity: 0; 
-            }
-        }
-        
-        .blood-drop {
-            position: fixed;
-            width: 8px;
-            height: 20px;
-            background: radial-gradient(ellipse at center, #FF0000 0%, #8B0000 70%, transparent 100%);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            pointer-events: none;
-            z-index: 15002;
-            animation: bloodDrop 4s linear forwards;
-        }
-        
-        .blood-splatter {
-            position: fixed;
-            width: 30px;
-            height: 30px;
-            background: radial-gradient(circle, #FF0000 0%, #8B0000 50%, transparent 100%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 15002;
-            animation: bloodSplatter 3s ease-out forwards;
-        }
-        
-        .blood-back-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 50px #FF0000, inset 0 0 20px rgba(255, 0, 0, 0.3);
-        }
-        
-        /* Responsive adjustments for blood screen */
-        @media (max-width: 768px) {
-            .blood-content {
-                max-width: 95% !important;
-                padding: 20px !important;
-            }
-            
-            .knife-icon {
-                font-size: 3rem !important;
-                margin-bottom: 0.5rem !important;
-            }
-            
-            .blood-message {
-                font-size: 1rem !important;
-                line-height: 1.2 !important;
-                margin-bottom: 1rem !important;
-            }
-            
-            .blood-back-btn {
-                font-size: 0.9rem !important;
-                padding: 10px 20px !important;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .blood-content {
-                max-width: 98% !important;
-                padding: 15px !important;
-            }
-            
-            .knife-icon {
-                font-size: 2.5rem !important;
-            }
-            
-            .blood-message {
-                font-size: 0.9rem !important;
-            }
-            
-            .blood-back-btn {
-                font-size: 0.8rem !important;
-                padding: 8px 16px !important;
-            }
-        }
-        
-        .notification-back-btn:hover {
-            background: #ffae42 !important;
-            color: #2d0a00 !important;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px #ffae42;
-        }
-    </style>
-
-    <script>
-        // Flag to prevent multiple notifications
-        let robberyNotificationShown = false;
-        
-        // Robbery notification functions for main page
-        function showRobberyNotification(attacker, target, amount, isSuccessful) {
-            // Prevent multiple notifications
-            if (robberyNotificationShown) {
-                console.log('⚠️ Notification already shown, skipping...');
-                return;
-            }
-            
-            const notificationModal = document.getElementById('notificationModal');
-            const notificationTitle = document.getElementById('notificationTitle');
-            const notificationMessage = document.getElementById('notificationMessage');
-            const notificationAttacker = document.getElementById('notificationAttacker');
-            const notificationAmount = document.getElementById('notificationAmount');
-            const notificationResult = document.getElementById('notificationResult');
-            
-            if (isSuccessful) {
-                notificationTitle.textContent = '💀 ¡TE HAN ROBADO!';
-                notificationMessage.textContent = `${attacker} ha logrado robarte exitosamente.`;
-                notificationResult.textContent = 'Resultado: Robo exitoso - Perdiste monedas';
-            } else {
-                notificationTitle.textContent = '🛡️ ¡DEFENSA EXITOSA!';
-                notificationMessage.textContent = `${attacker} intentó robarte pero falló.`;
-                notificationResult.textContent = 'Resultado: Robo fallido - Mantuviste tus monedas';
-            }
-            
-            notificationAttacker.textContent = `Atacante: ${attacker}`;
-            notificationAmount.textContent = `Cantidad: ${amount.toLocaleString()} monedas`;
-            
-            robberyNotificationShown = true;
-            notificationModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            
-            // Force immediate coins sync when robbery notification is shown
-            setTimeout(() => {
-                forceCoinsSync();
-            }, 500);
-            
-            console.log('🚨 Showing robbery notification for:', attacker, '->', target);
-        }
-
-        // Function to force immediate coins sync
-        function forceCoinsSync() {
-            if (window.firebase && window.firebase.database) {
-                const db = window.firebase.database();
-                const currentPlayer = localStorage.getItem('soldierName');
-                
-                if (!currentPlayer) return;
-                
-                const playerRef = db.ref(`players/${currentPlayer}`);
-                
-                playerRef.once('value')
-                    .then((snapshot) => {
-                        const playerData = snapshot.val();
-                        if (playerData && playerData.coins !== undefined) {
-                            const firebaseCoins = playerData.coins;
-                            const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                            
-                            if (firebaseCoins !== localCoins) {
-                                localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
-                                
-                                // Update display if loadTotalCoins function exists
-                                if (typeof loadTotalCoins === 'function') {
-                                    loadTotalCoins();
-                                }
-                                
-                                console.log(`🔄 Force coins sync: ${localCoins} -> ${firebaseCoins}`);
-                            }
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('❌ Error in force coins sync:', error);
-                    });
-            }
-        }
-
-        function closeRobberyNotification() {
-            const notificationModal = document.getElementById('notificationModal');
-            notificationModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            robberyNotificationShown = false; // Reset flag to allow future notifications
-            
-            // Force coins sync when notification is closed
-            setTimeout(() => {
-                forceCoinsSync();
-            }, 200);
-            
-            console.log('✅ Robbery notification closed');
-        }
-
-        // Flag to prevent multiple listeners
-        let robberyListenerStarted = false;
-        
-        // Listen for robbery attempts on current player
-        function startRobberyListener() {
-            // Prevent multiple listeners
-            if (robberyListenerStarted) {
-                console.log('⚠️ Robbery listener already started, skipping...');
-                return;
-            }
-            
-            if (window.firebase && window.firebase.database) {
-                const db = window.firebase.database();
-                const battleHistoryRef = db.ref('battleHistory');
-                const currentPlayer = localStorage.getItem('soldierName');
-                
-                if (!currentPlayer) {
-                    console.log('⚠️ No player name found, skipping robbery listener');
-                    return;
-                }
-                
-                // Get current timestamp to only listen for new records
-                const currentTime = Date.now();
-                
-                // Listen for new battle records only
-                battleHistoryRef.orderByChild('timestamp').startAt(currentTime).on('child_added', (snapshot) => {
-                    const battle = snapshot.val();
-                    
-                    // Check if this battle involves the current player and is recent
-                    if (battle && battle.timestamp >= currentTime && (battle.player1 === currentPlayer || battle.player2 === currentPlayer)) {
-                        const isAttacker = battle.player1 === currentPlayer;
-                        const opponent = isAttacker ? battle.player2 : battle.player1;
-                        const isSuccessful = battle.winner === opponent; // If opponent won, robbery was successful
-                        
-                        // Show notification for the target player only if it's a new battle
-                        if (!isAttacker) {
-                            console.log(`🚨 Robbery notification: ${opponent} tried to rob ${currentPlayer} for ${battle.betAmount} coins`);
-                            setTimeout(() => {
-                                showRobberyNotification(opponent, currentPlayer, battle.betAmount, isSuccessful);
-                            }, 1000);
-                        }
-                    }
-                });
-                
-                robberyListenerStarted = true;
-                console.log('✅ Robbery listener started for player:', currentPlayer);
-            } else {
-                console.log('❌ Firebase not available for robbery listener');
-            }
-        }
-
-        // Start robbery listener when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                startRobberyListener();
-                startCoinsSync(); // Start coins synchronization
-            }, 5000); // Wait longer for Firebase to load completely
-        });
-
-        // Function to sync coins from Firebase
-        function startCoinsSync() {
-            if (window.firebase && window.firebase.database) {
-                const db = window.firebase.database();
-                const currentPlayer = localStorage.getItem('soldierName');
-                
-                if (!currentPlayer) {
-                    console.log('⚠️ No player name found, skipping coins sync');
-                    return;
-                }
-                
-                const playerRef = db.ref(`players/${currentPlayer}`);
-                
-                // Listen for changes in player's coins
-                playerRef.on('value', (snapshot) => {
-                    const playerData = snapshot.val();
-                    if (playerData && playerData.coins !== undefined) {
-                        const firebaseCoins = playerData.coins;
-                        const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                        
-                        // Update if different
-                        if (firebaseCoins !== localCoins) {
-                            localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
-                            
-                            // Update display if loadTotalCoins function exists
-                            if (typeof loadTotalCoins === 'function') {
-                                loadTotalCoins();
-                            }
-                            
-                            console.log(`🔄 Coins synced from Firebase: ${localCoins} -> ${firebaseCoins}`);
-                        }
-                    }
-                });
-                
-                console.log('✅ Coins sync started for player:', currentPlayer);
-            } else {
-                console.log('❌ Firebase not available for coins sync');
-            }
-        }
-    </script>
 </body>
 </html> 

@@ -486,6 +486,161 @@
       transform: scale(1.05);
       box-shadow: 0 0 50px #ff4757, inset 0 0 30px rgba(255, 71, 87, 0.5);
     }
+
+    /* Blood Screen Modal */
+    .blood-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      z-index: 2000;
+      overflow: hidden;
+    }
+
+    .blood-screen.active {
+      display: block;
+      animation: bloodScreenEntrance 1s ease-out;
+    }
+
+    @keyframes bloodScreenEntrance {
+      0% {
+        opacity: 0;
+        transform: scale(1.1);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .blood-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #8B0000 0%, #660000 50%, #400000 100%);
+      animation: bloodPulse 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes bloodPulse {
+      0% {
+        background: radial-gradient(circle at center, #8B0000 0%, #660000 50%, #400000 100%);
+      }
+      100% {
+        background: radial-gradient(circle at center, #A00000 0%, #800000 50%, #500000 100%);
+      }
+    }
+
+    .blood-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 2001;
+      color: #fff;
+      text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+    }
+
+    .knife-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      animation: knifeGlow 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes knifeGlow {
+      0% {
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 20px #ff0000);
+      }
+      100% {
+        transform: scale(1.1) rotate(5deg);
+        filter: drop-shadow(0 0 40px #ff0000);
+      }
+    }
+
+    .blood-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: #ff0000;
+      text-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000;
+      animation: textShake 0.5s ease-in-out infinite;
+    }
+
+    @keyframes textShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
+    }
+
+    .blood-message {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #ff6666;
+      text-shadow: 0 0 15px #ff6666;
+    }
+
+    .blood-btn {
+      background: linear-gradient(45deg, #8B0000, #A00000);
+      color: #fff;
+      border: 3px solid #ff0000;
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 30px #ff0000, inset 0 0 20px rgba(255, 0, 0, 0.3);
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+
+    .blood-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 50px #ff0000, inset 0 0 30px rgba(255, 0, 0, 0.5);
+    }
+
+    .blood-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2002;
+    }
+
+    .blood-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #ff0000;
+      border-radius: 50%;
+      animation: bloodDrop 3s linear infinite;
+    }
+
+    @keyframes bloodDrop {
+      0% {
+        opacity: 1;
+        transform: translateY(-10px) scale(0);
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: translateY(100vh) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0);
+      }
+    }
     
     /* Responsive */
     @media (max-width: 768px) {
@@ -579,6 +734,18 @@
       <button class="game-over-btn" id="restartBtn">JUGAR DE NUEVO</button>
       <button class="game-over-btn" id="backBtn">VOLVER AL MENÚ</button>
     </div>
+
+    <!-- Blood Screen Modal -->
+    <div class="blood-screen" id="bloodScreen">
+      <div class="blood-overlay"></div>
+      <div class="blood-content">
+        <div class="knife-icon">🔪</div>
+        <div class="blood-title">¡HAS SIDO ACUCHILLADO DURMIENDO!</div>
+        <div class="blood-message">Pierdes 5000 monedas</div>
+        <button class="blood-btn" id="exitBloodBtn">SALIR</button>
+      </div>
+      <div class="blood-particles" id="bloodParticles"></div>
+    </div>
   </div>
 
   <script>
@@ -602,11 +769,25 @@
     const totalScoreElement = document.getElementById('totalScore');
     const restartBtn = document.getElementById('restartBtn');
     const backBtn = document.getElementById('backBtn');
+    const bloodScreen = document.getElementById('bloodScreen');
+    const exitBloodBtn = document.getElementById('exitBloodBtn');
 
     
     // Simple functions
     function startGame() {
       console.log('Starting game...');
+      
+      // Start game session tracking
+      if (window.PlayerDataManager && window.PlayerDataManager.startGameSession) {
+        const playerName = localStorage.getItem('soldierName') || 'Jugador';
+        window.PlayerDataManager.startGameSession(playerName, 'soldier-game').then(sessionId => {
+          if (sessionId) {
+            window.currentGameSessionId = sessionId;
+            console.log('🎮 Soldier game session started:', sessionId);
+          }
+        });
+      }
+      
       startScreen.classList.add('hidden');
       gameActive = true;
       timeLeft = 30;
@@ -764,6 +945,12 @@
       
       // Add/subtract score
       score += targetType.points;
+      
+      // Check for 30,000 points blood screen trigger
+      if (score >= 30000) {
+        showBloodScreen();
+        return;
+      }
       
       // Show score feedback
       showScoreFeedback(target, targetType);
@@ -969,6 +1156,96 @@
     // Add other event listeners
     restartBtn.addEventListener('click', restart);
     backBtn.addEventListener('click', goBack);
+    exitBloodBtn.addEventListener('click', exitBloodScreen);
+    
+
+    function showBloodScreen() {
+      // Stop the game
+      gameActive = false;
+      clearInterval(gameInterval);
+      clearInterval(targetInterval);
+      
+      // Remove all targets
+      targets.forEach(target => {
+        if (target.parentNode) {
+          target.parentNode.removeChild(target);
+        }
+      });
+      targets = [];
+      
+      // Deduct 5000 coins from global total
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newCoins = Math.max(0, currentCoins - 5000);
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      
+      // Update via PlayerDataManager if available
+      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
+        PlayerDataManager.safeAddCoins(-5000, 'blood-screen-penalty');
+      }
+      
+      // Show blood screen
+      bloodScreen.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Create blood particles
+      createBloodParticles();
+      
+      // Track the event
+      const playerName = localStorage.getItem('soldierName') || 'Jugador';
+      if (window.PlayerDataManager) {
+        PlayerDataManager.trackEasterEgg(playerName, 'blood-screen', -5000);
+      }
+      
+      console.log('🔪 Blood screen activated! Player lost 5000 coins');
+    }
+    
+    function exitBloodScreen() {
+      bloodScreen.classList.remove('active');
+      document.body.style.overflow = 'auto';
+      
+      // Clear blood particles
+      const bloodParticles = document.getElementById('bloodParticles');
+      if (bloodParticles) {
+        bloodParticles.innerHTML = '';
+      }
+      
+      // Redirect to main menu
+      setTimeout(() => {
+        goBack();
+      }, 500);
+    }
+    
+    function createBloodParticles() {
+      const bloodParticles = document.getElementById('bloodParticles');
+      if (!bloodParticles) return;
+      
+      // Create multiple blood drops
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.className = 'blood-particle';
+          
+          // Random position across the screen
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 2 + 's';
+          particle.style.animationDuration = (2 + Math.random() * 2) + 's';
+          
+          // Random size
+          const size = 2 + Math.random() * 6;
+          particle.style.width = size + 'px';
+          particle.style.height = size + 'px';
+          
+          bloodParticles.appendChild(particle);
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 5000);
+        }, i * 100);
+      }
+    }
     
 
     
@@ -1048,5 +1325,9 @@
       }));
     }
   </script>
+  <!-- Firebase Configuration -->
+  <script src="firebase-config.js"></script>
+  <!-- Easter Eggs Configuration -->
+  <script src="easter-eggs-config.js"></script>
 </body>
 </html> 

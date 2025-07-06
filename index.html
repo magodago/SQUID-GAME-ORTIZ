@@ -3978,7 +3978,7 @@
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
-      max-width: 600px;
+      max-width: 800px;
     }
     
     .envelope-btn {
@@ -4094,6 +4094,28 @@
       box-shadow: 0 0 50px #006400, inset 0 0 30px rgba(0, 100, 0, 0.5);
     }
     
+    .pvp-btn {
+      background: linear-gradient(45deg, #FF4500, #FF6347);
+      box-shadow: 0 0 30px #FF4500, inset 0 0 20px rgba(255, 69, 0, 0.3);
+    }
+    
+    .pvp-btn:hover {
+      transform: scale(1.1) rotateY(8deg);
+      box-shadow: 0 0 50px #FF4500, inset 0 0 30px rgba(255, 69, 0, 0.5);
+    }
+    
+    .robo-btn {
+      background: linear-gradient(45deg, #8B0000, #DC143C);
+      box-shadow: 0 0 30px #8B0000, inset 0 0 20px rgba(139, 0, 0, 0.3);
+    }
+    
+    .robo-btn:hover {
+      transform: scale(1.1) rotateY(10deg);
+      box-shadow: 0 0 50px #8B0000, inset 0 0 30px rgba(139, 0, 0, 0.5);
+    }
+    
+
+    
     .frontman-btn {
       background: linear-gradient(45deg, #000000, #333333);
       box-shadow: 0 0 30px #000000, inset 0 0 20px rgba(0, 0, 0, 0.3);
@@ -4196,7 +4218,9 @@
         .envelopes-container {
           gap: 0.8rem;
           margin: 1.5rem 0;
-          max-width: 400px;
+          max-width: 500px;
+          flex-wrap: wrap;
+          justify-content: center;
         }
         .envelope-btn {
           width: 100px;
@@ -4591,6 +4615,11 @@
       <button class="envelope-btn joker-btn" id="jokerBtn">
         <div class="envelope-content">
           <span class="envelope-text">JOKER PISTAS</span>
+        </div>
+      </button>
+      <button class="envelope-btn pvp-btn" id="pvpBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">ROBO</span>
         </div>
       </button>
     </div>
@@ -5964,6 +5993,101 @@
             messageEl.parentNode.removeChild(messageEl);
           }
           window.location.href = 'joker-pistas.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // PvP BATALLA Button Event Listener
+    const pvpBtn = document.getElementById('pvpBtn');
+    pvpBtn.addEventListener('click', () => {
+      console.log('ROBO seleccionado');
+      
+      // Add dramatic effect
+      pvpBtn.style.transform = 'scale(0.9) rotateY(8deg)';
+      pvpBtn.style.boxShadow = '0 0 80px #FF4500, inset 0 0 40px rgba(255, 69, 0, 0.7)';
+      
+      // Create simple explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#FF4500';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = pvpBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        pvpBtn.style.transform = '';
+        pvpBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '⚔️ SISTEMA DE ROBO ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#FF4500';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #FF4500';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'robo.html';
         }, 2000);
       }, 1000);
     });

@@ -777,6 +777,17 @@
             // Start game
             gameInProgress = true;
             
+            // Start game session tracking
+            if (window.PlayerDataManager && window.PlayerDataManager.startGameSession) {
+                const playerName = localStorage.getItem('soldierName') || 'Jugador';
+                window.PlayerDataManager.startGameSession(playerName, 'vip-game').then(sessionId => {
+                    if (sessionId) {
+                        window.currentGameSessionId = sessionId;
+                        console.log('🎮 VIP game session started:', sessionId);
+                    }
+                });
+            }
+            
             const playButton = document.getElementById('playButton');
             const statusText = document.getElementById('statusText');
             const gameProgress = document.getElementById('gameProgress');
@@ -828,6 +839,21 @@
 
         function endGame(betAmount) {
             console.log('🏁 Ending game with bet amount:', betAmount);
+            
+            // End game session tracking
+            if (window.PlayerDataManager && window.PlayerDataManager.endGameSession && window.currentGameSessionId) {
+                const playerName = localStorage.getItem('soldierName') || 'Jugador';
+                window.PlayerDataManager.endGameSession(playerName, window.currentGameSessionId, {
+                    won: false, // Will be updated later
+                    gameType: 'vip-game',
+                    betAmount: betAmount,
+                    betType: currentBetType,
+                    betOption: currentBetOption
+                }).then(() => {
+                    console.log('🏁 VIP game session ended');
+                    window.currentGameSessionId = null;
+                });
+            }
             
             // Find winner
             const winner = players.reduce((prev, current) => 
@@ -886,6 +912,22 @@
             
             console.log('🎯 Bet result:', won ? 'WON' : 'LOST');
             console.log('💰 Winnings:', winnings);
+            
+            // Update session result with actual win status
+            if (window.PlayerDataManager && window.PlayerDataManager.endGameSession && window.currentGameSessionId) {
+                const playerName = localStorage.getItem('soldierName') || 'Jugador';
+                window.PlayerDataManager.endGameSession(playerName, window.currentGameSessionId, {
+                    won: won,
+                    gameType: 'vip-game',
+                    betAmount: betAmount,
+                    betType: currentBetType,
+                    betOption: currentBetOption,
+                    winnings: winnings
+                }).then(() => {
+                    console.log('🏁 VIP game session updated with result');
+                    window.currentGameSessionId = null;
+                });
+            }
             
             // Update coins and statistics
             if (won) {

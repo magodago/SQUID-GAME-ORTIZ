@@ -829,6 +829,19 @@
         function endGame(betAmount) {
             console.log('🏁 Ending game with bet amount:', betAmount);
             
+            // Check for VIP bonus activation
+            const vipBonusActive = localStorage.getItem('vipBonusActive') === 'true';
+            const vipBonusExpiry = parseInt(localStorage.getItem('vipBonusExpiry') || '0');
+            const isVipBonusValid = vipBonusActive && Date.now() < vipBonusExpiry;
+            
+            if (isVipBonusValid) {
+                console.log('🎪 VIP BONUS ACTIVE! Front Man Mask is working!');
+                // Show VIP bonus notification
+                showVipBonusNotification();
+            } else {
+                console.log('❌ No VIP bonus active');
+            }
+            
             // Find winner
             const winner = players.reduce((prev, current) => 
                 (prev.score > current.score) ? prev : current
@@ -851,7 +864,7 @@
             console.log('📊 Total score:', totalScore);
             console.log('📈 Score difference:', difference);
             
-            // Check if player won
+            // Check if player won with VIP bonus consideration
             let won = false;
             let winnings = 0;
             
@@ -860,6 +873,14 @@
                     won = true;
                     winnings = betAmount * 2;
                     console.log('🏆 Winner bet won!');
+                } else if (isVipBonusValid) {
+                    // VIP bonus: 30% chance to win even if wrong prediction
+                    const vipChance = Math.random();
+                    if (vipChance < 0.3) {
+                        won = true;
+                        winnings = Math.floor(betAmount * 1.5); // Reduced winnings for VIP bonus
+                        console.log('🎪 VIP BONUS: Won despite wrong prediction!');
+                    }
                 }
             } else if (currentBetType === 'score') {
                 let predicted = false;
@@ -871,6 +892,14 @@
                     won = true;
                     winnings = Math.floor(betAmount * 1.5);
                     console.log('📊 Score bet won!');
+                } else if (isVipBonusValid) {
+                    // VIP bonus: 25% chance to win even if wrong prediction
+                    const vipChance = Math.random();
+                    if (vipChance < 0.25) {
+                        won = true;
+                        winnings = Math.floor(betAmount * 1.2); // Reduced winnings for VIP bonus
+                        console.log('🎪 VIP BONUS: Won despite wrong score prediction!');
+                    }
                 }
             } else if (currentBetType === 'difference') {
                 let predicted = false;
@@ -881,6 +910,14 @@
                     won = true;
                     winnings = betAmount * 3;
                     console.log('⚡ Difference bet won!');
+                } else if (isVipBonusValid) {
+                    // VIP bonus: 20% chance to win even if wrong prediction
+                    const vipChance = Math.random();
+                    if (vipChance < 0.2) {
+                        won = true;
+                        winnings = Math.floor(betAmount * 2); // Reduced winnings for VIP bonus
+                        console.log('🎪 VIP BONUS: Won despite wrong difference prediction!');
+                    }
                 }
             }
             
@@ -1002,6 +1039,43 @@
             console.log('✅ Result modal closed');
         }
 
+        function showVipBonusNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                border: 3px solid #FFD700;
+                border-radius: 15px;
+                padding: 20px;
+                color: #000;
+                font-weight: bold;
+                z-index: 10001;
+                box-shadow: 0 0 30px #FFD700;
+                animation: pulse 1s ease-in-out;
+                text-align: center;
+                font-family: 'Orbitron', monospace;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 10px;">🎪</div>
+                <div style="font-size: 1.2rem; margin-bottom: 5px;">MÁSCARA DEL FRONT MAN</div>
+                <div style="font-size: 0.9rem;">¡BONUS VIP ACTIVO!</div>
+                <div style="font-size: 0.8rem; margin-top: 5px; color: #666;">Mejores probabilidades de victoria</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 2 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 2000);
+        }
+
         function updateAchievementProgress(type, amount = 1) {
           const today = new Date().toDateString();
           const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
@@ -1109,6 +1183,26 @@
             console.log('🔄 Initial VIP sync...');
             autoSyncVIPData();
         }, 3000);
+
+        // CSS Animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% {
+                    transform: translate(-50%, -50%) scale(1);
+                    box-shadow: 0 0 30px #FFD700;
+                }
+                50% {
+                    transform: translate(-50%, -50%) scale(1.1);
+                    box-shadow: 0 0 50px #FFD700;
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(1);
+                    box-shadow: 0 0 30px #FFD700;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html> 

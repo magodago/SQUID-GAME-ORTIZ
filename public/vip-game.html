@@ -851,12 +851,34 @@
             console.log('📊 Total score:', totalScore);
             console.log('📈 Score difference:', difference);
             
-            // Check if player won
+            // Check if player won with wealth factor
             let won = false;
             let winnings = 0;
+            let shouldWin = false;
+            
+            // Calculate wealth factor
+            const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            let wealthFactor = 0.5; // Default 50%
+            
+            if (totalCoins >= 50001) {
+                wealthFactor = 0.25; // Rico: 25%
+            } else if (totalCoins >= 20001) {
+                wealthFactor = 0.40; // Clase media-alta: 40%
+            } else if (totalCoins >= 10001) {
+                wealthFactor = 0.50; // Clase media: 50%
+            } else if (totalCoins >= 5001) {
+                wealthFactor = 0.60; // Clase media-baja: 60%
+            } else {
+                wealthFactor = 0.70; // Pobre: 70%
+            }
+            
+            const random = Math.random();
+            shouldWin = random < wealthFactor;
+            
+            console.log(`💰 VIP Wealth Factor - Coins: ${totalCoins.toLocaleString()}, Factor: ${(wealthFactor * 100).toFixed(0)}%, Random: ${(random * 100).toFixed(1)}%, Should Win: ${shouldWin}`);
             
             if (currentBetType === 'winner') {
-                if (winner.name === currentBetOption) {
+                if (winner.name === currentBetOption && shouldWin) {
                     won = true;
                     winnings = betAmount * 2;
                     console.log('🏆 Winner bet won!');
@@ -867,7 +889,7 @@
                 if (currentBetOption === 'medium' && totalScore >= 50 && totalScore <= 100) predicted = true;
                 if (currentBetOption === 'low' && totalScore < 50) predicted = true;
                 
-                if (predicted) {
+                if (predicted && shouldWin) {
                     won = true;
                     winnings = Math.floor(betAmount * 1.5);
                     console.log('📊 Score bet won!');
@@ -877,7 +899,7 @@
                 if (currentBetOption === 'close' && difference < 20) predicted = true;
                 if (currentBetOption === 'wide' && difference >= 20) predicted = true;
                 
-                if (predicted) {
+                if (predicted && shouldWin) {
                     won = true;
                     winnings = betAmount * 3;
                     console.log('⚡ Difference bet won!');

@@ -3980,6 +3980,71 @@
       box-shadow: 0 0 20px #FFD700;
       backdrop-filter: blur(5px);
     }
+
+    /* Wealth Factor Counter */
+    .wealth-factor-counter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 0.5rem 0;
+      padding: 0.6rem 1.2rem;
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #4CAF50;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #4CAF50;
+      backdrop-filter: blur(5px);
+    }
+
+    .wealth-icon {
+      font-size: 1.2rem;
+      color: #4CAF50;
+      text-shadow: 0 0 10px #4CAF50;
+      animation: wealthGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes wealthGlow {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.1) rotate(5deg); }
+    }
+
+    .wealth-text {
+      color: #4CAF50;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #4CAF50;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+
+    .wealth-factor {
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .wealth-factor.wealth-poor {
+      color: #FFD700;
+      text-shadow: 0 0 10px #FFD700;
+    }
+
+    .wealth-factor.wealth-medium-low {
+      color: #FFA500;
+      text-shadow: 0 0 10px #FFA500;
+    }
+
+    .wealth-factor.wealth-medium {
+      color: #FF6B35;
+      text-shadow: 0 0 10px #FF6B35;
+    }
+
+    .wealth-factor.wealth-medium-high {
+      color: #FF4500;
+      text-shadow: 0 0 10px #FF4500;
+    }
+
+    .wealth-factor.wealth-rich {
+      color: #FF0000;
+      text-shadow: 0 0 10px #FF0000;
+    }
     
     .coin-icon {
       font-size: 1.5rem;
@@ -4731,6 +4796,12 @@
     <div class="coins-counter" id="coinsCounter">
       <span class="coin-icon">🪙</span>
       <span class="coins-text">ORTIZ COINS: <span id="totalCoins">0</span></span>
+    </div>
+    
+    <!-- Wealth Factor Display -->
+    <div class="wealth-factor-counter" id="wealthFactorCounter">
+      <span class="wealth-icon">💰</span>
+      <span class="wealth-text">ESTADO: <span id="wealthFactor">POBRE (70% ganar)</span></span>
     </div>
     
     <!-- Soldier Name Modal -->
@@ -6446,7 +6517,41 @@
           easterEgg6.style.display = 'none';
         }
       }
+      
+      // Update wealth factor display
+      updateWealthFactorDisplay();
 
+    }
+
+    function updateWealthFactorDisplay() {
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const wealthFactor = calculateWealthFactor();
+      const wealthDisplay = document.getElementById('wealthFactor');
+      
+      if (wealthDisplay) {
+        let wealthClass = '';
+        let wealthText = '';
+        
+        if (totalCoins >= 50001) {
+          wealthClass = 'wealth-rich';
+          wealthText = 'RICO';
+        } else if (totalCoins >= 20001) {
+          wealthClass = 'wealth-medium-high';
+          wealthText = 'CLASE MEDIA-ALTA';
+        } else if (totalCoins >= 10001) {
+          wealthClass = 'wealth-medium';
+          wealthText = 'CLASE MEDIA';
+        } else if (totalCoins >= 5001) {
+          wealthClass = 'wealth-medium-low';
+          wealthText = 'CLASE MEDIA-BAJA';
+        } else {
+          wealthClass = 'wealth-poor';
+          wealthText = 'POBRE';
+        }
+        
+        wealthDisplay.textContent = `${wealthText} (${(wealthFactor * 100).toFixed(0)}% ganar)`;
+        wealthDisplay.className = `wealth-factor ${wealthClass}`;
+      }
     }
 
     // Escuchar evento ortizCoinsUpdated y actualizar el contador
@@ -9278,7 +9383,7 @@
       
       console.log('⚔️ Computer chose:', computerChoice);
       
-      // Determine winner
+      // Determine winner with wealth factor
       let result;
       let playerWins = false;
       
@@ -9289,10 +9394,21 @@
         (playerChoice === 'paper' && computerChoice === 'rock') ||
         (playerChoice === 'scissors' && computerChoice === 'paper')
       ) {
-        result = 'victoria';
-        playerWins = true;
+        // Player should win based on game logic, but check wealth factor
+        if (shouldPlayerWin()) {
+          result = 'victoria';
+          playerWins = true;
+        } else {
+          result = 'derrota';
+        }
       } else {
-        result = 'derrota';
+        // Player should lose based on game logic, but check wealth factor
+        if (shouldPlayerWin()) {
+          result = 'victoria';
+          playerWins = true;
+        } else {
+          result = 'derrota';
+        }
       }
       
       // Show result
@@ -9450,6 +9566,40 @@
       } catch (error) {
         console.error('❌ Automatic sync error:', error);
       }
+    }
+
+    // WEALTH FACTOR SYSTEM - NEW
+    function calculateWealthFactor() {
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      
+      // Sistema de probabilidades basado en riqueza
+      if (totalCoins >= 50001) {
+        // Rico: 25% de probabilidad de ganar
+        return 0.25;
+      } else if (totalCoins >= 20001) {
+        // Clase media-alta: 40% de probabilidad de ganar
+        return 0.40;
+      } else if (totalCoins >= 10001) {
+        // Clase media: 50% de probabilidad de ganar
+        return 0.50;
+      } else if (totalCoins >= 5001) {
+        // Clase media-baja: 60% de probabilidad de ganar
+        return 0.60;
+      } else {
+        // Pobre: 70% de probabilidad de ganar (para ayudar a los nuevos)
+        return 0.70;
+      }
+    }
+
+    function shouldPlayerWin() {
+      const wealthFactor = calculateWealthFactor();
+      const random = Math.random();
+      const won = random < wealthFactor;
+      
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      console.log(`💰 Wealth Factor Check - Coins: ${totalCoins.toLocaleString()}, Factor: ${(wealthFactor * 100).toFixed(0)}%, Random: ${(random * 100).toFixed(1)}%, Result: ${won ? 'WIN' : 'LOSE'}`);
+      
+      return won;
     }
 
     // Initialize page

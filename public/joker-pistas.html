@@ -713,10 +713,31 @@
             const correctSelections = selectedCards.filter(pos => jokerPositions.includes(pos)).length;
             const isActuallyWin = correctSelections === 3;
             
-            // 5% de probabilidad de ganar (para dar pistas)
-            const shouldGiveHint = Math.random() < 0.05;
+            // Calculate wealth factor
+            const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            let wealthFactor = 0.5; // Default 50%
             
-            if (isActuallyWin || shouldGiveHint) {
+            if (totalCoins >= 50001) {
+                wealthFactor = 0.25; // Rico: 25%
+            } else if (totalCoins >= 20001) {
+                wealthFactor = 0.40; // Clase media-alta: 40%
+            } else if (totalCoins >= 10001) {
+                wealthFactor = 0.50; // Clase media: 50%
+            } else if (totalCoins >= 5001) {
+                wealthFactor = 0.60; // Clase media-baja: 60%
+            } else {
+                wealthFactor = 0.70; // Pobre: 70%
+            }
+            
+            const random = Math.random();
+            const shouldWin = random < wealthFactor;
+            
+            console.log(`💰 Joker Wealth Factor - Coins: ${totalCoins.toLocaleString()}, Factor: ${(wealthFactor * 100).toFixed(0)}%, Random: ${(random * 100).toFixed(1)}%, Should Win: ${shouldWin}`);
+            
+            // 5% de probabilidad de ganar (para dar pistas) - pero solo si el wealth factor lo permite
+            const shouldGiveHint = Math.random() < 0.05 && shouldWin;
+            
+            if ((isActuallyWin && shouldWin) || shouldGiveHint) {
                 // Verificar qué pista mostrar
                 const pista1Mostrada = localStorage.getItem('jokerPista1Mostrada') === 'true';
                 const pista2Mostrada = localStorage.getItem('jokerPista2Mostrada') === 'true';

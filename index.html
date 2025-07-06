@@ -3980,6 +3980,201 @@
       box-shadow: 0 0 20px #FFD700;
       backdrop-filter: blur(5px);
     }
+
+    /* Wealth Factor Counter */
+    .wealth-factor-counter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      margin: 0.5rem 0;
+      padding: 0.6rem 1.2rem;
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #4CAF50;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #4CAF50;
+      backdrop-filter: blur(5px);
+    }
+
+    .wealth-icon {
+      font-size: 1.2rem;
+      color: #4CAF50;
+      text-shadow: 0 0 10px #4CAF50;
+      animation: wealthGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes wealthGlow {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.1) rotate(5deg); }
+    }
+
+    .wealth-text {
+      color: #4CAF50;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #4CAF50;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+
+    .wealth-factor {
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .wealth-factor.wealth-poor {
+      color: #FFD700;
+      text-shadow: 0 0 10px #FFD700;
+    }
+
+    .wealth-factor.wealth-medium-low {
+      color: #FFA500;
+      text-shadow: 0 0 10px #FFA500;
+    }
+
+    .wealth-factor.wealth-medium {
+      color: #FF6B35;
+      text-shadow: 0 0 10px #FF6B35;
+    }
+
+    .wealth-factor.wealth-medium-high {
+      color: #FF4500;
+      text-shadow: 0 0 10px #FF4500;
+    }
+
+    .wealth-factor.wealth-rich {
+      color: #FF0000;
+      text-shadow: 0 0 10px #FF0000;
+    }
+
+    /* VIP Trap Modal */
+    .vip-trap-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      backdrop-filter: blur(10px);
+    }
+
+    .vip-trap-content {
+      background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+      border: 3px solid #FFD700;
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      margin: 0 auto;
+      box-shadow: 0 0 50px #FFD700, inset 0 0 50px rgba(255, 215, 0, 0.1);
+      animation: vipTrapGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes vipTrapGlow {
+      0% { box-shadow: 0 0 50px #FFD700, inset 0 0 50px rgba(255, 215, 0, 0.1); }
+      100% { box-shadow: 0 0 80px #FFD700, inset 0 0 80px rgba(255, 215, 0, 0.2); }
+    }
+
+    .vip-trap-header h2 {
+      color: #FFD700;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 15px #FFD700;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+
+    .vip-trap-subtitle {
+      color: #FFA500;
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 10px #FFA500;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+
+    .vip-trap-message {
+      margin: 1.5rem 0;
+    }
+
+    .vip-trap-message p {
+      color: #ffffff;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .vip-trap-warning {
+      color: #FF0000;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #FF0000;
+      margin-top: 1rem;
+      animation: warningBlink 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes warningBlink {
+      0% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    .vip-trap-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .vip-trap-accept-btn, .vip-trap-dare-btn, .vip-trap-close-btn {
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: 2px solid;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', Arial, sans-serif;
+      min-width: 150px;
+    }
+
+    .vip-trap-accept-btn {
+      background: linear-gradient(45deg, #00ff00, #00cc00);
+      color: #000;
+      border-color: #00ff00;
+      box-shadow: 0 0 20px #00ff00;
+    }
+
+    .vip-trap-accept-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #00ff00;
+    }
+
+    .vip-trap-dare-btn {
+      background: linear-gradient(45deg, #ff0000, #cc0000);
+      color: #fff;
+      border-color: #ff0000;
+      box-shadow: 0 0 20px #ff0000;
+    }
+
+    .vip-trap-dare-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #ff0000;
+    }
+
+    .vip-trap-close-btn {
+      background: linear-gradient(45deg, #666666, #444444);
+      color: #fff;
+      border-color: #666666;
+      box-shadow: 0 0 20px #666666;
+    }
+
+    .vip-trap-close-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #666666;
+    }
     
     .coin-icon {
       font-size: 1.5rem;
@@ -4731,6 +4926,12 @@
     <div class="coins-counter" id="coinsCounter">
       <span class="coin-icon">🪙</span>
       <span class="coins-text">ORTIZ COINS: <span id="totalCoins">0</span></span>
+    </div>
+    
+    <!-- Wealth Factor Display -->
+    <div class="wealth-factor-counter" id="wealthFactorCounter">
+      <span class="wealth-icon">💰</span>
+      <span class="wealth-text">ESTADO: <span id="wealthFactor">POBRE (70% ganar)</span></span>
     </div>
     
     <!-- Soldier Name Modal -->
@@ -6477,7 +6678,187 @@
           easterEgg6.style.display = 'none';
         }
       }
+      
+      // Update wealth factor display
+      updateWealthFactorDisplay();
 
+    }
+
+    function updateWealthFactorDisplay() {
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const wealthFactor = calculateWealthFactor();
+      const wealthDisplay = document.getElementById('wealthFactor');
+      
+      if (wealthDisplay) {
+        let wealthClass = '';
+        let wealthText = '';
+        
+        if (totalCoins >= 50001) {
+          wealthClass = 'wealth-rich';
+          wealthText = 'RICO';
+        } else if (totalCoins >= 20001) {
+          wealthClass = 'wealth-medium-high';
+          wealthText = 'CLASE MEDIA-ALTA';
+        } else if (totalCoins >= 10001) {
+          wealthClass = 'wealth-medium';
+          wealthText = 'CLASE MEDIA';
+        } else if (totalCoins >= 5001) {
+          wealthClass = 'wealth-medium-low';
+          wealthText = 'CLASE MEDIA-BAJA';
+        } else {
+          wealthClass = 'wealth-poor';
+          wealthText = 'POBRE';
+        }
+        
+        wealthDisplay.textContent = `${wealthText} (${(wealthFactor * 100).toFixed(0)}% ganar)`;
+        wealthDisplay.className = `wealth-factor ${wealthClass}`;
+      }
+      
+      // Check for VIP trap at 150,000 coins
+      checkVIPTrap(totalCoins);
+    }
+
+    function checkVIPTrap(totalCoins) {
+      if (totalCoins >= 150000) {
+        const vipTrapShown = localStorage.getItem('vipTrapShown');
+        if (vipTrapShown !== 'true') {
+          showVIPTrap();
+        }
+      }
+    }
+
+    function showVIPTrap() {
+      console.log('🐎 VIP Trap triggered - player has 150,000+ coins');
+      
+      // Mark as shown permanently
+      localStorage.setItem('vipTrapShown', 'true');
+      
+      // Create modal HTML
+      const modalHTML = `
+        <div class="vip-trap-modal" id="vipTrapModal">
+          <div class="vip-trap-content">
+            <div class="vip-trap-header">
+              <h2>🐎 VIP - FRONT MAN</h2>
+              <div class="vip-trap-subtitle">¡No nos gustan los caballos con tanto dinero!</div>
+            </div>
+            
+            <div class="vip-trap-message">
+              <p>¿Aceptas que te quitemos <strong>100,000 monedas</strong> o prefieres jugártela en decirnos <strong>NO</strong>?</p>
+              <div class="vip-trap-warning">⚠️ Piensa bien tu respuesta, caballo</div>
+            </div>
+            
+            <div class="vip-trap-buttons">
+              <button class="vip-trap-accept-btn" id="vipTrapAcceptBtn">✅ ACEPTO</button>
+              <button class="vip-trap-dare-btn" id="vipTrapDareBtn">🎰 ME LA JUEGO</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add modal to page
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+      
+      // Add event listeners
+      document.getElementById('vipTrapAcceptBtn').addEventListener('click', () => {
+        executeVIPTrapAccept();
+      });
+      
+      document.getElementById('vipTrapDareBtn').addEventListener('click', () => {
+        executeVIPTrapDare();
+      });
+      
+      // Close on outside click
+      document.getElementById('vipTrapModal').addEventListener('click', (e) => {
+        if (e.target.id === 'vipTrapModal') {
+          closeVIPTrapModal();
+        }
+      });
+    }
+
+    function executeVIPTrapAccept() {
+      console.log('✅ VIP Trap - Player accepted 100,000 coin penalty');
+      
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newCoins = Math.max(0, currentCoins - 100000);
+      
+      // Update coins
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      
+      // Track in Firebase
+      const playerName = localStorage.getItem('soldierName');
+      if (playerName && window.PlayerDataManager) {
+        PlayerDataManager.trackEasterEgg(playerName, 'vip-trap-accept', 100000);
+      }
+      
+      loadTotalCoins();
+      
+      // Show result message
+      const modal = document.getElementById('vipTrapModal');
+      modal.innerHTML = `
+        <div class="vip-trap-content">
+          <div class="vip-trap-header">
+            <h2 style="color: #00ff00;">🐎 ¡SABIA DECISIÓN!</h2>
+          </div>
+          <div class="vip-trap-message">
+            <p style="color: #ffffff; font-size: 1.3rem; margin: 20px 0;">Al menos sabes cuándo ceder</p>
+            <p style="color: #00ff66; font-size: 1.1rem;">Penalización: -100,000 monedas</p>
+            <p style="color: #ffff00; font-size: 1rem; margin: 15px 0; font-style: italic;">Te quedan ${newCoins.toLocaleString()} monedas</p>
+          </div>
+          <div class="vip-trap-buttons">
+            <button class="vip-trap-close-btn" id="vipTrapCloseBtn">✅ CERRAR</button>
+          </div>
+        </div>
+      `;
+      
+      // Add close button listener
+      document.getElementById('vipTrapCloseBtn').addEventListener('click', () => {
+        closeVIPTrapModal();
+      });
+    }
+
+    function executeVIPTrapDare() {
+      console.log('🎰 VIP Trap - Player dared to say NO - loses everything!');
+      
+      // Reset coins to 0
+      localStorage.setItem('totalOrtizCoins', '0');
+      
+      // Track in Firebase
+      const playerName = localStorage.getItem('soldierName');
+      if (playerName && window.PlayerDataManager) {
+        PlayerDataManager.trackEasterEgg(playerName, 'vip-trap-dare', 150000);
+      }
+      
+      loadTotalCoins();
+      
+      // Show result message
+      const modal = document.getElementById('vipTrapModal');
+      modal.innerHTML = `
+        <div class="vip-trap-content">
+          <div class="vip-trap-header">
+            <h2 style="color: #ff0000;">🐎 ¡ERES UN CABALLO!</h2>
+          </div>
+          <div class="vip-trap-message">
+            <p style="color: #ffffff; font-size: 1.3rem; margin: 20px 0;">¡Ves como eres un caballo, no piensas!</p>
+            <p style="color: #ff6666; font-size: 1.1rem;">Penalización: -TODAS las monedas</p>
+            <p style="color: #ffff00; font-size: 1rem; margin: 15px 0; font-style: italic;">Te quedan 0 monedas</p>
+          </div>
+          <div class="vip-trap-buttons">
+            <button class="vip-trap-close-btn" id="vipTrapCloseBtn">😈 CERRAR</button>
+          </div>
+        </div>
+      `;
+      
+      // Add close button listener
+      document.getElementById('vipTrapCloseBtn').addEventListener('click', () => {
+        closeVIPTrapModal();
+      });
+    }
+
+    function closeVIPTrapModal() {
+      const modal = document.getElementById('vipTrapModal');
+      if (modal) {
+        modal.remove();
+      }
     }
 
     // Escuchar evento ortizCoinsUpdated y actualizar el contador
@@ -7066,7 +7447,11 @@
     }
     
     function addTwentyCoins() {
-      console.log('🪙 Adding 20 coins from Gods Power Easter Egg...');
+      console.log('🪙 Adding 20 coins from VEINTE Easter Egg...');
+      
+      // Mark as used (verification already done before calling this function)
+      localStorage.setItem('veinteEasterEggUsed', 'true');
+      console.log('✅ VEINTE Easter Egg marked as used');
       
       // Get current coins
       let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
@@ -7149,7 +7534,339 @@
       // Create +20 coins effect
       createPlusTwentyEffect();
       
-      console.log('🎉 Gods Power Easter Egg coin addition completed!');
+      console.log('🎉 VEINTE Easter Egg coin addition completed!');
+    }
+    
+    function addDAGOCoinsSimple(currentCoins) {
+      console.log('💰 Adding DAGO admin code coins (simple method)...');
+      
+      const coinsToAdd = 53450;
+      const newCoins = currentCoins + coinsToAdd;
+      
+      // Update localStorage immediately (like VEINTE)
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      console.log(`✅ localStorage updated: ${currentCoins} -> ${newCoins}`);
+      
+      // Update display immediately
+      if (typeof loadTotalCoins === 'function') {
+        loadTotalCoins();
+      }
+      
+      // Create simple coin effect (like VEINTE)
+      createPlusDAGOEffect();
+      
+      // Sync with Firebase
+      const playerName = localStorage.getItem('soldierName');
+      if (playerName && window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
+        try {
+          PlayerDataManager.safeAddCoins(coinsToAdd, 'admin-code-dago');
+          console.log('✅ Firebase sync successful for DAGO admin code coins');
+        } catch (error) {
+          console.error('❌ Error syncing DAGO coins to Firebase:', error);
+          // Manual sync as fallback
+          if (typeof PlayerDataManager.savePlayerData === 'function') {
+            PlayerDataManager.savePlayerData(playerName, newCoins, {
+              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+              lastSync: new Date().toISOString(),
+              autoSync: true,
+              gameType: 'admin-code-dago',
+              coinChange: coinsToAdd
+            }).catch(error => {
+              console.error('❌ Manual Firebase sync failed for DAGO:', error);
+            });
+          }
+        }
+      }
+      
+      console.log(`✅ DAGO admin code coins added: ${currentCoins} -> ${newCoins}`);
+    }
+    
+    function createPlusDAGOEffect() {
+      console.log('🎬 Creating simple DAGO coin effect...');
+      
+      // Create the +53,450 effect element (like VEINTE)
+      const plusDAGOEffect = document.createElement('div');
+      plusDAGOEffect.className = 'plus-dago-effect';
+      plusDAGOEffect.innerHTML = `
+        <div class="plus-dago-content">
+          <span class="plus-dago-icon">🪙</span>
+          <span class="plus-dago-text">+53,450</span>
+        </div>
+      `;
+      
+      // Position it in the center of the screen
+      plusDAGOEffect.style.cssText = `
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10000;
+        pointer-events: none;
+        font-family: 'Orbitron', Arial, sans-serif;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #FFD700;
+        text-shadow: 0 0 20px #FFD700;
+      `;
+      
+      document.body.appendChild(plusDAGOEffect);
+      
+      // Animate the effect (like VEINTE)
+      plusDAGOEffect.animate([
+        { 
+          opacity: 0, 
+          transform: 'translate(-50%, -50%) scale(0.5)',
+          filter: 'brightness(1)'
+        },
+        { 
+          opacity: 1, 
+          transform: 'translate(-50%, -50%) scale(1.5)',
+          filter: 'brightness(2)'
+        },
+        { 
+          opacity: 0, 
+          transform: 'translate(-50%, -200px) scale(1)',
+          filter: 'brightness(1)'
+        }
+      ], {
+        duration: 2000,
+        easing: 'ease-out'
+      });
+      
+      // Remove the effect after animation
+      setTimeout(() => {
+        if (plusDAGOEffect.parentNode) {
+          plusDAGOEffect.parentNode.removeChild(plusDAGOEffect);
+        }
+      }, 2000);
+    }
+    
+    function createDAGOCoinAnimation() {
+      console.log('🎬 Creating DAGO coin animation...');
+      
+      // Create main animation container
+      const animationContainer = document.createElement('div');
+      animationContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 9999;
+        overflow: hidden;
+      `;
+      
+      document.body.appendChild(animationContainer);
+      
+      // Create multiple coin streams
+      for (let stream = 0; stream < 5; stream++) {
+        setTimeout(() => {
+          for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+              const coin = document.createElement('div');
+              coin.textContent = '🪙';
+              coin.style.cssText = `
+                position: absolute;
+                font-size: 2rem;
+                color: #FFD700;
+                text-shadow: 0 0 20px #FFD700;
+                pointer-events: none;
+                z-index: 10000;
+                animation: coinFall 3s ease-in forwards;
+              `;
+              
+              // Random starting position at top
+              coin.style.left = Math.random() * window.innerWidth + 'px';
+              coin.style.top = '-50px';
+              
+              // Random target position (center area)
+              const targetX = (window.innerWidth / 2) + (Math.random() - 0.5) * 400;
+              const targetY = (window.innerHeight / 2) + (Math.random() - 0.5) * 200;
+              
+              animationContainer.appendChild(coin);
+              
+              // Animate coin falling
+              coin.animate([
+                { 
+                  transform: 'translate(0, 0) rotate(0deg) scale(1)',
+                  opacity: 1
+                },
+                { 
+                  transform: `translate(${targetX - parseFloat(coin.style.left)}px, ${targetY + 50}px) rotate(360deg) scale(1.5)`,
+                  opacity: 1
+                },
+                { 
+                  transform: `translate(${targetX - parseFloat(coin.style.left)}px, ${targetY + 100}px) rotate(720deg) scale(0.8)`,
+                  opacity: 0
+                }
+              ], {
+                duration: 3000,
+                easing: 'ease-in'
+              });
+              
+              // Remove coin after animation
+              setTimeout(() => {
+                if (coin.parentNode) {
+                  coin.parentNode.removeChild(coin);
+                }
+              }, 3000);
+              
+            }, i * 100); // Stagger coins in each stream
+          }
+        }, stream * 500); // Stagger streams
+      }
+      
+      // Add CSS animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes coinFall {
+          0% { 
+            transform: translate(0, 0) rotate(0deg) scale(1);
+            opacity: 1;
+          }
+          50% { 
+            transform: translate(var(--target-x), var(--target-y)) rotate(360deg) scale(1.5);
+            opacity: 1;
+          }
+          100% { 
+            transform: translate(var(--target-x), calc(var(--target-y) + 100px)) rotate(720deg) scale(0.8);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Remove animation container after all animations complete
+      setTimeout(() => {
+        if (animationContainer.parentNode) {
+          animationContainer.parentNode.removeChild(animationContainer);
+        }
+        if (style.parentNode) {
+          style.parentNode.removeChild(style);
+        }
+      }, 8000);
+    }
+    
+    function showDAGOCoinsNotification(newCoins) {
+      console.log('💰 Showing DAGO admin code coins notification');
+      
+      // Create notification
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+        border: 3px solid #00ff00;
+        border-radius: 15px;
+        padding: 25px 35px;
+        color: white;
+        font-family: 'Orbitron', Arial, sans-serif;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        z-index: 10000;
+        box-shadow: 0 0 40px #00ff00;
+        animation: dagoCoinsPulse 2s ease-in-out infinite;
+        max-width: 500px;
+        line-height: 1.4;
+      `;
+      
+      notification.innerHTML = `
+        <div style="font-size: 2.5rem; margin-bottom: 15px;">🔐💰</div>
+        <div style="margin-bottom: 15px; font-size: 1.4rem;">¡CÓDIGO ADMIN DAGO!</div>
+        <div style="margin-bottom: 10px; font-size: 1.1rem;">Monedas añadidas: <span style="color: #ffff00;">+53,450</span></div>
+        <div style="font-size: 1rem; opacity: 0.9;">Nuevo total: <span style="color: #ffff00;">${newCoins.toLocaleString()}</span></div>
+        <div style="font-size: 0.9rem; margin-top: 15px; opacity: 0.8;">¡Bienvenido al panel de administración!</div>
+      `;
+      
+      // Add CSS animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes dagoCoinsPulse {
+          0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 40px #00ff00; }
+          50% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 60px #00ff00; }
+          100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 40px #00ff00; }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      document.body.appendChild(notification);
+      
+      // Remove after 5 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+        if (style.parentNode) {
+          style.parentNode.removeChild(style);
+        }
+      }, 5000);
+    }
+
+    function showEasterEggAlreadyUsedMessage() {
+      console.log('⚠️ Showing VEINTE Easter Egg already used message');
+      
+      // Debug: Show current status
+      const veinteEasterEggUsed = localStorage.getItem('veinteEasterEggUsed');
+      console.log('🔍 Debug - veinteEasterEggUsed:', veinteEasterEggUsed);
+      console.log('🔍 Debug - Current player:', localStorage.getItem('soldierName'));
+      
+      // Create notification
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        border: 3px solid #ff0000;
+        border-radius: 15px;
+        padding: 20px 30px;
+        color: white;
+        font-family: 'Orbitron', Arial, sans-serif;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-align: center;
+        z-index: 10000;
+        box-shadow: 0 0 30px #ff0000;
+        animation: easterEggUsedPulse 2s ease-in-out infinite;
+        max-width: 400px;
+        line-height: 1.4;
+      `;
+      
+      notification.innerHTML = `
+        <div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
+        <div style="margin-bottom: 15px;">¡YA USASTE ESTE HUEVO!</div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">El easter egg VEINTE solo se puede usar una vez por jugador.</div>
+      `;
+      
+      // Add CSS animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes easterEggUsedPulse {
+          0% { transform: translate(-50%, -50%) scale(1); }
+          50% { transform: translate(-50%, -50%) scale(1.05); }
+          100% { transform: translate(-50%, -50%) scale(1); }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      document.body.appendChild(notification);
+      
+      // Remove after 4 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+        if (style.parentNode) {
+          style.parentNode.removeChild(style);
+        }
+      }, 4000);
     }
     
     function createPlusOneEffect() {
@@ -7677,7 +8394,18 @@
             
             // Check if the sequence matches VEINTE
             if (veinteSequence.join('') === 'VEINTE') {
-              console.log('VEINTE sequence completed! +20 coins Easter Egg activated!');
+              console.log('VEINTE sequence completed! Checking if easter egg is available...');
+              
+              // Check if this easter egg has already been used
+              const veinteEasterEggUsed = localStorage.getItem('veinteEasterEggUsed');
+              if (veinteEasterEggUsed === 'true') {
+                console.log('⚠️ VEINTE Easter Egg already used by this player');
+                showEasterEggAlreadyUsedMessage();
+                veinteSequence = []; // Reset sequence
+                return;
+              }
+              
+              console.log('✅ VEINTE Easter Egg available! Activating...');
               addTwentyCoins();
               veinteSequence = []; // Reset sequence
             }
@@ -8622,8 +9350,8 @@
                     <div class="leaderboard-player">
                       <div class="leaderboard-name">${player.name}</div>
                       <div class="leaderboard-coins">🪙 ${player.coins.toLocaleString()} monedas</div>
-            </div>
-          </div>
+                    </div>
+                  </div>
                 `;
               });
             }
@@ -8690,7 +9418,7 @@
         })
         .catch((error) => {
           console.error('❌ Firebase connection test failed:', error);
-      });
+        });
     }
 
     function updateAchievementProgress(type, amount = 1) {
@@ -9309,7 +10037,7 @@
       
       console.log('⚔️ Computer chose:', computerChoice);
       
-      // Determine winner
+      // Determine winner with wealth factor
       let result;
       let playerWins = false;
       
@@ -9320,10 +10048,21 @@
         (playerChoice === 'paper' && computerChoice === 'rock') ||
         (playerChoice === 'scissors' && computerChoice === 'paper')
       ) {
-        result = 'victoria';
-        playerWins = true;
+        // Player should win based on game logic, but check wealth factor
+        if (shouldPlayerWin()) {
+          result = 'victoria';
+          playerWins = true;
+        } else {
+          result = 'derrota';
+        }
       } else {
-        result = 'derrota';
+        // Player should lose based on game logic, but check wealth factor
+        if (shouldPlayerWin()) {
+          result = 'victoria';
+          playerWins = true;
+        } else {
+          result = 'derrota';
+        }
       }
       
       // Show result
@@ -9481,6 +10220,40 @@
       } catch (error) {
         console.error('❌ Automatic sync error:', error);
       }
+    }
+
+    // WEALTH FACTOR SYSTEM - NEW
+    function calculateWealthFactor() {
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      
+      // Sistema de probabilidades basado en riqueza
+      if (totalCoins >= 50001) {
+        // Rico: 25% de probabilidad de ganar
+        return 0.25;
+      } else if (totalCoins >= 20001) {
+        // Clase media-alta: 40% de probabilidad de ganar
+        return 0.40;
+      } else if (totalCoins >= 10001) {
+        // Clase media: 50% de probabilidad de ganar
+        return 0.50;
+      } else if (totalCoins >= 5001) {
+        // Clase media-baja: 60% de probabilidad de ganar
+        return 0.60;
+      } else {
+        // Pobre: 70% de probabilidad de ganar (para ayudar a los nuevos)
+        return 0.70;
+      }
+    }
+
+    function shouldPlayerWin() {
+      const wealthFactor = calculateWealthFactor();
+      const random = Math.random();
+      const won = random < wealthFactor;
+      
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      console.log(`💰 Wealth Factor Check - Coins: ${totalCoins.toLocaleString()}, Factor: ${(wealthFactor * 100).toFixed(0)}%, Random: ${(random * 100).toFixed(1)}%, Result: ${won ? 'WIN' : 'LOSE'}`);
+      
+      return won;
     }
 
     // Initialize page
@@ -10076,21 +10849,44 @@
         </div>
     </div>
 
-    <!-- Notification Modal for Robbery Attempts -->
-    <div class="notification-modal" id="notificationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; justify-content: center; align-items: center;">
-        <div class="notification-content" style="background: linear-gradient(135deg, #2d0a00 0%, #ff7f50 50%, #2d0a00 100%); border: 3px solid #ffae42; border-radius: 20px; padding: 40px; max-width: 600px; width: 90%; text-align: center; position: relative; box-shadow: 0 0 50px rgba(255, 174, 66, 0.8); animation: notificationPulse 2s infinite;">
-            <div class="notification-title" id="notificationTitle" style="font-size: 2rem; font-weight: bold; margin-bottom: 20px; color: #ffae42; text-shadow: 0 0 20px #ffae42;">🚨 ¡ALERTA DE ROBO!</div>
-            <div class="notification-message" id="notificationMessage" style="font-size: 1.3rem; margin-bottom: 25px; color: #ffffff; line-height: 1.5;">
-                Alguien está intentando robarte...
+            <!-- Notification Modal for Robbery Attempts -->
+        <div class="notification-modal" id="notificationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; justify-content: center; align-items: center;">
+            <div class="notification-content" style="background: linear-gradient(135deg, #2d0a00 0%, #ff7f50 50%, #2d0a00 100%); border: 3px solid #ffae42; border-radius: 20px; padding: 40px; max-width: 600px; width: 90%; text-align: center; position: relative; box-shadow: 0 0 50px rgba(255, 174, 66, 0.8); animation: notificationPulse 2s infinite;">
+                <div class="notification-title" id="notificationTitle" style="font-size: 2rem; font-weight: bold; margin-bottom: 20px; color: #ffae42; text-shadow: 0 0 20px #ffae42;">🚨 ¡ALERTA DE ROBO!</div>
+                <div class="notification-message" id="notificationMessage" style="font-size: 1.3rem; margin-bottom: 25px; color: #ffffff; line-height: 1.5;">
+                    Alguien está intentando robarte...
+                </div>
+                <div class="notification-details" style="background: rgba(255, 174, 66, 0.1); border: 1px solid #ffae42; border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                    <div id="notificationAttacker" style="color: #ffffff; font-size: 1.1rem; margin-bottom: 10px;">Atacante: Desconocido</div>
+                    <div class="notification-amount" id="notificationAmount" style="font-size: 1.5rem; font-weight: bold; color: #ffd700; margin: 10px 0;">Cantidad: 0 monedas</div>
+                    <div id="notificationResult" style="color: #ffffff; font-size: 1.1rem;">Resultado: En proceso...</div>
+                </div>
+                <button class="notification-back-btn" onclick="closeRobberyNotification()" style="background: #ff7f50; color: white; border: none; padding: 15px 30px; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: all 0.3s;">ENTENDIDO</button>
             </div>
-            <div class="notification-details" style="background: rgba(255, 174, 66, 0.1); border: 1px solid #ffae42; border-radius: 10px; padding: 20px; margin-bottom: 25px;">
-                <div id="notificationAttacker" style="color: #ffffff; font-size: 1.1rem; margin-bottom: 10px;">Atacante: Desconocido</div>
-                <div class="notification-amount" id="notificationAmount" style="font-size: 1.5rem; font-weight: bold; color: #ffd700; margin: 10px 0;">Cantidad: 0 monedas</div>
-                <div id="notificationResult" style="color: #ffffff; font-size: 1.1rem;">Resultado: En proceso...</div>
-            </div>
-            <button class="notification-back-btn" onclick="closeRobberyNotification()" style="background: #ff7f50; color: white; border: none; padding: 15px 30px; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: all 0.3s;">ENTENDIDO</button>
         </div>
-    </div>
+
+        <!-- Voting Modal -->
+        <div id="votingModal" class="voting-modal">
+            <div class="voting-content" id="votingContent">
+                <div class="voting-title">🗳️ VOTACIÓN MASIVA</div>
+                <div class="voting-question">DEBÉIS ELEGIR A UNO<br>EL QUE MÁS VOTOS TENGA<br>PERDERÁ O GANARÁ MONEDAS</div>
+                <div class="voting-timer" id="votingTimer">01:00</div>
+                <div class="voting-players" id="votingPlayers">
+                    <!-- Players will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting Result Modal -->
+        <div id="votingResultModal" class="voting-modal">
+            <div class="voting-result" id="votingResult">
+                <div class="result-title">🎯 RESULTADO DE LA VOTACIÓN</div>
+                <div class="result-player" id="resultPlayer">Jugador</div>
+                <div class="result-action" id="resultAction">Acción</div>
+                <div class="result-amount" id="resultAmount">Cantidad</div>
+                <button class="close-button" onclick="closeVotingResult()">CERRAR</button>
+            </div>
+        </div>
 
     <style>
         @keyframes notificationPulse {
@@ -10214,6 +11010,169 @@
             color: #2d0a00 !important;
             transform: scale(1.05);
             box-shadow: 0 0 20px #ffae42;
+        }
+
+        /* Voting Modal Styles */
+        .voting-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            font-family: 'Orbitron', Arial, sans-serif;
+        }
+
+        .voting-content {
+            background: #000000;
+            border: 3px solid #ff6600;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 30px #ff6600;
+            animation: votingPulse 2s infinite;
+        }
+
+        @keyframes votingPulse {
+            0%, 100% { box-shadow: 0 0 30px #ff6600; }
+            50% { box-shadow: 0 0 50px #ff6600, 0 0 70px #ff6600; }
+        }
+
+        .voting-title {
+            font-size: 1.8rem;
+            color: #ff6600;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff6600;
+        }
+
+        .voting-question {
+            font-size: 1.2rem;
+            color: #ffffff;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .voting-timer {
+            font-size: 2.5rem;
+            color: #ff0000;
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px #ff0000;
+            font-weight: bold;
+        }
+
+        .voting-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .voting-player {
+            background: #000000;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .voting-player:hover {
+            background: #00ff00;
+            color: #000000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        .voting-player.selected {
+            background: #ff6600;
+            color: #000000;
+            border-color: #ff6600;
+            box-shadow: 0 0 15px #ff6600;
+        }
+
+        .voting-player.voted {
+            background: #ff0000;
+            color: #ffffff;
+            border-color: #ff0000;
+            box-shadow: 0 0 15px #ff0000;
+            cursor: not-allowed;
+        }
+
+        .voting-result {
+            background: #000000;
+            border: 3px solid #ff6600;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 30px #ff6600;
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            color: #ff6600;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff6600;
+        }
+
+        .result-player {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #ffffff;
+        }
+
+        .result-action {
+            font-size: 1.3rem;
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .result-amount {
+            font-size: 1.2rem;
+            color: #ffff00;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px #ffff00;
+        }
+
+        .close-button {
+            background: #000000;
+            color: #ff6600;
+            border: 2px solid #ff6600;
+            padding: 10px 20px;
+            font-family: 'Orbitron', Arial, sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-button:hover {
+            background: #ff6600;
+            color: #000000;
+            box-shadow: 0 0 15px #ff6600;
+        }
+
+        @media (max-width: 768px) {
+            .voting-content, .voting-result {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .voting-title, .result-title {
+                font-size: 1.5rem;
+            }
+
+            .voting-players {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
         }
     </style>
 
@@ -10366,8 +11325,257 @@
             setTimeout(() => {
                 startRobberyListener();
                 startCoinsSync(); // Start coins synchronization
+                startAdminCoinsListener(); // Listen for admin coin updates
+                
+                // Add test button for debugging
+                addTestButton();
             }, 5000); // Wait longer for Firebase to load completely
         });
+        
+        // Add test button for debugging admin sync
+        function addTestButton() {
+            const testButton = document.createElement('button');
+            testButton.textContent = '🧪 Test Admin Sync';
+            testButton.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                background: #ff6b6b;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000;
+                font-family: 'Orbitron', Arial, sans-serif;
+            `;
+            
+            testButton.onclick = function() {
+                const currentPlayer = localStorage.getItem('soldierName');
+                const currentCoins = localStorage.getItem('totalOrtizCoins');
+                console.log('🧪 Test Admin Sync:');
+                console.log('- Jugador:', currentPlayer);
+                console.log('- Monedas actuales:', currentCoins);
+                
+                // Test localStorage update
+                const testUpdate = {
+                    userId: currentPlayer,
+                    newCoins: parseInt(currentCoins || '0') + 1000,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('adminCoinsUpdate', JSON.stringify(testUpdate));
+                console.log('🧪 Test update creado:', testUpdate);
+                
+                alert(`Test creado:\nJugador: ${currentPlayer}\nMonedas actuales: ${currentCoins}\nNuevas monedas: ${testUpdate.newCoins}`);
+            };
+            
+            document.body.appendChild(testButton);
+            
+            // Add VEINTE Easter Egg debug button
+            const veinteDebugButton = document.createElement('button');
+            veinteDebugButton.textContent = '🔍 VEINTE Debug';
+            veinteDebugButton.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 200px;
+                background: #ffa500;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000;
+                font-family: 'Orbitron', Arial, sans-serif;
+            `;
+            
+            veinteDebugButton.onclick = function() {
+                const veinteEasterEggUsed = localStorage.getItem('veinteEasterEggUsed');
+                const currentPlayer = localStorage.getItem('soldierName');
+                console.log('🔍 VEINTE Easter Egg Debug:');
+                console.log('- Jugador:', currentPlayer);
+                console.log('- veinteEasterEggUsed:', veinteEasterEggUsed);
+                console.log('- Estado:', veinteEasterEggUsed === 'true' ? 'USADO' : 'DISPONIBLE');
+                
+                alert(`VEINTE Easter Egg Debug:\nJugador: ${currentPlayer}\nEstado: ${veinteEasterEggUsed === 'true' ? 'USADO' : 'DISPONIBLE'}\nValor: ${veinteEasterEggUsed || 'null'}`);
+            };
+            
+            document.body.appendChild(veinteDebugButton);
+        }
+
+        // Function to listen for admin coin updates
+        function startAdminCoinsListener() {
+            console.log('👂 Iniciando listener para actualizaciones del admin...');
+            
+            const currentPlayer = localStorage.getItem('soldierName');
+            console.log('👤 Jugador actual:', currentPlayer);
+            
+            // Listen for custom events
+            window.addEventListener('adminCoinsUpdate', (event) => {
+                const eventData = event.detail;
+                console.log('📢 Evento de actualización recibido:', eventData);
+                
+                if (eventData.userId === currentPlayer) {
+                    console.log('🎯 Actualización para el jugador actual detectada');
+                    updateLocalCoinsFromAdmin(eventData.newCoins);
+                } else {
+                    console.log('⚠️ Actualización para otro jugador:', eventData.userId, 'vs', currentPlayer);
+                }
+            });
+            
+            // Also check localStorage periodically for updates
+            setInterval(() => {
+                const adminUpdate = localStorage.getItem('adminCoinsUpdate');
+                if (adminUpdate) {
+                    try {
+                        const eventData = JSON.parse(adminUpdate);
+                        console.log('📢 Actualización del admin detectada en localStorage:', eventData);
+                        
+                        // Only process if it's recent (within last 30 seconds) and for current player
+                        if (eventData.userId === currentPlayer && 
+                            (Date.now() - eventData.timestamp) < 30000) {
+                            console.log('🎯 Procesando actualización del admin para jugador actual');
+                            updateLocalCoinsFromAdmin(eventData.newCoins);
+                        } else if (eventData.userId !== currentPlayer) {
+                            console.log('⚠️ Actualización para otro jugador:', eventData.userId, 'vs', currentPlayer);
+                        } else {
+                            console.log('⚠️ Actualización muy antigua:', Date.now() - eventData.timestamp, 'ms');
+                        }
+                        
+                        // Clear the update after processing
+                        localStorage.removeItem('adminCoinsUpdate');
+                    } catch (error) {
+                        console.error('❌ Error procesando actualización del admin:', error);
+                    }
+                }
+            }, 1000); // Check every 1 second for faster response
+            
+            // Also force a Firebase sync every 5 seconds as backup
+            setInterval(() => {
+                if (window.firebase && window.firebase.database) {
+                    const db = window.firebase.database();
+                    const playerRef = db.ref(`players/${currentPlayer}`);
+                    
+                    playerRef.once('value')
+                        .then((snapshot) => {
+                            const playerData = snapshot.val();
+                            if (playerData && playerData.coins !== undefined) {
+                                const firebaseCoins = playerData.coins;
+                                const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                                
+                                if (firebaseCoins !== localCoins) {
+                                    console.log(`🔄 Backup sync detectó diferencia: ${localCoins} -> ${firebaseCoins}`);
+                                    updateLocalCoinsFromAdmin(firebaseCoins);
+                                }
+                                
+                                // Additional VIP trap check in backup sync
+                                if (firebaseCoins >= 150000) {
+                                    const vipTrapShown = localStorage.getItem('vipTrapShown');
+                                    if (vipTrapShown !== 'true') {
+                                        console.log('🐎 VIP Trap detectado en backup sync!');
+                                        setTimeout(() => {
+                                            showVIPTrap();
+                                        }, 1000);
+                                    }
+                                }
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('❌ Error en backup sync:', error);
+                        });
+                }
+            }, 5000);
+            
+            console.log('✅ Admin coins listener iniciado con backup sync');
+        }
+
+        // Function to update local coins from admin update
+        function updateLocalCoinsFromAdmin(newCoins) {
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            
+            console.log(`🔄 Intentando actualizar monedas: ${currentCoins} -> ${newCoins}`);
+            
+            if (newCoins !== currentCoins) {
+                console.log(`✅ Actualizando monedas desde admin: ${currentCoins} -> ${newCoins}`);
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                
+                // Check for VIP trap immediately after coin update
+                if (newCoins >= 150000) {
+                    console.log('🐎 Verificando VIP trap después de actualización del admin...');
+                    const vipTrapShown = localStorage.getItem('vipTrapShown');
+                    if (vipTrapShown !== 'true') {
+                        console.log('🐎 ¡VIP Trap activado desde admin!');
+                        setTimeout(() => {
+                            showVIPTrap();
+                        }, 1000); // Small delay to ensure page is ready
+                    } else {
+                        console.log('🐎 VIP Trap ya fue mostrado anteriormente');
+                    }
+                }
+                
+                // Update display
+                if (typeof loadTotalCoins === 'function') {
+                    console.log('📊 Llamando a loadTotalCoins()');
+                    loadTotalCoins();
+                } else {
+                    console.log('⚠️ loadTotalCoins no está disponible');
+                    // Manual update as fallback
+                    const coinsDisplay = document.getElementById('totalCoins');
+                    if (coinsDisplay) {
+                        coinsDisplay.textContent = newCoins.toLocaleString();
+                        console.log('📊 Actualización manual del display');
+                    } else {
+                        console.log('❌ Elemento totalCoins no encontrado');
+                    }
+                }
+                
+                // Show notification
+                showAdminUpdateNotification(newCoins);
+                
+                // Dispatch event to notify other parts of the app
+                const event = new CustomEvent('coinsUpdated', {
+                    detail: { totalCoins: newCoins, source: 'admin' }
+                });
+                window.dispatchEvent(event);
+                
+                console.log('✅ Actualización completada exitosamente');
+            } else {
+                console.log('ℹ️ No hay diferencia en las monedas, no se actualiza');
+            }
+        }
+
+        // Function to show admin update notification
+        function showAdminUpdateNotification(newCoins) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 15px 20px;
+                color: #000;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 0 20px #FFD700;
+                animation: slideInRight 0.5s ease-out;
+                font-family: 'Orbitron', Arial, sans-serif;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 5px;">💰 ADMIN UPDATE</div>
+                <div style="font-size: 1rem;">Nuevas monedas: ${newCoins.toLocaleString()}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
 
         // Function to sync coins from Firebase
         function startCoinsSync() {
@@ -10408,6 +11616,381 @@
                 console.log('❌ Firebase not available for coins sync');
             }
         }
+
+        // ===== SISTEMA DE VOTACIÓN MASIVA =====
+        let votingActive = false;
+        let votingTimer = null;
+        let votingEndTime = null;
+        let selectedPlayer = null;
+        let hasVoted = false;
+
+        // Escuchar votaciones activas
+        function startVotingListener() {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const votingRef = db.ref('massVoting');
+                
+                votingRef.on('value', (snapshot) => {
+                    const votingData = snapshot.val();
+                    
+                    if (votingData && votingData.active) {
+                        // Mostrar modal de votación
+                        showVotingModal(votingData);
+                    } else {
+                        // Ocultar modal si no hay votación activa
+                        hideVotingModal();
+                    }
+                });
+
+                // Escuchar resultados
+                votingRef.child('result').on('value', (snapshot) => {
+                    const result = snapshot.val();
+                    if (result) {
+                        showVotingResult(result);
+                    }
+                });
+            }
+        }
+
+        function showVotingModal(votingData) {
+            if (votingActive) return; // Evitar múltiples modales
+            
+            votingActive = true;
+            votingEndTime = votingData.endTime;
+            selectedPlayer = null;
+            hasVoted = false;
+            
+            // Cargar lista de jugadores
+            const playersContainer = document.getElementById('votingPlayers');
+            playersContainer.innerHTML = '';
+            
+            votingData.players.forEach(player => {
+                const playerElement = document.createElement('div');
+                playerElement.className = 'voting-player';
+                playerElement.textContent = player.name;
+                playerElement.onclick = () => selectPlayer(player.id, playerElement);
+                playersContainer.appendChild(playerElement);
+            });
+            
+            // Mostrar modal
+            document.getElementById('votingModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Iniciar timer
+            startVotingTimer();
+            
+            console.log('🗳️ Modal de votación mostrado');
+        }
+
+        function selectPlayer(playerId, element) {
+            if (hasVoted) return;
+            
+            // Deseleccionar todos
+            document.querySelectorAll('.voting-player').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Seleccionar el elegido
+            element.classList.add('selected');
+            selectedPlayer = playerId;
+            
+            // Enviar voto
+            submitVote(playerId);
+        }
+
+        function submitVote(playerId) {
+            if (hasVoted) return;
+            
+            const currentPlayer = localStorage.getItem('soldierName');
+            if (!currentPlayer) {
+                alert('❌ Error: No se pudo identificar al jugador');
+                return;
+            }
+            
+            // Marcar como votado
+            hasVoted = true;
+            document.querySelectorAll('.voting-player').forEach(el => {
+                el.classList.add('voted');
+                el.style.cursor = 'not-allowed';
+            });
+            
+            // Enviar voto a Firebase
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const voteRef = db.ref(`massVoting/votes/${currentPlayer}`);
+                
+                const voteData = {
+                    voter: currentPlayer,
+                    targetPlayer: playerId,
+                    timestamp: Date.now()
+                };
+                
+                voteRef.set(voteData).then(() => {
+                    console.log('✅ Voto enviado:', playerId);
+                }).catch((error) => {
+                    console.error('❌ Error enviando voto:', error);
+                });
+            }
+        }
+
+        function startVotingTimer() {
+            if (votingTimer) clearInterval(votingTimer);
+            
+            votingTimer = setInterval(() => {
+                const now = Date.now();
+                const timeLeft = Math.max(0, votingEndTime - now);
+                
+                if (timeLeft <= 0) {
+                    clearInterval(votingTimer);
+                    votingTimer = null;
+                    
+                    // Mostrar 00:00 en el timer
+                    document.getElementById('votingTimer').textContent = '00:00';
+                    
+                    // Deshabilitar todos los botones de votar
+                    document.querySelectorAll('.voting-player').forEach(el => {
+                        el.classList.add('voted');
+                        el.style.cursor = 'not-allowed';
+                        el.onclick = null; // Remover el evento de click
+                    });
+                    
+                    // Mostrar botón CERRAR solo si no ha votado
+                    if (!hasVoted) {
+                        showCloseButton();
+                    }
+                    
+                    return;
+                }
+                
+                const minutes = Math.floor(timeLeft / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
+                const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                document.getElementById('votingTimer').textContent = timeString;
+            }, 1000);
+        }
+
+        function showCloseButton() {
+            // Crear botón CERRAR si no existe
+            let closeButton = document.getElementById('votingCloseButton');
+            if (!closeButton) {
+                closeButton = document.createElement('button');
+                closeButton.id = 'votingCloseButton';
+                closeButton.className = 'close-button';
+                closeButton.textContent = 'CERRAR';
+                closeButton.onclick = hideVotingModal;
+                
+                // Insertar después de la lista de jugadores
+                const playersContainer = document.getElementById('votingPlayers');
+                playersContainer.parentNode.insertBefore(closeButton, playersContainer.nextSibling);
+            }
+            
+            closeButton.style.display = 'block';
+        }
+
+        function hideVotingModal() {
+            votingActive = false;
+            selectedPlayer = null;
+            hasVoted = false;
+            
+            if (votingTimer) {
+                clearInterval(votingTimer);
+                votingTimer = null;
+            }
+            
+            // Ocultar botón CERRAR si existe
+            const closeButton = document.getElementById('votingCloseButton');
+            if (closeButton) {
+                closeButton.style.display = 'none';
+            }
+            
+            document.getElementById('votingModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            console.log('🗳️ Modal de votación oculto');
+        }
+
+        function showVotingResult(result) {
+            const resultModal = document.getElementById('votingResultModal');
+            const resultPlayer = document.getElementById('resultPlayer');
+            const resultAction = document.getElementById('resultAction');
+            const resultAmount = document.getElementById('resultAmount');
+            
+            resultPlayer.textContent = result.playerName;
+            resultAction.textContent = result.action;
+            resultAmount.textContent = `${result.amount.toLocaleString()} monedas (${result.voteCount} votos)`;
+            
+            resultModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            console.log('🎯 Resultado de votación mostrado:', result);
+        }
+
+        function closeVotingResult() {
+            document.getElementById('votingResultModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Iniciar listener de votación cuando la página cargue
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                startVotingListener();
+            }, 5000); // Esperar a que Firebase cargue
+        });
     </script>
+
+    <!-- ===== MODALES DE VOTACIÓN MASIVA ===== -->
+    
+    <!-- Modal de Votación -->
+    <div id="votingModal" class="modal" style="display: none;">
+        <div class="modal-content voting-modal">
+            <div class="modal-header">
+                <h2>🗳️ VOTACIÓN MASIVA</h2>
+                <div class="voting-timer">
+                    <span>Tiempo restante: </span>
+                    <span id="votingTimer" class="timer">--:--</span>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <p class="voting-instruction">Selecciona al jugador que será eliminado:</p>
+                <div id="votingPlayers" class="voting-players">
+                    <!-- Los jugadores se cargarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Resultado -->
+    <div id="votingResultModal" class="modal" style="display: none;">
+        <div class="modal-content result-modal">
+            <div class="modal-header">
+                <h2>🎯 RESULTADO DE LA VOTACIÓN</h2>
+            </div>
+            
+            <div class="modal-body">
+                <div class="result-info">
+                    <p><strong>Jugador:</strong> <span id="resultPlayer">-</span></p>
+                    <p><strong>Acción:</strong> <span id="resultAction">-</span></p>
+                    <p><strong>Detalles:</strong> <span id="resultAmount">-</span></p>
+                </div>
+                
+                <button class="close-button" onclick="closeVotingResult()">CERRAR</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* ===== ESTILOS PARA VOTACIÓN MASIVA ===== */
+        
+        .voting-modal {
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .voting-timer {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 10px 0;
+            font-family: 'Orbitron', Arial, sans-serif;
+        }
+        
+        .timer {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #fff;
+        }
+        
+        .voting-instruction {
+            text-align: center;
+            font-size: 1.1em;
+            margin: 20px 0;
+            color: #333;
+        }
+        
+        .voting-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .voting-player {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', Arial, sans-serif;
+            font-weight: bold;
+            border: 2px solid transparent;
+        }
+        
+        .voting-player:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-color: #fff;
+        }
+        
+        .voting-player.selected {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 184, 148, 0.5);
+        }
+        
+        .voting-player.voted {
+            background: linear-gradient(135deg, #636e72, #2d3436);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .close-button {
+            background: linear-gradient(135deg, #ff7675, #d63031);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Orbitron', Arial, sans-serif;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        
+        .close-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .result-modal {
+            max-width: 500px;
+        }
+        
+        .result-info {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            color: white;
+        }
+        
+        .result-info p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        
+        .result-info strong {
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+    </style>
 </body>
 </html> 

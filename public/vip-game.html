@@ -466,7 +466,7 @@
                 </div>
             </div>
             
-            <input type="number" class="bet-input" id="betAmount" min="1" max="1000" value="10" placeholder="Cantidad de Ortiz Coins">
+                            <input type="number" class="bet-input" id="betAmount" min="1" max="1000" value="10" placeholder="Mínimo: 1 Ortiz Coins">
             <button class="play-button" id="playButton">🎮 JUGAR</button>
             <button onclick="window.location.href='index.html'" class="back-button" style="position: static; margin-top: 15px; width: 100%;">⬅️ VOLVER</button>
         </div>
@@ -731,15 +731,24 @@
                 return;
             }
             
-            // Validate bet amount
+            // Validate bet amount with wealth-based minimum
             const betInput = document.getElementById('betAmount');
             const betAmount = parseInt(betInput ? betInput.value : '10');
+            const minBet = calculateMinimumBet();
+            const maxBet = Math.min(1000, vipCoins); // Cap at 1000 or available coins
             
-            if (!betAmount || betAmount < 1 || betAmount > 1000) {
-                console.log('⚠️ Invalid bet amount:', betAmount);
+            if (!betAmount || betAmount < minBet || betAmount > maxBet) {
+                console.log('⚠️ Invalid bet amount:', betAmount, 'Min:', minBet, 'Max:', maxBet);
                 const statusText = document.getElementById('statusText');
                 if (statusText) {
-                    statusText.textContent = '❌ Cantidad de apuesta inválida (1-1000)';
+                    const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                    if (totalCoins >= 100000) {
+                        statusText.textContent = `❌ Apuesta inválida (10,000-${maxBet.toLocaleString()})`;
+                    } else if (totalCoins >= 50000) {
+                        statusText.textContent = `❌ Apuesta inválida (5,000-${maxBet.toLocaleString()})`;
+                    } else {
+                        statusText.textContent = `❌ Apuesta inválida (1-${maxBet.toLocaleString()})`;
+                    }
                     statusText.style.color = '#FF0000';
                 }
                 return;
@@ -1091,6 +1100,52 @@
           }, 3000);
         }
 
+        // Calculate minimum bet based on wealth
+        function calculateMinimumBet() {
+            const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            
+            if (totalCoins >= 100000) {
+                return 10000; // Rico: 10,000 mínimo
+            } else if (totalCoins >= 50000) {
+                return 5000; // Clase alta: 5,000 mínimo
+            } else {
+                return 1; // Pobre: 1 mínimo
+            }
+        }
+
+        // Update bet input with minimum value
+        function updateBetInputMinimum() {
+            const betInput = document.getElementById('betAmount');
+            const minBet = calculateMinimumBet();
+            
+            if (betInput) {
+                betInput.min = minBet;
+                betInput.placeholder = `Mínimo: ${minBet.toLocaleString()} Ortiz Coins`;
+                
+                // Update current value if it's below minimum
+                const currentValue = parseInt(betInput.value) || 0;
+                if (currentValue < minBet) {
+                    betInput.value = minBet;
+                }
+            }
+            
+            // Update status text to show minimum bet
+            const statusText = document.getElementById('statusText');
+            if (statusText) {
+                const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                if (totalCoins >= 100000) {
+                    statusText.textContent = `💰 Apuesta mínima: 10,000 Ortiz Coins (RICO)`;
+                    statusText.style.color = '#FF0000';
+                } else if (totalCoins >= 50000) {
+                    statusText.textContent = `💰 Apuesta mínima: 5,000 Ortiz Coins (CLASE ALTA)`;
+                    statusText.style.color = '#FFA500';
+                } else {
+                    statusText.textContent = 'Esperando apuestas...';
+                    statusText.style.color = '#FFD700';
+                }
+            }
+        }
+
         // Auto-sync function for VIP game
         function autoSyncVIPData() {
             console.log('🔄 VIP auto-sync starting...');
@@ -1131,6 +1186,16 @@
             console.log('🔄 Initial VIP sync...');
             autoSyncVIPData();
         }, 3000);
+
+        // Update bet minimum when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            updateBetInputMinimum();
+        });
+
+        // Update bet minimum when coins change
+        window.addEventListener('ortizCoinsUpdated', () => {
+            updateBetInputMinimum();
+        });
     </script>
 </body>
 </html> 

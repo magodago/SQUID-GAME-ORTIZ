@@ -7418,15 +7418,7 @@
     function addTwentyCoins() {
       console.log('🪙 Adding 20 coins from VEINTE Easter Egg...');
       
-      // Check if this easter egg has already been used
-      const veinteEasterEggUsed = localStorage.getItem('veinteEasterEggUsed');
-      if (veinteEasterEggUsed === 'true') {
-        console.log('⚠️ VEINTE Easter Egg already used by this player');
-        showEasterEggAlreadyUsedMessage();
-        return;
-      }
-      
-      // Mark as used
+      // Mark as used (verification already done before calling this function)
       localStorage.setItem('veinteEasterEggUsed', 'true');
       console.log('✅ VEINTE Easter Egg marked as used');
       
@@ -7516,6 +7508,11 @@
     
     function showEasterEggAlreadyUsedMessage() {
       console.log('⚠️ Showing VEINTE Easter Egg already used message');
+      
+      // Debug: Show current status
+      const veinteEasterEggUsed = localStorage.getItem('veinteEasterEggUsed');
+      console.log('🔍 Debug - veinteEasterEggUsed:', veinteEasterEggUsed);
+      console.log('🔍 Debug - Current player:', localStorage.getItem('soldierName'));
       
       // Create notification
       const notification = document.createElement('div');
@@ -8095,7 +8092,18 @@
             
             // Check if the sequence matches VEINTE
             if (veinteSequence.join('') === 'VEINTE') {
-              console.log('VEINTE sequence completed! +20 coins Easter Egg activated!');
+              console.log('VEINTE sequence completed! Checking if easter egg is available...');
+              
+              // Check if this easter egg has already been used
+              const veinteEasterEggUsed = localStorage.getItem('veinteEasterEggUsed');
+              if (veinteEasterEggUsed === 'true') {
+                console.log('⚠️ VEINTE Easter Egg already used by this player');
+                showEasterEggAlreadyUsedMessage();
+                veinteSequence = []; // Reset sequence
+                return;
+              }
+              
+              console.log('✅ VEINTE Easter Egg available! Activating...');
               addTwentyCoins();
               veinteSequence = []; // Reset sequence
             }
@@ -10874,6 +10882,36 @@
             };
             
             document.body.appendChild(testButton);
+            
+            // Add VEINTE Easter Egg debug button
+            const veinteDebugButton = document.createElement('button');
+            veinteDebugButton.textContent = '🔍 VEINTE Debug';
+            veinteDebugButton.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 200px;
+                background: #ffa500;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000;
+                font-family: 'Orbitron', Arial, sans-serif;
+            `;
+            
+            veinteDebugButton.onclick = function() {
+                const veinteEasterEggUsed = localStorage.getItem('veinteEasterEggUsed');
+                const currentPlayer = localStorage.getItem('soldierName');
+                console.log('🔍 VEINTE Easter Egg Debug:');
+                console.log('- Jugador:', currentPlayer);
+                console.log('- veinteEasterEggUsed:', veinteEasterEggUsed);
+                console.log('- Estado:', veinteEasterEggUsed === 'true' ? 'USADO' : 'DISPONIBLE');
+                
+                alert(`VEINTE Easter Egg Debug:\nJugador: ${currentPlayer}\nEstado: ${veinteEasterEggUsed === 'true' ? 'USADO' : 'DISPONIBLE'}\nValor: ${veinteEasterEggUsed || 'null'}`);
+            };
+            
+            document.body.appendChild(veinteDebugButton);
         }
 
         // Function to listen for admin coin updates

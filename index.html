@@ -6266,9 +6266,6 @@
       // Verificar si se debe revelar algún dígito
       checkDigitRevelation(totalCoins);
       
-      // Check all button visibility
-      checkAllButtonVisibility();
-      
       // Easter Egg: Mostrar "6" en el título de acceso si tiene más de 50,000 monedas
       const easterEgg6 = document.getElementById('easter-egg-6');
       
@@ -9165,16 +9162,8 @@
       setTimeout(() => {
         const allInContainer = document.getElementById('allInContainer');
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        console.log('🔍 DEBUG - ALL IN Container:', allInContainer);
-        console.log('🔍 DEBUG - Total coins:', totalCoins);
-        console.log('🔍 DEBUG - Container visible:', allInContainer.classList.contains('visible'));
-        console.log('🔍 DEBUG - Container display:', window.getComputedStyle(allInContainer).display);
-        
-        // Force show for testing if player has coins
-        if (totalCoins >= 15000) {
-          allInContainer.classList.add('visible');
-          console.log('🔍 DEBUG - Forced ALL IN button to be visible');
-        }
+        const allInUsed = localStorage.getItem('allInUsed') === 'true';
+        console.log('🎰 ALL IN Status - Coins:', totalCoins, 'Used:', allInUsed, 'Visible:', allInContainer.classList.contains('visible'));
       }, 2000);
     });
 

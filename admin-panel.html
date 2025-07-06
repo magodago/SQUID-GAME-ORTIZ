@@ -405,15 +405,9 @@
 
             Object.keys(allPlayers).forEach(userId => {
                 const player = allPlayers[userId];
-                const lastActivity = player.lastActivity ? new Date(player.lastActivity).toLocaleString() : 'Nunca';
                 
                 // Debug: mostrar información del jugador
-                console.log(`Procesando jugador ${userId}:`, {
-                    username: player.username,
-                    coins: player.coins,
-                    easterEggs: player.easterEggsFound,
-                    lastActivity: player.lastActivity
-                });
+                console.log(`Procesando jugador ${userId}:`, player);
                 
                 // Determinar el nombre a mostrar
                 let displayName = 'Sin nombre';
@@ -427,11 +421,37 @@
                     displayName = `Usuario_${userId.substring(0, 8)}`;
                 }
                 
+                // Obtener monedas (puede estar en diferentes campos)
+                const coins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
+                
+                // Obtener easter eggs
+                const easterEggs = player.easterEggsFound || player.totalEasterEggs || 0;
+                
+                // Obtener última actividad
+                let lastActivity = 'Nunca';
+                if (player.lastActivity) {
+                    lastActivity = new Date(player.lastActivity).toLocaleString();
+                } else if (player.lastSync) {
+                    lastActivity = new Date(player.lastSync).toLocaleString();
+                } else if (player.timestamp) {
+                    lastActivity = new Date(player.timestamp).toLocaleString();
+                }
+                
+                // Obtener estadísticas de juegos
+                const gamesPlayed = player.gamesPlayed || 0;
+                const totalWins = player.totalWins || 0;
+                const soldierWins = player.soldierWins || 0;
+                const vipWins = player.vipWins || 0;
+                const jokerWins = player.jokerWins || 0;
+                const frontmanWins = player.frontmanWins || 0;
+                const robberiesWon = player.robberiesWon || 0;
+                const robberiesLost = player.robberiesLost || 0;
+                
                 html += `
                     <tr>
                         <td>${displayName}</td>
-                        <td>${player.coins || 0} 🪙</td>
-                        <td>${player.easterEggsFound || 0} 🥚</td>
+                        <td>${coins.toLocaleString()} 🪙</td>
+                        <td>${easterEggs} 🥚</td>
                         <td>${lastActivity}</td>
                         <td>
                             <div class="coin-controls">
@@ -463,16 +483,51 @@
             }
 
             const totalPlayers = players.length;
-            const totalCoins = players.reduce((sum, p) => sum + (p.coins || 0), 0);
+            
+            // Calcular total de monedas usando diferentes campos posibles
+            const totalCoins = players.reduce((sum, p) => {
+                const coins = p.coins || p.totalCoins || p.totalOrtizCoins || 0;
+                return sum + coins;
+            }, 0);
+            
             const avgCoins = Math.round(totalCoins / totalPlayers);
-            const richestPlayer = players.reduce((max, p) => (p.coins || 0) > (max.coins || 0) ? p : max);
-            const totalEasterEggs = players.reduce((sum, p) => sum + (p.easterEggsFound || 0), 0);
-            const totalRobberies = players.reduce((sum, p) => sum + (p.robberiesWon || 0) + (p.robberiesLost || 0), 0);
+            
+            // Encontrar jugador más rico
+            const richestPlayer = players.reduce((max, p) => {
+                const maxCoins = max.coins || max.totalCoins || max.totalOrtizCoins || 0;
+                const currentCoins = p.coins || p.totalCoins || p.totalOrtizCoins || 0;
+                return currentCoins > maxCoins ? p : max;
+            });
+            
+            // Calcular easter eggs totales
+            const totalEasterEggs = players.reduce((sum, p) => {
+                const easterEggs = p.easterEggsFound || p.totalEasterEggs || 0;
+                return sum + easterEggs;
+            }, 0);
+            
+            // Calcular robos totales
+            const totalRobberies = players.reduce((sum, p) => {
+                const robberiesWon = p.robberiesWon || 0;
+                const robberiesLost = p.robberiesLost || 0;
+                return sum + robberiesWon + robberiesLost;
+            }, 0);
+
+            // Obtener nombre del jugador más rico
+            let richestPlayerName = 'Sin nombre';
+            if (richestPlayer.username) {
+                richestPlayerName = richestPlayer.username;
+            } else if (richestPlayer.name) {
+                richestPlayerName = richestPlayer.name;
+            } else if (richestPlayer.displayName) {
+                richestPlayerName = richestPlayer.displayName;
+            }
+            
+            const richestPlayerCoins = richestPlayer.coins || richestPlayer.totalCoins || richestPlayer.totalOrtizCoins || 0;
 
             document.getElementById('totalPlayers').textContent = totalPlayers;
             document.getElementById('totalCoins').textContent = totalCoins.toLocaleString();
             document.getElementById('avgCoins').textContent = avgCoins.toLocaleString();
-            document.getElementById('richestPlayer').textContent = `${richestPlayer.username || 'Sin nombre'} (${richestPlayer.coins || 0})`;
+            document.getElementById('richestPlayer').textContent = `${richestPlayerName} (${richestPlayerCoins.toLocaleString()})`;
             document.getElementById('totalEasterEggs').textContent = totalEasterEggs;
             document.getElementById('totalRobberies').textContent = totalRobberies;
         }
@@ -500,15 +555,29 @@
             }
 
             const playerRef = firebase.database().ref(`players/${userId}`);
-            const currentCoins = allPlayers[userId].coins || 0;
+            
+            // Obtener monedas actuales del jugador
+            const player = allPlayers[userId];
+            const currentCoins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
             const newCoins = currentCoins + amount;
 
-            playerRef.update({
+            // Actualizar todos los campos posibles de monedas
+            const updateData = {
                 coins: newCoins,
-                lastActivity: Date.now()
-            }).then(() => {
+                totalCoins: newCoins,
+                totalOrtizCoins: newCoins,
+                lastActivity: Date.now(),
+                lastSync: Date.now()
+            };
+
+            playerRef.update(updateData).then(() => {
+                // Actualizar datos locales
                 allPlayers[userId].coins = newCoins;
-                statusDiv.innerHTML = `<div class="status-success">+${amount} monedas añadidas. Total: ${newCoins}</div>`;
+                allPlayers[userId].totalCoins = newCoins;
+                allPlayers[userId].totalOrtizCoins = newCoins;
+                allPlayers[userId].lastActivity = Date.now();
+                
+                statusDiv.innerHTML = `<div class="status-success">+${amount} monedas añadidas. Total: ${newCoins.toLocaleString()}</div>`;
                 calculateGlobalStats();
                 displayPlayers();
                 input.value = '';
@@ -532,15 +601,29 @@
             }
 
             const playerRef = firebase.database().ref(`players/${userId}`);
-            const currentCoins = allPlayers[userId].coins || 0;
+            
+            // Obtener monedas actuales del jugador
+            const player = allPlayers[userId];
+            const currentCoins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
             const newCoins = Math.max(0, currentCoins - amount);
 
-            playerRef.update({
+            // Actualizar todos los campos posibles de monedas
+            const updateData = {
                 coins: newCoins,
-                lastActivity: Date.now()
-            }).then(() => {
+                totalCoins: newCoins,
+                totalOrtizCoins: newCoins,
+                lastActivity: Date.now(),
+                lastSync: Date.now()
+            };
+
+            playerRef.update(updateData).then(() => {
+                // Actualizar datos locales
                 allPlayers[userId].coins = newCoins;
-                statusDiv.innerHTML = `<div class="status-success">-${amount} monedas removidas. Total: ${newCoins}</div>`;
+                allPlayers[userId].totalCoins = newCoins;
+                allPlayers[userId].totalOrtizCoins = newCoins;
+                allPlayers[userId].lastActivity = Date.now();
+                
+                statusDiv.innerHTML = `<div class="status-success">-${amount} monedas removidas. Total: ${newCoins.toLocaleString()}</div>`;
                 calculateGlobalStats();
                 displayPlayers();
                 input.value = '';

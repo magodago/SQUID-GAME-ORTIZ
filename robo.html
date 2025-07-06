@@ -1033,8 +1033,58 @@
             }
         }
 
-        // Start robbery
+        // Start robbery - FIXED VERSION
         function startRobbery(player1, player2, betAmount) {
+            console.log(`🚀 STARTING ROBBERY: ${player1} vs ${player2} for ${betAmount} coins`);
+            
+            // IMMEDIATELY DEDUCT BET FROM ATTACKER
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const attackerRef = db.ref(`players/${player1}`);
+                
+                attackerRef.once('value')
+                    .then((snapshot) => {
+                        const playerData = snapshot.val() || {};
+                        const currentCoins = playerData.coins || 0;
+                        
+                        if (currentCoins >= betAmount) {
+                            // Deduct bet immediately
+                            const newCoins = currentCoins - betAmount;
+                            
+                            // Update Firebase
+                            attackerRef.update({
+                                coins: newCoins,
+                                lastUpdated: Date.now()
+                            }).then(() => {
+                                console.log(`💰 BET DEDUCTED: ${player1} lost ${betAmount} coins (${currentCoins} -> ${newCoins})`);
+                                
+                                // Update localStorage if it's current player
+                                if (player1 === currentPlayer) {
+                                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                                    const coinsDisplay = document.getElementById('currentPlayerCoins');
+                                    if (coinsDisplay) {
+                                        coinsDisplay.textContent = newCoins.toLocaleString() + ' monedas';
+                                    }
+                                }
+                                
+                                // Now start the robbery UI
+                                startRobberyUI(player1, player2, betAmount);
+                            }).catch((error) => {
+                                console.error('❌ Error deducting bet:', error);
+                            });
+                        } else {
+                            console.error('❌ Not enough coins for bet!');
+                            alert('❌ No tienes suficientes monedas para esta apuesta!');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error reading player data:', error);
+                    });
+            }
+        }
+        
+        // Start robbery UI
+        function startRobberyUI(player1, player2, betAmount) {
             const battleModal = document.getElementById('battleModal');
             const battleGameArea = document.getElementById('battleGameArea');
             const battleStatus = document.getElementById('battleStatus');
@@ -1136,8 +1186,10 @@
             }, 300);
         }
 
-        // End robbery
+        // End robbery - FIXED VERSION
         function endRobbery(player1, player2, betAmount, player1Wins) {
+            console.log(`🏁 ENDING ROBBERY: ${player1} vs ${player2}, ${player1Wins ? 'ATTACKER WINS' : 'DEFENDER WINS'}`);
+            
             const resultElement = document.getElementById('battleResult');
             const winnerElement = document.getElementById('winnerAnnouncement');
             const coinsElement = document.getElementById('coinsWon');
@@ -1147,10 +1199,11 @@
                 winnerElement.textContent = `🦹‍♂️ ¡ROBO EXITOSO!`;
                 coinsElement.textContent = `💰 Robaste ${betAmount.toLocaleString()} monedas de ${player2}`;
                 
+                console.log(`🎯 ATTACKER WINS: ${player1} gets ${betAmount} coins from ${player2}`);
+                
                 // Update Firebase for both players
-                // Player 1 (attacker) gets the stolen coins from player 2 (plus recovers their bet)
-                // So they get betAmount * 2 (their bet back + stolen coins)
-                updatePlayerCoinsInFirebase(player1, betAmount * 2, true);
+                // Player 1 (attacker) gets the stolen coins from player 2
+                updatePlayerCoinsInFirebase(player1, betAmount, true);
                 // Player 2 (target) loses the stolen coins
                 updatePlayerCoinsInFirebase(player2, betAmount, false);
                 
@@ -1158,6 +1211,8 @@
                 // Player 2 (defender) wins - rob failed
                 winnerElement.textContent = `🛡️ ¡ROBO FRACASADO!`;
                 coinsElement.textContent = `💰 ${player2} te dice: "¡A MÍ NO ME ROBA NADIE!"`;
+                
+                console.log(`🛡️ DEFENDER WINS: ${player2} gets ${betAmount} coins from ${player1}'s bet`);
                 
                 // Update Firebase for both players
                 // Player 1 (attacker) already lost bet at start, no additional loss needed

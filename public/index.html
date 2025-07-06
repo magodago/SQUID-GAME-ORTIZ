@@ -9161,6 +9161,8 @@
       // Initialize automatic sync every hour
       initializeAutomaticSync();
       
+      // Connection status system removed - no test button needed
+      
       // DEBUG: Check ALL IN button status
       setTimeout(() => {
         const allInContainer = document.getElementById('allInContainer');
@@ -9242,8 +9244,12 @@
         }
       };
       
+      // Count online players (simple version - just count total for now)
+      const onlineCount = players.length; // For now, assume all are online
+      
       // Update admin stats with animation
       const totalPlayersEl = document.getElementById('totalPlayers');
+      const onlinePlayersEl = document.getElementById('onlinePlayers');
       const totalCoinsEl = document.getElementById('totalCoinsAdmin');
       const totalEasterEggsEl = document.getElementById('totalEasterEggs');
       const totalPlayTimeEl = document.getElementById('totalPlayTime');
@@ -9251,6 +9257,7 @@
       const totalWinsEl = document.getElementById('totalWins');
       
       totalPlayersEl.textContent = players.length.toString();
+      onlinePlayersEl.textContent = onlineCount.toString();
       totalCoinsEl.textContent = totalCoins.toLocaleString();
       totalEasterEggsEl.textContent = totalEasterEggs.toString();
       totalPlayTimeEl.textContent = formatPlayTime(totalPlayTime);
@@ -9322,10 +9329,14 @@
             return `${type} (${timesFound}x)`;
           }).join(', ') : 'Ninguno';
           
+          // Simple online indicator (green dot for all players for now)
+          const onlineIndicator = '🟢 En línea';
+          
           playersHTML += `
             <div class="player-entry" style="animation: playerEntrySlide 0.3s ease-out ${index * 0.1}s both;">
               <div class="player-info">
                 <span class="player-name">${rankEmoji} ${playerName}</span>
+                <span class="connection-status" style="color: #00ff00; font-size: 0.8rem; margin-left: 10px;">${onlineIndicator}</span>
                 <span class="player-coins">🪙 ${coins.toLocaleString()} monedas</span>
               </div>
                 <div class="player-stats">

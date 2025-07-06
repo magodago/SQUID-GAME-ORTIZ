@@ -11754,10 +11754,8 @@
                         el.onclick = null; // Remover el evento de click
                     });
                     
-                    // Mostrar botón CERRAR solo si no ha votado
-                    if (!hasVoted) {
-                        showCloseButton();
-                    }
+                    // Verificar si hay votos antes de mostrar botón CERRAR
+                    checkVotingResults();
                     
                     return;
                 }
@@ -11768,6 +11766,62 @@
                 
                 document.getElementById('votingTimer').textContent = timeString;
             }, 1000);
+        }
+
+        function checkVotingResults() {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const votesRef = db.ref('massVoting/votes');
+                
+                votesRef.once('value').then((snapshot) => {
+                    const votes = snapshot.val();
+                    const voteCount = votes ? Object.keys(votes).length : 0;
+                    
+                    console.log('🗳️ Verificando resultados de votación:', voteCount, 'votos');
+                    
+                    if (voteCount === 0) {
+                        // No hay votos - mostrar mensaje y botón CERRAR
+                        showNoVotesMessage();
+                    } else {
+                        // Hay votos - mostrar botón CERRAR solo si no votó
+                        if (!hasVoted) {
+                            showCloseButton();
+                        }
+                    }
+                }).catch((error) => {
+                    console.error('❌ Error verificando votos:', error);
+                    // En caso de error, mostrar botón CERRAR si no votó
+                    if (!hasVoted) {
+                        showCloseButton();
+                    }
+                });
+            }
+        }
+
+        function showNoVotesMessage() {
+            // Crear mensaje de "no hay votos"
+            let noVotesMessage = document.getElementById('noVotesMessage');
+            if (!noVotesMessage) {
+                noVotesMessage = document.createElement('div');
+                noVotesMessage.id = 'noVotesMessage';
+                noVotesMessage.className = 'no-votes-message';
+                noVotesMessage.innerHTML = `
+                    <div class="no-votes-content">
+                        <h3>❌ VOTACIÓN INSUFICIENTE</h3>
+                        <p>No se registraron votos suficientes.</p>
+                        <p>Nadie será eliminado.</p>
+                    </div>
+                `;
+                
+                // Insertar después de la lista de jugadores
+                const playersContainer = document.getElementById('votingPlayers');
+                playersContainer.parentNode.insertBefore(noVotesMessage, playersContainer.nextSibling);
+            }
+            
+            noVotesMessage.style.display = 'block';
+            
+            // Mostrar botón CERRAR para todos
+            showCloseButton();
         }
 
         function showCloseButton() {
@@ -11802,6 +11856,12 @@
             const closeButton = document.getElementById('votingCloseButton');
             if (closeButton) {
                 closeButton.style.display = 'none';
+            }
+            
+            // Ocultar mensaje de "no hay votos" si existe
+            const noVotesMessage = document.getElementById('noVotesMessage');
+            if (noVotesMessage) {
+                noVotesMessage.style.display = 'none';
             }
             
             document.getElementById('votingModal').style.display = 'none';
@@ -11990,6 +12050,33 @@
         .result-info strong {
             color: #fff;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .no-votes-message {
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .no-votes-content {
+            background: linear-gradient(135deg, #ff7675, #d63031);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .no-votes-content h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.3em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .no-votes-content p {
+            margin: 8px 0;
+            font-size: 1.1em;
+            font-weight: bold;
         }
     </style>
 </body>

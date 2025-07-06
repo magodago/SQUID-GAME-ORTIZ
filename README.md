@@ -1,145 +1,182 @@
-# 🎮 Squid Game Ortiz - Juego de Memoria
+# 🦑 SQUID GAME ORTIZ
 
-Un juego de memoria temático de Squid Game con efectos visuales espectaculares y un huevo de Pascua secreto.
+Un juego web completo inspirado en Squid Game con múltiples minijuegos, sistema de monedas, Firebase sync y funcionalidades avanzadas.
 
-## ✨ Características
+## 🎮 **JUEGOS DISPONIBLES**
 
-### 🎯 **Juego de Memoria**
-- **3 niveles de dificultad**: Fácil, Medio, Difícil
-- **Tarjetas temáticas**: Círculos, triángulos, cuadrados y símbolos especiales
-- **Trampas mortales**: Evita las tarjetas de trampa o pierdes
-- **Contador de movimientos**: Mide tu rendimiento
+### **🎯 SOLDADO**
+- Juego de disparos con objetivos
+- Ganas monedas según tu puntuación
+- Las monedas se suman al total existente
+- Sincronización automática con Firebase
 
-### 🌟 **Efectos Visuales**
-- **Formas flotantes animadas**: Círculos, triángulos y cuadrados que se mueven por la pantalla
-- **Partículas luminosas**: Efecto de partículas que suben desde abajo
-- **Matrix rain**: Lluvia digital en el fondo
-- **Scan lines**: Efecto de pantalla CRT
-- **Título con glitch**: Efecto de interferencia en el título
-- **Círculos de luz**: Aparecen donde hagas clic
-- **Botón pulsante**: Efecto de pulso en el botón principal
+### **🃏 JOKER PISTAS**
+- Juego de cartas para encontrar Jokers
+- Costo: 35 monedas (aumenta a 50 después de la tercera pista)
+- Te da pistas para resolver enigmas
+- Botón de mezclar funcional
 
-### 🔐 **Panel de Acceso**
-- **Código de 4 cifras**: Sistema de acceso con validación
-- **Código secreto**: `4567`
-- **Diseño transparente**: Permite ver todos los efectos de fondo
+### **⚔️ PVP ROBO**
+- Sistema de robo entre jugadores
+- Puedes desafiar a otros jugadores
+- Apuestas monedas y compites
+- Notificaciones en tiempo real
 
-### 🥚 **Huevo de Pascua**
-- **Patrón secreto**: 1 clic en "ORTIZ" + 3 clics en el cuadrado
-- **Pantalla VIP**: Coordenadas secretas de la Isla Jeju
-- **Información exclusiva**: Solo para invitados VIP
+## 🎰 **FUNCIONALIDADES ESPECIALES POR MONEDAS**
 
-## 🚀 Instalación y Uso
+### **🎰 15,000+ Monedas**
+- **🎰 BOTÓN "ALL IN"** - Se desbloquea
+  - Permite apostar todas tus monedas de una vez
+  - Solo se puede usar una vez por jugador
 
-### 🌐 **Jugar Online (Recomendado)**
-¡El juego está disponible online para todo el mundo!
-**URL**: https://magodago.github.io/SQUID-GAME-ORTIZ/
+### **📞 20,000+ Monedas**
+- **📞 BOTÓN "FRONT MAN"** - Se desbloquea
+  - Permite llamar al Front Man para obtener ayuda especial
+  - Solo se puede usar una vez por jugador
 
-### 💻 **Instalación Local**
+### **⚔️ 25,000+ Monedas**
+- **⚔️ BOTÓN "PLAYER FIGHT"** - Se desbloquea
+  - Permite desafiar a otros jugadores en combate PvP
+  - Solo se puede usar una vez por jugador
 
-#### Requisitos
-- Node.js (versión 14 o superior)
-- NPM
+### **🩸 30,000+ Monedas**
+- **🩸 PANTALLA DE SANGRE** - Se activa automáticamente
+  - Efectos dramáticos de sangre
+  - Pierdes 5,000 monedas
+  - Mensaje: "HAS SIDO ACUCHILLADO"
+  - Solo aparece una vez
 
-#### Instalación
+## 🥚 **EASTER EGGS**
+
+### **👤 3 Clics en tu Nombre**
+- Ganas **+1 moneda** instantáneamente
+- Se sincroniza con Firebase
+
+### **👤 2 Clics en Nombre + 2 Clics en Contador de Monedas**
+- **PODER DE LOS DIOSES** - Ganas **+20 monedas**
+- Efectos visuales especiales
+
+### **🔺 6 Clics en Triángulos Flotantes**
+- **PODER DE FUSIÓN** - Funcionalidad especial
+- Easter Egg oculto
+
+## 🔧 **TECNOLOGÍAS UTILIZADAS**
+
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Backend**: Firebase Realtime Database
+- **Autenticación**: Firebase Auth
+- **Hosting**: GitHub Pages
+- **Responsive**: Mobile-first design
+
+## 🚀 **INSTALACIÓN Y USO**
+
+### **Requisitos**
+- Navegador web moderno
+- Conexión a internet (para Firebase)
+
+### **Instalación Local**
 ```bash
 # Clonar el repositorio
 git clone https://github.com/magodago/SQUID-GAME-ORTIZ.git
 
-# Entrar al directorio
+# Navegar al directorio
 cd SQUID-GAME-ORTIZ
 
-# Instalar dependencias
-npm install
-
-# Iniciar el servidor
-npm start
+# Abrir en el navegador
+# Abrir public/index.html en tu navegador
 ```
 
-#### Acceso Local
-Abre tu navegador y ve a: `http://localhost:3000`
+### **Configuración Firebase**
+1. Crear proyecto en Firebase Console
+2. Habilitar Realtime Database
+3. Configurar reglas de seguridad
+4. Actualizar `firebase-config.js` con tus credenciales
 
-## 🎮 Cómo Jugar
+## 📱 **CARACTERÍSTICAS TÉCNICAS**
 
-1. **Selecciona un nivel**: Fácil (12 tarjetas), Medio (20 tarjetas), Difícil (30 tarjetas)
-2. **Encuentra parejas**: Haz clic en las tarjetas para voltearlas
-3. **Evita las trampas**: Las tarjetas con símbolos de muerte te eliminan
-4. **Completa el juego**: Encuentra todas las parejas para ganar
+### **Sincronización Firebase**
+- ✅ Sincronización automática de monedas
+- ✅ Tracking de estadísticas de juego
+- ✅ Backup de datos de jugadores
+- ✅ Manejo de errores robusto
 
-## 🔐 Funciones Secretas
+### **Responsive Design**
+- ✅ Optimizado para móviles
+- ✅ Tablet-friendly
+- ✅ Desktop experience completa
 
-### Panel de Acceso
-- Código: `4567`
-- Accede a datos privilegiados
+### **Performance**
+- ✅ Carga rápida
+- ✅ Animaciones fluidas
+- ✅ Efectos visuales optimizados
 
-### Huevo de Pascua
-- **Patrón**: 1 clic en "ORTIZ" + 3 clics rápidos en el cuadrado
-- **Recompensa**: Coordenadas secretas de la Isla Jeju, Corea del Sur
+## 🎯 **FUNCIONALIDADES AVANZADAS**
 
-## 🛠️ Tecnologías
+### **Sistema de Logros**
+- Rastreo automático de estadísticas
+- Desbloqueo de logros por acciones
+- Sincronización con Firebase
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Backend**: Node.js, Express.js
-- **Efectos**: CSS Animations, Keyframes
-- **Responsive**: Diseño adaptativo para móviles y desktop
+### **Panel de Administración**
+- Accesible con secuencia especial
+- Estadísticas globales
+- Control de monedas para administradores
 
-## 📱 Compatibilidad
+### **Sistema de Notificaciones**
+- Notificaciones en tiempo real
+- Alertas de robo PvP
+- Mensajes del sistema
 
-- ✅ Chrome/Chromium
-- ✅ Firefox
-- ✅ Safari
-- ✅ Edge
-- ✅ Dispositivos móviles (iOS/Android)
+## 📊 **ESTADÍSTICAS**
 
-## 🎨 Temática
+- **Juegos implementados**: 3 principales + Easter Eggs
+- **Funcionalidades especiales**: 4 niveles por monedas
+- **Easter Eggs**: 3 ocultos
+- **Sincronización**: 100% Firebase
+- **Responsive**: Mobile, Tablet, Desktop
 
-Basado en la serie "Squid Game" de Netflix:
-- **Colores**: Rosa (#e60073) y negro
-- **Tipografía**: Orbitron (futurista)
-- **Efectos**: Cyberpunk, glitch, neon
-- **Ubicación**: Corea del Sur
+## 🔐 **SEGURIDAD**
 
-## 📄 Licencia
+- Validación de datos en cliente y servidor
+- Protección contra manipulación de monedas
+- Sincronización segura con Firebase
+- Backup automático de datos
 
-Este proyecto es de código abierto y está disponible bajo la licencia MIT.
+## 📝 **CHANGELOG**
 
-## 🤝 Contribuciones
+### **Versión Final (2025-07-06)**
+- ✅ Pantalla de Sangre implementada
+- ✅ Juego Soldado corregido (suma de monedas)
+- ✅ Juego Joker Pistas corregido (botón mezclar)
+- ✅ Sistema PvP Robo completo
+- ✅ Sincronización Firebase mejorada
+- ✅ UI responsive optimizada
+- ✅ Easter Eggs mejorados
 
-Las contribuciones son bienvenidas. Por favor, abre un issue o un pull request.
+## 🤝 **CONTRIBUCIÓN**
+
+Este proyecto está en desarrollo activo. Las contribuciones son bienvenidas:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature
+3. Commit tus cambios
+4. Push a la rama
+5. Abre un Pull Request
+
+## 📄 **LICENCIA**
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## 👨‍💻 **DESARROLLADOR**
+
+**Ortiz** - Desarrollador principal del proyecto Squid Game Ortiz
+
+## 🔗 **ENLACES**
+
+- **Repositorio**: https://github.com/magodago/SQUID-GAME-ORTIZ
+- **Demo**: [Disponible en GitHub Pages]
+- **Firebase**: Configurado para sincronización en tiempo real
 
 ---
 
-**¡Disfruta del juego y encuentra todos los secretos!** 🎮✨
-
-*Deploy con permisos corregidos - Sistema de logros activo* 
-
-# SQUID GAME ORTIZ
-
-Sistema de juegos web inspirado en Squid Game con múltiples minijuegos, panel de administración y integración con Firebase.
-
-## Características
-
-- Múltiples minijuegos (Soldado, Jugador, VIP, Front Man, Joker Pistas)
-- Sistema de monedas y recompensas
-- Panel de administración
-- Integración con Firebase
-- Sistema de logros y rachas diarias
-- Easter Eggs y características especiales
-
-## Juegos Disponibles
-
-1. **Soldado**: Juego de puntería y precisión
-2. **Jugador**: Juego de timing y reflejos
-3. **VIP**: Juego de apuestas y estrategia
-4. **Front Man**: Juego de memoria y secuencias
-5. **Joker Pistas**: Juego de pistas y misterio
-
-## Tecnologías
-
-- HTML5, CSS3, JavaScript
-- Firebase (Firestore, Authentication)
-- GitHub Pages para hosting
-
----
-
-*Actualizado: Sistema de logros y estadísticas completamente funcional* 
+**🎮 ¡Disfruta del juego y estate atento a las sorpresas! 🎮** 

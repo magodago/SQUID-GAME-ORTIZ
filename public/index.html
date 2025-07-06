@@ -3546,6 +3546,96 @@
       max-width: 300px;
     }
 
+    /* Inventory Button Styles */
+    .inventory-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem 0;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
+      border: 3px solid #e60073;
+      border-radius: 15px;
+      box-shadow: 0 0 30px #e60073, inset 0 0 20px rgba(230, 0, 115, 0.3);
+      backdrop-filter: blur(5px);
+      margin-left: auto;
+      margin-right: auto;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      max-width: 300px;
+    }
+
+    .inventory-container:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px #e60073, inset 0 0 30px rgba(230, 0, 115, 0.5);
+    }
+
+    .inventory-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #fff;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+      padding: 0;
+      width: 100%;
+      height: auto;
+    }
+
+    .inventory-btn:hover {
+      transform: none;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+    }
+
+    /* Daily Reward Button Styles */
+    .daily-reward-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem 0;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+      border: 3px solid #00ff00;
+      border-radius: 15px;
+      box-shadow: 0 0 30px #00ff00, inset 0 0 20px rgba(0, 255, 0, 0.3);
+      backdrop-filter: blur(5px);
+      margin-left: auto;
+      margin-right: auto;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      max-width: 300px;
+    }
+
+    .daily-reward-container:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px #00ff00, inset 0 0 30px rgba(0, 255, 0, 0.5);
+    }
+
+    .daily-reward-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #000;
+      text-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+      padding: 0;
+      width: 100%;
+      height: auto;
+    }
+
+    .daily-reward-btn:hover {
+      transform: none;
+      text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+    }
+
     .achievements-container:hover {
       transform: scale(1.05);
       box-shadow: 0 0 40px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
@@ -11801,8 +11891,14 @@
             
             // Add click event to inventory button
             const inventoryBtn = document.getElementById('inventoryBtn');
+            const inventoryContainer = document.querySelector('.inventory-container');
+            
             if (inventoryBtn) {
                 inventoryBtn.addEventListener('click', showInventoryModal);
+            }
+            
+            if (inventoryContainer) {
+                inventoryContainer.addEventListener('click', showInventoryModal);
             }
         }
 

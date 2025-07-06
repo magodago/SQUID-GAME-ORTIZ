@@ -286,6 +286,7 @@
         <button class="refresh-button" onclick="loadAllData()">🔄 REFRESCAR DATOS</button>
         <button class="refresh-button" onclick="debugPlayerData()" style="margin-left: 10px;">🐛 DEBUG DATOS</button>
         <button class="refresh-button" onclick="add50000CoinsToMain()" style="margin-left: 10px; background: #ff6b6b; border-color: #ff6b6b; color: white;">💰 +50,000 MONEDAS</button>
+        <button class="refresh-button" onclick="testVIPTrap()" style="margin-left: 10px; background: #ff00ff; border-color: #ff00ff; color: white;">🐎 TEST VIP TRAP</button>
 
         <div class="terminal-section">
             <div class="section-title">📊 ESTADÍSTICAS GLOBALES</div>
@@ -1007,6 +1008,65 @@
             } else {
                 console.error('❌ Firebase no disponible');
                 alert('❌ Firebase no está disponible. Las monedas se añadieron al localStorage pero no se sincronizaron con Firebase.');
+            }
+        }
+
+        // Function to test VIP trap by setting coins to 150,000
+        function testVIPTrap() {
+            console.log('🐎 Iniciando test del VIP Trap...');
+            
+            // Get current player name from localStorage
+            const currentPlayer = localStorage.getItem('soldierName');
+            
+            if (!currentPlayer) {
+                alert('❌ No se encontró nombre de jugador. Asegúrate de estar logueado en la página principal.');
+                return;
+            }
+            
+            console.log('👤 Jugador actual:', currentPlayer);
+            
+            // Reset VIP trap flag for testing
+            localStorage.removeItem('vipTrapShown');
+            console.log('🔄 Flag VIP trap reseteado para testing');
+            
+            // Set coins to exactly 150,000
+            const testCoins = 150000;
+            localStorage.setItem('totalOrtizCoins', testCoins.toString());
+            console.log('💰 Monedas establecidas a:', testCoins);
+            
+            // Update Firebase
+            if (typeof firebase !== 'undefined' && firebase.database) {
+                const playerRef = firebase.database().ref(`players/${currentPlayer}`);
+                
+                const updateData = {
+                    coins: testCoins,
+                    totalCoins: testCoins,
+                    totalOrtizCoins: testCoins,
+                    lastActivity: Date.now(),
+                    lastSync: Date.now()
+                };
+                
+                console.log('📤 Actualizando Firebase con datos:', updateData);
+                
+                playerRef.update(updateData).then(() => {
+                    console.log('✅ Firebase actualizado exitosamente');
+                    
+                    // Notify main page about the update
+                    notifyPlayerCoinsUpdate(currentPlayer, testCoins);
+                    
+                    // Show success message
+                    alert(`🐎 ¡Test VIP Trap configurado!\n\nJugador: ${currentPlayer}\nMonedas establecidas: ${testCoins.toLocaleString()}\n\nAhora ve a la página principal y debería aparecer el VIP Trap.`);
+                    
+                    // Refresh admin data
+                    loadAllData();
+                    
+                }).catch((error) => {
+                    console.error('❌ Error actualizando Firebase:', error);
+                    alert(`❌ Error actualizando Firebase:\n${error.message}`);
+                });
+            } else {
+                console.error('❌ Firebase no disponible');
+                alert('❌ Firebase no está disponible.');
             }
         }
     </script>

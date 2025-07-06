@@ -8533,6 +8533,12 @@
             snapshot.forEach((childSnapshot) => {
               const player = childSnapshot.val();
               if (player && player.name) {
+                // Filter out test users
+                const playerName = player.name.toLowerCase();
+                if (playerName === 'yo' || playerName === 'prueba' || playerName === 'prueba 2') {
+                  return; // Skip these users
+                }
+                
                 const coins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
                 players.push({
                   name: player.name,

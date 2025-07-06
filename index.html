@@ -9161,21 +9161,7 @@
       // Initialize automatic sync every hour
       initializeAutomaticSync();
       
-      // SIMPLE CONNECTION STATUS SYSTEM
-      setTimeout(() => {
-        console.log('🌐 Adding simple connection status system...');
-        
-        // Add a simple test button
-        const testBtn = document.createElement('button');
-        testBtn.textContent = '🌐 Test Conexión';
-        testBtn.style.cssText = 'position: fixed; top: 150px; right: 10px; z-index: 10000; background: green; color: white; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px;';
-        testBtn.onclick = () => {
-          const playerName = localStorage.getItem('soldierName');
-          alert('🌐 Sistema funcionando!\nJugador: ' + (playerName || 'Sin nombre'));
-        };
-        document.body.appendChild(testBtn);
-        console.log('✅ Test button added');
-      }, 2000);
+      // Connection status system removed - no test button needed
       
       // DEBUG: Check ALL IN button status
       setTimeout(() => {

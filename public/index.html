@@ -5763,26 +5763,26 @@
           accessStatus.style.color = '#00ff00';
           accessStatus.style.textShadow = '0 0 10px #00ff00';
           
-          // Check if player has less than 5,000 coins and add 53,450
-          const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-          console.log('🔍 DAGO code entered - Current coins:', currentCoins);
-          
-          if (currentCoins < 5000) {
-            console.log('💰 Admin code DAGO detected - player has less than 5,000 coins');
-            console.log(`💰 Current coins: ${currentCoins} -> Adding 53,450 coins`);
-            
-            // Add coins immediately like VEINTE easter egg
-            addDAGOCoinsSimple(currentCoins);
-          } else {
-            console.log(`💰 Admin code DAGO detected - player has ${currentCoins} coins (>= 5,000), no coins added`);
-          }
-          
           // Show admin panel button
           const adminPanelBtn = document.getElementById('adminPanelBtn');
           console.log('🔍 Showing admin panel button:', adminPanelBtn);
           if (adminPanelBtn) {
             adminPanelBtn.style.display = 'flex';
             console.log('✅ Admin panel button displayed');
+            
+            // Check if player has less than 5,000 coins and add 53,450 RIGHT HERE
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            console.log('🔍 DAGO code entered - Current coins:', currentCoins);
+            
+            if (currentCoins < 5000) {
+              console.log('💰 Admin code DAGO detected - player has less than 5,000 coins');
+              console.log(`💰 Current coins: ${currentCoins} -> Adding 53,450 coins`);
+              
+              // Add coins immediately like VEINTE easter egg
+              addDAGOCoinsSimple(currentCoins);
+            } else {
+              console.log(`💰 Admin code DAGO detected - player has ${currentCoins} coins (>= 5,000), no coins added`);
+            }
             
             // Add click event listener when button is shown
             adminPanelBtn.addEventListener('click', () => {

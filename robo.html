@@ -829,6 +829,44 @@
                 return;
             }
             
+            // NEW: Check if attacker has more money than target (anti-bullying rule)
+            if (currentCoins > targetPlayerData.coins) {
+                // Punish the attacker for trying to rob someone poorer
+                const punishmentMessage = `🛡️ ¡NO ROBES A LOS POBRES! 🛡️\n\n${targetPlayer} es más pobre que tú.\nTienes: ${currentCoins.toLocaleString()} monedas\nÉl tiene: ${targetPlayerData.coins.toLocaleString()} monedas\n\nComo castigo, pierdes TODAS tus monedas.`;
+                
+                alert(punishmentMessage);
+                
+                // Take all money from attacker as punishment
+                const allMoney = currentCoins;
+                currentCoins = 0;
+                localStorage.setItem('totalOrtizCoins', '0');
+                
+                // Update display immediately
+                document.getElementById('currentPlayerCoins').textContent = '0 monedas';
+                
+                // Update Firebase immediately
+                if (window.firebase && window.firebase.database) {
+                    const db = window.firebase.database();
+                    const playerRef = db.ref(`players/${currentPlayer}`);
+                    playerRef.update({
+                        coins: 0,
+                        lastUpdated: Date.now(),
+                        lastPunishment: {
+                            reason: 'Trying to rob someone poorer',
+                            target: targetPlayer,
+                            amountLost: allMoney,
+                            timestamp: Date.now()
+                        }
+                    }).then(() => {
+                        console.log(`💀 Punishment applied to ${currentPlayer}: lost all ${allMoney} coins for trying to rob ${targetPlayer}`);
+                    }).catch((error) => {
+                        console.error('❌ Error applying punishment:', error);
+                    });
+                }
+                
+                return; // Stop the robbery
+            }
+            
             // Deduct bet amount from attacker immediately
             currentCoins -= betAmount;
             localStorage.setItem('totalOrtizCoins', currentCoins.toString());

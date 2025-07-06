@@ -2107,49 +2107,7 @@
       border: 3px solid #00FFFF;
     }
     
-      /* Connection Status Styles */
-  .connection-status {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-left: 10px;
-    font-size: 0.8rem;
-  }
-  
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-    animation: statusPulse 2s infinite;
-  }
-  
-  .status-dot.online {
-    background-color: #00ff00;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-  }
-  
-  .status-dot.offline {
-    background-color: #ff0000;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
-  }
-  
-  @keyframes statusPulse {
-    0%, 100% { 
-      opacity: 1;
-      transform: scale(1);
-    }
-    50% { 
-      opacity: 0.7;
-      transform: scale(1.2);
-    }
-  }
-  
-  .status-text {
-    font-weight: bold;
-  }
-  
-  /* Admin Panel Styles */
+      /* Admin Panel Styles */
   .admin-panel {
     position: fixed;
     top: 0;
@@ -6308,6 +6266,9 @@
       // Verificar si se debe revelar algún dígito
       checkDigitRevelation(totalCoins);
       
+      // Check all button visibility
+      checkAllButtonVisibility();
+      
       // Easter Egg: Mostrar "6" en el título de acceso si tiene más de 50,000 monedas
       const easterEgg6 = document.getElementById('easter-egg-6');
       
@@ -8785,16 +8746,11 @@
       // Check if player has 20000+ coins and show/hide button
       function checkFrontManVisibility() {
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        const frontManUsed = localStorage.getItem('frontManUsed') === 'true';
-        
-        if (totalCoins >= 20000 && !frontManUsed) {
+        if (totalCoins >= 20000) {
           frontmanContainer.classList.add('visible');
-          frontmanContainer.style.display = 'block';
-          console.log('📞 Front Man call button visible - player has', totalCoins, 'coins and hasn\'t used it');
+          console.log('📞 Front Man call button visible - player has', totalCoins, 'coins');
         } else {
           frontmanContainer.classList.remove('visible');
-          frontmanContainer.style.display = 'none';
-          console.log('📞 Front Man call button hidden - coins:', totalCoins, 'used:', frontManUsed);
         }
       }
       
@@ -8932,16 +8888,11 @@
       // Check if player has 25000+ coins and show/hide button
       function checkPlayerFightVisibility() {
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        const playerFightUsed = localStorage.getItem('playerFightUsed') === 'true';
-        
-        if (totalCoins >= 25000 && !playerFightUsed) {
+        if (totalCoins >= 25000) {
           playerFightContainer.classList.add('visible');
-          playerFightContainer.style.display = 'block';
-          console.log('⚔️ Player Fight button visible - player has', totalCoins, 'coins and hasn\'t used it');
+          console.log('⚔️ Player Fight button visible - player has', totalCoins, 'coins');
         } else {
           playerFightContainer.classList.remove('visible');
-          playerFightContainer.style.display = 'none';
-          console.log('⚔️ Player Fight button hidden - coins:', totalCoins, 'used:', playerFightUsed);
         }
       }
       
@@ -9210,52 +9161,20 @@
       // Initialize automatic sync every hour
       initializeAutomaticSync();
       
-      // Initialize presence system for real-time connection status
-      initializePresenceSystem();
-      
-      // Start presence listener for admin panel
-      startPresenceListener();
-      
-      // DEBUG: Add mobile-friendly test button
-      setTimeout(() => {
-        const debugBtn = document.createElement('button');
-        debugBtn.textContent = '🌐 Test Mobile';
-        debugBtn.style.cssText = 'position: fixed; top: 130px; right: 10px; z-index: 10000; background: blue; color: white; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px;';
-        debugBtn.onclick = () => {
-          console.log('🌐 DEBUG - Online players:', window.onlinePlayers);
-          console.log('🌐 DEBUG - Current player name:', localStorage.getItem('soldierName'));
-          
-          // Force update presence
-          const playerName = localStorage.getItem('soldierName');
-          if (playerName) {
-            window.onlinePlayers.set(playerName, {
-              state: 'online',
-              lastSeen: new Date().toISOString()
-            });
-            console.log('🌐 DEBUG - Forced player online:', playerName);
-            
-            // Force refresh admin panel
-            if (window.updateAdminPanelWithFirebaseData && window.currentPlayersData) {
-              updateAdminPanelWithFirebaseData(window.currentPlayersData);
-            }
-          }
-        };
-        document.body.appendChild(debugBtn);
-      }, 3000);
-      
-      // Check Blood Screen trigger (30000+ coins and not triggered)
-      const bloodScreenTriggered = localStorage.getItem('bloodScreenTriggered') === 'true';
-      if (totalCoins >= 30000 && !bloodScreenTriggered) {
-        console.log('🩸 Blood Screen trigger activated - player has', totalCoins, 'coins');
-        activateBloodScreen();
-      }
-      
       // DEBUG: Check ALL IN button status
       setTimeout(() => {
         const allInContainer = document.getElementById('allInContainer');
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        const allInUsed = localStorage.getItem('allInUsed') === 'true';
-        console.log('🎰 ALL IN Status - Coins:', totalCoins, 'Used:', allInUsed, 'Visible:', allInContainer.classList.contains('visible'));
+        console.log('🔍 DEBUG - ALL IN Container:', allInContainer);
+        console.log('🔍 DEBUG - Total coins:', totalCoins);
+        console.log('🔍 DEBUG - Container visible:', allInContainer.classList.contains('visible'));
+        console.log('🔍 DEBUG - Container display:', window.getComputedStyle(allInContainer).display);
+        
+        // Force show for testing if player has coins
+        if (totalCoins >= 15000) {
+          allInContainer.classList.add('visible');
+          console.log('🔍 DEBUG - Forced ALL IN button to be visible');
+        }
       }, 2000);
     });
 
@@ -9291,11 +9210,8 @@
       console.log('✅ Admin panel initialized - waiting for Firebase data');
     }
 
-    window.updateAdminPanelWithFirebaseData = function(playersData) {
+    function updateAdminPanelWithFirebaseData(playersData) {
       console.log('📊 Updating admin panel with Firebase data...');
-      
-      // Store current data for debugging
-      window.currentPlayersData = playersData;
       
       const players = Object.keys(playersData);
       let totalCoins = 0;
@@ -9326,18 +9242,8 @@
         }
       };
       
-      // Count online players
-      let onlineCount = 0;
-      players.forEach(playerName => {
-        const playerStatus = window.onlinePlayers.get(playerName);
-        if (playerStatus && playerStatus.state === 'online') {
-          onlineCount++;
-        }
-      });
-      
       // Update admin stats with animation
       const totalPlayersEl = document.getElementById('totalPlayers');
-      const onlinePlayersEl = document.getElementById('onlinePlayers');
       const totalCoinsEl = document.getElementById('totalCoinsAdmin');
       const totalEasterEggsEl = document.getElementById('totalEasterEggs');
       const totalPlayTimeEl = document.getElementById('totalPlayTime');
@@ -9345,7 +9251,6 @@
       const totalWinsEl = document.getElementById('totalWins');
       
       totalPlayersEl.textContent = players.length.toString();
-      onlinePlayersEl.textContent = onlineCount.toString();
       totalCoinsEl.textContent = totalCoins.toLocaleString();
       totalEasterEggsEl.textContent = totalEasterEggs.toString();
       totalPlayTimeEl.textContent = formatPlayTime(totalPlayTime);
@@ -9417,18 +9322,10 @@
             return `${type} (${timesFound}x)`;
           }).join(', ') : 'Ninguno';
           
-          // Check connection status
-          const playerStatus = window.onlinePlayers.get(playerName);
-          const isOnline = playerStatus && playerStatus.state === 'online';
-          const statusIndicator = isOnline ? 
-            '<span class="status-dot online" title="Conectado ahora"></span><span class="status-text">🟢 En línea</span>' :
-            '<span class="status-dot offline" title="No conectado"></span><span class="status-text">🔴 Desconectado</span>';
-          
           playersHTML += `
             <div class="player-entry" style="animation: playerEntrySlide 0.3s ease-out ${index * 0.1}s both;">
               <div class="player-info">
                 <span class="player-name">${rankEmoji} ${playerName}</span>
-                <div class="connection-status">${statusIndicator}</div>
                 <span class="player-coins">🪙 ${coins.toLocaleString()} monedas</span>
               </div>
                 <div class="player-stats">
@@ -9486,58 +9383,6 @@
       }
     }
 
-    // SIMPLE MOBILE-FRIENDLY CONNECTION STATUS SYSTEM
-    window.onlinePlayers = new Map();
-    
-    function initializePresenceSystem() {
-      console.log('🌐 Initializing simple mobile-friendly presence system...');
-      
-      // Mark current user as online
-      const playerName = localStorage.getItem('soldierName');
-      if (playerName) {
-        window.onlinePlayers.set(playerName, {
-          state: 'online',
-          lastSeen: new Date().toISOString()
-        });
-        console.log('🌐 Current user marked as online:', playerName);
-      }
-      
-      // Set up periodic updates to keep user "online"
-      setInterval(() => {
-        const playerName = localStorage.getItem('soldierName');
-        if (playerName) {
-          window.onlinePlayers.set(playerName, {
-            state: 'online',
-            lastSeen: new Date().toISOString()
-          });
-        }
-      }, 30000); // Update every 30 seconds
-      
-      console.log('✅ Simple presence system initialized');
-    }
-    
-    function startPresenceListener() {
-      console.log('👥 Starting simple presence listener...');
-      
-      // For now, just mark all players as "online" for testing
-      // In a real implementation, you'd sync this with Firebase
-      setTimeout(() => {
-        const playerName = localStorage.getItem('soldierName');
-        if (playerName) {
-          window.onlinePlayers.set(playerName, {
-            state: 'online',
-            lastSeen: new Date().toISOString()
-          });
-          console.log('👥 Player marked as online:', playerName);
-        }
-      }, 1000);
-    }
-    
-    function updateAdminPanelWithPresence() {
-      console.log('👥 Updating admin panel with presence data...');
-      // This function will be called when the admin panel updates
-    }
-
     // Admin Set Coins Functionality
     function initializeAdminSetCoins() {
       const setCoinsInput = document.getElementById('adminSetCoinsInput');
@@ -9569,7 +9414,61 @@
       }
     }
 
-
+    // UNIFIED BUTTON VISIBILITY CHECKER
+    function checkAllButtonVisibility() {
+      console.log('🔍 Checking all button visibility...');
+      
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      
+      // Check ALL IN button (15000+ coins and not used)
+      const allInContainer = document.getElementById('allInContainer');
+      if (allInContainer) {
+        const allInUsed = localStorage.getItem('allInUsed') === 'true';
+        if (totalCoins >= 15000 && !allInUsed) {
+          allInContainer.classList.add('visible');
+          allInContainer.style.display = 'block';
+          console.log('🎰 ALL IN button visible - player has', totalCoins, 'coins');
+        } else {
+          allInContainer.classList.remove('visible');
+          allInContainer.style.display = 'none';
+        }
+      }
+      
+      // Check Front Man button (20000+ coins and not used)
+      const frontmanContainer = document.getElementById('frontmanCallContainer');
+      if (frontmanContainer) {
+        const frontManUsed = localStorage.getItem('frontManUsed') === 'true';
+        if (totalCoins >= 20000 && !frontManUsed) {
+          frontmanContainer.classList.add('visible');
+          frontmanContainer.style.display = 'block';
+          console.log('📞 Front Man button visible - player has', totalCoins, 'coins');
+        } else {
+          frontmanContainer.classList.remove('visible');
+          frontmanContainer.style.display = 'none';
+        }
+      }
+      
+      // Check Player Fight button (25000+ coins and not used)
+      const playerFightContainer = document.getElementById('playerFightContainer');
+      if (playerFightContainer) {
+        const playerFightUsed = localStorage.getItem('playerFightUsed') === 'true';
+        if (totalCoins >= 25000 && !playerFightUsed) {
+          playerFightContainer.classList.add('visible');
+          playerFightContainer.style.display = 'block';
+          console.log('⚔️ Player Fight button visible - player has', totalCoins, 'coins');
+        } else {
+          playerFightContainer.classList.remove('visible');
+          playerFightContainer.style.display = 'none';
+        }
+      }
+      
+      // Check Blood Screen trigger (30000+ coins and not triggered)
+      const bloodScreenTriggered = localStorage.getItem('bloodScreenTriggered') === 'true';
+      if (totalCoins >= 30000 && !bloodScreenTriggered) {
+        console.log('🩸 Blood Screen trigger activated - player has', totalCoins, 'coins');
+        activateBloodScreen();
+      }
+    }
     
     // BLOOD SCREEN FUNCTIONALITY
     function activateBloodScreen() {
@@ -9748,11 +9647,6 @@
           <span class="stat-icon">👥</span>
           <span class="stat-label">Total Jugadores:</span>
           <span class="stat-value" id="totalPlayers">0</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-icon">🟢</span>
-          <span class="stat-label">Conectados Ahora:</span>
-          <span class="stat-value" id="onlinePlayers">0</span>
         </div>
         <div class="stat-item">
           <span class="stat-icon">🪙</span>

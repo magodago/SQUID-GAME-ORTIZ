@@ -4675,6 +4675,7 @@
       <div class="leaderboard-header">
         <span class="leaderboard-title">🏆 TOP 3 RICOS</span>
         <span class="leaderboard-subtitle">Los jugadores con más monedas</span>
+        <button onclick="loadTop3Leaderboard()" style="background: #FFD700; color: #000; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; cursor: pointer; margin-top: 5px;">🔄 REFRESCAR</button>
       </div>
       <div class="leaderboard-content" id="leaderboardContent">
         <div class="loading-leaderboard">Cargando ranking...</div>
@@ -8611,13 +8612,54 @@
 
     // Auto-update leaderboard every 30 seconds
     function startLeaderboardUpdates() {
-      // Load initial data
-      loadTop3Leaderboard();
+      console.log('🏆 Initializing leaderboard updates...');
+      
+      // Test Firebase connection first
+      testFirebaseConnection();
+      
+      // Load initial data after a short delay
+      setTimeout(() => {
+        console.log('🏆 Loading initial leaderboard data...');
+        loadTop3Leaderboard();
+      }, 2000);
       
       // Update every 30 seconds
       setInterval(() => {
+        console.log('🏆 Auto-updating leaderboard...');
         loadTop3Leaderboard();
       }, 30000);
+    }
+
+    // Test Firebase connection
+    function testFirebaseConnection() {
+      console.log('🔍 Testing Firebase connection...');
+      
+      if (!window.firebase) {
+        console.error('❌ Firebase SDK not loaded');
+        return;
+      }
+      
+      if (!window.firebase.database) {
+        console.error('❌ Firebase Database not available');
+        return;
+      }
+      
+      console.log('✅ Firebase SDK and Database available');
+      
+      const db = window.firebase.database();
+      const testRef = db.ref('test');
+      
+      testRef.set({ test: true, timestamp: Date.now() })
+        .then(() => {
+          console.log('✅ Firebase connection test successful');
+          return testRef.remove();
+        })
+        .then(() => {
+          console.log('✅ Firebase test data cleaned up');
+        })
+        .catch((error) => {
+          console.error('❌ Firebase connection test failed:', error);
+        });
     }
 
     function updateAchievementProgress(type, amount = 1) {

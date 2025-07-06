@@ -4885,6 +4885,22 @@
     <div class="squid-title">
       SQUID GAME <span class="ortiz-text" id="ortizText">ORTIZ</span>
     </div>
+    
+    <!-- TEMPORARY TEST INVENTORY BUTTON -->
+    <div style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+      border: 3px solid #ff0000;
+      border-radius: 10px;
+      padding: 10px 15px;
+      cursor: pointer;
+      z-index: 9999;
+      box-shadow: 0 0 20px #ff0000;
+    " onclick="showInventoryModal()">
+      <span style="color: white; font-weight: bold; font-size: 1rem;">🎒 INVENTARIO TEST</span>
+    </div>
     <div class="shapes">
       <span class="shape circle-shape"></span>
       <span class="shape triangle-shape">
@@ -4917,12 +4933,42 @@
       </button>
     </div>
 
-    <!-- Inventory Button -->
-    <div class="inventory-container" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
-      <button class="envelope-btn inventory-btn" id="inventoryBtn" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
-        <div class="envelope-content">
-          <span class="envelope-text">🎒 INVENTARIO</span>
-        </div>
+    <!-- Inventory Button - NEW SIMPLE VERSION -->
+    <div style="
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem auto;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
+      border: 3px solid #e60073;
+      border-radius: 15px;
+      box-shadow: 0 0 30px #e60073, inset 0 0 20px rgba(230, 0, 115, 0.3);
+      backdrop-filter: blur(5px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      max-width: 300px;
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 1000;
+    " onclick="showInventoryModal()">
+      <button style="
+        background: transparent !important;
+        border: none;
+        cursor: pointer;
+        font-family: 'Orbitron', Arial, sans-serif;
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #fff !important;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+        padding: 0;
+        width: 100%;
+        height: auto;
+        visibility: visible !important;
+        opacity: 1 !important;
+      ">
+        🎒 INVENTARIO
       </button>
     </div>
 

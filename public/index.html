@@ -7416,7 +7416,19 @@
     }
     
     function addTwentyCoins() {
-      console.log('🪙 Adding 20 coins from Gods Power Easter Egg...');
+      console.log('🪙 Adding 20 coins from VEINTE Easter Egg...');
+      
+      // Check if this easter egg has already been used
+      const veinteEasterEggUsed = localStorage.getItem('veinteEasterEggUsed');
+      if (veinteEasterEggUsed === 'true') {
+        console.log('⚠️ VEINTE Easter Egg already used by this player');
+        showEasterEggAlreadyUsedMessage();
+        return;
+      }
+      
+      // Mark as used
+      localStorage.setItem('veinteEasterEggUsed', 'true');
+      console.log('✅ VEINTE Easter Egg marked as used');
       
       // Get current coins
       let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
@@ -7499,7 +7511,63 @@
       // Create +20 coins effect
       createPlusTwentyEffect();
       
-      console.log('🎉 Gods Power Easter Egg coin addition completed!');
+      console.log('🎉 VEINTE Easter Egg coin addition completed!');
+    }
+    
+    function showEasterEggAlreadyUsedMessage() {
+      console.log('⚠️ Showing VEINTE Easter Egg already used message');
+      
+      // Create notification
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        border: 3px solid #ff0000;
+        border-radius: 15px;
+        padding: 20px 30px;
+        color: white;
+        font-family: 'Orbitron', Arial, sans-serif;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-align: center;
+        z-index: 10000;
+        box-shadow: 0 0 30px #ff0000;
+        animation: easterEggUsedPulse 2s ease-in-out infinite;
+        max-width: 400px;
+        line-height: 1.4;
+      `;
+      
+      notification.innerHTML = `
+        <div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
+        <div style="margin-bottom: 15px;">¡YA USASTE ESTE HUEVO!</div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">El easter egg VEINTE solo se puede usar una vez por jugador.</div>
+      `;
+      
+      // Add CSS animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes easterEggUsedPulse {
+          0% { transform: translate(-50%, -50%) scale(1); }
+          50% { transform: translate(-50%, -50%) scale(1.05); }
+          100% { transform: translate(-50%, -50%) scale(1); }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      document.body.appendChild(notification);
+      
+      // Remove after 4 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+        if (style.parentNode) {
+          style.parentNode.removeChild(style);
+        }
+      }, 4000);
     }
     
     function createPlusOneEffect() {

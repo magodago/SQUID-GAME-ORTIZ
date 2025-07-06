@@ -287,6 +287,7 @@
         <button class="refresh-button" onclick="debugPlayerData()" style="margin-left: 10px;">🐛 DEBUG DATOS</button>
         <button class="refresh-button" onclick="add50000CoinsToMain()" style="margin-left: 10px; background: #ff6b6b; border-color: #ff6b6b; color: white;">💰 +50,000 MONEDAS</button>
         <button class="refresh-button" onclick="testVIPTrap()" style="margin-left: 10px; background: #ff00ff; border-color: #ff00ff; color: white;">🐎 TEST VIP TRAP</button>
+        <button class="refresh-button" onclick="resetVeinteEasterEgg()" style="margin-left: 10px; background: #ffa500; border-color: #ffa500; color: white;">🔄 RESET VEINTE EGG</button>
 
         <div class="terminal-section">
             <div class="section-title">📊 ESTADÍSTICAS GLOBALES</div>
@@ -1068,6 +1069,30 @@
                 console.error('❌ Firebase no disponible');
                 alert('❌ Firebase no está disponible.');
             }
+        }
+
+        // Function to reset VEINTE Easter Egg for testing
+        function resetVeinteEasterEgg() {
+            console.log('🔄 Iniciando reset del VEINTE Easter Egg...');
+            
+            // Get current player name from localStorage
+            const currentPlayer = localStorage.getItem('soldierName');
+            
+            if (!currentPlayer) {
+                alert('❌ No se encontró nombre de jugador. Asegúrate de estar logueado en la página principal.');
+                return;
+            }
+            
+            console.log('👤 Jugador actual:', currentPlayer);
+            
+            // Reset VEINTE Easter Egg flag
+            localStorage.removeItem('veinteEasterEggUsed');
+            console.log('🔄 Flag VEINTE Easter Egg reseteado');
+            
+            // Show success message
+            alert(`🔄 ¡VEINTE Easter Egg reseteado!\n\nJugador: ${currentPlayer}\n\nAhora el jugador puede usar el easter egg VEINTE nuevamente.`);
+            
+            console.log('✅ VEINTE Easter Egg reset completado');
         }
     </script>
 </body>

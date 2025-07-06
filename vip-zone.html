@@ -467,6 +467,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkVIPAccess();
             updateCoinsDisplay();
+            checkPlayTimeRestriction();
         });
 
         function checkVIPAccess() {
@@ -492,17 +493,46 @@
             setTimeout(checkVIPAccess, 1000);
         }
 
+        function checkPlayTimeRestriction() {
+            const vipPlayStart = localStorage.getItem('vipPlayStart');
+            const currentTime = Date.now();
+            
+            if (!vipPlayStart) {
+                // First time entering VIP zone, set start time
+                localStorage.setItem('vipPlayStart', currentTime.toString());
+                console.log('🎮 VIP play session started');
+            } else {
+                const playTimeElapsed = currentTime - parseInt(vipPlayStart);
+                const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+                
+                if (playTimeElapsed >= oneHour) {
+                    alert('⏰ Has alcanzado el límite de 1 hora de juego VIP. Serás redirigido al menú principal.');
+                    localStorage.removeItem('vipPlayStart');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                const remainingTime = oneHour - playTimeElapsed;
+                const remainingMinutes = Math.floor(remainingTime / 60000);
+                const remainingSeconds = Math.floor((remainingTime % 60000) / 1000);
+                
+                console.log(`⏰ Tiempo restante de juego VIP: ${remainingMinutes}:${remainingSeconds.toString().padStart(2, '0')}`);
+            }
+        }
+
         function updateCoinsDisplay() {
             const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
             document.getElementById('coinsDisplay').textContent = `🪙 ${totalCoins.toLocaleString()}`;
         }
 
         function goBack() {
+            localStorage.removeItem('vipPlayStart'); // Reset play time when leaving
             window.location.href = 'index.html';
         }
 
         // VIP Roulette Functions
         function openVIPRoulette() {
+            checkPlayTimeRestriction(); // Check before opening game
             document.getElementById('rouletteContainer').style.display = 'flex';
             document.getElementById('rouletteResult').style.display = 'none';
         }
@@ -539,13 +569,13 @@
             wheel.style.transform = `rotate(${totalRotation}deg)`;
             
             setTimeout(() => {
-                // Determine result (VIP: 60% chance to win)
-                const won = Math.random() < 0.6;
+                // Determine result (VIP: 45% chance to win - more realistic)
+                const won = Math.random() < 0.45;
                 let winnings = 0;
                 let resultText = '';
                 
                 if (won) {
-                    const multiplier = Math.random() < 0.3 ? 3 : 2; // 30% chance for 3x, 70% for 2x
+                    const multiplier = Math.random() < 0.2 ? 3 : 2; // 20% chance for 3x, 80% for 2x
                     winnings = Math.floor(betAmount * multiplier);
                     resultText = `🏆 ¡GANASTE! +${winnings} monedas (${multiplier}x)`;
                     
@@ -566,6 +596,7 @@
 
         // VIP Dice Functions
         function openVIPDice() {
+            checkPlayTimeRestriction(); // Check before opening game
             document.getElementById('diceContainer').style.display = 'flex';
             document.getElementById('diceResultMsg').style.display = 'none';
         }
@@ -606,30 +637,41 @@
                 if (rollCount >= maxRolls) {
                     clearInterval(rollInterval);
                     
-                    // Final result
+                    // Final result with realistic probabilities
                     const finalRoll = Math.floor(Math.random() * 6) + 1;
                     dice.textContent = diceValues[finalRoll - 1];
                     
-                    // Determine result (VIP: 70% chance to win)
-                    const won = Math.random() < 0.7;
+                    // Determine result based on dice value
+                    let won = false;
                     let winnings = 0;
                     let resultText = '';
                     
+                    if (finalRoll === 6) {
+                        // 6 = Jackpot (10% chance)
+                        won = true;
+                        winnings = Math.floor(betAmount * 10);
+                        resultText = `🏆 ¡JACKPOT! +${winnings} monedas (10x)`;
+                    } else if (finalRoll === 5) {
+                        // 5 = Win (15% chance)
+                        won = true;
+                        winnings = Math.floor(betAmount * 3);
+                        resultText = `🏆 ¡GANASTE! +${winnings} monedas (3x)`;
+                    } else if (finalRoll === 4) {
+                        // 4 = Small win (15% chance)
+                        won = true;
+                        winnings = Math.floor(betAmount * 2);
+                        resultText = `🏆 ¡GANASTE! +${winnings} monedas (2x)`;
+                    } else {
+                        // 1, 2, 3 = Lose (60% chance)
+                        won = false;
+                        resultText = `💔 Perdiste ${betAmount} monedas`;
+                    }
+                    
                     if (won) {
-                        let multiplier = 1;
-                        if (finalRoll === 6) multiplier = 10; // Jackpot for 6
-                        else if (finalRoll >= 4) multiplier = 3; // Good for 4-5
-                        else multiplier = 2; // Normal for 1-3
-                        
-                        winnings = Math.floor(betAmount * multiplier);
-                        resultText = `🏆 ¡GANASTE! +${winnings} monedas (${multiplier}x)`;
-                        
                         // Add winnings
                         const finalCoins = newCoins + winnings;
                         localStorage.setItem('totalOrtizCoins', finalCoins.toString());
                         updateCoinsDisplay();
-                    } else {
-                        resultText = `💔 Perdiste ${betAmount} monedas`;
                     }
                     
                     const resultElement = document.getElementById('diceResultMsg');
@@ -642,6 +684,7 @@
 
         // VIP Slot Functions
         function openVIPSlot() {
+            checkPlayTimeRestriction(); // Check before opening game
             document.getElementById('slotContainer').style.display = 'flex';
             document.getElementById('slotResult').style.display = 'none';
         }
@@ -691,15 +734,15 @@
                             setTimeout(() => {
                                 const finalSymbols = reels.map(id => document.getElementById(id).textContent);
                                 
-                                // Determine result (VIP: 65% chance to win)
-                                const won = Math.random() < 0.65;
+                                // Determine result with realistic probabilities
+                                const won = Math.random() < 0.4; // 40% chance to win
                                 let winnings = 0;
                                 let resultText = '';
                                 
                                 if (won) {
                                     let multiplier = 1;
                                     if (finalSymbols[0] === finalSymbols[1] && finalSymbols[1] === finalSymbols[2]) {
-                                        if (finalSymbols[0] === '💎') multiplier = 20; // Diamond jackpot
+                                        if (finalSymbols[0] === '💎') multiplier = 20; // Diamond jackpot (rare)
                                         else if (finalSymbols[0] === '🎰') multiplier = 10; // Slot jackpot
                                         else multiplier = 5; // Regular jackpot
                                     } else if (finalSymbols[0] === finalSymbols[1] || finalSymbols[1] === finalSymbols[2]) {

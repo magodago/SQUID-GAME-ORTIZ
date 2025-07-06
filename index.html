@@ -5405,73 +5405,9 @@
             // Add click event listener when button is shown
             adminPanelBtn.addEventListener('click', () => {
               console.log('🔐 Admin panel button clicked!');
-              const adminPanel = document.getElementById('adminPanel');
-              if (adminPanel) {
-                adminPanel.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-                loadAdminData();
-                console.log('✅ Admin panel opened');
-                
-                // Add event listener to force sync button when panel opens
-                const forceSyncBtn = document.getElementById('forceSyncBtn');
-                if (forceSyncBtn) {
-                  console.log('🔍 Force sync button found, adding event listener...');
-                  forceSyncBtn.onclick = function() {
-                    alert('🔄 BOTÓN PULSADO - Iniciando sincronización...');
-                    console.log('🔄 Forzando sincronización con Firebase...');
-                    
-                    // Simple Firebase connection test
-                    if (typeof firebase !== 'undefined' && firebase.database) {
-                      alert('✅ Firebase detectado - Conectando...');
-                      
-                      const database = firebase.database();
-                      const playersRef = database.ref('players');
-                      
-                      playersRef.once('value')
-                        .then(function(snapshot) {
-                          const data = snapshot.val() || {};
-                          const playerCount = Object.keys(data).length;
-                          
-                          alert(`✅ CONEXIÓN EXITOSA!\n\nJugadores encontrados: ${playerCount}\n\nDatos: ${JSON.stringify(data, null, 2)}`);
-                          
-                                                     // Update the admin panel display
-                           updateAdminPanelWithFirebaseData(data);
-                        })
-                        .catch(function(error) {
-                          alert(`❌ ERROR: ${error.message}`);
-                          console.error('Firebase error:', error);
-                        });
-                    } else {
-                      alert('❌ Firebase no está disponible');
-                      console.error('Firebase not available');
-                    }
-                  };
-                } else {
-                  console.error('❌ Force sync button not found when panel opened!');
-                  alert('❌ Botón de sincronización no encontrado!');
-                }
-                
-                // Add event listener to close button when panel opens
-                const closeAdminBtn = document.getElementById('closeAdminBtn');
-                if (closeAdminBtn) {
-                  console.log('🔍 Close admin button found, adding event listener...');
-                  closeAdminBtn.onclick = function() {
-                    console.log('❌ Close admin button clicked!');
-                    const adminPanel = document.getElementById('adminPanel');
-                    if (adminPanel) {
-                      adminPanel.style.display = 'none';
-                      document.body.style.overflow = 'auto';
-                      console.log('✅ Admin panel closed');
-                    } else {
-                      console.error('❌ Admin panel element not found for closing!');
-                    }
-                  };
-                } else {
-                  console.error('❌ Close admin button not found when panel opened!');
-                }
-              } else {
-                console.error('❌ Admin panel element not found!');
-              }
+              // Redirect to the new admin panel
+              window.location.href = 'admin-panel.html';
+              console.log('✅ Redirecting to admin panel');
             });
           } else {
             console.error('❌ Admin panel button not found when trying to show it');

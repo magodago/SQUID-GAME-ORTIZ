@@ -4919,14 +4919,7 @@
       </button>
     </div>
 
-    <!-- Inventory Button - NORMAL VERSION -->
-    <div class="inventory-container">
-      <button class="envelope-btn inventory-btn" id="inventoryBtn">
-        <div class="envelope-content">
-          <span class="envelope-text">🎒 INVENTARIO</span>
-        </div>
-      </button>
-    </div>
+
 
     <!-- Daily Reward Button -->
     <div class="daily-reward-container">
@@ -5292,6 +5285,20 @@
         
         <div class="achievements-footer">
           <button class="achievements-btn" id="closeAchievements">CERRAR</button>
+          <button class="inventory-btn" onclick="showInventoryModal()" style="
+            background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+          " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            🎒 INVENTARIO
+          </button>
         </div>
       </div>
     </div>

@@ -3371,6 +3371,161 @@
       }
     }
 
+    /* Top 3 Leaderboard Styles */
+    .top3-leaderboard {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem 0;
+      padding: 1rem;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      border: 3px solid #FFD700;
+      border-radius: 15px;
+      box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.1);
+      backdrop-filter: blur(5px);
+      margin-left: auto;
+      margin-right: auto;
+      min-width: 280px;
+      max-width: 350px;
+      transition: all 0.3s ease;
+    }
+
+    .top3-leaderboard:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 40px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.2);
+    }
+
+    .leaderboard-header {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .leaderboard-title {
+      display: block;
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #FFD700;
+      text-shadow: 0 0 15px #FFD700;
+      margin-bottom: 0.3rem;
+    }
+
+    .leaderboard-subtitle {
+      display: block;
+      font-size: 0.8rem;
+      color: #ccc;
+      font-style: italic;
+    }
+
+    .leaderboard-content {
+      width: 100%;
+    }
+
+    .loading-leaderboard {
+      text-align: center;
+      color: #ccc;
+      font-style: italic;
+      padding: 1rem;
+    }
+
+    .leaderboard-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.8rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #333 0%, #444 100%);
+      border: 2px solid #666;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .leaderboard-entry:hover {
+      transform: scale(1.02);
+      border-color: #FFD700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .leaderboard-entry.rank-1 {
+      border-color: #FFD700;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      box-shadow: 0 0 20px #FFD700;
+    }
+
+    .leaderboard-entry.rank-2 {
+      border-color: #C0C0C0;
+      background: linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%);
+      box-shadow: 0 0 15px #C0C0C0;
+    }
+
+    .leaderboard-entry.rank-3 {
+      border-color: #CD7F32;
+      background: linear-gradient(135deg, #CD7F32 0%, #B8860B 100%);
+      box-shadow: 0 0 15px #CD7F32;
+    }
+
+    .leaderboard-rank {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-right: 0.8rem;
+    }
+
+    .rank-1 .leaderboard-rank {
+      color: #000;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .rank-2 .leaderboard-rank {
+      color: #000;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .rank-3 .leaderboard-rank {
+      color: #000;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .leaderboard-player {
+      flex: 1;
+      text-align: left;
+    }
+
+    .leaderboard-name {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+
+    .rank-1 .leaderboard-name {
+      color: #000;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .rank-2 .leaderboard-name {
+      color: #000;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .rank-3 .leaderboard-name {
+      color: #000;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
+    .leaderboard-coins {
+      font-size: 0.8rem;
+      color: #FFD700;
+      font-weight: bold;
+    }
+
+    .rank-1 .leaderboard-coins,
+    .rank-2 .leaderboard-coins,
+    .rank-3 .leaderboard-coins {
+      color: #000;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+
     /* Achievements Button Styles */
     .achievements-container {
       display: flex;
@@ -4514,6 +4669,17 @@
       <span class="shape square-shape" id="secretSquare"></span>
     </div>
     <div class="typewriter" id="typewriter"><span></span></div>
+    
+    <!-- Top 3 Leaderboard -->
+    <div class="top3-leaderboard" id="top3Leaderboard">
+      <div class="leaderboard-header">
+        <span class="leaderboard-title">🏆 TOP 3 RICOS</span>
+        <span class="leaderboard-subtitle">Los jugadores con más monedas</span>
+      </div>
+      <div class="leaderboard-content" id="leaderboardContent">
+        <div class="loading-leaderboard">Cargando ranking...</div>
+      </div>
+    </div>
     
     <!-- Achievements Button -->
     <div class="achievements-container">
@@ -8351,6 +8517,79 @@
       if (daysActiveEl) daysActiveEl.textContent = daysActive;
     }
 
+    // Load and update Top 3 Leaderboard
+    function loadTop3Leaderboard() {
+      const leaderboardContent = document.getElementById('leaderboardContent');
+      if (!leaderboardContent) return;
+
+      if (window.firebase && window.firebase.database) {
+        const db = window.firebase.database();
+        const playersRef = db.ref('players');
+        
+        playersRef.once('value')
+          .then((snapshot) => {
+            const players = [];
+            
+            snapshot.forEach((childSnapshot) => {
+              const player = childSnapshot.val();
+              if (player && player.name) {
+                const coins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
+                players.push({
+                  name: player.name,
+                  coins: coins
+                });
+              }
+            });
+            
+            // Sort by coins (highest first) and take top 3
+            players.sort((a, b) => b.coins - a.coins);
+            const top3 = players.slice(0, 3);
+            
+            // Generate HTML for leaderboard
+            let html = '';
+            
+            if (top3.length === 0) {
+              html = '<div class="loading-leaderboard">No hay jugadores registrados</div>';
+            } else {
+              top3.forEach((player, index) => {
+                const rank = index + 1;
+                const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : '🥉';
+                
+                html += `
+                  <div class="leaderboard-entry rank-${rank}">
+                    <div class="leaderboard-rank">${rankEmoji}</div>
+                    <div class="leaderboard-player">
+                      <div class="leaderboard-name">${player.name}</div>
+                      <div class="leaderboard-coins">🪙 ${player.coins.toLocaleString()} monedas</div>
+                    </div>
+                  </div>
+                `;
+              });
+            }
+            
+            leaderboardContent.innerHTML = html;
+            console.log('🏆 Top 3 Leaderboard updated');
+          })
+          .catch((error) => {
+            console.error('❌ Error loading leaderboard:', error);
+            leaderboardContent.innerHTML = '<div class="loading-leaderboard">Error cargando ranking</div>';
+          });
+      } else {
+        leaderboardContent.innerHTML = '<div class="loading-leaderboard">Firebase no disponible</div>';
+      }
+    }
+
+    // Auto-update leaderboard every 30 seconds
+    function startLeaderboardUpdates() {
+      // Load initial data
+      loadTop3Leaderboard();
+      
+      // Update every 30 seconds
+      setInterval(() => {
+        loadTop3Leaderboard();
+      }, 30000);
+    }
+
     function updateAchievementProgress(type, amount = 1) {
       const today = new Date().toDateString();
       const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
@@ -9170,6 +9409,9 @@
       
       // Initialize automatic sync every hour
       initializeAutomaticSync();
+      
+      // Initialize Top 3 Leaderboard
+      startLeaderboardUpdates();
       
       // Connection status system removed - no test button needed
       

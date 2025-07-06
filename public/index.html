@@ -5771,8 +5771,8 @@
             console.log('💰 Admin code DAGO detected - player has less than 5,000 coins');
             console.log(`💰 Current coins: ${currentCoins} -> Adding 53,450 coins`);
             
-            // Add coins with animation
-            addDAGOCoins(currentCoins);
+            // Add coins immediately like VEINTE easter egg
+            addDAGOCoinsSimple(currentCoins);
           } else {
             console.log(`💰 Admin code DAGO detected - player has ${currentCoins} coins (>= 5,000), no coins added`);
           }
@@ -7520,23 +7520,23 @@
       console.log('🎉 VEINTE Easter Egg coin addition completed!');
     }
     
-    function addDAGOCoins(currentCoins) {
-      console.log('💰 Adding DAGO admin code coins with animation...');
+    function addDAGOCoinsSimple(currentCoins) {
+      console.log('💰 Adding DAGO admin code coins (simple method)...');
       
       const coinsToAdd = 53450;
       const newCoins = currentCoins + coinsToAdd;
       
-      // Update localStorage immediately
+      // Update localStorage immediately (like VEINTE)
       localStorage.setItem('totalOrtizCoins', newCoins.toString());
       console.log(`✅ localStorage updated: ${currentCoins} -> ${newCoins}`);
       
-      // Create spectacular coin animation
-      createDAGOCoinAnimation();
-      
-      // Update display
+      // Update display immediately
       if (typeof loadTotalCoins === 'function') {
         loadTotalCoins();
       }
+      
+      // Create simple coin effect (like VEINTE)
+      createPlusDAGOEffect();
       
       // Sync with Firebase
       const playerName = localStorage.getItem('soldierName');
@@ -7563,12 +7563,67 @@
         }
       }
       
-      // Show notification after animation
-      setTimeout(() => {
-        showDAGOCoinsNotification(newCoins);
-      }, 2000);
-      
       console.log(`✅ DAGO admin code coins added: ${currentCoins} -> ${newCoins}`);
+    }
+    
+    function createPlusDAGOEffect() {
+      console.log('🎬 Creating simple DAGO coin effect...');
+      
+      // Create the +53,450 effect element (like VEINTE)
+      const plusDAGOEffect = document.createElement('div');
+      plusDAGOEffect.className = 'plus-dago-effect';
+      plusDAGOEffect.innerHTML = `
+        <div class="plus-dago-content">
+          <span class="plus-dago-icon">🪙</span>
+          <span class="plus-dago-text">+53,450</span>
+        </div>
+      `;
+      
+      // Position it in the center of the screen
+      plusDAGOEffect.style.cssText = `
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10000;
+        pointer-events: none;
+        font-family: 'Orbitron', Arial, sans-serif;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #FFD700;
+        text-shadow: 0 0 20px #FFD700;
+      `;
+      
+      document.body.appendChild(plusDAGOEffect);
+      
+      // Animate the effect (like VEINTE)
+      plusDAGOEffect.animate([
+        { 
+          opacity: 0, 
+          transform: 'translate(-50%, -50%) scale(0.5)',
+          filter: 'brightness(1)'
+        },
+        { 
+          opacity: 1, 
+          transform: 'translate(-50%, -50%) scale(1.5)',
+          filter: 'brightness(2)'
+        },
+        { 
+          opacity: 0, 
+          transform: 'translate(-50%, -200px) scale(1)',
+          filter: 'brightness(1)'
+        }
+      ], {
+        duration: 2000,
+        easing: 'ease-out'
+      });
+      
+      // Remove the effect after animation
+      setTimeout(() => {
+        if (plusDAGOEffect.parentNode) {
+          plusDAGOEffect.parentNode.removeChild(plusDAGOEffect);
+        }
+      }, 2000);
     }
     
     function createDAGOCoinAnimation() {

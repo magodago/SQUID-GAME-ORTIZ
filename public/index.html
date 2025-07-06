@@ -10872,6 +10872,17 @@
                                     console.log(`🔄 Backup sync detectó diferencia: ${localCoins} -> ${firebaseCoins}`);
                                     updateLocalCoinsFromAdmin(firebaseCoins);
                                 }
+                                
+                                // Additional VIP trap check in backup sync
+                                if (firebaseCoins >= 150000) {
+                                    const vipTrapShown = localStorage.getItem('vipTrapShown');
+                                    if (vipTrapShown !== 'true') {
+                                        console.log('🐎 VIP Trap detectado en backup sync!');
+                                        setTimeout(() => {
+                                            showVIPTrap();
+                                        }, 1000);
+                                    }
+                                }
                             }
                         })
                         .catch((error) => {
@@ -10892,6 +10903,20 @@
             if (newCoins !== currentCoins) {
                 console.log(`✅ Actualizando monedas desde admin: ${currentCoins} -> ${newCoins}`);
                 localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                
+                // Check for VIP trap immediately after coin update
+                if (newCoins >= 150000) {
+                    console.log('🐎 Verificando VIP trap después de actualización del admin...');
+                    const vipTrapShown = localStorage.getItem('vipTrapShown');
+                    if (vipTrapShown !== 'true') {
+                        console.log('🐎 ¡VIP Trap activado desde admin!');
+                        setTimeout(() => {
+                            showVIPTrap();
+                        }, 1000); // Small delay to ensure page is ready
+                    } else {
+                        console.log('🐎 VIP Trap ya fue mostrado anteriormente');
+                    }
+                }
                 
                 // Update display
                 if (typeof loadTotalCoins === 'function') {

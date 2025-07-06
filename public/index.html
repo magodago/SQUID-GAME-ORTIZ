@@ -8520,36 +8520,59 @@
     // Load and update Top 3 Leaderboard
     function loadTop3Leaderboard() {
       const leaderboardContent = document.getElementById('leaderboardContent');
-      if (!leaderboardContent) return;
+      if (!leaderboardContent) {
+        console.error('❌ Leaderboard content element not found');
+        return;
+      }
+
+      console.log('🏆 Starting leaderboard update...');
 
       if (window.firebase && window.firebase.database) {
         const db = window.firebase.database();
         const playersRef = db.ref('players');
         
+        console.log('📡 Fetching players from Firebase...');
+        
         playersRef.once('value')
           .then((snapshot) => {
+            console.log('📊 Firebase response:', snapshot.val());
             const players = [];
             
             snapshot.forEach((childSnapshot) => {
               const player = childSnapshot.val();
-              if (player && player.name) {
+              console.log('🔍 Checking player:', childSnapshot.key, player);
+              
+              // Check for different possible name fields
+              const playerName = player?.name || player?.username || player?.displayName || childSnapshot.key;
+              
+              if (player && playerName) {
                 // Filter out test users
-                const playerName = player.name.toLowerCase();
-                if (playerName === 'yo' || playerName === 'prueba' || playerName === 'prueba 2') {
+                const playerNameLower = playerName.toLowerCase();
+                if (playerNameLower === 'yo' || playerNameLower === 'prueba' || playerNameLower === 'prueba 2') {
+                  console.log('🚫 Skipping test user:', playerName);
                   return; // Skip these users
                 }
                 
                 const coins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
+                console.log('✅ Adding player to leaderboard:', playerName, 'with', coins, 'coins');
+                
                 players.push({
-                  name: player.name,
+                  name: playerName,
                   coins: coins
                 });
+              } else {
+                console.log('❌ Invalid player data:', player);
               }
             });
+            
+            console.log('📋 Total players found:', players.length);
+            console.log('📋 Players array:', players);
             
             // Sort by coins (highest first) and take top 3
             players.sort((a, b) => b.coins - a.coins);
             const top3 = players.slice(0, 3);
+            
+            console.log('🏆 Top 3 players:', top3);
             
             // Generate HTML for leaderboard
             let html = '';
@@ -8574,13 +8597,14 @@
             }
             
             leaderboardContent.innerHTML = html;
-            console.log('🏆 Top 3 Leaderboard updated');
+            console.log('🏆 Top 3 Leaderboard updated successfully');
           })
           .catch((error) => {
             console.error('❌ Error loading leaderboard:', error);
             leaderboardContent.innerHTML = '<div class="loading-leaderboard">Error cargando ranking</div>';
           });
       } else {
+        console.error('❌ Firebase not available');
         leaderboardContent.innerHTML = '<div class="loading-leaderboard">Firebase no disponible</div>';
       }
     }

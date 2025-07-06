@@ -8743,11 +8743,16 @@
       // Check if player has 20000+ coins and show/hide button
       function checkFrontManVisibility() {
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        if (totalCoins >= 20000) {
+        const frontManUsed = localStorage.getItem('frontManUsed') === 'true';
+        
+        if (totalCoins >= 20000 && !frontManUsed) {
           frontmanContainer.classList.add('visible');
-          console.log('📞 Front Man call button visible - player has', totalCoins, 'coins');
+          frontmanContainer.style.display = 'block';
+          console.log('📞 Front Man call button visible - player has', totalCoins, 'coins and hasn\'t used it');
         } else {
           frontmanContainer.classList.remove('visible');
+          frontmanContainer.style.display = 'none';
+          console.log('📞 Front Man call button hidden - coins:', totalCoins, 'used:', frontManUsed);
         }
       }
       
@@ -8885,11 +8890,16 @@
       // Check if player has 25000+ coins and show/hide button
       function checkPlayerFightVisibility() {
         const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        if (totalCoins >= 25000) {
+        const playerFightUsed = localStorage.getItem('playerFightUsed') === 'true';
+        
+        if (totalCoins >= 25000 && !playerFightUsed) {
           playerFightContainer.classList.add('visible');
-          console.log('⚔️ Player Fight button visible - player has', totalCoins, 'coins');
+          playerFightContainer.style.display = 'block';
+          console.log('⚔️ Player Fight button visible - player has', totalCoins, 'coins and hasn\'t used it');
         } else {
           playerFightContainer.classList.remove('visible');
+          playerFightContainer.style.display = 'none';
+          console.log('⚔️ Player Fight button hidden - coins:', totalCoins, 'used:', playerFightUsed);
         }
       }
       

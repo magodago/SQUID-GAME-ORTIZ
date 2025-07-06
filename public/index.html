@@ -4940,9 +4940,14 @@
           <span class="envelope-text">ZONA VIP</span>
         </div>
       </button>
-      <button class="envelope-btn debug-btn" id="debugVipBtn" style="display: block; background: linear-gradient(45deg, #FF0000, #FF4444);" onclick="debugVipAccess()">
+      <button class="envelope-btn debug-btn" id="debugVipBtn" style="display: block; background: linear-gradient(45deg, #FF0000, #FF4444);" onclick="alert('DEBUG VIP clicked!'); debugVipAccess();">
         <div class="envelope-content">
           <span class="envelope-text">DEBUG VIP</span>
+        </div>
+      </button>
+      <button class="envelope-btn test-btn" id="testBtn" style="display: block; background: linear-gradient(45deg, #00FF00, #44FF44);" onclick="alert('TEST BUTTON WORKS!');">
+        <div class="envelope-content">
+          <span class="envelope-text">TEST</span>
         </div>
       </button>
       <button class="envelope-btn frontman-btn" id="frontmanBtn">
@@ -10694,8 +10699,33 @@
       // Check VIP Access and show/hide VIP Zone button
       checkVipAccess();
       
-          // Check VIP access every 30 seconds
-    setInterval(checkVipAccess, 30000);
+                // Check VIP access every 30 seconds
+      setInterval(checkVipAccess, 30000);
+
+      // Auto-check VIP status every 5 seconds for debugging
+      setInterval(() => {
+        const vipAccessActive = localStorage.getItem('vipAccessActive') === 'true';
+        const vipAccessExpiry = parseInt(localStorage.getItem('vipAccessExpiry') || '0');
+        const isVipAccessValid = vipAccessActive && Date.now() < vipAccessExpiry;
+        
+        if (isVipAccessValid) {
+          console.log('💎 VIP Access is ACTIVE - should show button');
+          const vipZoneBtn = document.getElementById('vipZoneBtn');
+          if (vipZoneBtn && vipZoneBtn.style.display === 'none') {
+            console.log('🔄 Forcing VIP Zone button to show...');
+            vipZoneBtn.style.display = 'flex';
+          }
+        }
+      }, 5000);
+
+      // Add event listener for debug button
+      const debugVipBtn = document.getElementById('debugVipBtn');
+      if (debugVipBtn) {
+        debugVipBtn.addEventListener('click', () => {
+          console.log('🔍 DEBUG VIP button clicked via event listener');
+          debugVipAccess();
+        });
+      }
 
     // Debug function for VIP access
     function debugVipAccess() {

@@ -9184,9 +9184,28 @@
         animation: fadeIn 0.5s ease-out;
       `;
       
-      // Generate random reward
-      const rewards = [100, 1000, 5000];
-      const randomReward = rewards[Math.floor(Math.random() * rewards.length)];
+      // Generate random reward with items included
+      const rewards = [
+        { type: 'coins', value: 100, probability: 0.4 },
+        { type: 'coins', value: 1000, probability: 0.35 },
+        { type: 'coins', value: 5000, probability: 0.15 },
+        { type: 'item', value: 'Front Man Mask', probability: 0.05 },
+        { type: 'item', value: 'VIP Card', probability: 0.03 },
+        { type: 'item', value: 'Golden Key', probability: 0.02 }
+      ];
+      
+      // Select reward based on probability
+      const random = Math.random();
+      let cumulativeProbability = 0;
+      let selectedReward = rewards[0]; // Default to 100 coins
+      
+      for (const reward of rewards) {
+        cumulativeProbability += reward.probability;
+        if (random <= cumulativeProbability) {
+          selectedReward = reward;
+          break;
+        }
+      }
       
       modal.innerHTML = `
         <div class="surprise-box-content" style="
@@ -9203,7 +9222,7 @@
           <div style="font-size: 4rem; margin-bottom: 20px; animation: bounce 1s infinite;">🎁</div>
           <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #000;">¡CAJA SORPRESA DIARIA!</div>
           <div style="font-size: 1.1rem; margin-bottom: 20px; color: #333;">¡Haz clic para abrir tu regalo!</div>
-          <div style="font-size: 0.9rem; color: #666; margin-bottom: 30px;">Recompensa aleatoria: 100, 1000 o 5000 monedas</div>
+          <div style="font-size: 0.9rem; color: #666; margin-bottom: 30px;">Recompensa aleatoria: Monedas o ¡Objetos especiales raros!</div>
           
           <button id="openSurpriseBoxBtn" style="
             background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
@@ -9227,7 +9246,7 @@
       
       // Add click event to open button
       document.getElementById('openSurpriseBoxBtn').addEventListener('click', () => {
-        openDailySurpriseBox(randomReward);
+        openDailySurpriseBox(selectedReward);
       });
       
       // Add CSS animations
@@ -9269,36 +9288,65 @@
     }
 
     function openDailySurpriseBox(reward) {
-      console.log(`🎁 Opening surprise box with reward: ${reward} coins`);
+      console.log(`🎁 Opening surprise box with reward:`, reward);
       
       // Update localStorage to mark as claimed today
       const today = new Date().toDateString();
       localStorage.setItem('lastDailySurpriseBox', today);
       
-      // Add coins to player
-      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-      const newCoins = currentCoins + reward;
-      localStorage.setItem('totalOrtizCoins', newCoins.toString());
-      
-      // Update display
-      if (typeof loadTotalCoins === 'function') {
-        loadTotalCoins();
-      }
-      
-      // Sync with Firebase
-      if (window.firebase && window.firebase.database) {
-        const db = window.firebase.database();
-        const currentPlayer = localStorage.getItem('soldierName');
-        if (currentPlayer) {
-          const playerRef = db.ref(`players/${currentPlayer}`);
-          playerRef.update({
-            coins: newCoins,
-            lastUpdated: Date.now()
-          }).then(() => {
-            console.log(`✅ Daily surprise box coins synced to Firebase: ${reward} coins`);
-          }).catch((error) => {
-            console.error('❌ Error syncing daily surprise box coins:', error);
-          });
+      if (reward.type === 'coins') {
+        // Add coins to player
+        const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        const newCoins = currentCoins + reward.value;
+        localStorage.setItem('totalOrtizCoins', newCoins.toString());
+        
+        // Update display
+        if (typeof loadTotalCoins === 'function') {
+          loadTotalCoins();
+        }
+        
+        // Sync with Firebase
+        if (window.firebase && window.firebase.database) {
+          const db = window.firebase.database();
+          const currentPlayer = localStorage.getItem('soldierName');
+          if (currentPlayer) {
+            const playerRef = db.ref(`players/${currentPlayer}`);
+            playerRef.update({
+              coins: newCoins,
+              lastUpdated: Date.now()
+            }).then(() => {
+              console.log(`✅ Daily surprise box coins synced to Firebase: ${reward.value} coins`);
+            }).catch((error) => {
+              console.error('❌ Error syncing daily surprise box coins:', error);
+            });
+          }
+        }
+      } else if (reward.type === 'item') {
+        // Add item to inventory
+        const inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+        inventory.push(reward.value);
+        localStorage.setItem('inventory', JSON.stringify(inventory));
+        
+        // Sync inventory with Firebase
+        if (window.firebase && window.firebase.database) {
+          const db = window.firebase.database();
+          const currentPlayer = localStorage.getItem('soldierName');
+          if (currentPlayer) {
+            const playerRef = db.ref(`players/${currentPlayer}`);
+            playerRef.update({
+              inventory: inventory,
+              lastUpdated: Date.now()
+            }).then(() => {
+              console.log(`✅ Daily surprise box item synced to Firebase: ${reward.value}`);
+            }).catch((error) => {
+              console.error('❌ Error syncing daily surprise box item:', error);
+            });
+          }
+        }
+        
+        // Update inventory display if function exists
+        if (typeof loadInventory === 'function') {
+          loadInventory();
         }
       }
       
@@ -9334,22 +9382,45 @@
         animation: fadeIn 0.3s ease-out;
       `;
       
+      let rewardContent = '';
+      let backgroundGradient = '';
+      let borderColor = '';
+      let shadowColor = '';
+      let icon = '';
+      let title = '';
+      let description = '';
+      
+      if (reward.type === 'coins') {
+        backgroundGradient = 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)';
+        borderColor = '#00ff00';
+        shadowColor = '#00ff00';
+        icon = '💰';
+        title = '¡FELICIDADES!';
+        description = `Has ganado ${reward.value.toLocaleString()} MONEDAS`;
+      } else if (reward.type === 'item') {
+        backgroundGradient = 'linear-gradient(135deg, #ffd700 0%, #ffa500 100%)';
+        borderColor = '#ffd700';
+        shadowColor = '#ffd700';
+        icon = '🎁';
+        title = '¡OBJETO ESPECIAL!';
+        description = `Has obtenido: ${reward.value}`;
+      }
+      
       rewardModal.innerHTML = `
         <div style="
-          background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
-          border: 3px solid #00ff00;
+          background: ${backgroundGradient};
+          border: 3px solid ${borderColor};
           border-radius: 20px;
           padding: 40px;
           text-align: center;
           max-width: 90%;
           width: 350px;
-          box-shadow: 0 0 50px #00ff00;
+          box-shadow: 0 0 50px ${shadowColor};
           animation: rewardReveal 1s ease-out;
         ">
-          <div style="font-size: 5rem; margin-bottom: 20px; animation: bounce 1s infinite;">💰</div>
-          <div style="font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #000;">¡FELICIDADES!</div>
-          <div style="font-size: 1.5rem; margin-bottom: 20px; color: #333;">Has ganado</div>
-          <div style="font-size: 3rem; font-weight: bold; margin-bottom: 20px; color: #000; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${reward.toLocaleString()} MONEDAS</div>
+          <div style="font-size: 5rem; margin-bottom: 20px; animation: bounce 1s infinite;">${icon}</div>
+          <div style="font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #000;">${title}</div>
+          <div style="font-size: 1.5rem; margin-bottom: 20px; color: #333;">${description}</div>
           <div style="font-size: 1rem; color: #666; margin-bottom: 30px;">¡Vuelve mañana por más sorpresas!</div>
           
           <button onclick="closeRewardModal()" style="
@@ -9370,8 +9441,10 @@
       
       document.body.appendChild(rewardModal);
       
-      // Create coin rain effect
-      createCoinRain();
+      // Create coin rain effect only for coins
+      if (reward.type === 'coins') {
+        createCoinRain();
+      }
     }
 
     function createCoinRain() {

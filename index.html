@@ -8591,8 +8591,8 @@
                     <div class="leaderboard-player">
                       <div class="leaderboard-name">${player.name}</div>
                       <div class="leaderboard-coins">🪙 ${player.coins.toLocaleString()} monedas</div>
-                    </div>
-                  </div>
+            </div>
+          </div>
                 `;
               });
             }
@@ -8659,7 +8659,7 @@
         })
         .catch((error) => {
           console.error('❌ Firebase connection test failed:', error);
-        });
+      });
     }
 
     function updateAchievementProgress(type, amount = 1) {

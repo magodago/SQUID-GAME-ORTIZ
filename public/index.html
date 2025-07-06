@@ -4045,6 +4045,136 @@
       color: #FF0000;
       text-shadow: 0 0 10px #FF0000;
     }
+
+    /* VIP Trap Modal */
+    .vip-trap-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      backdrop-filter: blur(10px);
+    }
+
+    .vip-trap-content {
+      background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+      border: 3px solid #FFD700;
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      margin: 0 auto;
+      box-shadow: 0 0 50px #FFD700, inset 0 0 50px rgba(255, 215, 0, 0.1);
+      animation: vipTrapGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes vipTrapGlow {
+      0% { box-shadow: 0 0 50px #FFD700, inset 0 0 50px rgba(255, 215, 0, 0.1); }
+      100% { box-shadow: 0 0 80px #FFD700, inset 0 0 80px rgba(255, 215, 0, 0.2); }
+    }
+
+    .vip-trap-header h2 {
+      color: #FFD700;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 15px #FFD700;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+
+    .vip-trap-subtitle {
+      color: #FFA500;
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 10px #FFA500;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+
+    .vip-trap-message {
+      margin: 1.5rem 0;
+    }
+
+    .vip-trap-message p {
+      color: #ffffff;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .vip-trap-warning {
+      color: #FF0000;
+      font-size: 1rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #FF0000;
+      margin-top: 1rem;
+      animation: warningBlink 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes warningBlink {
+      0% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    .vip-trap-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .vip-trap-accept-btn, .vip-trap-dare-btn, .vip-trap-close-btn {
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: 2px solid;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', Arial, sans-serif;
+      min-width: 150px;
+    }
+
+    .vip-trap-accept-btn {
+      background: linear-gradient(45deg, #00ff00, #00cc00);
+      color: #000;
+      border-color: #00ff00;
+      box-shadow: 0 0 20px #00ff00;
+    }
+
+    .vip-trap-accept-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #00ff00;
+    }
+
+    .vip-trap-dare-btn {
+      background: linear-gradient(45deg, #ff0000, #cc0000);
+      color: #fff;
+      border-color: #ff0000;
+      box-shadow: 0 0 20px #ff0000;
+    }
+
+    .vip-trap-dare-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #ff0000;
+    }
+
+    .vip-trap-close-btn {
+      background: linear-gradient(45deg, #666666, #444444);
+      color: #fff;
+      border-color: #666666;
+      box-shadow: 0 0 20px #666666;
+    }
+
+    .vip-trap-close-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px #666666;
+    }
     
     .coin-icon {
       font-size: 1.5rem;
@@ -6551,6 +6681,152 @@
         
         wealthDisplay.textContent = `${wealthText} (${(wealthFactor * 100).toFixed(0)}% ganar)`;
         wealthDisplay.className = `wealth-factor ${wealthClass}`;
+      }
+      
+      // Check for VIP trap at 150,000 coins
+      checkVIPTrap(totalCoins);
+    }
+
+    function checkVIPTrap(totalCoins) {
+      if (totalCoins >= 150000) {
+        const vipTrapShown = localStorage.getItem('vipTrapShown');
+        if (vipTrapShown !== 'true') {
+          showVIPTrap();
+        }
+      }
+    }
+
+    function showVIPTrap() {
+      console.log('🐎 VIP Trap triggered - player has 150,000+ coins');
+      
+      // Mark as shown permanently
+      localStorage.setItem('vipTrapShown', 'true');
+      
+      // Create modal HTML
+      const modalHTML = `
+        <div class="vip-trap-modal" id="vipTrapModal">
+          <div class="vip-trap-content">
+            <div class="vip-trap-header">
+              <h2>🐎 VIP - FRONT MAN</h2>
+              <div class="vip-trap-subtitle">¡No nos gustan los caballos con tanto dinero!</div>
+            </div>
+            
+            <div class="vip-trap-message">
+              <p>¿Aceptas que te quitemos <strong>100,000 monedas</strong> o prefieres jugártela en decirnos <strong>NO</strong>?</p>
+              <div class="vip-trap-warning">⚠️ Piensa bien tu respuesta, caballo</div>
+            </div>
+            
+            <div class="vip-trap-buttons">
+              <button class="vip-trap-accept-btn" id="vipTrapAcceptBtn">✅ ACEPTO</button>
+              <button class="vip-trap-dare-btn" id="vipTrapDareBtn">🎰 ME LA JUEGO</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add modal to page
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+      
+      // Add event listeners
+      document.getElementById('vipTrapAcceptBtn').addEventListener('click', () => {
+        executeVIPTrapAccept();
+      });
+      
+      document.getElementById('vipTrapDareBtn').addEventListener('click', () => {
+        executeVIPTrapDare();
+      });
+      
+      // Close on outside click
+      document.getElementById('vipTrapModal').addEventListener('click', (e) => {
+        if (e.target.id === 'vipTrapModal') {
+          closeVIPTrapModal();
+        }
+      });
+    }
+
+    function executeVIPTrapAccept() {
+      console.log('✅ VIP Trap - Player accepted 100,000 coin penalty');
+      
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newCoins = Math.max(0, currentCoins - 100000);
+      
+      // Update coins
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      
+      // Track in Firebase
+      const playerName = localStorage.getItem('soldierName');
+      if (playerName && window.PlayerDataManager) {
+        PlayerDataManager.trackEasterEgg(playerName, 'vip-trap-accept', 100000);
+      }
+      
+      loadTotalCoins();
+      
+      // Show result message
+      const modal = document.getElementById('vipTrapModal');
+      modal.innerHTML = `
+        <div class="vip-trap-content">
+          <div class="vip-trap-header">
+            <h2 style="color: #00ff00;">🐎 ¡SABIA DECISIÓN!</h2>
+          </div>
+          <div class="vip-trap-message">
+            <p style="color: #ffffff; font-size: 1.3rem; margin: 20px 0;">Al menos sabes cuándo ceder</p>
+            <p style="color: #00ff66; font-size: 1.1rem;">Penalización: -100,000 monedas</p>
+            <p style="color: #ffff00; font-size: 1rem; margin: 15px 0; font-style: italic;">Te quedan ${newCoins.toLocaleString()} monedas</p>
+          </div>
+          <div class="vip-trap-buttons">
+            <button class="vip-trap-close-btn" id="vipTrapCloseBtn">✅ CERRAR</button>
+          </div>
+        </div>
+      `;
+      
+      // Add close button listener
+      document.getElementById('vipTrapCloseBtn').addEventListener('click', () => {
+        closeVIPTrapModal();
+      });
+    }
+
+    function executeVIPTrapDare() {
+      console.log('🎰 VIP Trap - Player dared to say NO - loses everything!');
+      
+      // Reset coins to 0
+      localStorage.setItem('totalOrtizCoins', '0');
+      
+      // Track in Firebase
+      const playerName = localStorage.getItem('soldierName');
+      if (playerName && window.PlayerDataManager) {
+        PlayerDataManager.trackEasterEgg(playerName, 'vip-trap-dare', 150000);
+      }
+      
+      loadTotalCoins();
+      
+      // Show result message
+      const modal = document.getElementById('vipTrapModal');
+      modal.innerHTML = `
+        <div class="vip-trap-content">
+          <div class="vip-trap-header">
+            <h2 style="color: #ff0000;">🐎 ¡ERES UN CABALLO!</h2>
+          </div>
+          <div class="vip-trap-message">
+            <p style="color: #ffffff; font-size: 1.3rem; margin: 20px 0;">¡Ves como eres un caballo, no piensas!</p>
+            <p style="color: #ff6666; font-size: 1.1rem;">Penalización: -TODAS las monedas</p>
+            <p style="color: #ffff00; font-size: 1rem; margin: 15px 0; font-style: italic;">Te quedan 0 monedas</p>
+          </div>
+          <div class="vip-trap-buttons">
+            <button class="vip-trap-close-btn" id="vipTrapCloseBtn">😈 CERRAR</button>
+          </div>
+        </div>
+      `;
+      
+      // Add close button listener
+      document.getElementById('vipTrapCloseBtn').addEventListener('click', () => {
+        closeVIPTrapModal();
+      });
+    }
+
+    function closeVIPTrapModal() {
+      const modal = document.getElementById('vipTrapModal');
+      if (modal) {
+        modal.remove();
       }
     }
 

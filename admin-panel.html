@@ -284,6 +284,7 @@
 
         <button class="back-button" onclick="window.location.href='index.html'">← VOLVER AL MENÚ PRINCIPAL</button>
         <button class="refresh-button" onclick="loadAllData()">🔄 REFRESCAR DATOS</button>
+        <button class="refresh-button" onclick="debugPlayerData()" style="margin-left: 10px;">🐛 DEBUG DATOS</button>
 
         <div class="terminal-section">
             <div class="section-title">📊 ESTADÍSTICAS GLOBALES</div>
@@ -528,15 +529,19 @@
                     }
                 };
                 
-                // Determinar si el jugador está "conectado" (activo en las últimas 5 horas)
+                // Determinar si el jugador está "conectado" (activo en los últimos 30 minutos)
                 const isOnline = () => {
                     if (!player.lastActivity && !player.lastSync && !player.timestamp) {
+                        console.log(`Jugador ${displayName}: Sin datos de actividad`);
                         return false; // Sin datos de actividad
                     }
                     
                     const lastActivityTime = player.lastActivity || player.lastSync || player.timestamp;
-                    const fiveHoursAgo = Date.now() - (5 * 60 * 60 * 1000);
-                    return new Date(lastActivityTime).getTime() > fiveHoursAgo;
+                    const thirtyMinutesAgo = Date.now() - (30 * 60 * 1000);
+                    const isActive = new Date(lastActivityTime).getTime() > thirtyMinutesAgo;
+                    
+                    console.log(`Jugador ${displayName}: Última actividad ${new Date(lastActivityTime).toLocaleString()}, Conectado: ${isActive}`);
+                    return isActive;
                 };
                 
                 const onlineStatus = isOnline();
@@ -585,14 +590,14 @@
 
             const totalPlayers = players.length;
             
-            // Calcular jugadores conectados (activos en las últimas 5 horas)
+            // Calcular jugadores conectados (activos en los últimos 30 minutos)
             const connectedPlayers = players.filter(p => {
                 if (!p.lastActivity && !p.lastSync && !p.timestamp) {
                     return false;
                 }
                 const lastActivityTime = p.lastActivity || p.lastSync || p.timestamp;
-                const fiveHoursAgo = Date.now() - (5 * 60 * 60 * 1000);
-                return new Date(lastActivityTime).getTime() > fiveHoursAgo;
+                const thirtyMinutesAgo = Date.now() - (30 * 60 * 1000);
+                return new Date(lastActivityTime).getTime() > thirtyMinutesAgo;
             }).length;
             
             // Calcular total de monedas usando diferentes campos posibles
@@ -819,6 +824,34 @@
 
         // Actualizar timestamp cada minuto
         setInterval(updateTimestamp, 60000);
+
+        function debugPlayerData() {
+            console.log('=== DEBUG: DATOS DE JUGADORES ===');
+            console.log('Total de jugadores:', Object.keys(allPlayers).length);
+            console.log('Hora actual:', new Date().toLocaleString());
+            console.log('30 minutos atrás:', new Date(Date.now() - (30 * 60 * 1000)).toLocaleString());
+            
+            Object.keys(allPlayers).forEach(userId => {
+                const player = allPlayers[userId];
+                const displayName = player.username || player.name || player.displayName || `Usuario_${userId.substring(0, 8)}`;
+                
+                console.log(`\n--- ${displayName} (${userId}) ---`);
+                console.log('lastActivity:', player.lastActivity ? new Date(player.lastActivity).toLocaleString() : 'No disponible');
+                console.log('lastSync:', player.lastSync ? new Date(player.lastSync).toLocaleString() : 'No disponible');
+                console.log('timestamp:', player.timestamp ? new Date(player.timestamp).toLocaleString() : 'No disponible');
+                
+                if (player.lastActivity || player.lastSync || player.timestamp) {
+                    const lastActivityTime = player.lastActivity || player.lastSync || player.timestamp;
+                    const thirtyMinutesAgo = Date.now() - (30 * 60 * 1000);
+                    const isActive = new Date(lastActivityTime).getTime() > thirtyMinutesAgo;
+                    console.log('¿Conectado?', isActive);
+                } else {
+                    console.log('¿Conectado?', false, '(sin datos de actividad)');
+                }
+            });
+            
+            alert('Revisa la consola del navegador (F12) para ver los datos de debug');
+        }
     </script>
 </body>
 </html> 

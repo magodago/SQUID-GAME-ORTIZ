@@ -581,17 +581,6 @@
             lives = 3;
             level = 1;
             
-            // Start game session tracking
-            if (window.PlayerDataManager && window.PlayerDataManager.startGameSession) {
-                const playerName = localStorage.getItem('soldierName') || 'Jugador';
-                window.PlayerDataManager.startGameSession(playerName, 'frontman-game').then(sessionId => {
-                    if (sessionId) {
-                        window.currentGameSessionId = sessionId;
-                        console.log('🎮 Front Man game session started:', sessionId);
-                    }
-                });
-            }
-            
             // Ocultar pantalla de inicio
             document.getElementById('startScreen').style.display = 'none';
             
@@ -751,34 +740,10 @@
             score += points;
             document.getElementById('score').textContent = score;
             
-            // Dar Ortiz Coins usando el sistema centralizado
+            // Dar Ortiz Coins
             const coins = Math.floor(points / 10);
-            if (window.OrtizCoinManager && OrtizCoinManager.addCoins) {
-                console.log('💰 Usando OrtizCoinManager para añadir monedas');
-                OrtizCoinManager.addCoins(coins, 'frontman-game');
-                frontmanCoins = OrtizCoinManager.getTotalCoins();
-                console.log('✅ Monedas añadidas con OrtizCoinManager:', coins);
-            } else {
-                console.log('⚠️ OrtizCoinManager no disponible, usando PlayerDataManager');
-                if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
-                    if (PlayerDataManager.safeAddCoins(coins, 'frontman-game')) {
-                        frontmanCoins += coins;
-                        // Don't overwrite totalOrtizCoins, just update local variable
-                        console.log('✅ Monedas añadidas con PlayerDataManager:', coins);
-                    } else {
-                        console.error('❌ Error al añadir monedas con PlayerDataManager');
-                        // Fallback: añadir directamente
-                        frontmanCoins += coins;
-                        // Don't overwrite totalOrtizCoins, just update local variable
-                        console.log('⚠️ Monedas añadidas directamente:', coins);
-                    }
-                } else {
-                    console.log('⚠️ Ningún sistema disponible, añadiendo directamente');
-                    frontmanCoins += coins;
-                    // Don't overwrite totalOrtizCoins, just update local variable
-                    console.log('✅ Monedas añadidas directamente:', coins);
-                }
-            }
+            frontmanCoins += coins;
+            localStorage.setItem('totalOrtizCoins', frontmanCoins.toString());
             
             // Mostrar mensaje de éxito
             const successMessage = document.createElement('div');
@@ -865,71 +830,8 @@
             console.log('Juego terminado');
             gameState = 'gameOver';
             
-            // End game session tracking
-            if (window.PlayerDataManager && window.PlayerDataManager.endGameSession && window.currentGameSessionId) {
-                const playerName = localStorage.getItem('soldierName') || 'Jugador';
-                const isWin = score > 0;
-                window.PlayerDataManager.endGameSession(playerName, window.currentGameSessionId, {
-                    won: isWin,
-                    gameType: 'frontman-game',
-                    score: score,
-                    level: level
-                }).then(() => {
-                    console.log('🏁 Front Man game session ended');
-                    window.currentGameSessionId = null;
-                });
-            }
-            
-            // Actualizar estadísticas
-            const currentGamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
-            localStorage.setItem('gamesPlayed', (currentGamesPlayed + 1).toString());
-
-            // Consider it a win if score > 0 (player got some points)
-            const isWin = score > 0;
-            if (isWin) {
-                const currentWins = parseInt(localStorage.getItem('totalWins') || '0');
-                localStorage.setItem('totalWins', (currentWins + 1).toString());
-                updateAchievementProgress('wins', 1);
-            }
-
-            // Actualizar logros diarios
-            updateAchievementProgress('games', 1);
-
-            // Sincronizar monedas con Firebase
-            autoSyncFrontmanData();
-            
             document.getElementById('finalScore').textContent = `Puntuación: ${score}`;
             document.getElementById('gameOverScreen').style.display = 'flex';
-        }
-
-        // Auto-sync function for Front Man game
-        function autoSyncFrontmanData() {
-            console.log('🔄 Front Man auto-sync starting...');
-            
-            const playerName = localStorage.getItem('soldierName');
-            const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-            
-            if (playerName && window.PlayerDataManager && PlayerDataManager.savePlayerData) {
-                console.log('☁️ Syncing to Firebase...');
-                PlayerDataManager.savePlayerData(playerName, totalCoins, {
-                    gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-                    totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-                    cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-                    lastSync: new Date().toISOString(),
-                    autoSync: true,
-                    gameType: 'frontman'
-                }).then(result => {
-                    if (result) {
-                        console.log('✅ Front Man auto-sync successful');
-                    } else {
-                        console.log('⚠️ Front Man auto-sync failed');
-                    }
-                }).catch(error => {
-                    console.error('❌ Front Man auto-sync error:', error);
-                });
-            } else {
-                console.log('⚠️ PlayerDataManager not available for sync');
-            }
         }
 
         function restartGame() {
@@ -968,126 +870,6 @@
         
         // Inicializar partículas cuando se carga la página
         if (document.getElementById('goldParticles')) createGoldParticles();
-
-        // ACHIEVEMENTS SYSTEM FOR FRONT MAN GAME
-        const dailyAchievements = [
-          {
-            id: 'play_3_games',
-            icon: '🎮',
-            title: 'Jugador Activo',
-            description: 'Juega 3 juegos hoy',
-            target: 3,
-            reward: 25,
-            type: 'games'
-          },
-          {
-            id: 'win_2_games',
-            icon: '🏆',
-            title: 'Ganador',
-            description: 'Gana 2 juegos hoy',
-            target: 2,
-            reward: 50,
-            type: 'wins'
-          },
-          {
-            id: 'find_1_clue',
-            icon: '🔍',
-            title: 'Detective',
-            description: 'Encuentra 1 pista hoy',
-            target: 1,
-            reward: 30,
-            type: 'clues'
-          },
-          {
-            id: 'earn_100_coins',
-            icon: '💰',
-            title: 'Rico',
-            description: 'Gana 100 monedas hoy',
-            target: 100,
-            reward: 40,
-            type: 'coins'
-          },
-          {
-            id: 'use_daily_reward',
-            icon: '🎁',
-            title: 'Fiel',
-            description: 'Cobra tu recompensa diaria',
-            target: 1,
-            reward: 20,
-            type: 'daily_reward'
-          }
-        ];
-
-        function updateAchievementProgress(type, amount = 1) {
-          const today = new Date().toDateString();
-          const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
-          
-          let achievementCompleted = false;
-          let completedAchievement = null;
-          
-          dailyAchievements.forEach(achievement => {
-            if (achievement.type === type) {
-              const currentProgress = todayData[achievement.id] || 0;
-              const newProgress = currentProgress + amount;
-              todayData[achievement.id] = newProgress;
-              
-              // Check if achievement completed
-              if (newProgress >= achievement.target && currentProgress < achievement.target) {
-                achievementCompleted = true;
-                completedAchievement = achievement;
-                
-                // Achievement just completed
-                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                const newCoins = currentCoins + achievement.reward;
-                localStorage.setItem('totalOrtizCoins', newCoins.toString());
-                
-                // Show achievement notification
-                showAchievementNotification(achievement);
-              }
-            }
-          });
-          
-          localStorage.setItem(`achievements_${today}`, JSON.stringify(todayData));
-          
-          return { achievementCompleted, completedAchievement };
-        }
-
-        function showAchievementNotification(achievement) {
-          const notification = document.createElement('div');
-          notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            padding: 1rem;
-            color: #000;
-            font-weight: bold;
-            z-index: 10000;
-            box-shadow: 0 0 20px #FFD700;
-            animation: slideInRight 0.5s ease-out;
-          `;
-          
-          notification.innerHTML = `
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">${achievement.icon}</div>
-            <div style="font-size: 1rem; margin-bottom: 0.3rem;">¡${achievement.title}!</div>
-            <div style="font-size: 0.8rem;">+${achievement.reward} monedas</div>
-          `;
-          
-          document.body.appendChild(notification);
-          
-          // Remove after 3 seconds
-          setTimeout(() => {
-            if (notification.parentNode) {
-              notification.parentNode.removeChild(notification);
-            }
-          }, 3000);
-        }
     </script>
-    <!-- Firebase Configuration -->
-    <script src="firebase-config.js"></script>
-    <!-- Easter Eggs Configuration -->
-    <script src="easter-eggs-config.js"></script>
 </body>
 </html> 

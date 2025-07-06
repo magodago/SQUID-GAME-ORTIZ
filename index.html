@@ -3978,7 +3978,7 @@
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
-      max-width: 800px;
+      max-width: 600px;
     }
     
     .envelope-btn {
@@ -4104,18 +4104,6 @@
       box-shadow: 0 0 50px #FF4500, inset 0 0 30px rgba(255, 69, 0, 0.5);
     }
     
-    .robo-btn {
-      background: linear-gradient(45deg, #8B0000, #DC143C);
-      box-shadow: 0 0 30px #8B0000, inset 0 0 20px rgba(139, 0, 0, 0.3);
-    }
-    
-    .robo-btn:hover {
-      transform: scale(1.1) rotateY(10deg);
-      box-shadow: 0 0 50px #8B0000, inset 0 0 30px rgba(139, 0, 0, 0.5);
-    }
-    
-
-    
     .frontman-btn {
       background: linear-gradient(45deg, #000000, #333333);
       box-shadow: 0 0 30px #000000, inset 0 0 20px rgba(0, 0, 0, 0.3);
@@ -4218,9 +4206,7 @@
         .envelopes-container {
           gap: 0.8rem;
           margin: 1.5rem 0;
-          max-width: 500px;
-          flex-wrap: wrap;
-          justify-content: center;
+          max-width: 400px;
         }
         .envelope-btn {
           width: 100px;
@@ -6000,7 +5986,7 @@
     // PvP BATALLA Button Event Listener
     const pvpBtn = document.getElementById('pvpBtn');
     pvpBtn.addEventListener('click', () => {
-      console.log('ROBO seleccionado');
+              console.log('ROBO seleccionado');
       
       // Add dramatic effect
       pvpBtn.style.transform = 'scale(0.9) rotateY(8deg)';
@@ -6849,20 +6835,79 @@
     }
     
     function addOneCoin() {
-      // Add 1 coin to total using safe addition
-      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(1, 'easter-egg-soldier-name')) {
-        console.log('✅ Easter Egg coin added safely: +1');
+      console.log('🪙 Adding 1 coin from Easter Egg...');
+      
+      // Get current coins
+      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newTotal = totalCoins + 1;
+      
+      // Update localStorage first
+      localStorage.setItem('totalOrtizCoins', newTotal.toString());
+      console.log(`✅ Local coins updated: ${totalCoins} -> ${newTotal}`);
+      
+      // Try to sync with Firebase using PlayerDataManager
+      if (window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
+        try {
+          const success = PlayerDataManager.safeAddCoins(1, 'easter-egg-soldier-name');
+          if (success) {
+            console.log('✅ Firebase sync successful for Easter Egg coin');
+          } else {
+            console.log('⚠️ Firebase sync failed, but local update successful');
+            // Force manual sync
+            const playerName = localStorage.getItem('soldierName');
+            if (playerName) {
+              PlayerDataManager.savePlayerData(playerName, newTotal, {
+                gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+                totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+                cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+                lastSync: new Date().toISOString(),
+                autoSync: true,
+                gameType: 'easter-egg-soldier-name',
+                coinChange: 1
+              }).then(() => {
+                console.log('✅ Manual Firebase sync completed');
+              }).catch(error => {
+                console.error('❌ Manual Firebase sync failed:', error);
+              });
+            }
+          }
+        } catch (error) {
+          console.error('❌ Error in PlayerDataManager.safeAddCoins:', error);
+          // Force manual sync as fallback
+          const playerName = localStorage.getItem('soldierName');
+          if (playerName && typeof PlayerDataManager.savePlayerData === 'function') {
+            PlayerDataManager.savePlayerData(playerName, newTotal, {
+              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+              lastSync: new Date().toISOString(),
+              autoSync: true,
+              gameType: 'easter-egg-soldier-name',
+              coinChange: 1
+            }).catch(error => {
+              console.error('❌ Fallback Firebase sync failed:', error);
+            });
+          }
+        }
       } else {
-        // Fallback if PlayerDataManager not available
-        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        totalCoins += 1;
-        localStorage.setItem('totalOrtizCoins', totalCoins);
+        console.log('⚠️ PlayerDataManager not available, local update only');
       }
       
       // Increment easter eggs found counter
       const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
       localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
       console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
+      
+      // Track Easter Egg in Firebase
+      const playerName = localStorage.getItem('soldierName');
+      if (playerName && window.PlayerDataManager && typeof PlayerDataManager.trackEasterEgg === 'function') {
+        try {
+          PlayerDataManager.trackEasterEgg(playerName, 'soldier-name', 1);
+          console.log('🥚 Easter Egg tracked in Firebase: soldier-name');
+        } catch (error) {
+          console.error('❌ Error tracking Easter Egg:', error);
+        }
+      }
       
       // Update statistics display
       loadStats();
@@ -6872,17 +6917,67 @@
       
       // Create +1 coin effect
       createPlusOneEffect();
+      
+      console.log('🎉 Easter Egg coin addition completed!');
     }
     
     function addTwentyCoins() {
-      // Add 20 coins to total using safe addition
-      if (window.PlayerDataManager && PlayerDataManager.safeAddCoins(20, 'easter-egg-gods-power')) {
-        console.log('✅ Easter Egg coins added safely: +20');
+      console.log('🪙 Adding 20 coins from Gods Power Easter Egg...');
+      
+      // Get current coins
+      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newTotal = totalCoins + 20;
+      
+      // Update localStorage first
+      localStorage.setItem('totalOrtizCoins', newTotal.toString());
+      console.log(`✅ Local coins updated: ${totalCoins} -> ${newTotal}`);
+      
+      // Try to sync with Firebase using PlayerDataManager
+      if (window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
+        try {
+          const success = PlayerDataManager.safeAddCoins(20, 'easter-egg-gods-power');
+          if (success) {
+            console.log('✅ Firebase sync successful for Gods Power Easter Egg coins');
+          } else {
+            console.log('⚠️ Firebase sync failed, but local update successful');
+            // Force manual sync
+            const playerName = localStorage.getItem('soldierName');
+            if (playerName) {
+              PlayerDataManager.savePlayerData(playerName, newTotal, {
+                gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+                totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+                cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+                lastSync: new Date().toISOString(),
+                autoSync: true,
+                gameType: 'easter-egg-gods-power',
+                coinChange: 20
+              }).then(() => {
+                console.log('✅ Manual Firebase sync completed for Gods Power');
+              }).catch(error => {
+                console.error('❌ Manual Firebase sync failed for Gods Power:', error);
+              });
+            }
+          }
+        } catch (error) {
+          console.error('❌ Error in PlayerDataManager.safeAddCoins for Gods Power:', error);
+          // Force manual sync as fallback
+          const playerName = localStorage.getItem('soldierName');
+          if (playerName && typeof PlayerDataManager.savePlayerData === 'function') {
+            PlayerDataManager.savePlayerData(playerName, newTotal, {
+              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+              lastSync: new Date().toISOString(),
+              autoSync: true,
+              gameType: 'easter-egg-gods-power',
+              coinChange: 20
+            }).catch(error => {
+              console.error('❌ Fallback Firebase sync failed for Gods Power:', error);
+            });
+          }
+        }
       } else {
-        // Fallback if PlayerDataManager not available
-        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-        totalCoins += 20;
-        localStorage.setItem('totalOrtizCoins', totalCoins);
+        console.log('⚠️ PlayerDataManager not available, local update only');
       }
       
       // Increment easter eggs found counter
@@ -6890,21 +6985,27 @@
       localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
       console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
       
-      // Update statistics display
-      loadStats();
-      
       // Track Easter Egg in Firebase
       const playerName = localStorage.getItem('soldierName');
-      if (playerName && window.PlayerDataManager) {
-        PlayerDataManager.trackEasterEgg(playerName, 'gods-power', 20);
-        console.log('🥚 Easter Egg tracked: gods-power');
+      if (playerName && window.PlayerDataManager && typeof PlayerDataManager.trackEasterEgg === 'function') {
+        try {
+          PlayerDataManager.trackEasterEgg(playerName, 'gods-power', 20);
+          console.log('🥚 Easter Egg tracked in Firebase: gods-power');
+        } catch (error) {
+          console.error('❌ Error tracking Gods Power Easter Egg:', error);
+        }
       }
+      
+      // Update statistics display
+      loadStats();
       
       // Update display
       loadTotalCoins();
       
       // Create +20 coins effect
       createPlusTwentyEffect();
+      
+      console.log('🎉 Gods Power Easter Egg coin addition completed!');
     }
     
     function createPlusOneEffect() {
@@ -9416,7 +9517,174 @@
           playerFightContainer.style.display = 'none';
         }
       }
+      
+      // Check Blood Screen trigger (30000+ coins and not triggered)
+      const bloodScreenTriggered = localStorage.getItem('bloodScreenTriggered') === 'true';
+      if (totalCoins >= 30000 && !bloodScreenTriggered) {
+        console.log('🩸 Blood Screen trigger activated - player has', totalCoins, 'coins');
+        activateBloodScreen();
+      }
     }
+    
+    // BLOOD SCREEN FUNCTIONALITY
+    function activateBloodScreen() {
+      console.log('🩸 Activating Blood Screen...');
+      
+      // Mark as triggered
+      localStorage.setItem('bloodScreenTriggered', 'true');
+      
+      // Deduct 5000 coins
+      const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+      const newCoins = Math.max(0, currentCoins - 5000);
+      localStorage.setItem('totalOrtizCoins', newCoins.toString());
+      
+      console.log(`🩸 Blood Screen: ${currentCoins} - 5000 = ${newCoins} coins`);
+      
+      // Sync with Firebase
+      const playerName = localStorage.getItem('soldierName');
+      if (playerName && window.PlayerDataManager && typeof PlayerDataManager.savePlayerData === 'function') {
+        PlayerDataManager.savePlayerData(playerName, newCoins, {
+          gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+          totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+          cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+          lastSync: new Date().toISOString(),
+          autoSync: true,
+          gameType: 'blood-screen-penalty',
+          coinChange: -5000
+        }).then(() => {
+          console.log('✅ Blood Screen penalty synced to Firebase');
+        }).catch(error => {
+          console.error('❌ Blood Screen Firebase sync failed:', error);
+        });
+      }
+      
+      // Show blood screen with delay to ensure it's visible
+      setTimeout(() => {
+        const bloodScreen = document.getElementById('bloodScreen');
+        console.log('🩸 Blood screen element:', bloodScreen);
+        
+        if (bloodScreen) {
+          bloodScreen.style.display = 'flex';
+          bloodScreen.style.zIndex = '15000';
+          bloodScreen.style.position = 'fixed';
+          bloodScreen.style.top = '0';
+          bloodScreen.style.left = '0';
+          bloodScreen.style.width = '100%';
+          bloodScreen.style.height = '100%';
+          document.body.style.overflow = 'hidden';
+          
+          console.log('🩸 Blood screen displayed, starting effects...');
+          
+          // Start blood effects
+          createBloodEffects();
+          
+          // Typewriter effect for message
+          typewriterEffect();
+          
+          console.log('🩸 Blood screen activation completed');
+        } else {
+          console.error('❌ Blood screen element not found!');
+        }
+      }, 100);
+      
+      // Update display
+      loadTotalCoins();
+    }
+    
+    function createBloodEffects() {
+      // Create blood drops
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const bloodDrop = document.createElement('div');
+          bloodDrop.className = 'blood-drop';
+          bloodDrop.style.left = Math.random() * 100 + '%';
+          bloodDrop.style.animationDelay = Math.random() * 2 + 's';
+          document.body.appendChild(bloodDrop);
+          
+          // Remove after animation
+          setTimeout(() => {
+            if (bloodDrop.parentNode) {
+              bloodDrop.parentNode.removeChild(bloodDrop);
+            }
+          }, 4000);
+        }, i * 100);
+      }
+      
+      // Create blood splatter effects
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const bloodSplatter = document.createElement('div');
+          bloodSplatter.className = 'blood-splatter';
+          bloodSplatter.style.left = Math.random() * 100 + '%';
+          bloodSplatter.style.top = Math.random() * 100 + '%';
+          document.body.appendChild(bloodSplatter);
+          
+          // Remove after animation
+          setTimeout(() => {
+            if (bloodSplatter.parentNode) {
+              bloodSplatter.parentNode.removeChild(bloodSplatter);
+            }
+          }, 3000);
+        }, i * 200);
+      }
+    }
+    
+    function typewriterEffect() {
+      const messageElement = document.getElementById('bloodMessage');
+      const fullMessage = 'HAS SIDO ACUCHILLADO\n\nPIERDES 5000 MONEDAS\n\nPERO SIGUES VIVO\n\nESTATE ATENTO...';
+      let currentIndex = 0;
+      
+      messageElement.innerHTML = '';
+      
+      function typeNextChar() {
+        if (currentIndex < fullMessage.length) {
+          if (fullMessage[currentIndex] === '\n') {
+            messageElement.innerHTML += '<br>';
+          } else {
+            messageElement.innerHTML += fullMessage[currentIndex];
+          }
+          currentIndex++;
+          setTimeout(typeNextChar, 80); // Faster typing
+        }
+      }
+      
+      typeNextChar();
+    }
+    
+    function closeBloodScreen() {
+      const bloodScreen = document.getElementById('bloodScreen');
+      if (bloodScreen) {
+        bloodScreen.style.display = 'none';
+        document.body.style.overflow = '';
+        console.log('🩸 Blood screen closed');
+      }
+    }
+    
+    // Function to reset blood screen trigger (for testing purposes)
+    function resetBloodScreenTrigger() {
+      localStorage.removeItem('bloodScreenTriggered');
+      console.log('🩸 Blood screen trigger reset - can be activated again');
+    }
+    
+    // Function to manually test blood screen (for testing purposes)
+    function testBloodScreen() {
+      console.log('🩸 Testing blood screen manually...');
+      const bloodScreen = document.getElementById('bloodScreen');
+      if (bloodScreen) {
+        bloodScreen.style.display = 'flex';
+        bloodScreen.style.zIndex = '15000';
+        document.body.style.overflow = 'hidden';
+        createBloodEffects();
+        typewriterEffect();
+        console.log('🩸 Blood screen test activated');
+      } else {
+        console.error('❌ Blood screen element not found for testing');
+      }
+    }
+    
+    // Make functions available globally for testing
+    window.resetBloodScreenTrigger = resetBloodScreenTrigger;
+    window.testBloodScreen = testBloodScreen;
   </script>
   
   <!-- Firebase Configuration -->
@@ -9488,5 +9756,348 @@
 
 
     <!-- Fusion Power Modal -->
+
+    <!-- Blood Screen Modal -->
+    <div class="blood-screen" id="bloodScreen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #8B0000 0%, #DC143C 50%, #8B0000 100%); z-index: 15000; justify-content: center; align-items: center; overflow: hidden;">
+        <div class="blood-content" style="text-align: center; color: #FFFFFF; z-index: 15001; position: relative; max-width: 90%; max-height: 90%;">
+            <div class="knife-icon" style="font-size: 4rem; margin-bottom: 1rem; animation: knifeGlow 2s ease-in-out infinite alternate;">🔪</div>
+            <div class="blood-message" id="bloodMessage" style="font-size: 1.2rem; font-weight: bold; text-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000; line-height: 1.3; margin-bottom: 1.5rem; font-family: 'Orbitron', Arial, sans-serif; max-width: 100%; word-wrap: break-word;"></div>
+            <button class="blood-back-btn" onclick="closeBloodScreen()" style="background: linear-gradient(45deg, #8B0000, #DC143C); color: white; border: 2px solid #FF0000; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: all 0.3s; box-shadow: 0 0 20px #FF0000; font-family: 'Orbitron', Arial, sans-serif;">VOLVER</button>
+        </div>
+    </div>
+
+    <!-- Notification Modal for Robbery Attempts -->
+    <div class="notification-modal" id="notificationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; justify-content: center; align-items: center;">
+        <div class="notification-content" style="background: linear-gradient(135deg, #2d0a00 0%, #ff7f50 50%, #2d0a00 100%); border: 3px solid #ffae42; border-radius: 20px; padding: 40px; max-width: 600px; width: 90%; text-align: center; position: relative; box-shadow: 0 0 50px rgba(255, 174, 66, 0.8); animation: notificationPulse 2s infinite;">
+            <div class="notification-title" id="notificationTitle" style="font-size: 2rem; font-weight: bold; margin-bottom: 20px; color: #ffae42; text-shadow: 0 0 20px #ffae42;">🚨 ¡ALERTA DE ROBO!</div>
+            <div class="notification-message" id="notificationMessage" style="font-size: 1.3rem; margin-bottom: 25px; color: #ffffff; line-height: 1.5;">
+                Alguien está intentando robarte...
+            </div>
+            <div class="notification-details" style="background: rgba(255, 174, 66, 0.1); border: 1px solid #ffae42; border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                <div id="notificationAttacker" style="color: #ffffff; font-size: 1.1rem; margin-bottom: 10px;">Atacante: Desconocido</div>
+                <div class="notification-amount" id="notificationAmount" style="font-size: 1.5rem; font-weight: bold; color: #ffd700; margin: 10px 0;">Cantidad: 0 monedas</div>
+                <div id="notificationResult" style="color: #ffffff; font-size: 1.1rem;">Resultado: En proceso...</div>
+            </div>
+            <button class="notification-back-btn" onclick="closeRobberyNotification()" style="background: #ff7f50; color: white; border: none; padding: 15px 30px; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: all 0.3s;">ENTENDIDO</button>
+        </div>
+    </div>
+
+    <style>
+        @keyframes notificationPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Blood Screen Animations */
+        @keyframes knifeGlow {
+            0% { transform: scale(1) rotate(0deg); filter: brightness(1) drop-shadow(0 0 20px #FF0000); }
+            100% { transform: scale(1.1) rotate(5deg); filter: brightness(1.5) drop-shadow(0 0 40px #FF0000); }
+        }
+        
+        @keyframes bloodDrop {
+            0% { 
+                transform: translateY(-100px) scale(0); 
+                opacity: 0; 
+            }
+            10% { 
+                transform: translateY(0) scale(1); 
+                opacity: 1; 
+            }
+            90% { 
+                transform: translateY(calc(100vh + 50px)) scale(1); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translateY(calc(100vh + 100px)) scale(0); 
+                opacity: 0; 
+            }
+        }
+        
+        @keyframes bloodSplatter {
+            0% { 
+                transform: scale(0) rotate(0deg); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: scale(1.5) rotate(180deg); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: scale(2) rotate(360deg); 
+                opacity: 0; 
+            }
+        }
+        
+        .blood-drop {
+            position: fixed;
+            width: 8px;
+            height: 20px;
+            background: radial-gradient(ellipse at center, #FF0000 0%, #8B0000 70%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            pointer-events: none;
+            z-index: 15002;
+            animation: bloodDrop 4s linear forwards;
+        }
+        
+        .blood-splatter {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #FF0000 0%, #8B0000 50%, transparent 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 15002;
+            animation: bloodSplatter 3s ease-out forwards;
+        }
+        
+        .blood-back-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px #FF0000, inset 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+        
+        /* Responsive adjustments for blood screen */
+        @media (max-width: 768px) {
+            .blood-content {
+                max-width: 95% !important;
+                padding: 20px !important;
+            }
+            
+            .knife-icon {
+                font-size: 3rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .blood-message {
+                font-size: 1rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            .blood-back-btn {
+                font-size: 0.9rem !important;
+                padding: 10px 20px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .blood-content {
+                max-width: 98% !important;
+                padding: 15px !important;
+            }
+            
+            .knife-icon {
+                font-size: 2.5rem !important;
+            }
+            
+            .blood-message {
+                font-size: 0.9rem !important;
+            }
+            
+            .blood-back-btn {
+                font-size: 0.8rem !important;
+                padding: 8px 16px !important;
+            }
+        }
+        
+        .notification-back-btn:hover {
+            background: #ffae42 !important;
+            color: #2d0a00 !important;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffae42;
+        }
+    </style>
+
+    <script>
+        // Flag to prevent multiple notifications
+        let robberyNotificationShown = false;
+        
+        // Robbery notification functions for main page
+        function showRobberyNotification(attacker, target, amount, isSuccessful) {
+            // Prevent multiple notifications
+            if (robberyNotificationShown) {
+                console.log('⚠️ Notification already shown, skipping...');
+                return;
+            }
+            
+            const notificationModal = document.getElementById('notificationModal');
+            const notificationTitle = document.getElementById('notificationTitle');
+            const notificationMessage = document.getElementById('notificationMessage');
+            const notificationAttacker = document.getElementById('notificationAttacker');
+            const notificationAmount = document.getElementById('notificationAmount');
+            const notificationResult = document.getElementById('notificationResult');
+            
+            if (isSuccessful) {
+                notificationTitle.textContent = '💀 ¡TE HAN ROBADO!';
+                notificationMessage.textContent = `${attacker} ha logrado robarte exitosamente.`;
+                notificationResult.textContent = 'Resultado: Robo exitoso - Perdiste monedas';
+            } else {
+                notificationTitle.textContent = '🛡️ ¡DEFENSA EXITOSA!';
+                notificationMessage.textContent = `${attacker} intentó robarte pero falló.`;
+                notificationResult.textContent = 'Resultado: Robo fallido - Mantuviste tus monedas';
+            }
+            
+            notificationAttacker.textContent = `Atacante: ${attacker}`;
+            notificationAmount.textContent = `Cantidad: ${amount.toLocaleString()} monedas`;
+            
+            robberyNotificationShown = true;
+            notificationModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Force immediate coins sync when robbery notification is shown
+            setTimeout(() => {
+                forceCoinsSync();
+            }, 500);
+            
+            console.log('🚨 Showing robbery notification for:', attacker, '->', target);
+        }
+
+        // Function to force immediate coins sync
+        function forceCoinsSync() {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const currentPlayer = localStorage.getItem('soldierName');
+                
+                if (!currentPlayer) return;
+                
+                const playerRef = db.ref(`players/${currentPlayer}`);
+                
+                playerRef.once('value')
+                    .then((snapshot) => {
+                        const playerData = snapshot.val();
+                        if (playerData && playerData.coins !== undefined) {
+                            const firebaseCoins = playerData.coins;
+                            const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                            
+                            if (firebaseCoins !== localCoins) {
+                                localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
+                                
+                                // Update display if loadTotalCoins function exists
+                                if (typeof loadTotalCoins === 'function') {
+                                    loadTotalCoins();
+                                }
+                                
+                                console.log(`🔄 Force coins sync: ${localCoins} -> ${firebaseCoins}`);
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error in force coins sync:', error);
+                    });
+            }
+        }
+
+        function closeRobberyNotification() {
+            const notificationModal = document.getElementById('notificationModal');
+            notificationModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            robberyNotificationShown = false; // Reset flag to allow future notifications
+            
+            // Force coins sync when notification is closed
+            setTimeout(() => {
+                forceCoinsSync();
+            }, 200);
+            
+            console.log('✅ Robbery notification closed');
+        }
+
+        // Flag to prevent multiple listeners
+        let robberyListenerStarted = false;
+        
+        // Listen for robbery attempts on current player
+        function startRobberyListener() {
+            // Prevent multiple listeners
+            if (robberyListenerStarted) {
+                console.log('⚠️ Robbery listener already started, skipping...');
+                return;
+            }
+            
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const battleHistoryRef = db.ref('battleHistory');
+                const currentPlayer = localStorage.getItem('soldierName');
+                
+                if (!currentPlayer) {
+                    console.log('⚠️ No player name found, skipping robbery listener');
+                    return;
+                }
+                
+                // Get current timestamp to only listen for new records
+                const currentTime = Date.now();
+                
+                // Listen for new battle records only
+                battleHistoryRef.orderByChild('timestamp').startAt(currentTime).on('child_added', (snapshot) => {
+                    const battle = snapshot.val();
+                    
+                    // Check if this battle involves the current player and is recent
+                    if (battle && battle.timestamp >= currentTime && (battle.player1 === currentPlayer || battle.player2 === currentPlayer)) {
+                        const isAttacker = battle.player1 === currentPlayer;
+                        const opponent = isAttacker ? battle.player2 : battle.player1;
+                        const isSuccessful = battle.winner === opponent; // If opponent won, robbery was successful
+                        
+                        // Show notification for the target player only if it's a new battle
+                        if (!isAttacker) {
+                            console.log(`🚨 Robbery notification: ${opponent} tried to rob ${currentPlayer} for ${battle.betAmount} coins`);
+                            setTimeout(() => {
+                                showRobberyNotification(opponent, currentPlayer, battle.betAmount, isSuccessful);
+                            }, 1000);
+                        }
+                    }
+                });
+                
+                robberyListenerStarted = true;
+                console.log('✅ Robbery listener started for player:', currentPlayer);
+            } else {
+                console.log('❌ Firebase not available for robbery listener');
+            }
+        }
+
+        // Start robbery listener when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                startRobberyListener();
+                startCoinsSync(); // Start coins synchronization
+            }, 5000); // Wait longer for Firebase to load completely
+        });
+
+        // Function to sync coins from Firebase
+        function startCoinsSync() {
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const currentPlayer = localStorage.getItem('soldierName');
+                
+                if (!currentPlayer) {
+                    console.log('⚠️ No player name found, skipping coins sync');
+                    return;
+                }
+                
+                const playerRef = db.ref(`players/${currentPlayer}`);
+                
+                // Listen for changes in player's coins
+                playerRef.on('value', (snapshot) => {
+                    const playerData = snapshot.val();
+                    if (playerData && playerData.coins !== undefined) {
+                        const firebaseCoins = playerData.coins;
+                        const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                        
+                        // Update if different
+                        if (firebaseCoins !== localCoins) {
+                            localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
+                            
+                            // Update display if loadTotalCoins function exists
+                            if (typeof loadTotalCoins === 'function') {
+                                loadTotalCoins();
+                            }
+                            
+                            console.log(`🔄 Coins synced from Firebase: ${localCoins} -> ${firebaseCoins}`);
+                        }
+                    }
+                });
+                
+                console.log('✅ Coins sync started for player:', currentPlayer);
+            } else {
+                console.log('❌ Firebase not available for coins sync');
+            }
+        }
+    </script>
 </body>
 </html> 

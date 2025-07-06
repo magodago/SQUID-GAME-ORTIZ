@@ -10761,8 +10761,103 @@
             setTimeout(() => {
                 startRobberyListener();
                 startCoinsSync(); // Start coins synchronization
+                startAdminCoinsListener(); // Listen for admin coin updates
             }, 5000); // Wait longer for Firebase to load completely
         });
+
+        // Function to listen for admin coin updates
+        function startAdminCoinsListener() {
+            console.log('👂 Iniciando listener para actualizaciones del admin...');
+            
+            // Listen for custom events
+            window.addEventListener('adminCoinsUpdate', (event) => {
+                const eventData = event.detail;
+                console.log('📢 Evento de actualización recibido:', eventData);
+                
+                const currentPlayer = localStorage.getItem('soldierName');
+                if (eventData.userId === currentPlayer) {
+                    console.log('🎯 Actualización para el jugador actual detectada');
+                    updateLocalCoinsFromAdmin(eventData.newCoins);
+                }
+            });
+            
+            // Also check localStorage periodically for updates
+            setInterval(() => {
+                const adminUpdate = localStorage.getItem('adminCoinsUpdate');
+                if (adminUpdate) {
+                    try {
+                        const eventData = JSON.parse(adminUpdate);
+                        const currentPlayer = localStorage.getItem('soldierName');
+                        
+                        // Only process if it's recent (within last 10 seconds) and for current player
+                        if (eventData.userId === currentPlayer && 
+                            (Date.now() - eventData.timestamp) < 10000) {
+                            console.log('📢 Actualización del admin detectada en localStorage:', eventData);
+                            updateLocalCoinsFromAdmin(eventData.newCoins);
+                        }
+                        
+                        // Clear the update after processing
+                        localStorage.removeItem('adminCoinsUpdate');
+                    } catch (error) {
+                        console.error('❌ Error procesando actualización del admin:', error);
+                    }
+                }
+            }, 2000); // Check every 2 seconds
+            
+            console.log('✅ Admin coins listener iniciado');
+        }
+
+        // Function to update local coins from admin update
+        function updateLocalCoinsFromAdmin(newCoins) {
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            
+            if (newCoins !== currentCoins) {
+                console.log(`🔄 Actualizando monedas desde admin: ${currentCoins} -> ${newCoins}`);
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                
+                // Update display
+                if (typeof loadTotalCoins === 'function') {
+                    loadTotalCoins();
+                }
+                
+                // Show notification
+                showAdminUpdateNotification(newCoins);
+            }
+        }
+
+        // Function to show admin update notification
+        function showAdminUpdateNotification(newCoins) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                border: 2px solid #FFD700;
+                border-radius: 10px;
+                padding: 15px 20px;
+                color: #000;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 0 20px #FFD700;
+                animation: slideInRight 0.5s ease-out;
+                font-family: 'Orbitron', Arial, sans-serif;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 5px;">💰 ADMIN UPDATE</div>
+                <div style="font-size: 1rem;">Nuevas monedas: ${newCoins.toLocaleString()}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
 
         // Function to sync coins from Firebase
         function startCoinsSync() {

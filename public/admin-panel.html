@@ -734,6 +734,9 @@
                 displayPlayers();
                 input.value = '';
                 
+                // Notificar a la página principal que se actualizaron monedas
+                notifyPlayerCoinsUpdate(userId, newCoins);
+                
                 setTimeout(() => {
                     statusDiv.innerHTML = '';
                 }, 3000);
@@ -810,6 +813,9 @@
                 calculateGlobalStats();
                 displayPlayers();
                 input.value = '';
+                
+                // Notificar a la página principal que se actualizaron monedas
+                notifyPlayerCoinsUpdate(userId, newCoins);
                 
                 setTimeout(() => {
                     statusDiv.innerHTML = '';
@@ -913,6 +919,33 @@
             });
             
             alert('Revisa la consola del navegador (F12) para ver los datos de debug');
+        }
+
+        // Function to notify other pages about coin updates
+        function notifyPlayerCoinsUpdate(userId, newCoins) {
+            console.log('📢 Notificando actualización de monedas para:', userId, 'Nuevas monedas:', newCoins);
+            
+            // Try to notify through localStorage event
+            try {
+                const eventData = {
+                    type: 'coinsUpdated',
+                    userId: userId,
+                    newCoins: newCoins,
+                    timestamp: Date.now()
+                };
+                
+                localStorage.setItem('adminCoinsUpdate', JSON.stringify(eventData));
+                
+                // Trigger a custom event that other pages can listen to
+                const event = new CustomEvent('adminCoinsUpdate', {
+                    detail: eventData
+                });
+                window.dispatchEvent(event);
+                
+                console.log('✅ Notificación de actualización enviada');
+            } catch (error) {
+                console.error('❌ Error enviando notificación:', error);
+            }
         }
     </script>
 </body>

@@ -667,21 +667,47 @@
         }
 
         function addCoins(userId) {
+            console.log('💰 Añadiendo monedas para usuario:', userId);
+            
             const input = document.getElementById(`coins_${userId}`);
-            const amount = parseInt(input.value);
             const statusDiv = document.getElementById(`status_${userId}`);
+            
+            if (!input) {
+                console.error('❌ Input no encontrado para usuario:', userId);
+                return;
+            }
+            
+            if (!statusDiv) {
+                console.error('❌ Status div no encontrado para usuario:', userId);
+                return;
+            }
+            
+            const amount = parseInt(input.value);
+            console.log('💰 Cantidad a añadir:', amount);
 
             if (!amount || amount <= 0) {
+                console.log('❌ Cantidad inválida:', amount);
                 statusDiv.innerHTML = '<div class="status-error">Ingresa una cantidad válida</div>';
                 return;
             }
 
+            // Verificar que el usuario existe en los datos locales
+            if (!allPlayers[userId]) {
+                console.error('❌ Usuario no encontrado en datos locales:', userId);
+                statusDiv.innerHTML = '<div class="status-error">Usuario no encontrado</div>';
+                return;
+            }
+
             const playerRef = firebase.database().ref(`players/${userId}`);
+            console.log('🔥 Referencia Firebase:', `players/${userId}`);
             
             // Obtener monedas actuales del jugador
             const player = allPlayers[userId];
             const currentCoins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
             const newCoins = currentCoins + amount;
+            
+            console.log('💰 Monedas actuales:', currentCoins);
+            console.log('💰 Nuevas monedas:', newCoins);
 
             // Actualizar todos los campos posibles de monedas
             const updateData = {
@@ -691,8 +717,12 @@
                 lastActivity: Date.now(),
                 lastSync: Date.now()
             };
+            
+            console.log('📤 Datos a actualizar:', updateData);
 
             playerRef.update(updateData).then(() => {
+                console.log('✅ Monedas añadidas exitosamente');
+                
                 // Actualizar datos locales
                 allPlayers[userId].coins = newCoins;
                 allPlayers[userId].totalCoins = newCoins;
@@ -708,26 +738,53 @@
                     statusDiv.innerHTML = '';
                 }, 3000);
             }).catch((error) => {
+                console.error('❌ Error añadiendo monedas:', error);
                 statusDiv.innerHTML = `<div class="status-error">Error: ${error.message}</div>`;
             });
         }
 
         function removeCoins(userId) {
+            console.log('💰 Quitando monedas para usuario:', userId);
+            
             const input = document.getElementById(`coins_${userId}`);
-            const amount = parseInt(input.value);
             const statusDiv = document.getElementById(`status_${userId}`);
+            
+            if (!input) {
+                console.error('❌ Input no encontrado para usuario:', userId);
+                return;
+            }
+            
+            if (!statusDiv) {
+                console.error('❌ Status div no encontrado para usuario:', userId);
+                return;
+            }
+            
+            const amount = parseInt(input.value);
+            console.log('💰 Cantidad a quitar:', amount);
 
             if (!amount || amount <= 0) {
+                console.log('❌ Cantidad inválida:', amount);
                 statusDiv.innerHTML = '<div class="status-error">Ingresa una cantidad válida</div>';
                 return;
             }
 
+            // Verificar que el usuario existe en los datos locales
+            if (!allPlayers[userId]) {
+                console.error('❌ Usuario no encontrado en datos locales:', userId);
+                statusDiv.innerHTML = '<div class="status-error">Usuario no encontrado</div>';
+                return;
+            }
+
             const playerRef = firebase.database().ref(`players/${userId}`);
+            console.log('🔥 Referencia Firebase:', `players/${userId}`);
             
             // Obtener monedas actuales del jugador
             const player = allPlayers[userId];
             const currentCoins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
             const newCoins = Math.max(0, currentCoins - amount);
+            
+            console.log('💰 Monedas actuales:', currentCoins);
+            console.log('💰 Nuevas monedas:', newCoins);
 
             // Actualizar todos los campos posibles de monedas
             const updateData = {
@@ -737,8 +794,12 @@
                 lastActivity: Date.now(),
                 lastSync: Date.now()
             };
+            
+            console.log('📤 Datos a actualizar:', updateData);
 
             playerRef.update(updateData).then(() => {
+                console.log('✅ Monedas quitadas exitosamente');
+                
                 // Actualizar datos locales
                 allPlayers[userId].coins = newCoins;
                 allPlayers[userId].totalCoins = newCoins;
@@ -754,6 +815,7 @@
                     statusDiv.innerHTML = '';
                 }, 3000);
             }).catch((error) => {
+                console.error('❌ Error quitando monedas:', error);
                 statusDiv.innerHTML = `<div class="status-error">Error: ${error.message}</div>`;
             });
         }

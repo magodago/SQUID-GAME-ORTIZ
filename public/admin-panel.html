@@ -285,6 +285,7 @@
         <button class="back-button" onclick="window.location.href='index.html'">← VOLVER AL MENÚ PRINCIPAL</button>
         <button class="refresh-button" onclick="loadAllData()">🔄 REFRESCAR DATOS</button>
         <button class="refresh-button" onclick="debugPlayerData()" style="margin-left: 10px;">🐛 DEBUG DATOS</button>
+        <button class="refresh-button" onclick="add50000CoinsToMain()" style="margin-left: 10px; background: #ff6b6b; border-color: #ff6b6b; color: white;">💰 +50,000 MONEDAS</button>
 
         <div class="terminal-section">
             <div class="section-title">📊 ESTADÍSTICAS GLOBALES</div>
@@ -945,6 +946,67 @@
                 console.log('✅ Notificación de actualización enviada');
             } catch (error) {
                 console.error('❌ Error enviando notificación:', error);
+            }
+        }
+
+        // Function to add 50,000 coins to main page and sync with Firebase
+        function add50000CoinsToMain() {
+            console.log('💰 Iniciando proceso de añadir 50,000 monedas...');
+            
+            // Get current player name from localStorage
+            const currentPlayer = localStorage.getItem('soldierName');
+            
+            if (!currentPlayer) {
+                alert('❌ No se encontró nombre de jugador. Asegúrate de estar logueado en la página principal.');
+                return;
+            }
+            
+            console.log('👤 Jugador actual:', currentPlayer);
+            
+            // Get current coins from localStorage
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const newCoins = currentCoins + 50000;
+            
+            console.log('💰 Monedas actuales:', currentCoins);
+            console.log('💰 Nuevas monedas:', newCoins);
+            
+            // Update localStorage first
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            console.log('✅ localStorage actualizado');
+            
+            // Update Firebase
+            if (typeof firebase !== 'undefined' && firebase.database) {
+                const playerRef = firebase.database().ref(`players/${currentPlayer}`);
+                
+                const updateData = {
+                    coins: newCoins,
+                    totalCoins: newCoins,
+                    totalOrtizCoins: newCoins,
+                    lastActivity: Date.now(),
+                    lastSync: Date.now()
+                };
+                
+                console.log('📤 Actualizando Firebase con datos:', updateData);
+                
+                playerRef.update(updateData).then(() => {
+                    console.log('✅ Firebase actualizado exitosamente');
+                    
+                    // Notify main page about the update
+                    notifyPlayerCoinsUpdate(currentPlayer, newCoins);
+                    
+                    // Show success message
+                    alert(`✅ ¡Éxito!\n\nJugador: ${currentPlayer}\nMonedas añadidas: +50,000\nNuevo total: ${newCoins.toLocaleString()}\n\nLos cambios se han sincronizado con Firebase y la página principal.`);
+                    
+                    // Refresh admin data
+                    loadAllData();
+                    
+                }).catch((error) => {
+                    console.error('❌ Error actualizando Firebase:', error);
+                    alert(`❌ Error actualizando Firebase:\n${error.message}\n\nLas monedas se añadieron al localStorage pero no se sincronizaron con Firebase.`);
+                });
+            } else {
+                console.error('❌ Firebase no disponible');
+                alert('❌ Firebase no está disponible. Las monedas se añadieron al localStorage pero no se sincronizaron con Firebase.');
             }
         }
     </script>

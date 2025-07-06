@@ -172,12 +172,14 @@ const PlayerDataManager = {
       const currentLocalGames = parseInt(localStorage.getItem('gamesPlayed') || '0');
       const currentLocalWins = parseInt(localStorage.getItem('totalWins') || '0');
       const currentLocalClues = parseInt(localStorage.getItem('cluesFound') || '0');
+      const currentLocalEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
       
       // Use the maximum value between local storage and existing data
       const finalCoins = Math.max(coins, currentLocalCoins, existingData.coins || 0);
       const finalGames = Math.max(gameData.gamesPlayed || 0, currentLocalGames, existingData.gamesPlayed || 0);
       const finalWins = Math.max(gameData.totalWins || 0, currentLocalWins, existingData.totalWins || 0);
       const finalClues = Math.max(gameData.cluesFound || 0, currentLocalClues, existingData.cluesFound || 0);
+      const finalEasterEggs = Math.max(currentLocalEasterEggs, existingData.easterEggsFound || existingData.totalEasterEggs || 0);
       
       // Prepare new data with the highest values
       const newData = {
@@ -187,6 +189,8 @@ const PlayerDataManager = {
         gamesPlayed: finalGames,
         totalWins: finalWins,
         cluesFound: finalClues,
+        easterEggsFound: finalEasterEggs,
+        totalEasterEggs: finalEasterEggs,
         deviceInfo: {
           userAgent: navigator.userAgent,
           platform: navigator.platform,

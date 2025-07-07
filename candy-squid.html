@@ -58,38 +58,15 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 5px;
-            box-sizing: border-box;
         }
 
         #gameHeader {
-            position: relative;
-            text-align: center;
-            z-index: 100;
-            margin-bottom: 10px;
-        }
-
-        #backButton {
             position: absolute;
             top: 10px;
-            left: 10px;
-            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', Arial, sans-serif;
-            box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
-            z-index: 200;
-        }
-
-        #backButton:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(255, 107, 107, 0.8);
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
         }
 
         #gameTitle {
@@ -140,6 +117,64 @@
             gap: 2px;
             padding: 10px;
             margin-top: 10px;
+        }
+
+        #gameInstructions {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #gameInstructions h2 {
+            color: #8A2BE2;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #8A2BE2;
+        }
+
+        #gameInstructions p {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        #gameInstructions .highlight {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        #startButton {
+            background: linear-gradient(45deg, #8A2BE2, #9370DB);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+        }
+
+        #startButton:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.8);
+        }
+
+        #gameInstructions.hidden {
+            display: none;
         }
 
         .candy {
@@ -290,66 +325,42 @@
         }
 
         #gameOver {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0,0,0,0.92);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 0 10px;
-        }
-        #gameOver h2 {
-            font-size: 2rem;
-            color: #FFD700;
-            margin-bottom: 18px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 3px solid #8A2BE2;
+            border-radius: 20px;
+            padding: 40px;
             text-align: center;
-        }
-        #finalScore, #finalCoins {
-            font-size: 1.3rem;
             color: #fff;
-            margin-bottom: 10px;
-            text-align: center;
+            display: none;
+            z-index: 200;
+            box-shadow: 0 0 50px #8A2BE2;
+            max-width: 90%;
+            width: 400px;
         }
-        .gameButton {
-            width: 90vw;
-            max-width: 350px;
-            margin: 10px auto;
-            padding: 18px 0;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 12px;
-            border: none;
-            background: linear-gradient(45deg, #8A2BE2, #FFD700);
-            color: #222;
-            box-shadow: 0 2px 16px rgba(138,43,226,0.2);
-            cursor: pointer;
-            display: block;
-            transition: background 0.2s, transform 0.2s;
+
+        #gameOver h2 {
+            font-size: 2.5rem;
+            color: #8A2BE2;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #8A2BE2;
         }
-        .gameButton:active {
-            background: linear-gradient(45deg, #FFD700, #8A2BE2);
-            transform: scale(0.97);
+
+        #finalScore {
+            font-size: 1.8rem;
+            color: #FFD700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #FFD700;
         }
-        @media (max-width: 600px) {
-            #gameOver {
-                padding: 0 2vw;
-            }
-            #gameOver h2 {
-                font-size: 1.3rem;
-            }
-            #finalScore, #finalCoins {
-                font-size: 1.05rem;
-            }
-            .gameButton {
-                font-size: 1rem;
-                padding: 14px 0;
-                max-width: 98vw;
-            }
+
+        #finalCoins {
+            font-size: 1.5rem;
+            color: #FFD700;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px #FFD700;
         }
 
         .particle {
@@ -484,19 +495,68 @@
 
         @media (max-width: 768px) {
             #gameTitle {
-                font-size: 1.2rem;
-                margin-bottom: 1px;
+                font-size: 1.8rem;
+                margin-bottom: 3px;
             }
             
             #gameInstructions p {
-                font-size: 0.6rem;
-                margin-bottom: 2px;
+                font-size: 0.8rem;
+                margin-bottom: 5px;
             }
             
             #gameBoard {
-                width: 260px;
-                height: 260px;
-                margin-top: 3px;
+                width: 320px;
+                height: 320px;
+                margin-top: 10px;
+            }
+            
+            .candy {
+                font-size: 1.1rem;
+            }
+            
+            #gameStats {
+                gap: 15px;
+                margin-bottom: 5px;
+            }
+            
+            .stat {
+                padding: 4px 8px;
+            }
+            
+            .stat-label {
+                font-size: 0.6rem;
+            }
+            
+            .stat-value {
+                font-size: 0.9rem;
+            }
+            
+            #gameControls {
+                bottom: 10px;
+                gap: 10px;
+            }
+            
+            .gameButton {
+                padding: 6px 12px;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #gameTitle {
+                font-size: 1.4rem;
+                margin-bottom: 2px;
+            }
+            
+            #gameInstructions p {
+                font-size: 0.7rem;
+                margin-bottom: 3px;
+            }
+            
+            #gameBoard {
+                width: 280px;
+                height: 280px;
+                margin-top: 8px;
             }
             
             .candy {
@@ -504,108 +564,48 @@
             }
             
             #gameStats {
-                gap: 8px;
-                margin-bottom: 2px;
+                gap: 10px;
+                margin-bottom: 3px;
             }
             
             .stat {
-                padding: 2px 4px;
+                padding: 3px 6px;
             }
             
             .stat-label {
-                font-size: 0.4rem;
+                font-size: 0.5rem;
             }
             
             .stat-value {
-                font-size: 0.7rem;
-            }
-            
-            #gameControls {
-                bottom: 3px;
-                gap: 6px;
-            }
-            
-            .gameButton {
-                padding: 4px 8px;
-                font-size: 0.5rem;
-            }
-
-            #backButton {
-                top: 5px;
-                left: 5px;
-                padding: 5px 8px;
-                font-size: 0.6rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #gameTitle {
-                font-size: 1rem;
-                margin-bottom: 1px;
-            }
-            
-            #gameInstructions p {
-                font-size: 0.5rem;
-                margin-bottom: 1px;
-            }
-            
-            #gameBoard {
-                width: 220px;
-                height: 220px;
-                margin-top: 2px;
-            }
-            
-            .candy {
                 font-size: 0.8rem;
             }
             
-            #gameStats {
-                gap: 6px;
-                margin-bottom: 1px;
-            }
-            
-            .stat {
-                padding: 1px 3px;
-            }
-            
-            .stat-label {
-                font-size: 0.3rem;
-            }
-            
-            .stat-value {
-                font-size: 0.6rem;
-            }
-            
             #gameControls {
-                bottom: 2px;
-                gap: 4px;
+                bottom: 8px;
+                gap: 8px;
             }
             
             .gameButton {
-                padding: 3px 6px;
-                font-size: 0.4rem;
-            }
-
-            #backButton {
-                top: 3px;
-                left: 3px;
-                padding: 4px 6px;
-                font-size: 0.5rem;
+                padding: 5px 10px;
+                font-size: 0.6rem;
             }
         }
-
-
     </style>
 </head>
 <body>
     <div id="gameContainer">
         <div id="gameHeader">
-            <button id="backButton" onclick="goBack()">🔙 VOLVER</button>
             <h1 id="gameTitle">🦑 CANDY SQUID</h1>
             <div id="gameInstructions">
-                <p style="color: #9370DB; font-size: 0.9rem; margin-bottom: 10px;">
-                    💡 Desliza el dedo para mover dulces y hacer matches de 3+ iguales
-                </p>
+                <h2>🎮 CANDY SQUID</h2>
+                <p><span class="highlight">OBJETIVO:</span> Haz matches de 3 o más dulces iguales</p>
+                <p><span class="highlight">CÓMO JUGAR:</span></p>
+                <p>• Toca un dulce y luego otro adyacente para intercambiarlos</p>
+                <p>• En móvil: Desliza el dedo para mover dulces</p>
+                <p>• Haz matches horizontales o verticales</p>
+                <p>• Cada match te da puntos y monedas</p>
+                <p>• Alcanza la puntuación objetivo para subir de nivel</p>
+                <button id="startButton" onclick="startGame()">🎯 COMENZAR JUEGO</button>
             </div>
                     <div id="gameStats">
             <div class="stat">
@@ -1154,47 +1154,16 @@
         // Game over
         function gameOver() {
             gameRunning = false;
+            
+            // Save coins to main game
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const newCoins = currentCoins + coins;
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            
+            // Update game over screen
             document.getElementById('finalScore').textContent = `PUNTUACIÓN: ${score}`;
-            document.getElementById('finalCoins').textContent = `MONEDAS GANADAS: +${coins}`;
-            document.getElementById('gameOver').style.display = 'flex';
-        }
-
-        // Sumar monedas solo al pulsar VOLVER
-        let coinsAddedToTotal = false;
-        function addCoinsToTotal() {
-            if (coinsAddedToTotal || coins <= 0) return;
-            coinsAddedToTotal = true;
-            if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
-                const success = PlayerDataManager.safeAddCoins(coins, 'candy-squid');
-                if (success) {
-                    console.log(`✅ Candy Squid coins added safely: +${coins}`);
-                } else {
-                    console.log('⚠️ Failed to add coins safely, using fallback method');
-                    addCoinsFallback(coins);
-                }
-            } else {
-                addCoinsFallback(coins);
-            }
-        }
-
-        function addCoinsFallback(coinsToAdd) {
-            try {
-                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                const newCoins = currentCoins + coinsToAdd;
-                localStorage.setItem('totalOrtizCoins', newCoins.toString());
-                // Sync with Firebase if available
-                if (window.firebase && window.firebase.database) {
-                    const playerName = localStorage.getItem('playerName') || 'Jugador';
-                    const userRef = window.firebase.database().ref(`users/${playerName}`);
-                    userRef.update({
-                        totalOrtizCoins: newCoins,
-                        candySquidWins: (parseInt(localStorage.getItem('candySquidWins') || '0') + 1).toString()
-                    });
-                }
-                console.log(`✅ Candy Squid coins added: ${currentCoins} -> ${newCoins}`);
-            } catch (error) {
-                console.error('❌ Error adding Candy Squid coins:', error);
-            }
+            document.getElementById('finalCoins').textContent = `MONEDAS: ${coins}`;
+            document.getElementById('gameOver').style.display = 'block';
         }
 
         // Restart game
@@ -1215,7 +1184,6 @@
 
         // Go back to main menu
         function goBack() {
-            addCoinsToTotal();
             window.location.href = 'index.html';
         }
 
@@ -1352,9 +1320,16 @@
             });
         }
 
+        // Start game function
+        function startGame() {
+            document.getElementById('gameInstructions').classList.add('hidden');
+            initGame();
+            addTouchListeners();
+        }
+
         // Initialize game when page loads
         window.addEventListener('load', () => {
-            initGame();
+            // Don't auto-start, wait for user to click start button
             addTouchListeners();
         });
     </script>

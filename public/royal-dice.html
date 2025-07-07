@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎲 Royal Dice - Squid Game Ortiz</title>
+    <title>✂️ Piedra Papel Tijera PvP - Squid Game Ortiz</title>
     <style>
         * {
             margin: 0;
@@ -278,36 +278,46 @@
             border-radius: 10px;
         }
 
-        .dice-container {
+        .rps-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 30px;
             margin: 30px 0;
             flex-wrap: wrap;
         }
 
-        .dice {
-            width: 80px;
-            height: 80px;
-            background: white;
-            border-radius: 10px;
+        .rps-option {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5em;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease;
+            font-size: 3em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
         }
 
-        .dice.rolling {
-            animation: roll 0.5s infinite;
+        .rps-option:hover {
+            transform: translateY(-5px) scale(1.1);
+            border-color: #FFD700;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
         }
 
-        @keyframes roll {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(90deg); }
-            50% { transform: rotate(180deg); }
-            75% { transform: rotate(270deg); }
+        .rps-option.selected {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+        }
+
+        .rps-option:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .controls {
@@ -400,18 +410,19 @@
             border: 2px solid #FFD700;
         }
 
-        .loading {
-            text-align: center;
-            font-size: 1.2em;
-            color: #FFD700;
-            margin: 20px 0;
+        .score-card.loser {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
         }
 
-        .back-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
+        .score-card.tie {
+            background: rgba(158, 158, 158, 0.2);
+            border: 2px solid #9e9e9e;
+        }
+
+        .player-choice {
+            font-size: 2em;
+            margin: 10px 0;
         }
 
         .challenge-modal {
@@ -422,7 +433,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
+            z-index: 1000;
             backdrop-filter: blur(5px);
         }
 
@@ -434,21 +445,22 @@
             background: linear-gradient(135deg, #1a1a2e, #16213e);
             padding: 30px;
             border-radius: 15px;
+            border: 2px solid #8A2BE2;
             text-align: center;
             max-width: 400px;
             width: 90%;
-            border: 2px solid #9370DB;
-            box-shadow: 0 0 30px rgba(147, 112, 219, 0.5);
         }
 
         .challenge-title {
             font-size: 1.5em;
             color: #FFD700;
             margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
         .challenge-message {
-            margin-bottom: 20px;
+            font-size: 1.1em;
+            margin-bottom: 10px;
             color: #ccc;
         }
 
@@ -456,60 +468,13 @@
             font-size: 1.2em;
             color: #FFD700;
             margin-bottom: 20px;
+            font-weight: bold;
         }
 
         .challenge-buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
-        }
-
-        .bet-input {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 20px 0;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .bet-input input {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-            width: 150px;
-            text-align: center;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .dice {
-                width: 60px;
-                height: 60px;
-                font-size: 2em;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 300px;
-            }
-
-            .challenge-buttons {
-                flex-direction: column;
-            }
         }
 
         .particles {
@@ -526,7 +491,7 @@
             position: absolute;
             width: 4px;
             height: 4px;
-            background: #9370DB;
+            background: #FFD700;
             border-radius: 50%;
             animation: float 6s infinite linear;
         }
@@ -547,57 +512,89 @@
                 opacity: 0;
             }
         }
+
+        .waiting-message {
+            text-align: center;
+            font-size: 1.2em;
+            color: #FFD700;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid #FFD700;
+        }
+
+        .choice-made {
+            text-align: center;
+            font-size: 1.1em;
+            color: #4CAF50;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 8px;
+            border: 1px solid #4CAF50;
+        }
     </style>
 </head>
 <body>
     <div class="particles" id="particles"></div>
     
-    <button class="btn btn-secondary back-btn" onclick="window.location.href='index.html'">
-        ← Volver
-    </button>
-
     <div class="container">
         <div class="header">
-            <h1>🎲 Royal Dice</h1>
-            <p>Reta a otros jugadores en duelos de dados épicos</p>
+            <h1>✂️ Piedra Papel Tijera PvP</h1>
+            <p>¡Reta a otros jugadores y gana sus monedas!</p>
         </div>
 
         <div class="main-section" id="mainSection">
             <div class="section-header">
-                <h2>👥 Jugadores Online</h2>
+                <h2>👥 Jugadores Disponibles</h2>
                 <button class="refresh-header-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
             </div>
+            
             <div class="players-list" id="playersList">
-                <div class="loading">Cargando jugadores...</div>
+                <!-- Players will be loaded here -->
             </div>
         </div>
 
         <div class="game-section" id="gameSection">
-            <h2>⚔️ Duelo en Progreso</h2>
             <div class="challenge-info">
                 <div>
-                    <strong>Retador:</strong>
-                    <span id="challengerName">-</span>
+                    <strong>Retador:</strong> <span id="challengerName"></span>
                 </div>
                 <div>
-                    <strong>Retado:</strong>
-                    <span id="challengedName">-</span>
+                    <strong>Retado:</strong> <span id="challengedName"></span>
                 </div>
                 <div>
-                    <strong>Apuesta:</strong>
-                    <span id="challengeBet">0</span> monedas
+                    <strong>Apuesta:</strong> <span id="challengeBet"></span> monedas
                 </div>
             </div>
 
-            <div class="dice-container" id="diceContainer">
-                <div class="dice" id="dice1">⚀</div>
-                <div class="dice" id="dice2">⚀</div>
-                <div class="dice" id="dice3">⚀</div>
+            <div class="waiting-message" id="waitingMessage" style="display: none;">
+                ⏳ Esperando que el oponente elija...
+            </div>
+
+            <div class="choice-made" id="choiceMade" style="display: none;">
+                ✅ ¡Ya elegiste! Esperando al oponente...
+            </div>
+
+            <div class="rps-container" id="rpsContainer">
+                <div class="rps-option" onclick="selectChoice('piedra')" data-choice="piedra">
+                    🪨
+                </div>
+                <div class="rps-option" onclick="selectChoice('papel')" data-choice="papel">
+                    📄
+                </div>
+                <div class="rps-option" onclick="selectChoice('tijera')" data-choice="tijera">
+                    ✂️
+                </div>
             </div>
 
             <div class="controls">
-                <button class="btn btn-primary" id="rollBtn" onclick="rollDice()">
-                    Lanzar Dados
+                <button class="btn btn-primary" id="confirmBtn" onclick="confirmChoice()" style="display: none;">
+                    Confirmar Elección
+                </button>
+                <button class="btn btn-danger" onclick="resetGame()">
+                    Volver al Lobby
                 </button>
             </div>
 
@@ -642,8 +639,8 @@
         let currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
         let gameState = 'lobby'; // lobby, challenging, playing, finished
         let currentChallenge = null;
-        let myRoll = null;
-        let opponentRoll = null;
+        let myChoice = null;
+        let opponentChoice = null;
         let challengeBet = 100;
 
         // Initialize particles
@@ -665,7 +662,7 @@
             update(userRef, { 
                 online: true,
                 lastSeen: Date.now(),
-                royalDiceActive: true
+                rpsActive: true
             });
         }
 
@@ -686,8 +683,8 @@
                             players.push({
                                 name: playerName,
                                 coins: parseInt(player.totalOrtizCoins || '0'),
-                                wins: parseInt(player.royalDiceWins || '0'),
-                                losses: parseInt(player.royalDiceLosses || '0'),
+                                wins: parseInt(player.rpsWins || '0'),
+                                losses: parseInt(player.rpsLosses || '0'),
                                 isOnline: player.online || false
                             });
                         }
@@ -712,7 +709,7 @@
             if (players.length === 0) {
                 playersList.innerHTML = `
                     <div class="no-players">
-                        <div class="no-players-icon">🎲</div>
+                        <div class="no-players-icon">✂️</div>
                         <div class="no-players-text">No hay jugadores disponibles</div>
                         <div class="no-players-subtext">Intenta refrescar la página</div>
                         <button class="refresh-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
@@ -758,7 +755,7 @@
             challengeBet = parseInt(betAmount);
             
             // Create challenge
-            const challengeRef = ref(db, `royalDiceChallenges/${playerName}`);
+            const challengeRef = ref(db, `rpsChallenges/${playerName}`);
             set(challengeRef, {
                 challenger: currentPlayer,
                 challenged: playerName,
@@ -772,11 +769,14 @@
 
         // Listen for incoming challenges
         function listenForChallenges() {
-            const challengeRef = ref(db, `royalDiceChallenges/${currentPlayer}`);
+            const challengeRef = ref(db, `rpsChallenges/${currentPlayer}`);
             onValue(challengeRef, (snapshot) => {
                 const challenge = snapshot.val();
                 if (challenge && challenge.status === 'pending') {
                     showChallengeModal(challenge);
+                } else if (challenge && challenge.status === 'rejected') {
+                    alert(`${challenge.challenger} rechazó tu reto.`);
+                    remove(challengeRef);
                 }
             });
         }
@@ -785,7 +785,7 @@
         function showChallengeModal(challenge) {
             currentChallenge = challenge;
             document.getElementById('challengeMessage').textContent = 
-                `${challenge.challenger} te está retando a un duelo de dados!`;
+                `${challenge.challenger} te está retando a Piedra Papel Tijera!`;
             document.getElementById('challengeBetAmount').textContent = 
                 `Apuesta: ${challenge.betAmount} monedas`;
             document.getElementById('challengeModal').style.display = 'block';
@@ -796,7 +796,7 @@
             if (!currentChallenge) return;
             
             // Update challenge status
-            const challengeRef = ref(db, `royalDiceChallenges/${currentChallenge.challenged}`);
+            const challengeRef = ref(db, `rpsChallenges/${currentChallenge.challenged}`);
             set(challengeRef, { status: 'accepted' });
             
             // Start game
@@ -810,8 +810,12 @@
         window.rejectChallenge = function() {
             if (!currentChallenge) return;
             
+            // Notify challenger
+            const challengerRef = ref(db, `rpsChallenges/${currentChallenge.challenger}`);
+            set(challengerRef, { status: 'rejected' });
+            
             // Remove challenge
-            const challengeRef = ref(db, `royalDiceChallenges/${currentChallenge.challenged}`);
+            const challengeRef = ref(db, `rpsChallenges/${currentChallenge.challenged}`);
             remove(challengeRef);
             
             // Hide modal
@@ -829,14 +833,8 @@
             document.getElementById('challengedName').textContent = challenge.challenged;
             document.getElementById('challengeBet').textContent = challenge.betAmount;
             
-            // Determine turn order (challenger goes first)
-            const isMyTurn = challenge.challenger === currentPlayer;
-            const rollBtn = document.getElementById('rollBtn');
-            rollBtn.disabled = !isMyTurn;
-            rollBtn.textContent = isMyTurn ? 'Lanzar Dados' : 'Esperando al oponente...';
-            
             // Listen for game updates
-            const gameRef = ref(db, `royalDiceGames/${challenge.challenger}_${challenge.challenged}`);
+            const gameRef = ref(db, `rpsGames/${challenge.challenger}_${challenge.challenged}`);
             onValue(gameRef, (snapshot) => {
                 const gameData = snapshot.val();
                 if (gameData) {
@@ -847,106 +845,106 @@
 
         // Update game state
         function updateGameState(gameData) {
-            if (gameData.challengerRoll && gameData.challengedRoll) {
-                // Both players have rolled
+            if (gameData.challengerChoice && gameData.challengedChoice) {
+                // Both players have chosen
                 showResults(gameData);
-            } else if (gameData.challengerRoll && currentPlayer === gameData.challenged) {
-                // Opponent rolled, now it's my turn
-                document.getElementById('rollBtn').disabled = false;
-                document.getElementById('rollBtn').textContent = 'Lanzar Dados';
-            } else if (gameData.challengedRoll && currentPlayer === gameData.challenger) {
-                // Opponent rolled, now it's my turn
-                document.getElementById('rollBtn').disabled = false;
-                document.getElementById('rollBtn').textContent = 'Lanzar Dados';
+            } else if (gameData.challengerChoice && currentPlayer === currentChallenge.challenged) {
+                // Opponent chose, now it's my turn
+                document.getElementById('waitingMessage').style.display = 'none';
+                document.getElementById('choiceMade').style.display = 'none';
+            } else if (gameData.challengedChoice && currentPlayer === currentChallenge.challenger) {
+                // Opponent chose, now it's my turn
+                document.getElementById('waitingMessage').style.display = 'none';
+                document.getElementById('choiceMade').style.display = 'none';
+            } else {
+                // Waiting for opponent
+                document.getElementById('waitingMessage').style.display = 'block';
+                document.getElementById('choiceMade').style.display = 'none';
             }
         }
 
-        // Roll dice
-        window.rollDice = function() {
-            if (gameState !== 'playing') return;
+        // Select choice
+        window.selectChoice = function(choice) {
+            if (gameState !== 'playing' || myChoice) return;
             
-            const dice1 = Math.floor(Math.random() * 6) + 1;
-            const dice2 = Math.floor(Math.random() * 6) + 1;
-            const dice3 = Math.floor(Math.random() * 6) + 1;
-            const total = dice1 + dice2 + dice3;
+            // Remove previous selection
+            document.querySelectorAll('.rps-option').forEach(option => {
+                option.classList.remove('selected');
+            });
             
-            // Animate dice
-            const diceElements = document.querySelectorAll('.dice');
-            diceElements.forEach(dice => dice.classList.add('rolling'));
+            // Select new choice
+            const selectedOption = document.querySelector(`[data-choice="${choice}"]`);
+            selectedOption.classList.add('selected');
             
-            setTimeout(() => {
-                diceElements[0].textContent = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][dice1 - 1];
-                diceElements[1].textContent = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][dice2 - 1];
-                diceElements[2].textContent = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][dice3 - 1];
-                diceElements.forEach(dice => dice.classList.remove('rolling'));
-                
-                // Save roll to Firebase
-                const gameRef = ref(db, `royalDiceGames/${currentChallenge.challenger}_${currentChallenge.challenged}`);
-                if (currentPlayer === currentChallenge.challenger) {
-                    set(gameRef, { challengerRoll: total });
-                } else {
-                    set(gameRef, { challengedRoll: total });
-                }
-                
-                // Disable roll button
-                document.getElementById('rollBtn').disabled = true;
-                document.getElementById('rollBtn').textContent = 'Esperando al oponente...';
-            }, 500);
+            myChoice = choice;
+            
+            // Show confirm button
+            document.getElementById('confirmBtn').style.display = 'inline-block';
+        };
+
+        // Confirm choice
+        window.confirmChoice = function() {
+            if (!myChoice) return;
+            
+            // Save choice to Firebase
+            const gameRef = ref(db, `rpsGames/${currentChallenge.challenger}_${currentChallenge.challenged}`);
+            if (currentPlayer === currentChallenge.challenger) {
+                set(gameRef, { challengerChoice: myChoice });
+            } else {
+                set(gameRef, { challengedChoice: myChoice });
+            }
+            
+            // Disable options
+            document.querySelectorAll('.rps-option').forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+            
+            // Hide confirm button and show waiting message
+            document.getElementById('confirmBtn').style.display = 'none';
+            document.getElementById('waitingMessage').style.display = 'none';
+            document.getElementById('choiceMade').style.display = 'block';
         };
 
         // Show results
         function showResults(gameData) {
-            const challengerRoll = gameData.challengerRoll;
-            const challengedRoll = gameData.challengedRoll;
+            const challengerChoice = gameData.challengerChoice;
+            const challengedChoice = gameData.challengedChoice;
             const challengerName = currentChallenge.challenger;
             const challengedName = currentChallenge.challenged;
             
-            let winner, loser, winnerRoll, loserRoll;
-            
-            if (challengerRoll > challengedRoll) {
-                winner = challengerName;
-                loser = challengedName;
-                winnerRoll = challengerRoll;
-                loserRoll = challengedRoll;
-            } else if (challengedRoll > challengerRoll) {
-                winner = challengedName;
-                loser = challengerName;
-                winnerRoll = challengedRoll;
-                loserRoll = challengerRoll;
-            } else {
-                // Tie
-                winner = 'Empate';
-                loser = 'Empate';
-                winnerRoll = challengerRoll;
-                loserRoll = challengedRoll;
-            }
+            const winner = determineWinner(challengerChoice, challengedChoice);
             
             const results = document.getElementById('results');
             const winnerText = document.getElementById('winnerText');
             const scoreBoard = document.getElementById('scoreBoard');
             
-            if (winner === 'Empate') {
-                winnerText.textContent = `🤝 ¡Empate! Ambos sacaron ${winnerRoll}`;
+            if (winner === 'tie') {
+                winnerText.textContent = `🤝 ¡Empate! Ambos eligieron ${getChoiceEmoji(challengerChoice)}`;
+            } else if (winner === 'challenger') {
+                winnerText.textContent = `🏆 ¡${challengerName} gana ${currentChallenge.betAmount} monedas!`;
             } else {
-                winnerText.textContent = `🏆 ¡${winner} gana ${currentChallenge.betAmount} monedas!`;
+                winnerText.textContent = `🏆 ¡${challengedName} gana ${currentChallenge.betAmount} monedas!`;
             }
             
             scoreBoard.innerHTML = `
-                <div class="score-card ${winner === challengerName ? 'winner' : ''}">
+                <div class="score-card ${winner === 'challenger' ? 'winner' : winner === 'tie' ? 'tie' : 'loser'}">
                     <div class="player-name">${challengerName}</div>
-                    <div class="player-status">Puntaje: ${challengerRoll}</div>
+                    <div class="player-choice">${getChoiceEmoji(challengerChoice)}</div>
+                    <div class="player-status">${challengerChoice.toUpperCase()}</div>
                 </div>
-                <div class="score-card ${winner === challengedName ? 'winner' : ''}">
+                <div class="score-card ${winner === 'challenged' ? 'winner' : winner === 'tie' ? 'tie' : 'loser'}">
                     <div class="player-name">${challengedName}</div>
-                    <div class="player-status">Puntaje: ${challengedRoll}</div>
+                    <div class="player-choice">${getChoiceEmoji(challengedChoice)}</div>
+                    <div class="player-status">${challengedChoice.toUpperCase()}</div>
                 </div>
             `;
             
             results.style.display = 'block';
             
             // Update coins and stats
-            if (winner !== 'Empate') {
-                if (winner === currentPlayer) {
+            if (winner !== 'tie') {
+                if ((winner === 'challenger' && currentPlayer === challengerName) || 
+                    (winner === 'challenged' && currentPlayer === challengedName)) {
                     // Winner
                     const newCoins = currentCoins + currentChallenge.betAmount;
                     localStorage.setItem('totalOrtizCoins', newCoins.toString());
@@ -954,7 +952,7 @@
                     const userRef = ref(db, `users/${currentPlayer}`);
                     update(userRef, { 
                         totalOrtizCoins: newCoins,
-                        royalDiceWins: (parseInt(localStorage.getItem('royalDiceWins') || '0') + 1).toString()
+                        rpsWins: (parseInt(localStorage.getItem('rpsWins') || '0') + 1).toString()
                     });
                 } else {
                     // Loser
@@ -964,7 +962,7 @@
                     const userRef = ref(db, `users/${currentPlayer}`);
                     update(userRef, { 
                         totalOrtizCoins: newCoins,
-                        royalDiceLosses: (parseInt(localStorage.getItem('royalDiceLosses') || '0') + 1).toString()
+                        rpsLosses: (parseInt(localStorage.getItem('rpsLosses') || '0') + 1).toString()
                     });
                 }
             }
@@ -975,20 +973,52 @@
             }, 5000);
         }
 
+        // Determine winner
+        function determineWinner(choice1, choice2) {
+            if (choice1 === choice2) return 'tie';
+            
+            if ((choice1 === 'piedra' && choice2 === 'tijera') ||
+                (choice1 === 'papel' && choice2 === 'piedra') ||
+                (choice1 === 'tijera' && choice2 === 'papel')) {
+                return 'challenger';
+            } else {
+                return 'challenged';
+            }
+        }
+
+        // Get choice emoji
+        function getChoiceEmoji(choice) {
+            const emojis = {
+                'piedra': '🪨',
+                'papel': '📄',
+                'tijera': '✂️'
+            };
+            return emojis[choice] || '❓';
+        }
+
         // Reset game
         function resetGame() {
             gameState = 'lobby';
             currentChallenge = null;
-            myRoll = null;
-            opponentRoll = null;
+            myChoice = null;
+            opponentChoice = null;
             
             document.getElementById('mainSection').style.display = 'block';
             document.getElementById('gameSection').style.display = 'none';
             document.getElementById('results').style.display = 'none';
+            document.getElementById('waitingMessage').style.display = 'none';
+            document.getElementById('choiceMade').style.display = 'none';
+            document.getElementById('confirmBtn').style.display = 'none';
+            
+            // Reset RPS options
+            document.querySelectorAll('.rps-option').forEach(option => {
+                option.classList.remove('selected');
+                option.style.pointerEvents = 'auto';
+            });
             
             // Clean up Firebase
             if (currentChallenge) {
-                const gameRef = ref(db, `royalDiceGames/${currentChallenge.challenger}_${currentChallenge.challenged}`);
+                const gameRef = ref(db, `rpsGames/${currentChallenge.challenger}_${currentChallenge.challenged}`);
                 remove(gameRef);
             }
         }
@@ -1004,7 +1034,7 @@
             const userRef = ref(db, `users/${currentPlayer}`);
             update(userRef, { 
                 online: false,
-                royalDiceActive: false
+                rpsActive: false
             });
         });
     </script>

@@ -4452,13 +4452,23 @@
     }
     
     .slotmachine-btn {
-      background: linear-gradient(45deg, #FFD700, #FFA500);
-      box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+      background: linear-gradient(45deg, #808080, #696969);
+      box-shadow: 0 0 30px #808080, inset 0 0 20px rgba(128, 128, 128, 0.3);
     }
     
     .slotmachine-btn:hover {
       transform: scale(1.1) rotateY(10deg);
-      box-shadow: 0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
+      box-shadow: 0 0 50px #808080, inset 0 0 30px rgba(128, 128, 128, 0.5);
+    }
+    
+    .dollshooter-btn {
+      background: linear-gradient(45deg, #F4A460, #DEB887);
+      box-shadow: 0 0 30px #F4A460, inset 0 0 20px rgba(244, 164, 96, 0.3);
+    }
+    
+    .dollshooter-btn:hover {
+      transform: scale(1.1) rotateY(-10deg);
+      box-shadow: 0 0 50px #F4A460, inset 0 0 30px rgba(244, 164, 96, 0.5);
     }
     
     .daily-reward-btn {
@@ -5008,6 +5018,11 @@
       <button class="envelope-btn slotmachine-btn" id="slotMachineBtn">
         <div class="envelope-content">
           <span class="envelope-text">🎰 SLOT MACHINE</span>
+        </div>
+      </button>
+      <button class="envelope-btn dollshooter-btn" id="dollShooterBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">👱‍♀️ DOLL SHOOTER</span>
         </div>
       </button>
     </div>
@@ -6914,6 +6929,101 @@
             messageEl.parentNode.removeChild(messageEl);
           }
           window.location.href = 'slot-machine.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // DOLL SHOOTER Button Event Listener
+    const dollShooterBtn = document.getElementById('dollShooterBtn');
+    dollShooterBtn.addEventListener('click', () => {
+      console.log('🎭 DOLL SHOOTER seleccionado');
+      
+      // Add dramatic effect
+      dollShooterBtn.style.transform = 'scale(0.9) rotateY(-10deg)';
+      dollShooterBtn.style.boxShadow = '0 0 80px #FF4500, inset 0 0 40px rgba(255, 69, 0, 0.7)';
+      
+      // Create doll shooter explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#FF4500';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = dollShooterBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        dollShooterBtn.style.transform = '';
+        dollShooterBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🎭 DOLL SHOOTER ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#FF4500';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #FF4500';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'doll-shooter.html';
         }, 2000);
       }, 1000);
     });

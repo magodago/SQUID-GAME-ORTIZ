@@ -4472,13 +4472,13 @@
     }
     
     .royaldice-btn {
-      background: linear-gradient(45deg, #9370DB, #8A2BE2);
-      box-shadow: 0 0 30px #9370DB, inset 0 0 20px rgba(147, 112, 219, 0.3);
+      background: linear-gradient(45deg, #FFFFFF, #F0F0F0);
+      box-shadow: 0 0 30px #FFFFFF, inset 0 0 20px rgba(255, 255, 255, 0.3);
     }
     
     .royaldice-btn:hover {
       transform: scale(1.1) rotateY(10deg);
-      box-shadow: 0 0 50px #9370DB, inset 0 0 30px rgba(147, 112, 219, 0.5);
+      box-shadow: 0 0 50px #FFFFFF, inset 0 0 30px rgba(255, 255, 255, 0.5);
     }
     
     .daily-reward-btn {
@@ -5037,7 +5037,7 @@
       </button>
       <button class="envelope-btn royaldice-btn" id="royalDiceBtn">
         <div class="envelope-content">
-          <span class="envelope-text">🎲 ROYAL DICE</span>
+          <span class="envelope-text">✂️ PIEDRA PAPEL O TIJERA</span>
         </div>
       </button>
     </div>
@@ -7043,16 +7043,16 @@
       }, 1000);
     });
 
-    // ROYAL DICE Button Event Listener
+    // PIEDRA PAPEL O TIJERA Button Event Listener
     const royalDiceBtn = document.getElementById('royalDiceBtn');
     royalDiceBtn.addEventListener('click', () => {
-      console.log('🎲 ROYAL DICE seleccionado');
+      console.log('✂️ PIEDRA PAPEL O TIJERA seleccionado');
       
       // Add dramatic effect
       royalDiceBtn.style.transform = 'scale(0.9) rotateY(10deg)';
       royalDiceBtn.style.boxShadow = '0 0 80px #9370DB, inset 0 0 40px rgba(147, 112, 219, 0.7)';
       
-      // Create royal dice explosion effect
+              // Create piedra papel tijera explosion effect
       for (let i = 0; i < 8; i++) {
         const particle = document.createElement('div');
         particle.style.position = 'absolute';
@@ -7103,7 +7103,7 @@
       // Show message and redirect
       setTimeout(() => {
         const messageEl = document.createElement('div');
-        messageEl.textContent = '🎲 ROYAL DICE ACTIVADO';
+        messageEl.textContent = '✂️ PIEDRA PAPEL O TIJERA ACTIVADO';
         messageEl.style.position = 'fixed';
         messageEl.style.top = '50%';
         messageEl.style.left = '50%';

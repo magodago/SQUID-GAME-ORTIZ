@@ -651,13 +651,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let currentPlayer = localStorage.getItem('playerName') || 'Jugador';
+        let currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
         let currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
         let gameState = 'lobby'; // lobby, challenging, playing, finished
         let currentChallenge = null;
         let myChoice = null;
         let opponentChoice = null;
         let challengeBet = 100;
+        let players = []; // Global players array like in robbery game
 
         // Initialize particles
         function createParticles() {
@@ -672,6 +673,41 @@
             }
         }
 
+        // Load player info - EXACTLY like robbery game
+        function loadPlayerInfo() {
+            currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
+            
+            // Use localStorage as primary source to avoid overwriting recent changes
+            const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            currentCoins = localCoins;
+            
+            console.log(`✅ Player info loaded from localStorage: ${currentPlayer} - ${currentCoins} coins`);
+            
+            // Only sync with Firebase if there's a significant difference (more than 1000 coins)
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playerRef = db.ref(`players/${currentPlayer}`);
+                
+                playerRef.once('value')
+                    .then((snapshot) => {
+                        const playerData = snapshot.val() || {};
+                        const firebaseCoins = playerData.coins || 0;
+                        
+                        // Only sync if difference is significant (more than 1000 coins)
+                        if (Math.abs(firebaseCoins - localCoins) > 1000) {
+                            localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
+                            currentCoins = firebaseCoins;
+                            console.log(`🔄 Synced coins from Firebase: ${localCoins} -> ${firebaseCoins}`);
+                        }
+                        
+                        console.log(`✅ Player info synced from Firebase: ${currentPlayer} - ${currentCoins} coins`);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error loading player info from Firebase:', error);
+                    });
+            }
+        }
+
         // Set online status
         function setOnlineStatus() {
             const userRef = ref(db, `users/${currentPlayer}`);
@@ -682,7 +718,7 @@
             });
         }
 
-        // Load all players - EXACT same logic as robbery game
+        // Load all players - COPIED EXACTLY from robbery game
         function loadOnlinePlayers() {
             const playersList = document.getElementById('playersList');
             playersList.innerHTML = '<div class="loading">Cargando jugadores...</div>';
@@ -693,15 +729,15 @@
                 
                 playersRef.once('value')
                     .then((snapshot) => {
-                        const players = [];
+                        players = [];
                         let html = '';
                         
                         snapshot.forEach((childSnapshot) => {
                             const player = childSnapshot.val();
                             
-                            // Validate player data - only show players with valid names (EXACT same as robbery)
+                            // Validate player data - only show players with valid names
                             if (player && player.name && player.name !== 'undefined' && player.name !== currentPlayer) {
-                                // Ocultar jugadores de prueba (EXACT same as robbery)
+                                // Ocultar jugadores de prueba
                                 const testPlayers = ['yo', 'prueba', 'prueba 2'];
                                 if (!testPlayers.includes(player.name.toLowerCase())) {
                                     players.push(player);
@@ -1029,8 +1065,9 @@
 
 
 
-        // Initialize the page - same as robbery game
+        // Initialize the page - EXACTLY like robbery game
         document.addEventListener('DOMContentLoaded', function() {
+            loadPlayerInfo();
             createParticles();
             setOnlineStatus();
             loadOnlinePlayers();
@@ -1048,9 +1085,9 @@
             }, 30000); // Sync every 30 seconds
         }
 
-        // Sync current player data to Firebase - same as robbery game
+        // Sync current player data to Firebase - EXACTLY like robbery game
         function syncPlayerDataToFirebase() {
-            const playerName = localStorage.getItem('playerName');
+            const playerName = localStorage.getItem('soldierName');
             if (!playerName || !window.firebase || !window.firebase.database) {
                 return;
             }

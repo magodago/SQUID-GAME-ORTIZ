@@ -5986,11 +5986,20 @@
               rarity: 'legendary'
             };
             
+            const humanitarianAid = {
+              id: 'humanitarian_aid',
+              name: '🤝 Ayuda Humanitaria',
+              description: 'Da 50,000 monedas a jugadores con menos de 50,000 (anónimo)',
+              icon: '🤝',
+              value: 15000,
+              rarity: 'mythic'
+            };
+            
 
             
             // Add ONLY FUNCTIONAL items to inventory (avoid duplicates)
             const itemsToAdd = [
-                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, goldenButton
+                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, goldenButton, humanitarianAid
             ];
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
@@ -6003,7 +6012,7 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🟡 Botón de Oro\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🟡 Botón de Oro\n   • 🤝 Ayuda Humanitaria\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
             
             console.log('✅ DAGO coins and items added successfully!');
             
@@ -13377,6 +13386,11 @@
                     activateNuclearBomb();
                     break;
                     
+                case 'humanitarian_aid':
+                    // Activate humanitarian aid effect
+                    activateHumanitarianAid();
+                    break;
+                    
                 default:
                     showNotification(`❌ Función no implementada para ${item.name}`, 'error');
                     return;
@@ -14034,6 +14048,14 @@
                         icon: '🟡',
                         value: 3000,
                         rarity: 'legendary'
+                    },
+                    {
+                        id: 'humanitarian_aid',
+                        name: '🤝 Ayuda Humanitaria',
+                        description: 'Da 50,000 monedas a jugadores con menos de 50,000 (anónimo)',
+                        icon: '🤝',
+                        value: 15000,
+                        rarity: 'mythic'
                     }
                 ];
                 const selectedItem = dailyItems[Math.floor(Math.random() * dailyItems.length)];
@@ -14193,6 +14215,147 @@
                 }).catch((error) => {
                     console.error('❌ Error sending anonymous RPS challenge:', error);
                 });
+            }
+        }
+
+        // HUMANITARIAN AID SYSTEM
+        function activateHumanitarianAid() {
+            console.log('🤝 HUMANITARIAN AID ACTIVATED!');
+            
+            const currentPlayer = localStorage.getItem('soldierName');
+            
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playersRef = db.ref('players');
+                
+                playersRef.once('value')
+                    .then((snapshot) => {
+                        const playersData = snapshot.val() || {};
+                        const helpedPlayers = [];
+                        
+                        // Find players with less than 50,000 coins
+                        Object.keys(playersData).forEach(playerName => {
+                            const playerData = playersData[playerName];
+                            const coins = parseInt(playerData.coins || playerData.totalCoins || 0);
+                            
+                            // Skip test users, current player, and players with 50,000+ coins
+                            if (playerName !== 'yo' && 
+                                playerName !== 'prueba' && 
+                                playerName !== 'prueba 2' && 
+                                playerName !== currentPlayer && 
+                                coins < 50000) {
+                                
+                                // Add 50,000 coins to this player
+                                const newCoins = coins + 50000;
+                                
+                                // Update Firebase
+                                const playerRef = db.ref(`players/${playerName}`);
+                                playerRef.update({
+                                    coins: newCoins,
+                                    lastUpdated: Date.now()
+                                });
+                                
+                                // Update localStorage if it's the current player
+                                if (playerName === currentPlayer) {
+                                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                                    if (typeof loadTotalCoins === 'function') {
+                                        loadTotalCoins();
+                                    }
+                                }
+                                
+                                helpedPlayers.push(playerName);
+                                
+                                // Send anonymous notification to the helped player
+                                const notificationRef = db.ref(`notifications/${playerName}`);
+                                notificationRef.push({
+                                    message: `🤝 ¡AYUDA HUMANITARIA RECIBIDA!\n\nHas recibido 50,000 monedas de un donante anónimo.\n\nJugadores ayudados en esta ronda:\n${helpedPlayers.map(name => `• ${name}`).join('\n')}`,
+                                    timestamp: Date.now(),
+                                    type: 'humanitarian_aid',
+                                    read: false
+                                });
+                            }
+                        });
+                        
+                        // Show result to the user who used the item
+                        if (helpedPlayers.length > 0) {
+                            showNotification(`🤝 ¡Ayuda Humanitaria enviada!\n\nJugadores ayudados (${helpedPlayers.length}):\n${helpedPlayers.join(', ')}`, 'success');
+                            
+                            // Show detailed modal
+                            const modal = document.createElement('div');
+                            modal.style.cssText = `
+                                position: fixed;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                background: rgba(0, 0, 0, 0.9);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                z-index: 10000;
+                                animation: fadeIn 0.3s ease-out;
+                            `;
+                            
+                            modal.innerHTML = `
+                                <div style="
+                                    background: linear-gradient(135deg, #00ff7f 0%, #1a1a1a 100%);
+                                    border: 3px solid #00ff7f;
+                                    border-radius: 20px;
+                                    padding: 30px;
+                                    text-align: center;
+                                    max-width: 90%;
+                                    width: 500px;
+                                    max-height: 80vh;
+                                    overflow-y: auto;
+                                    box-shadow: 0 0 50px #00ff7f;
+                                ">
+                                    <div style="font-size: 4rem; margin-bottom: 20px;">🤝</div>
+                                    <h2 style="color: #00ff7f; margin-bottom: 20px; text-shadow: 0 0 10px #00ff7f;">AYUDA HUMANITARIA ENVIADA</h2>
+                                    <p style="color: white; margin-bottom: 20px; font-size: 1.1em;">
+                                        Has ayudado a <strong>${helpedPlayers.length}</strong> jugadores con menos de 50,000 monedas.
+                                    </p>
+                                    <div style="
+                                        background: rgba(0, 255, 127, 0.1);
+                                        border: 2px solid #00ff7f;
+                                        border-radius: 15px;
+                                        padding: 20px;
+                                        margin-bottom: 20px;
+                                        text-align: left;
+                                    ">
+                                        <h3 style="color: #00ff7f; margin-bottom: 15px;">Jugadores Ayudados:</h3>
+                                        ${helpedPlayers.map(name => `<div style="color: white; margin: 5px 0; font-size: 1.1em;">• ${name}</div>`).join('')}
+                                    </div>
+                                    <p style="color: #00ff7f; font-size: 0.9em; font-style: italic;">
+                                        Cada jugador recibió 50,000 monedas de forma anónima.
+                                    </p>
+                                    <button onclick="this.parentElement.parentElement.remove()" style="
+                                        background: linear-gradient(135deg, #00ff7f 0%, #00cc66 100%);
+                                        border: none;
+                                        border-radius: 10px;
+                                        padding: 15px 30px;
+                                        color: white;
+                                        font-size: 1.1em;
+                                        font-weight: bold;
+                                        cursor: pointer;
+                                        margin-top: 20px;
+                                        transition: all 0.3s ease;
+                                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                        ENTENDIDO
+                                    </button>
+                                </div>
+                            `;
+                            
+                            document.body.appendChild(modal);
+                        } else {
+                            showNotification('🤝 No hay jugadores que necesiten ayuda (todos tienen 50,000+ monedas)', 'info');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error activating humanitarian aid:', error);
+                        showNotification('❌ Error al activar la ayuda humanitaria', 'error');
+                    });
+            } else {
+                showNotification('❌ Error: Firebase no disponible', 'error');
             }
         }
 

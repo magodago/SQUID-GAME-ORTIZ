@@ -4431,6 +4431,36 @@
       box-shadow: 0 0 50px #000000, inset 0 0 30px rgba(0, 0, 0, 0.5);
     }
     
+    .squidfly-btn {
+      background: linear-gradient(45deg, #8A2BE2, #9370DB);
+      box-shadow: 0 0 30px #8A2BE2, inset 0 0 20px rgba(138, 43, 226, 0.3);
+    }
+    
+    .squidfly-btn:hover {
+      transform: scale(1.1) rotateY(10deg);
+      box-shadow: 0 0 50px #8A2BE2, inset 0 0 30px rgba(138, 43, 226, 0.5);
+    }
+    
+    .candysquid-btn {
+      background: linear-gradient(45deg, #00CED1, #20B2AA);
+      box-shadow: 0 0 30px #00CED1, inset 0 0 20px rgba(0, 206, 209, 0.3);
+    }
+    
+    .candysquid-btn:hover {
+      transform: scale(1.1) rotateY(-10deg);
+      box-shadow: 0 0 50px #00CED1, inset 0 0 30px rgba(0, 206, 209, 0.5);
+    }
+    
+    .slotmachine-btn {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    
+    .slotmachine-btn:hover {
+      transform: scale(1.1) rotateY(10deg);
+      box-shadow: 0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5);
+    }
+    
     .daily-reward-btn {
       background: linear-gradient(45deg, #FF6B35, #F7931E);
       box-shadow: 0 0 30px #FF6B35, inset 0 0 20px rgba(255, 107, 53, 0.3);
@@ -4963,6 +4993,21 @@
       <button class="envelope-btn pvp-btn" id="pvpBtn">
         <div class="envelope-content">
           <span class="envelope-text">ROBO</span>
+        </div>
+      </button>
+      <button class="envelope-btn squidfly-btn" id="squidFlyBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🦑 SQUID FLY</span>
+        </div>
+      </button>
+      <button class="envelope-btn candysquid-btn" id="candySquidBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🍬 CANDY SQUID</span>
+        </div>
+      </button>
+      <button class="envelope-btn slotmachine-btn" id="slotMachineBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🎰 SLOT MACHINE</span>
         </div>
       </button>
     </div>
@@ -6588,6 +6633,291 @@
       }, 1000);
     });
 
+    // SQUID FLY Button Event Listener
+    const squidFlyBtn = document.getElementById('squidFlyBtn');
+    squidFlyBtn.addEventListener('click', () => {
+      console.log('🦑 SQUID FLY seleccionado');
+      
+      // Add dramatic effect
+      squidFlyBtn.style.transform = 'scale(0.9) rotateY(10deg)';
+      squidFlyBtn.style.boxShadow = '0 0 80px #8A2BE2, inset 0 0 40px rgba(138, 43, 226, 0.7)';
+      
+      // Create squid explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#8A2BE2';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = squidFlyBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        squidFlyBtn.style.transform = '';
+        squidFlyBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🦑 SQUID FLY ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#8A2BE2';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #8A2BE2';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'squid-fly.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // CANDY SQUID Button Event Listener
+    const candySquidBtn = document.getElementById('candySquidBtn');
+    candySquidBtn.addEventListener('click', () => {
+      console.log('🍬 CANDY SQUID seleccionado');
+      
+      // Add dramatic effect
+      candySquidBtn.style.transform = 'scale(0.9) rotateY(-10deg)';
+      candySquidBtn.style.boxShadow = '0 0 80px #00CED1, inset 0 0 40px rgba(0, 206, 209, 0.7)';
+      
+      // Create candy explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#00CED1';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = candySquidBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        candySquidBtn.style.transform = '';
+        candySquidBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🍬 CANDY SQUID ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#00CED1';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #00CED1';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'candy-squid.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // SLOT MACHINE Button Event Listener
+    const slotMachineBtn = document.getElementById('slotMachineBtn');
+    slotMachineBtn.addEventListener('click', () => {
+      console.log('🎰 SLOT MACHINE seleccionado');
+      
+      // Add dramatic effect
+      slotMachineBtn.style.transform = 'scale(0.9) rotateY(10deg)';
+      slotMachineBtn.style.boxShadow = '0 0 80px #FFD700, inset 0 0 40px rgba(255, 215, 0, 0.7)';
+      
+      // Create slot machine explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#FFD700';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = slotMachineBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        slotMachineBtn.style.transform = '';
+        slotMachineBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🎰 SLOT MACHINE ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#FFD700';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #FFD700';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'slot-machine.html';
+        }, 2000);
+      }, 1000);
+    });
+
     // DAILY REWARD Button Event Listener
     const dailyRewardBtn = document.getElementById('dailyRewardBtn');
     const dailyRewardContainer = document.querySelector('.daily-reward-container');
@@ -6853,7 +7183,7 @@
           easterEgg6.style.display = 'none';
         }
       }
-      
+
       // Check for VIP trap at 150,000 coins
       checkVIPTrap(totalCoins);
     }
@@ -7024,14 +7354,19 @@
     
     // Check if soldier name exists in localStorage
     function checkSoldierName() {
+      console.log('🔍 Checking soldier name...');
       const savedName = localStorage.getItem('soldierName');
+      console.log('📝 Saved name:', savedName);
+      
       if (savedName) {
         // Hide modal and show name display
+        console.log('✅ Name found, hiding modal');
         soldierNameModal.style.display = 'none';
         soldierNameText.textContent = savedName;
         soldierNameDisplay.style.display = 'flex';
       } else {
         // Show modal to get name
+        console.log('❌ No name found, showing modal');
         soldierNameModal.style.display = 'flex';
         soldierNameInput.focus();
       }
@@ -7039,19 +7374,25 @@
     
     // Save soldier name
     function saveSoldierName() {
+      console.log('💾 Saving soldier name...');
       const name = soldierNameInput.value.trim();
+      console.log('📝 Name to save:', name);
+      
       if (!name) {
+        console.log('❌ No name provided');
         alert('Por favor ingresa tu nombre, jugador');
         return;
       }
       
       // Save to localStorage
       localStorage.setItem('soldierName', name);
+      console.log('✅ Name saved to localStorage');
       
       // Hide modal and show name display
       soldierNameModal.style.display = 'none';
       soldierNameText.textContent = name;
       soldierNameDisplay.style.display = 'flex';
+      console.log('✅ Modal hidden, name display shown');
       
       // Clear input
       soldierNameInput.value = '';
@@ -7518,7 +7859,7 @@
       console.log('🪙 Adding 1 coin from Easter Egg...');
       
       // Get current coins
-      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const newTotal = totalCoins + 1;
       
       // Update localStorage first
@@ -7609,7 +7950,7 @@
       console.log('✅ VEINTE Easter Egg marked as used');
       
       // Get current coins
-      let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        let totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const newTotal = totalCoins + 20;
       
       // Update localStorage first
@@ -7673,7 +8014,7 @@
       const playerName = localStorage.getItem('soldierName');
       if (playerName && window.PlayerDataManager && typeof PlayerDataManager.trackEasterEgg === 'function') {
         try {
-          PlayerDataManager.trackEasterEgg(playerName, 'gods-power', 20);
+        PlayerDataManager.trackEasterEgg(playerName, 'gods-power', 20);
           console.log('🥚 Easter Egg tracked in Firebase: gods-power');
         } catch (error) {
           console.error('❌ Error tracking Gods Power Easter Egg:', error);
@@ -10571,10 +10912,10 @@
       ) {
         // Player should win based on game logic, but check wealth factor
         if (shouldPlayerWin()) {
-          result = 'victoria';
-          playerWins = true;
-        } else {
-          result = 'derrota';
+        result = 'victoria';
+        playerWins = true;
+      } else {
+        result = 'derrota';
         }
       } else {
         // Player should lose based on game logic, but check wealth factor
@@ -11043,14 +11384,14 @@
                 <span class="connection-status" style="color: #00ff00; font-size: 0.8rem; margin-left: 10px;">${onlineIndicator}</span>
                 <span class="player-coins">🪙 ${coins.toLocaleString()} monedas</span>
               </div>
-                <div class="player-stats">
+              <div class="player-stats">
                 <span title="Juegos jugados">🎮 ${gamesPlayed}</span>
                 <span title="Victorias totales">🏆 ${totalWins}</span>
                 <span title="Pistas encontradas">🔍 ${cluesFound}</span>
                 <span title="Easter Eggs encontrados">🥚 ${easterEggs}</span>
                 <span title="Tiempo total jugado">⏱️ ${formatPlayTime(playTime)}</span>
                 <span title="Porcentaje de victoria" style="background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.1)); border-color: rgba(255, 215, 0, 0.4);">📊 ${winRate}%</span>
-                </div>
+              </div>
               <div class="player-easter-eggs" style="margin-top: 8px; font-size: 0.8rem; color: #ffd700; text-align: left;">
                 <span title="Easter Eggs específicos">🥚 ${easterEggsDetails}</span>
               </div>

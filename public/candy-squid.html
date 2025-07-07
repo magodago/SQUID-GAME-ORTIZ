@@ -267,42 +267,66 @@
         }
 
         #gameOver {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-            border: 3px solid #8A2BE2;
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.92);
             display: none;
-            z-index: 200;
-            box-shadow: 0 0 50px #8A2BE2;
-            max-width: 90%;
-            width: 400px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 0 10px;
         }
-
         #gameOver h2 {
-            font-size: 2.5rem;
-            color: #8A2BE2;
-            margin-bottom: 20px;
-            text-shadow: 0 0 20px #8A2BE2;
-        }
-
-        #finalScore {
-            font-size: 1.8rem;
+            font-size: 2rem;
             color: #FFD700;
-            margin-bottom: 20px;
-            text-shadow: 0 0 15px #FFD700;
+            margin-bottom: 18px;
+            text-align: center;
         }
-
-        #finalCoins {
-            font-size: 1.5rem;
-            color: #FFD700;
-            margin-bottom: 30px;
-            text-shadow: 0 0 15px #FFD700;
+        #finalScore, #finalCoins {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .gameButton {
+            width: 90vw;
+            max-width: 350px;
+            margin: 10px auto;
+            padding: 18px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(45deg, #8A2BE2, #FFD700);
+            color: #222;
+            box-shadow: 0 2px 16px rgba(138,43,226,0.2);
+            cursor: pointer;
+            display: block;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .gameButton:active {
+            background: linear-gradient(45deg, #FFD700, #8A2BE2);
+            transform: scale(0.97);
+        }
+        @media (max-width: 600px) {
+            #gameOver {
+                padding: 0 2vw;
+            }
+            #gameOver h2 {
+                font-size: 1.3rem;
+            }
+            #finalScore, #finalCoins {
+                font-size: 1.05rem;
+            }
+            .gameButton {
+                font-size: 1rem;
+                padding: 14px 0;
+                max-width: 98vw;
+            }
         }
 
         .particle {
@@ -1090,16 +1114,47 @@
         // Game over
         function gameOver() {
             gameRunning = false;
-            
-            // Save coins to main game
-            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-            const newCoins = currentCoins + coins;
-            localStorage.setItem('totalOrtizCoins', newCoins.toString());
-            
-            // Update game over screen
             document.getElementById('finalScore').textContent = `PUNTUACIÓN: ${score}`;
-            document.getElementById('finalCoins').textContent = `MONEDAS: ${coins}`;
-            document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('finalCoins').textContent = `MONEDAS GANADAS: +${coins}`;
+            document.getElementById('gameOver').style.display = 'flex';
+        }
+
+        // Sumar monedas solo al pulsar VOLVER
+        let coinsAddedToTotal = false;
+        function addCoinsToTotal() {
+            if (coinsAddedToTotal || coins <= 0) return;
+            coinsAddedToTotal = true;
+            if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
+                const success = PlayerDataManager.safeAddCoins(coins, 'candy-squid');
+                if (success) {
+                    console.log(`✅ Candy Squid coins added safely: +${coins}`);
+                } else {
+                    console.log('⚠️ Failed to add coins safely, using fallback method');
+                    addCoinsFallback(coins);
+                }
+            } else {
+                addCoinsFallback(coins);
+            }
+        }
+
+        function addCoinsFallback(coinsToAdd) {
+            try {
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const newCoins = currentCoins + coinsToAdd;
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                // Sync with Firebase if available
+                if (window.firebase && window.firebase.database) {
+                    const playerName = localStorage.getItem('playerName') || 'Jugador';
+                    const userRef = window.firebase.database().ref(`users/${playerName}`);
+                    userRef.update({
+                        totalOrtizCoins: newCoins,
+                        candySquidWins: (parseInt(localStorage.getItem('candySquidWins') || '0') + 1).toString()
+                    });
+                }
+                console.log(`✅ Candy Squid coins added: ${currentCoins} -> ${newCoins}`);
+            } catch (error) {
+                console.error('❌ Error adding Candy Squid coins:', error);
+            }
         }
 
         // Restart game
@@ -1120,6 +1175,7 @@
 
         // Go back to main menu
         function goBack() {
+            addCoinsToTotal();
             window.location.href = 'index.html';
         }
 

@@ -13501,7 +13501,7 @@
                                 const notificationRef = db.ref(`notifications/${player.name}`);
                                 notificationRef.push({
                                     type: 'nuclear_bomb',
-                                    message: `☢️ ¡BOMBA NUCLEAR DETONADA!\n\nHas perdido ${reduction.toLocaleString()} monedas (30% de tu riqueza)\n\nLanzada por: ${currentPlayer}`,
+                                    message: `☢️ ¡BOMBA NUCLEAR DETONADA!\n\nHas perdido ${reduction.toLocaleString()} monedas (30% de tu riqueza)\n\nLanzada por: ???`,
                                     timestamp: Date.now(),
                                     read: false
                                 });
@@ -13511,11 +13511,11 @@
                                     const message = `☢️ BOMBA NUCLEAR EJECUTADA!\n\n${affectedPlayers.join('\n')}\n\n¡Los 3 más ricos han perdido 30% de sus monedas!`;
                                     showNotification(message, 'success');
                                     
-                                    // Send notification to launcher
+                                    // Send notification to launcher (anonymous)
                                     const launcherNotificationRef = db.ref(`notifications/${currentPlayer}`);
                                     launcherNotificationRef.push({
                                         type: 'nuclear_bomb_launched',
-                                        message: `☢️ BOMBA NUCLEAR EJECUTADA EXITOSAMENTE!\n\n${affectedPlayers.join('\n')}\n\n¡Destrucción masiva completada!`,
+                                        message: `☢️ BOMBA NUCLEAR EJECUTADA EXITOSAMENTE!\n\n${affectedPlayers.join('\n')}\n\n¡Destrucción masiva completada!\n\nTu identidad permanece oculta.`,
                                         timestamp: Date.now(),
                                         read: false
                                     });

@@ -67,4 +67,7 @@ logs
 
 # Temporary files
 tmp/
-temp/ 
+temp/
+
+# Backup directories
+backup-*/ 

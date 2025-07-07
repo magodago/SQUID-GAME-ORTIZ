@@ -774,6 +774,15 @@
             }
             updateCoinsDisplay();
             
+            // Check for Crystal Ball prediction
+            const crystalBallActive = localStorage.getItem('crystalBallActive') === 'true';
+            const crystalBallUses = parseInt(localStorage.getItem('crystalBallUses') || '0');
+            
+            if (crystalBallActive && crystalBallUses < 3) {
+                // Show prediction before game starts
+                showCrystalBallPrediction();
+            }
+            
             // Start game
             gameInProgress = true;
             
@@ -834,12 +843,25 @@
             const vipBonusExpiry = parseInt(localStorage.getItem('vipBonusExpiry') || '0');
             const isVipBonusValid = vipBonusActive && Date.now() < vipBonusExpiry;
             
+            // Check for Golden Dice activation
+            const goldenDiceActive = localStorage.getItem('doubleWinningsActive') === 'true';
+            const goldenDiceExpiry = parseInt(localStorage.getItem('doubleWinningsExpiry') || '0');
+            const isGoldenDiceValid = goldenDiceActive && Date.now() < goldenDiceExpiry;
+            
             if (isVipBonusValid) {
                 console.log('🎪 VIP BONUS ACTIVE! Front Man Mask is working!');
                 // Show VIP bonus notification
                 showVipBonusNotification();
             } else {
                 console.log('❌ No VIP bonus active');
+            }
+            
+            if (isGoldenDiceValid) {
+                console.log('🎲 GOLDEN DICE ACTIVE! Double winnings enabled!');
+                // Show Golden Dice notification
+                showGoldenDiceNotification();
+            } else {
+                console.log('❌ No Golden Dice active');
             }
             
             // Find winner
@@ -924,25 +946,32 @@
             console.log('🎯 Bet result:', won ? 'WON' : 'LOST');
             console.log('💰 Winnings:', winnings);
             
+            // Apply Golden Dice effect if active
+            let finalWinnings = winnings;
+            if (won && isGoldenDiceValid) {
+                finalWinnings = winnings * 2;
+                console.log(`🎲 GOLDEN DICE: Winnings doubled! ${winnings} -> ${finalWinnings}`);
+            }
+            
             // Update coins and statistics
             if (won) {
                 // Use centralized coin system
                 if (window.OrtizCoinManager && OrtizCoinManager.addCoins) {
                     console.log('💰 Using OrtizCoinManager for winnings');
-                    OrtizCoinManager.addCoins(winnings, 'vip-betting-win');
+                    OrtizCoinManager.addCoins(finalWinnings, 'vip-betting-win');
                     vipCoins = OrtizCoinManager.getTotalCoins();
-                    console.log('✅ Coins added with OrtizCoinManager:', winnings);
+                    console.log('✅ Coins added with OrtizCoinManager:', finalWinnings);
                 } else if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
                     console.log('🔒 Using PlayerDataManager for winnings');
-                    if (PlayerDataManager.safeAddCoins(winnings, 'vip-betting-win')) {
-                        vipCoins += winnings;
-                        console.log('✅ Coins added safely:', winnings);
+                    if (PlayerDataManager.safeAddCoins(finalWinnings, 'vip-betting-win')) {
+                        vipCoins += finalWinnings;
+                        console.log('✅ Coins added safely:', finalWinnings);
                     } else {
                         console.error('❌ Error al añadir monedas ganadas');
                     }
                 } else {
                     console.log('⚠️ No system available, using direct addition');
-                    vipCoins += winnings;
+                    vipCoins += finalWinnings;
                     localStorage.setItem('totalOrtizCoins', vipCoins.toString());
                 }
             }
@@ -1004,12 +1033,25 @@
             const message = document.getElementById('resultMessage');
             const coins = document.getElementById('resultCoins');
             
+            // Check for Golden Dice effect
+            const goldenDiceActive = localStorage.getItem('doubleWinningsActive') === 'true';
+            const goldenDiceExpiry = parseInt(localStorage.getItem('doubleWinningsExpiry') || '0');
+            const isGoldenDiceValid = goldenDiceActive && Date.now() < goldenDiceExpiry;
+            
+            let finalWinnings = winnings;
+            let winningsText = `+${winnings} Ortiz Coins`;
+            
+            if (won && isGoldenDiceValid) {
+                finalWinnings = winnings * 2;
+                winningsText = `+${finalWinnings} Ortiz Coins (🎲 Dado Dorado x2)`;
+            }
+            
             if (won) {
                 icon.textContent = '🏆';
                 title.textContent = '¡GANASTE!';
                 title.className = 'result-title win';
                 message.textContent = '¡Felicidades! Has ganado:';
-                coins.textContent = `+${winnings} Ortiz Coins`;
+                coins.textContent = winningsText;
             } else {
                 icon.textContent = '💔';
                 title.textContent = '¡PERDISTE!';
@@ -1074,6 +1116,117 @@
                     notification.parentNode.removeChild(notification);
                 }
             }, 2000);
+        }
+
+        function showGoldenDiceNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                border: 3px solid #FFD700;
+                border-radius: 15px;
+                padding: 20px;
+                color: #000;
+                font-weight: bold;
+                z-index: 10001;
+                box-shadow: 0 0 30px #FFD700;
+                animation: pulse 1s ease-in-out;
+                text-align: center;
+                font-family: 'Orbitron', monospace;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 10px;">🎲</div>
+                <div style="font-size: 1.2rem; margin-bottom: 5px;">DADO DORADO</div>
+                <div style="font-size: 0.9rem;">¡GANANCIAS DUPLICADAS!</div>
+                <div style="font-size: 0.8rem; margin-top: 5px; color: #666;">Doble monedas en victorias</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 2 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 2000);
+        }
+
+        function showCrystalBallPrediction() {
+            console.log('🔮 Showing Crystal Ball prediction...');
+            
+            // Generate prediction based on current bet
+            let prediction = '';
+            let predictionColor = '#00ff00';
+            
+            if (currentBetType === 'winner') {
+                // 70% chance to predict correctly for winner bets
+                const willWin = Math.random() < 0.7;
+                prediction = willWin ? 'GANARÁS' : 'PERDERÁS';
+                predictionColor = willWin ? '#00ff00' : '#ff0000';
+            } else if (currentBetType === 'score') {
+                // 60% chance to predict correctly for score bets
+                const willWin = Math.random() < 0.6;
+                prediction = willWin ? 'GANARÁS' : 'PERDERÁS';
+                predictionColor = willWin ? '#00ff00' : '#ff0000';
+            } else if (currentBetType === 'difference') {
+                // 50% chance to predict correctly for difference bets
+                const willWin = Math.random() < 0.5;
+                prediction = willWin ? 'GANARÁS' : 'PERDERÁS';
+                predictionColor = willWin ? '#00ff00' : '#ff0000';
+            }
+            
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #8A2BE2 0%, #4B0082 100%);
+                border: 3px solid #8A2BE2;
+                border-radius: 15px;
+                padding: 20px;
+                color: white;
+                font-weight: bold;
+                z-index: 10002;
+                box-shadow: 0 0 30px #8A2BE2;
+                animation: crystalBallPulse 2s ease-in-out;
+                text-align: center;
+                font-family: 'Orbitron', monospace;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 10px;">🔮</div>
+                <div style="font-size: 1.2rem; margin-bottom: 5px;">BOLA DE CRISTAL</div>
+                <div style="font-size: 1rem; margin-bottom: 5px;">PREDICCIÓN:</div>
+                <div style="font-size: 1.5rem; font-weight: bold; color: ${predictionColor}; text-shadow: 0 0 10px ${predictionColor};">${prediction}</div>
+                <div style="font-size: 0.8rem; margin-top: 5px; color: #ccc;">Apuesta: ${currentBetType} - ${currentBetOption}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Add CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes crystalBallPulse {
+                    0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 30px #8A2BE2; }
+                    50% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 50px #8A2BE2, 0 0 70px #8A2BE2; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+                if (style.parentNode) {
+                    style.parentNode.removeChild(style);
+                }
+            }, 3000);
         }
 
         function updateAchievementProgress(type, amount = 1) {

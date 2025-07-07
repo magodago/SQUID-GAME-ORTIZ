@@ -1391,6 +1391,15 @@
       }
     }
     
+    @keyframes easterEggGlow {
+      0%, 100% {
+        filter: brightness(1) drop-shadow(0 0 10px #FFD700);
+      }
+      50% {
+        filter: brightness(1.3) drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 30px #FFA500);
+      }
+    }
+    
     .congrats-text {
       color: #FFA500;
       font-size: 1rem;
@@ -6915,6 +6924,9 @@
         PlayerDataManager.trackEasterEgg(playerName, 'vip-trap-accept', 100000);
       }
       
+      // Add Easter Egg card to inventory
+      addEasterEggCard('vip-trap-accept');
+      
       loadTotalCoins();
       
       // Show result message
@@ -6952,6 +6964,9 @@
       if (playerName && window.PlayerDataManager) {
         PlayerDataManager.trackEasterEgg(playerName, 'vip-trap-dare', 150000);
       }
+      
+      // Add Easter Egg card to inventory
+      addEasterEggCard('vip-trap-dare');
       
       loadTotalCoins();
       
@@ -7127,6 +7142,9 @@
         console.log('🥚 Easter Egg tracked: sistema-activo');
       }
       
+      // Add Easter Egg card to inventory
+      addEasterEggCard('sistema-activo');
+      
       // Update display
       loadTotalCoins();
       
@@ -7291,6 +7309,9 @@
             PlayerDataManager.trackEasterEgg(playerName, 'soldier-name', 1);
             console.log('🥚 Easter Egg tracked: soldier-name');
           }
+          
+          // Add Easter Egg card to inventory
+          addEasterEggCard('soldier-name');
           
           soldierNameClicks = 0; // Reset counter
         }
@@ -7649,6 +7670,9 @@
           console.error('❌ Error tracking Gods Power Easter Egg:', error);
         }
       }
+      
+      // Add Easter Egg card to inventory
+      addEasterEggCard('gods-power');
       
       // Update statistics display
       loadStats();
@@ -9047,6 +9071,9 @@
         console.log('🥚 Daily Reward tracked:', amount);
       }
       
+      // Add Easter Egg card to inventory
+      addEasterEggCard('daily-reward');
+      
       // Update achievement progress
       updateAchievementProgress('daily_reward', 1);
       
@@ -10261,6 +10288,9 @@
         PlayerDataManager.trackEasterEgg(playerName, 'all-in-lost', totalCoins);
         console.log('🥚 ALL IN Easter Egg tracked: lost', totalCoins, 'coins');
       }
+      
+      // Add Easter Egg card to inventory
+      addEasterEggCard('all-in-lost');
       
       // Show lose message
       const modal = document.getElementById('simpleAllInModal');
@@ -12116,18 +12146,57 @@
                     ">
                         ${inventory.length === 0 ? 
                             '<div style="grid-column: 1 / -1; color: #888; font-size: 1.1rem; padding: 40px;">🎁 No tienes objetos. ¡Abre cajas sorpresa para obtener objetos!</div>' : 
-                            inventory.map(item => `
-                                <div class="inventory-item" style="
+                            inventory.map(item => {
+                                // Special styling for Easter Egg cards
+                                const isEasterEgg = item.type === 'easter_egg';
+                                const itemStyle = isEasterEgg ? `
+                                    background: linear-gradient(135deg, #2a1a0a 0%, #4a2a1a 100%);
+                                    border: 3px solid #FFD700;
+                                    box-shadow: 0 0 20px #FFD700, inset 0 0 10px rgba(255, 215, 0, 0.1);
+                                ` : `
                                     background: linear-gradient(135deg, #333 0%, #444 100%);
                                     border: 2px solid #e60073;
-                                    border-radius: 15px;
-                                    padding: 15px;
-                                    text-align: center;
-                                    transition: all 0.3s ease;
-                                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                                    <div style="font-size: 2.5rem; margin-bottom: 10px;">${item.icon}</div>
-                                    <div style="font-size: 1rem; font-weight: bold; color: #fff; margin-bottom: 5px;">${item.name}</div>
-                                    <div style="font-size: 0.8rem; color: #ccc; margin-bottom: 10px;">${item.description}</div>
+                                `;
+                                
+                                const iconStyle = isEasterEgg ? `
+                                    font-size: 2.5rem; 
+                                    margin-bottom: 10px;
+                                    animation: easterEggGlow 2s infinite;
+                                ` : `
+                                    font-size: 2.5rem; 
+                                    margin-bottom: 10px;
+                                `;
+                                
+                                const nameStyle = isEasterEgg ? `
+                                    font-size: 1rem; 
+                                    font-weight: bold; 
+                                    color: #FFD700; 
+                                    margin-bottom: 5px;
+                                    text-shadow: 0 0 10px #FFD700;
+                                ` : `
+                                    font-size: 1rem; 
+                                    font-weight: bold; 
+                                    color: #fff; 
+                                    margin-bottom: 5px;
+                                `;
+                                
+                                const descriptionStyle = isEasterEgg ? `
+                                    font-size: 0.8rem; 
+                                    color: #FFA500; 
+                                    margin-bottom: 10px;
+                                    font-style: italic;
+                                ` : `
+                                    font-size: 0.8rem; 
+                                    color: #ccc; 
+                                    margin-bottom: 10px;
+                                `;
+                                
+                                // Don't show buttons for Easter Egg cards (they're collectibles)
+                                const buttons = isEasterEgg ? `
+                                    <div style="color: #FFD700; font-size: 0.8rem; font-style: italic; margin-top: 10px;">
+                                        🥚 Tarjeta Coleccionable
+                                    </div>
+                                ` : `
                                     <div style="display: flex; gap: 5px; justify-content: center;">
                                         <button onclick="useItem('${item.id}')" style="
                                             background: linear-gradient(135deg, #00ff00, #00cc00);
@@ -12150,8 +12219,23 @@
                                             cursor: pointer;
                                         ">VENDER</button>
                                     </div>
-                                </div>
-                            `).join('')
+                                `;
+                                
+                                return `
+                                    <div class="inventory-item" style="
+                                        ${itemStyle}
+                                        border-radius: 15px;
+                                        padding: 15px;
+                                        text-align: center;
+                                        transition: all 0.3s ease;
+                                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                        <div style="${iconStyle}">${item.icon}</div>
+                                        <div style="${nameStyle}">${item.name}</div>
+                                        <div style="${descriptionStyle}">${item.description}</div>
+                                        ${buttons}
+                                    </div>
+                                `;
+                            }).join('')
                         }
                     </div>
                     
@@ -12360,6 +12444,47 @@
             }, 3000);
         }
 
+        function addEasterEggCard(easterEggType) {
+            console.log(`🥚 Adding Easter Egg card: ${easterEggType}`);
+            
+            const cardData = EASTER_EGG_CARDS[easterEggType];
+            if (!cardData) {
+                console.error(`❌ Easter Egg card not found: ${easterEggType}`);
+                return;
+            }
+            
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            
+            // Check if card already exists to avoid duplicates
+            const existingCard = inventory.find(item => item.id === cardData.id);
+            if (existingCard) {
+                console.log(`🥚 Easter Egg card already exists: ${easterEggType} - skipping`);
+                return;
+            }
+            
+            // Check if any easter egg card of this type already exists
+            const existingEasterEgg = inventory.find(item => item.type === 'easter_egg' && item.id.includes(easterEggType));
+            if (existingEasterEgg) {
+                console.log(`🥚 Easter Egg card of type ${easterEggType} already exists - skipping`);
+                return;
+            }
+            
+            // Add card to inventory
+            inventory.push(cardData);
+            localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            
+            console.log(`✅ Easter Egg card added to inventory: ${cardData.name}`);
+            
+            // Show notification
+            showNotification(`🥚 ¡Nueva tarjeta coleccionable: ${cardData.name}!`, 'success');
+            
+            // Update inventory display if open
+            const inventoryItems = document.getElementById('inventoryItems');
+            if (inventoryItems) {
+                showInventoryModal(); // Reopen modal with updated inventory
+            }
+        }
+
         // ITEM DEFINITIONS
         const ITEMS = {
             frontman_mask: {
@@ -12369,6 +12494,73 @@
                 icon: '🎪',
                 value: 1000,
                 rarity: 'rare'
+            }
+        };
+
+        // EASTER EGG CARDS DEFINITIONS
+        const EASTER_EGG_CARDS = {
+            'sistema-activo': {
+                id: 'easter_egg_sistema_activo',
+                name: '🥚 Sistema Activo',
+                description: 'Hiciste clic 10 veces en "Sistema Activo" y descubriste el secreto del sistema. Recompensa: +500 monedas',
+                icon: '🥚',
+                value: 500,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'soldier-name': {
+                id: 'easter_egg_soldier_name',
+                name: '🥚 Nombre del Soldado',
+                description: 'Hiciste clic 3 veces en tu nombre de soldado. Recompensa: +1 moneda',
+                icon: '🥚',
+                value: 1,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'gods-power': {
+                id: 'easter_egg_gods_power',
+                name: '🥚 Poder de los Dioses',
+                description: 'Encontraste el código secreto "VEINTE" y obtuviste el poder de los dioses. Recompensa: +20 monedas',
+                icon: '🥚',
+                value: 20,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'vip-trap-accept': {
+                id: 'easter_egg_vip_trap_accept',
+                name: '🥚 Trampa VIP - Aceptado',
+                description: 'Aceptaste la trampa del Front Man a los 150,000 monedas. Perdiste 100,000 monedas pero sobreviviste.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'vip-trap-dare': {
+                id: 'easter_egg_vip_trap_dare',
+                name: '🥚 Trampa VIP - Desafío',
+                description: 'Te atreviste a desafiar al Front Man a los 150,000 monedas. Perdiste todas tus monedas pero fuiste valiente.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'daily-reward': {
+                id: 'easter_egg_daily_reward',
+                name: '🥚 Recompensa Diaria',
+                description: 'Cobraste tu recompensa diaria. Mantienes la constancia en el juego.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'all-in-lost': {
+                id: 'easter_egg_all_in_lost',
+                name: '🥚 Todo o Nada - Perdido',
+                description: 'Perdiste todo en una apuesta "ALL IN". Una lección dura sobre el riesgo.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
             }
         };
 

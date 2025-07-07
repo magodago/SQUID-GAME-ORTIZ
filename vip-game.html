@@ -263,6 +263,33 @@
             margin-bottom: 8px;
         }
 
+        .crystal-ball-button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #8A2BE2 0%, #4B0082 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            display: none;
+        }
+
+        .crystal-ball-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .crystal-ball-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .play-button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
@@ -467,6 +494,7 @@
             </div>
             
             <input type="number" class="bet-input" id="betAmount" min="1" max="1000" value="10" placeholder="Cantidad de Ortiz Coins">
+            <button class="crystal-ball-button" id="crystalBallButton">🔮 CONSULTAR BOLA DE CRISTAL</button>
             <button class="play-button" id="playButton">🎮 JUGAR</button>
             <button onclick="window.location.href='index.html'" class="back-button" style="position: static; margin-top: 15px; width: 100%;">⬅️ VOLVER</button>
         </div>
@@ -589,6 +617,21 @@
             } else {
                 console.error('❌ Play button not found');
             }
+
+            // Add Crystal Ball button listener
+            const crystalBallButton = document.getElementById('crystalBallButton');
+            if (crystalBallButton) {
+                crystalBallButton.addEventListener('click', function(e) {
+                    console.log('🔮 Crystal Ball button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showCrystalBallPrediction();
+                });
+                
+                console.log('✅ Crystal Ball button event listeners added');
+            } else {
+                console.error('❌ Crystal Ball button not found');
+            }
             
             console.log('✅ VIP Game initialized successfully');
         });
@@ -630,6 +673,25 @@
             }
             
             console.log('💰 Coins display updated:', vipCoins);
+        }
+
+        function checkCrystalBallAvailability() {
+            const crystalBallButton = document.getElementById('crystalBallButton');
+            if (!crystalBallButton) return;
+            
+            // Check if Crystal Ball is active and has uses left
+            const crystalBallActive = localStorage.getItem('crystalBallActive') === 'true';
+            const crystalBallUses = parseInt(localStorage.getItem('crystalBallUses') || '0');
+            
+            if (crystalBallActive && crystalBallUses < 3 && currentBetType && currentBetOption) {
+                crystalBallButton.style.display = 'block';
+                crystalBallButton.disabled = false;
+                crystalBallButton.textContent = `🔮 CONSULTAR BOLA DE CRISTAL (${3 - crystalBallUses} usos)`;
+                console.log('🔮 Crystal Ball button shown');
+            } else {
+                crystalBallButton.style.display = 'none';
+                console.log('🔮 Crystal Ball button hidden');
+            }
         }
 
         function selectBetType(betType, element) {
@@ -714,6 +776,9 @@
                 statusText.style.color = '#00FF00';
             }
             
+            // Check if Crystal Ball is available and show button
+            checkCrystalBallAvailability();
+            
             console.log('✅ Bet option selected:', option, 'Current type:', currentBetType);
         }
 
@@ -773,15 +838,6 @@
                 localStorage.setItem('totalOrtizCoins', vipCoins.toString());
             }
             updateCoinsDisplay();
-            
-            // Check for Crystal Ball prediction
-            const crystalBallActive = localStorage.getItem('crystalBallActive') === 'true';
-            const crystalBallUses = parseInt(localStorage.getItem('crystalBallUses') || '0');
-            
-            if (crystalBallActive && crystalBallUses < 3) {
-                // Show prediction before game starts
-                showCrystalBallPrediction();
-            }
             
             // Start game
             gameInProgress = true;
@@ -1158,26 +1214,69 @@
         function showCrystalBallPrediction() {
             console.log('🔮 Showing Crystal Ball prediction...');
             
-            // Generate prediction based on current bet
+            // Check if Crystal Ball is available
+            const crystalBallActive = localStorage.getItem('crystalBallActive') === 'true';
+            const crystalBallUses = parseInt(localStorage.getItem('crystalBallUses') || '0');
+            
+            if (!crystalBallActive || crystalBallUses >= 3) {
+                console.log('❌ Crystal Ball not available');
+                return;
+            }
+            
+            if (!currentBetType || !currentBetOption) {
+                console.log('❌ No bet selected for prediction');
+                return;
+            }
+            
+            // Generate accurate prediction based on game logic
             let prediction = '';
             let predictionColor = '#00ff00';
+            let willWin = false;
             
-            if (currentBetType === 'winner') {
-                // 70% chance to predict correctly for winner bets
-                const willWin = Math.random() < 0.7;
-                prediction = willWin ? 'GANARÁS' : 'PERDERÁS';
-                predictionColor = willWin ? '#00ff00' : '#ff0000';
-            } else if (currentBetType === 'score') {
-                // 60% chance to predict correctly for score bets
-                const willWin = Math.random() < 0.6;
-                prediction = willWin ? 'GANARÁS' : 'PERDERÁS';
-                predictionColor = willWin ? '#00ff00' : '#ff0000';
-            } else if (currentBetType === 'difference') {
-                // 50% chance to predict correctly for difference bets
-                const willWin = Math.random() < 0.5;
-                prediction = willWin ? 'GANARÁS' : 'PERDERÁS';
-                predictionColor = willWin ? '#00ff00' : '#ff0000';
+            // Simulate the game outcome to make accurate prediction
+            const simulatedPlayers = [
+                { name: '001', score: 0 },
+                { name: '002', score: 0 },
+                { name: '003', score: 0 }
+            ];
+            
+            // Simulate 5 rounds
+            for (let round = 0; round < 5; round++) {
+                simulatedPlayers.forEach(player => {
+                    const scoreIncrease = Math.floor(Math.random() * 20) + 5;
+                    player.score += scoreIncrease;
+                });
             }
+            
+            // Calculate results
+            const totalScore = simulatedPlayers.reduce((sum, player) => sum + player.score, 0);
+            const scores = simulatedPlayers.map(p => p.score).sort((a, b) => b - a);
+            const difference = scores[0] - scores[1];
+            const winner = simulatedPlayers.reduce((prev, current) => 
+                (prev.score > current.score) ? prev : current
+            );
+            
+            // Check if the bet would win
+            if (currentBetType === 'winner') {
+                willWin = winner.name === currentBetOption;
+            } else if (currentBetType === 'score') {
+                let predicted = false;
+                if (currentBetOption === 'high' && totalScore > 100) predicted = true;
+                if (currentBetOption === 'medium' && totalScore >= 50 && totalScore <= 100) predicted = true;
+                if (currentBetOption === 'low' && totalScore < 50) predicted = true;
+                willWin = predicted;
+            } else if (currentBetType === 'difference') {
+                let predicted = false;
+                if (currentBetOption === 'close' && difference < 20) predicted = true;
+                if (currentBetOption === 'wide' && difference >= 20) predicted = true;
+                willWin = predicted;
+            }
+            
+            prediction = willWin ? 'GANARÁS' : 'PERDERÁS';
+            predictionColor = willWin ? '#00ff00' : '#ff0000';
+            
+            // Increment uses
+            localStorage.setItem('crystalBallUses', (crystalBallUses + 1).toString());
             
             const notification = document.createElement('div');
             notification.style.cssText = `
@@ -1204,6 +1303,7 @@
                 <div style="font-size: 1rem; margin-bottom: 5px;">PREDICCIÓN:</div>
                 <div style="font-size: 1.5rem; font-weight: bold; color: ${predictionColor}; text-shadow: 0 0 10px ${predictionColor};">${prediction}</div>
                 <div style="font-size: 0.8rem; margin-top: 5px; color: #ccc;">Apuesta: ${currentBetType} - ${currentBetOption}</div>
+                <div style="font-size: 0.7rem; margin-top: 5px; color: #aaa;">Usos restantes: ${2 - crystalBallUses}</div>
             `;
             
             document.body.appendChild(notification);
@@ -1218,7 +1318,10 @@
             `;
             document.head.appendChild(style);
             
-            // Remove after 3 seconds
+            // Update button display
+            checkCrystalBallAvailability();
+            
+            // Remove after 4 seconds
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
@@ -1226,7 +1329,7 @@
                 if (style.parentNode) {
                     style.parentNode.removeChild(style);
                 }
-            }, 3000);
+            }, 4000);
         }
 
         function updateAchievementProgress(type, amount = 1) {

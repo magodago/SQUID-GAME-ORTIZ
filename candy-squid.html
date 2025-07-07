@@ -58,21 +58,21 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 5px;
+            box-sizing: border-box;
         }
 
         #gameHeader {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
             text-align: center;
             z-index: 100;
+            margin-bottom: 10px;
         }
 
         #backButton {
             position: absolute;
-            top: 0;
-            left: -120px;
+            top: 10px;
+            left: 10px;
             background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
             color: white;
             border: none;
@@ -139,7 +139,7 @@
             grid-template-rows: repeat(8, 1fr);
             gap: 2px;
             padding: 10px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .candy {
@@ -484,61 +484,6 @@
 
         @media (max-width: 768px) {
             #gameTitle {
-                font-size: 1.5rem;
-                margin-bottom: 2px;
-            }
-            
-            #gameInstructions p {
-                font-size: 0.7rem;
-                margin-bottom: 3px;
-            }
-            
-            #gameBoard {
-                width: 280px;
-                height: 280px;
-                margin-top: 5px;
-            }
-            
-            .candy {
-                font-size: 1rem;
-            }
-            
-            #gameStats {
-                gap: 10px;
-                margin-bottom: 3px;
-            }
-            
-            .stat {
-                padding: 3px 6px;
-            }
-            
-            .stat-label {
-                font-size: 0.5rem;
-            }
-            
-            .stat-value {
-                font-size: 0.8rem;
-            }
-            
-            #gameControls {
-                bottom: 5px;
-                gap: 8px;
-            }
-            
-            .gameButton {
-                padding: 5px 10px;
-                font-size: 0.6rem;
-            }
-
-            #backButton {
-                left: -100px;
-                padding: 6px 10px;
-                font-size: 0.7rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #gameTitle {
                 font-size: 1.2rem;
                 margin-bottom: 1px;
             }
@@ -549,8 +494,8 @@
             }
             
             #gameBoard {
-                width: 240px;
-                height: 240px;
+                width: 260px;
+                height: 260px;
                 margin-top: 3px;
             }
             
@@ -584,56 +529,72 @@
                 padding: 4px 8px;
                 font-size: 0.5rem;
             }
+
+            #backButton {
+                top: 5px;
+                left: 5px;
+                padding: 5px 8px;
+                font-size: 0.6rem;
+            }
         }
 
         @media (max-width: 480px) {
             #gameTitle {
-                font-size: 1.4rem;
-                margin-bottom: 2px;
+                font-size: 1rem;
+                margin-bottom: 1px;
             }
             
             #gameInstructions p {
-                font-size: 0.7rem;
-                margin-bottom: 3px;
+                font-size: 0.5rem;
+                margin-bottom: 1px;
             }
             
             #gameBoard {
-                width: 280px;
-                height: 280px;
-                margin-top: 8px;
+                width: 220px;
+                height: 220px;
+                margin-top: 2px;
             }
             
             .candy {
-                font-size: 0.9rem;
-            }
-            
-            #gameStats {
-                gap: 10px;
-                margin-bottom: 3px;
-            }
-            
-            .stat {
-                padding: 3px 6px;
-            }
-            
-            .stat-label {
-                font-size: 0.5rem;
-            }
-            
-            .stat-value {
                 font-size: 0.8rem;
             }
             
+            #gameStats {
+                gap: 6px;
+                margin-bottom: 1px;
+            }
+            
+            .stat {
+                padding: 1px 3px;
+            }
+            
+            .stat-label {
+                font-size: 0.3rem;
+            }
+            
+            .stat-value {
+                font-size: 0.6rem;
+            }
+            
             #gameControls {
-                bottom: 8px;
-                gap: 8px;
+                bottom: 2px;
+                gap: 4px;
             }
             
             .gameButton {
-                padding: 5px 10px;
-                font-size: 0.6rem;
+                padding: 3px 6px;
+                font-size: 0.4rem;
+            }
+
+            #backButton {
+                top: 3px;
+                left: 3px;
+                padding: 4px 6px;
+                font-size: 0.5rem;
             }
         }
+
+
     </style>
 </head>
 <body>

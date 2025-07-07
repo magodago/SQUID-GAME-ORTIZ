@@ -5959,11 +5959,20 @@
               rarity: 'legendary'
             };
             
+            const anonymousRobbery = {
+              id: 'anonymous_robbery',
+              name: '🕵️‍♂️ Roba Anónimo',
+              description: 'Activa el modo de robo anónimo por 24 horas',
+              icon: '🕵️‍♂️',
+              value: 5000,
+              rarity: 'legendary'
+            };
+            
 
             
             // Add ONLY FUNCTIONAL items to inventory (avoid duplicates)
             const itemsToAdd = [
-                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall
+                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery
             ];
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
@@ -5976,7 +5985,7 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
             
             console.log('✅ DAGO coins and items added successfully!');
             

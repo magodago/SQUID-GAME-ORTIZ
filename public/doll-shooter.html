@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👱‍♀️ DOLL SHOOTER SQUID</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', Arial, sans-serif;
+            background: linear-gradient(135deg, #F4A460 0%, #DEB887 50%, #F4A460 100%);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #gameContainer {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #startScreen {
+            text-align: center;
+            z-index: 1000;
+        }
+
+        #gameTitle {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #8B4513;
+            text-shadow: 0 0 30px #8B4513;
+            margin-bottom: 20px;
+        }
+
+        #startButton {
+            background: linear-gradient(45deg, #FF4500, #FF6347);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.6);
+        }
+
+        #startButton:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 60px rgba(255, 69, 0, 0.8);
+        }
+
+        #gameCanvas {
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            background: #F4A460;
+            box-shadow: 0 0 30px rgba(139, 69, 19, 0.5);
+            display: none;
+        }
+
+        #gameUI {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(139, 69, 19, 0.9);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 2px solid #8B4513;
+            display: none;
+            z-index: 100;
+            text-align: center;
+        }
+
+        #gameStats {
+            display: flex;
+            gap: 20px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .stat {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .stat-value {
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700;
+        }
+
+        #backButton {
+            background: linear-gradient(45deg, #8A2BE2, #9370DB);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #backButton:hover {
+            transform: scale(1.05);
+        }
+
+        #gameOverModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gameOverContent {
+            background: #2a2a2a;
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        #gameOverTitle {
+            font-size: 2.5rem;
+            color: #FF4500;
+            margin-bottom: 25px;
+        }
+
+        #finalScore {
+            font-size: 1.8rem;
+            color: #FFD700;
+            margin-bottom: 25px;
+        }
+
+        #restartButton {
+            background: linear-gradient(45deg, #32CD32, #228B22);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        @media (max-width: 768px) {
+            #gameTitle {
+                font-size: 1.8rem;
+                margin-bottom: 15px;
+            }
+            
+            #startButton {
+                padding: 12px 25px;
+                font-size: 1.1rem;
+            }
+            
+            #gameStats {
+                gap: 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="startScreen">
+            <h1 id="gameTitle">👱‍♀️ DOLL SHOOTER SQUID</h1>
+            <div style="background: rgba(139, 69, 19, 0.9); padding: 15px; border-radius: 15px; border: 2px solid #8B4513; margin: 15px auto; max-width: 90%; font-size: 0.9rem; text-align: center;">
+                <h3 style="color: #FFD700; margin-bottom: 10px; font-size: 1.1rem;">🎯 CÓMO JUGAR</h3>
+                <p style="margin-bottom: 5px;">👱‍♀️ TÚ ERES LA MUÑECA RUBIA</p>
+                <p style="margin-bottom: 5px;">⬅️➡️ Toca y arrastra para mover</p>
+                <p style="margin-bottom: 5px;">🎯 Dispara automáticamente</p>
+                <p style="margin-bottom: 5px;">🔢 Elimina jugadores numerados</p>
+                <p style="margin-bottom: 5px;"> LÍNEA ROJA = META (pierdes vida)</p>
+                <p style="margin-bottom: 5px;">💀 3 vidas = GAME OVER</p>
+            </div>
+            <button id="startButton" onclick="startGame()">🎯 EMPEZAR JUEGO</button>
+        </div>
+
+        <div id="gameUI">
+            <div id="gameStats">
+                <div class="stat">PUNTUACIÓN: <span class="stat-value" id="score">0</span></div>
+                <div class="stat">NIVEL: <span class="stat-value" id="level">1</span></div>
+            </div>
+            <button id="backButton" onclick="goBack()">🔙 VOLVER</button>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div id="gameOverModal">
+        <div id="gameOverContent">
+            <h2 id="gameOverTitle">💀 GAME OVER</h2>
+            <div id="finalScore">Puntuación Final: 0</div>
+            <button id="restartButton" onclick="restartGame()">🔄 JUGAR DE NUEVO</button>
+            <button class="gameButton" onclick="goBack()">🔙 VOLVER</button>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let canvas, ctx;
+        let gameRunning = false;
+        let score = 0;
+        let level = 1;
+        let lives = 3;
+        
+        // Player (doll)
+        let player = {
+            x: 0,
+            y: 0,
+            width: 40, // MÁS PEQUEÑA
+            height: 50, // MÁS PEQUEÑA
+            speed: 6,
+            targetX: 0
+        };
+        
+        // Bullets
+        let bullets = [];
+        let bulletSpeed = 12;
+        let lastShootTime = 0;
+        let shootInterval = 300; // Shoot every 300ms
+        
+        // Enemies (numbered players)
+        let enemies = [];
+        let enemySpeed = 2;
+        let enemySpawnRate = 60; // Spawn more frequently
+        let enemySpawnCounter = 0;
+        
+        // Game area
+        let gameWidth, gameHeight;
+        let finishLineY = 0; // Finish line position
+        
+        // Input handling
+        let keys = {};
+        let mouseX = 0;
+        let isMouseDown = false;
+
+        // Initialize game
+        function initGame() {
+            console.log('🎮 Inicializando juego...');
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Initialize player position
+            player.x = gameWidth / 2 - player.width / 2;
+            player.y = gameHeight - player.height - 20;
+            player.targetX = player.x;
+            
+            // Set finish line position (where enemies must reach to win)
+            finishLineY = gameHeight - player.height - 30;
+            
+            // Add event listeners
+            addEventListeners();
+            
+            console.log('✅ Juego inicializado correctamente');
+        }
+
+        function resizeCanvas() {
+            gameWidth = Math.min(800, window.innerWidth - 40);
+            gameHeight = Math.min(600, window.innerHeight - 100);
+            
+            canvas.width = gameWidth;
+            canvas.height = gameHeight;
+            
+            console.log(`📐 Canvas: ${gameWidth}x${gameHeight}`);
+            
+            // Update player position if game is running
+            if (gameRunning) {
+                player.x = Math.max(0, Math.min(gameWidth - player.width, player.x));
+                player.y = gameHeight - player.height - 20;
+                player.targetX = player.x;
+                finishLineY = gameHeight - player.height - 30;
+            }
+        }
+
+        function addEventListeners() {
+            console.log('🎯 Agregando event listeners...');
+            
+            // Keyboard events
+            document.addEventListener('keydown', (e) => {
+                keys[e.key] = true;
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                keys[e.key] = false;
+            });
+            
+            // Mouse events
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mouseX = e.clientX - rect.left;
+            });
+            
+            canvas.addEventListener('mousedown', (e) => {
+                isMouseDown = true;
+            });
+            
+            canvas.addEventListener('mouseup', (e) => {
+                isMouseDown = false;
+            });
+            
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                mouseX = touch.clientX - rect.left;
+                isMouseDown = true;
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                mouseX = touch.clientX - rect.left;
+            });
+            
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                isMouseDown = false;
+            });
+            
+            console.log('✅ Event listeners agregados');
+        }
+
+        function startGame() {
+            console.log('🚀 Iniciando juego...');
+            
+            // Hide start screen
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameUI').style.display = 'block';
+            document.getElementById('gameCanvas').style.display = 'block';
+            
+            // Reset game state
+            score = 0;
+            level = 1;
+            lives = 3;
+            bullets = [];
+            enemies = [];
+            enemySpeed = 2;
+            enemySpawnRate = 30; // Mucho más frecuente
+            enemySpawnCounter = 0;
+            lastShootTime = 0;
+            
+            // Update player position
+            player.x = gameWidth / 2 - player.width / 2;
+            player.y = gameHeight - player.height - 20;
+            player.targetX = player.x;
+            finishLineY = gameHeight - player.height - 30;
+            
+            gameRunning = true;
+            updateUI();
+            
+            // Force spawn first enemy immediately
+            spawnEnemy();
+            console.log('🎯 Forced first enemy spawn!');
+            
+            gameLoop();
+            
+            console.log('✅ Juego iniciado correctamente');
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            update();
+            draw();
+            
+            // Debug: Log frame count occasionally
+            if (Math.random() < 0.01) {
+                console.log(`🎮 Game loop running, enemies: ${enemies.length}`);
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            // Handle player movement
+            if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
+                player.targetX -= player.speed;
+            }
+            if (keys['d'] || keys['D'] || keys['ArrowRight']) {
+                player.targetX += player.speed;
+            }
+            
+            // Mouse/touch movement
+            if (isMouseDown || mouseX > 0) {
+                player.targetX = mouseX - player.width / 2;
+            }
+            
+            // Smooth movement
+            const dx = player.targetX - player.x;
+            player.x += dx * 0.1; // Smooth interpolation
+            
+            // Keep player in bounds
+            player.x = Math.max(0, Math.min(gameWidth - player.width, player.x));
+            player.targetX = Math.max(0, Math.min(gameWidth - player.width, player.targetX));
+            
+            // Automatic shooting
+            const currentTime = Date.now();
+            if (currentTime - lastShootTime > shootInterval) {
+                shoot();
+                lastShootTime = currentTime;
+            }
+            
+            // Update bullets
+            bullets.forEach((bullet, index) => {
+                bullet.y -= bulletSpeed;
+                if (bullet.y < 0) {
+                    bullets.splice(index, 1);
+                }
+            });
+            
+            // SPAWN ENEMIES EVERY SECOND - 5 AT A TIME
+            enemySpawnCounter++;
+            if (enemySpawnCounter >= 60) { // 60 frames = 1 second at 60fps
+                for (let i = 0; i < 5; i++) {
+                    spawnEnemy();
+                }
+                enemySpawnCounter = 0;
+                console.log(`🎯 Spawned 5 enemies! Total enemies: ${enemies.length}, finishLineY: ${finishLineY}`);
+            }
+            
+            // Keep only 15 enemies max to avoid lag
+            if (enemies.length > 15) {
+                enemies.splice(0, enemies.length - 15);
+                console.log(`🎯 Removed old enemies, now have: ${enemies.length}`);
+            }
+            
+            // Update enemies - GAME OVER SI LLEGA UNO
+            enemies.forEach((enemy, index) => {
+                enemy.y += enemy.speed;
+                
+                // Debug: Log enemy positions occasionally
+                if (index === 0 && Math.random() < 0.05) {
+                    console.log(`🎯 Enemy ${enemy.number} at y: ${enemy.y}, finishLineY: ${finishLineY}, speed: ${enemy.speed}`);
+                }
+                
+                // Check if enemy reached finish line - GAME OVER INMEDIATO
+                if (enemy.y > finishLineY) {
+                    console.log(`💀 Enemy ${enemy.number} reached finish line! GAME OVER!`);
+                    gameOver();
+                    return; // Stop the loop
+                }
+            });
+            
+            // Check collisions
+            checkCollisions();
+            
+            // Update level
+            if (score > level * 100) {
+                level++;
+                enemySpeed += 0.3;
+                enemySpawnRate = Math.max(30, enemySpawnRate - 10);
+                shootInterval = Math.max(150, shootInterval - 20);
+                updateUI();
+            }
+        }
+
+        function draw() {
+            // Clear canvas with sand background
+            ctx.fillStyle = '#F4A460';
+            ctx.fillRect(0, 0, gameWidth, gameHeight);
+            
+            // Draw finish line
+            ctx.strokeStyle = '#FF0000';
+            ctx.lineWidth = 5;
+            ctx.setLineDash([10, 5]);
+            ctx.beginPath();
+            ctx.moveTo(0, finishLineY);
+            ctx.lineTo(gameWidth, finishLineY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw finish line text
+            ctx.fillStyle = '#FF0000';
+            ctx.font = 'bold 20px Orbitron';
+            ctx.textAlign = 'center';
+            ctx.fillText('LÍNEA DE META', gameWidth / 2, finishLineY - 10);
+            
+            // Draw player (doll with girl head and pink/yellow body)
+            drawPlayer();
+            
+            // Draw bullets
+            bullets.forEach(bullet => {
+                ctx.fillStyle = '#FF4500';
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            });
+            
+            // Draw enemies (numbered players)
+            enemies.forEach(enemy => {
+                drawEnemy(enemy);
+            });
+            
+            // Draw lives
+            drawLives();
+        }
+
+        function drawPlayer() {
+            // Draw blonde girl emoji as player
+            ctx.font = `${player.height * 0.8}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('👱‍♀️', player.x + player.width / 2, player.y + player.height);
+        }
+
+        function drawEnemy(enemy) {
+            // Draw blue man emoji as enemy (half body)
+            ctx.font = `${enemy.height * 0.8}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('👤', enemy.x + enemy.width / 2, enemy.y + enemy.height);
+            
+            // Number on chest (smaller)
+            ctx.fillStyle = '#FF0000';
+            ctx.font = `bold 12px Orbitron`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(enemy.number, enemy.x + enemy.width / 2, enemy.y + enemy.height / 2);
+            
+            // Number outline (white)
+            ctx.strokeStyle = '#FFF';
+            ctx.lineWidth = 1;
+            ctx.strokeText(enemy.number, enemy.x + enemy.width / 2, enemy.y + enemy.height / 2);
+        }
+
+        function drawLives() {
+            // Traffic light that changes constantly
+            const time = Date.now();
+            const isRed = Math.floor(time / 1000) % 2 === 0; // Change every second
+            
+            const lightX = 15;
+            const lightY = 15;
+            const lightSize = 30;
+            
+            // Light background (gray circle)
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(lightX + lightSize/2, lightY + lightSize/2, lightSize/2, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Light color (red or green)
+            ctx.fillStyle = isRed ? '#FF0000' : '#00FF00';
+            ctx.beginPath();
+            ctx.arc(lightX + lightSize/2, lightY + lightSize/2, lightSize/2 - 3, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Light glow effect
+            ctx.shadowColor = isRed ? '#FF0000' : '#00FF00';
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.arc(lightX + lightSize/2, lightY + lightSize/2, lightSize/2 - 3, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Light text
+            ctx.fillStyle = '#FFF';
+            ctx.font = 'bold 12px Orbitron';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(isRed ? 'ROJO' : 'VERDE', lightX + lightSize/2, lightY + lightSize/2);
+        }
+
+        function shoot() {
+            if (!gameRunning) return;
+            
+            bullets.push({
+                x: player.x + player.width / 2 - 3,
+                y: player.y,
+                width: 6,
+                height: 15
+            });
+        }
+
+        function spawnEnemy() {
+            const number = Math.floor(Math.random() * 456) + 1;
+            const width = 35; // MÁS PEQUEÑO
+            const height = 45; // MÁS PEQUEÑO
+            
+            const enemy = {
+                x: Math.random() * (gameWidth - width),
+                y: -50, // APARECE DESDE ARRIBA VISIBLE
+                width: width,
+                height: height,
+                number: number,
+                speed: 0.8 + Math.random() * 1.2 // MÁS DESPACIO
+            };
+            
+            enemies.push(enemy);
+            
+            console.log(`🎯 Created enemy ${number} at x: ${enemy.x}, y: ${enemy.y}, size: ${width}x${height}, speed: ${enemy.speed}, globalSpeed: ${enemySpeed}`);
+        }
+
+        function checkCollisions() {
+            bullets.forEach((bullet, bulletIndex) => {
+                enemies.forEach((enemy, enemyIndex) => {
+                    const bulletCenterX = bullet.x + bullet.width / 2;
+                    const bulletCenterY = bullet.y + bullet.height / 2;
+                    const enemyCenterX = enemy.x + enemy.width / 2;
+                    const enemyCenterY = enemy.y + enemy.height / 2;
+                    
+                    const distance = Math.sqrt(
+                        Math.pow(bulletCenterX - enemyCenterX, 2) +
+                        Math.pow(bulletCenterY - enemyCenterY, 2)
+                    );
+                    
+                    const maxDistance = (enemy.width + enemy.height) / 4 + bullet.width / 2;
+                    
+                    if (distance < maxDistance) {
+                        // Collision detected
+                        bullets.splice(bulletIndex, 1);
+                        enemies.splice(enemyIndex, 1);
+                        score += 10;
+                        updateUI();
+                        console.log(`🎯 Hit enemy! Score: ${score}`);
+                    }
+                });
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = `Puntuación Final: ${score}`;
+            document.getElementById('gameOverModal').style.display = 'flex';
+        }
+
+        function restartGame() {
+            score = 0;
+            level = 1;
+            lives = 3;
+            bullets = [];
+            enemies = [];
+            enemySpeed = 2;
+            enemySpawnRate = 30; // Mucho más frecuente
+            enemySpawnCounter = 0;
+            lastShootTime = 0;
+            shootInterval = 300;
+            
+            player.x = gameWidth / 2 - player.width / 2;
+            player.targetX = player.x;
+            finishLineY = gameHeight - player.height - 30;
+            
+            document.getElementById('gameOverModal').style.display = 'none';
+            updateUI();
+            gameRunning = true;
+            gameLoop();
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Initialize game when page loads
+        window.addEventListener('load', () => {
+            console.log('📱 Página cargada, inicializando juego...');
+            initGame();
+        });
+    </script>
+</body>
+</html> 

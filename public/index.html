@@ -5416,6 +5416,9 @@
     const secretMessage = document.getElementById('secretMessage');
     
     locationBtn.addEventListener('click', () => {
+      // Add Easter Egg card to inventory
+      addEasterEggCard('secret-location');
+      
       // Hide the location button
       locationBtn.style.display = 'none';
       
@@ -5954,6 +5957,9 @@
       
       // Guardar la vida extra en localStorage
       localStorage.setItem('extraLife', 'true');
+      
+      // Add Easter Egg card to inventory
+      addEasterEggCard('extra-life');
       
       // Efecto de partículas doradas
       createGoldenParticles();
@@ -7494,6 +7500,9 @@
       localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
       console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
       
+      // Add Easter Egg card to inventory
+      addEasterEggCard('fusion-power');
+      
       // Update statistics display
       loadStats();
       
@@ -8580,6 +8589,9 @@
       localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
       console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
       
+      // Add Easter Egg card to inventory
+      addEasterEggCard('squid-power');
+      
       // Update statistics display
       loadStats();
       
@@ -8697,6 +8709,9 @@
       const currentEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
       localStorage.setItem('easterEggsFound', (currentEasterEggs + 1).toString());
       console.log('🥚 Easter Egg found! Total:', currentEasterEggs + 1);
+      
+      // Add Easter Egg card to inventory
+      addEasterEggCard('lock-power');
       
       // Update statistics display
       loadStats();
@@ -10405,6 +10420,9 @@
       
       loadTotalCoins();
       
+      // Add Easter Egg card to inventory
+      addEasterEggCard('frontman-yes');
+      
       // Show result message
       const modal = document.getElementById('frontmanModal');
       modal.innerHTML = `
@@ -10432,6 +10450,9 @@
       const frontmanContainer = document.getElementById('frontmanCallContainer');
       frontmanContainer.style.display = 'none';
       frontmanContainer.classList.remove('visible');
+      
+      // Add Easter Egg card to inventory
+      addEasterEggCard('frontman-no');
       
       // Show result message
       const modal = document.getElementById('frontmanModal');
@@ -12557,6 +12578,78 @@
                 id: 'easter_egg_all_in_lost',
                 name: '🥚 Todo o Nada - Perdido',
                 description: 'Perdiste todo en una apuesta "ALL IN". Una lección dura sobre el riesgo.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'fusion-power': {
+                id: 'easter_egg_fusion_power',
+                name: '🥚 Poder de Fusión',
+                description: 'Completaste la secuencia secreta de 6 triángulos y obtuviste el poder de fusión.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'frontman-yes': {
+                id: 'easter_egg_frontman_yes',
+                name: '🥚 Front Man - Caballo',
+                description: 'Dijiste "SÍ" al Front Man. Perdiste 10,000 monedas por ser un caballo.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'frontman-no': {
+                id: 'easter_egg_frontman_no',
+                name: '🥚 Front Man - Inteligente',
+                description: 'Dijiste "NO" al Front Man. Fuiste inteligente y te libraste de la trampa.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'easter-egg-6': {
+                id: 'easter_egg_6',
+                name: '🥚 Easter Egg 6',
+                description: 'Descubriste el "6" oculto en el título de acceso a datos privilegiados.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'squid-power': {
+                id: 'easter_egg_squid_power',
+                name: '🥚 Poder del Calamar',
+                description: 'Completaste la secuencia secreta de letras y obtuviste el poder del calamar.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'lock-power': {
+                id: 'easter_egg_lock_power',
+                name: '🥚 Poder del Candado',
+                description: 'Hiciste clic 7 veces en el candado y obtuviste el poder del candado.',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'extra-life': {
+                id: 'easter_egg_extra_life',
+                name: '🥚 Vida Extra',
+                description: 'Ganaste una vida extra en el juego. ¡Una segunda oportunidad!',
+                icon: '🥚',
+                value: 0,
+                rarity: 'easter_egg',
+                type: 'easter_egg'
+            },
+            'secret-location': {
+                id: 'easter_egg_secret_location',
+                name: '🥚 Ubicación Secreta',
+                description: 'Descubriste la ubicación secreta del juego y sus coordenadas.',
                 icon: '🥚',
                 value: 0,
                 rarity: 'easter_egg',

@@ -12974,12 +12974,12 @@
                     break;
                     
                 case 'golden_dice':
-                    // Activate double winnings for 1 hour
+                    // Activate double winnings for 5 minutes
                     localStorage.setItem('doubleWinningsActive', 'true');
-                    localStorage.setItem('doubleWinningsExpiry', (Date.now() + 3600000).toString());
+                    localStorage.setItem('doubleWinningsExpiry', (Date.now() + 300000).toString());
                     
                     // Show notification
-                    showNotification(`🎲 ${item.name} activado! Doble ganancia en apuestas por 1 hora`, 'success');
+                    showNotification(`🎲 ${item.name} activado! Doble ganancia en apuestas por 5 minutos`, 'success');
                     break;
                     
                 case 'crystal_ball':

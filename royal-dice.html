@@ -540,6 +540,17 @@
             border-radius: 8px;
             border: 1px solid #4CAF50;
         }
+
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
+            color: #FFD700;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            border: 1px solid #FFD700;
+        }
     </style>
 </head>
 <body>
@@ -554,10 +565,6 @@
         <div class="main-section" id="mainSection">
             <div class="section-header">
                 <h2>👥 Todos los Jugadores</h2>
-                <div style="display: flex; gap: 10px;">
-                    <button class="refresh-header-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
-                    <button class="refresh-header-btn" onclick="debugFirebase()" style="background: linear-gradient(45deg, #f44336, #d32f2f); color: white;">🐛 Debug Firebase</button>
-                </div>
             </div>
             
             <div class="players-list" id="playersList">
@@ -675,13 +682,10 @@
             });
         }
 
-        // Load all players - using same logic as robbery game
+        // Load all players - EXACT same logic as robbery game
         function loadOnlinePlayers() {
-            console.log('🔍 Loading all players...');
-            console.log('👤 Current player:', currentPlayer);
-            
             const playersList = document.getElementById('playersList');
-            playersList.innerHTML = '<div class="no-players"><div class="no-players-icon">✂️</div><div class="no-players-text">Cargando jugadores...</div></div>';
+            playersList.innerHTML = '<div class="loading">Cargando jugadores...</div>';
 
             if (window.firebase && window.firebase.database) {
                 const db = window.firebase.database();
@@ -695,9 +699,9 @@
                         snapshot.forEach((childSnapshot) => {
                             const player = childSnapshot.val();
                             
-                            // Validate player data - only show players with valid names (same as robbery)
+                            // Validate player data - only show players with valid names (EXACT same as robbery)
                             if (player && player.name && player.name !== 'undefined' && player.name !== currentPlayer) {
-                                // Ocultar jugadores de prueba (same as robbery)
+                                // Ocultar jugadores de prueba (EXACT same as robbery)
                                 const testPlayers = ['yo', 'prueba', 'prueba 2'];
                                 if (!testPlayers.includes(player.name.toLowerCase())) {
                                     players.push(player);
@@ -725,7 +729,7 @@
                         });
                         
                         if (html === '') {
-                            html = '<div class="no-players"><div class="no-players-icon">✂️</div><div class="no-players-text">No hay otros jugadores disponibles</div></div>';
+                            html = '<div class="loading">No hay otros jugadores disponibles</div>';
                         }
                         
                         playersList.innerHTML = html;
@@ -733,10 +737,10 @@
                     })
                     .catch((error) => {
                         console.error('Error loading players:', error);
-                        playersList.innerHTML = '<div class="no-players"><div class="no-players-icon">✂️</div><div class="no-players-text">Error cargando jugadores</div></div>';
+                        playersList.innerHTML = '<div class="loading">Error cargando jugadores</div>';
                     });
             } else {
-                playersList.innerHTML = '<div class="no-players"><div class="no-players-icon">✂️</div><div class="no-players-text">Firebase no disponible</div></div>';
+                playersList.innerHTML = '<div class="loading">Firebase no disponible</div>';
             }
         }
 
@@ -1023,50 +1027,63 @@
             }
         }
 
-        // Debug Firebase function - using same logic as robbery game
-        window.debugFirebase = function() {
-            console.log('🐛 === DEBUG FIREBASE ===');
-            console.log('👤 Current player:', currentPlayer);
-            console.log('💰 Current coins:', currentCoins);
-            
-            if (window.firebase && window.firebase.database) {
-                const db = window.firebase.database();
-                const playersRef = db.ref('players');
-                
-                console.log('🔍 Checking players collection (same as robbery game)...');
-                playersRef.once('value')
-                    .then((snapshot) => {
-                        console.log('📊 Players collection data:', snapshot.val());
-                        console.log('📊 Players data type:', typeof snapshot.val());
-                        console.log('📊 Players data keys:', snapshot.val() ? Object.keys(snapshot.val()) : 'null');
-                        console.log('📊 Players data length:', snapshot.val() ? Object.keys(snapshot.val()).length : 0);
-                        
-                        if (snapshot.val()) {
-                            snapshot.forEach((childSnapshot) => {
-                                const player = childSnapshot.val();
-                                console.log(`👤 Player "${player.name || childSnapshot.key}":`, player);
-                                console.log(`   - Coins: ${player.coins || 'undefined'}`);
-                                console.log(`   - Wins: ${player.rpsWins || 'undefined'}`);
-                                console.log(`   - Losses: ${player.rpsLosses || 'undefined'}`);
-                                console.log(`   - Is current player: ${(player.name || childSnapshot.key) === currentPlayer}`);
-                                console.log(`   - Valid name: ${player.name && player.name !== 'undefined'}`);
-                                console.log(`   - Test player: ${['yo', 'prueba', 'prueba 2'].includes((player.name || '').toLowerCase())}`);
-                            });
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('❌ Error checking players collection:', error);
-                    });
-            } else {
-                console.error('❌ Firebase not available');
-            }
-        };
 
-        // Initialize
-        createParticles();
-        setOnlineStatus();
-        loadOnlinePlayers();
-        listenForChallenges();
+
+        // Initialize the page - same as robbery game
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            setOnlineStatus();
+            loadOnlinePlayers();
+            listenForChallenges();
+            startAutoSync();
+        });
+
+        // Auto-sync player data with Firebase every 30 seconds - same as robbery game
+        function startAutoSync() {
+            setInterval(() => {
+                if (window.firebase && window.firebase.database) {
+                    syncPlayerDataToFirebase();
+                    loadOnlinePlayers(); // Refresh player list
+                }
+            }, 30000); // Sync every 30 seconds
+        }
+
+        // Sync current player data to Firebase - same as robbery game
+        function syncPlayerDataToFirebase() {
+            const playerName = localStorage.getItem('playerName');
+            if (!playerName || !window.firebase || !window.firebase.database) {
+                return;
+            }
+
+            const db = window.firebase.database();
+            const playerRef = db.ref(`players/${playerName}`);
+            
+            // Get current data from localStorage
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const rpsWins = parseInt(localStorage.getItem('rpsWins') || '0');
+            const rpsLosses = parseInt(localStorage.getItem('rpsLosses') || '0');
+            
+            const playerData = {
+                name: playerName,
+                coins: currentCoins,
+                rpsWins: rpsWins,
+                rpsLosses: rpsLosses,
+                lastUpdated: Date.now(),
+                deviceInfo: {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    timestamp: new Date().toISOString()
+                }
+            };
+            
+            playerRef.update(playerData)
+                .then(() => {
+                    console.log(`✅ Player data synced to Firebase: ${playerName}`);
+                })
+                .catch((error) => {
+                    console.error('❌ Error syncing to Firebase:', error);
+                });
+        }
         
         // Clean up on page unload
         window.addEventListener('beforeunload', () => {

@@ -119,6 +119,11 @@
             box-shadow: 0 0 10px #4CAF50;
         }
 
+        .status-dot.offline {
+            background: #666;
+            box-shadow: 0 0 5px #666;
+        }
+
         .player-info {
             display: flex;
             justify-content: space-between;
@@ -578,12 +583,14 @@
                     const players = [];
                     Object.keys(data).forEach(playerName => {
                         const player = data[playerName];
-                        if (player.online && player.royalDiceActive && playerName !== currentPlayer) {
+                        // Show all players with coins, not just those marked as online
+                        if (playerName !== currentPlayer && parseInt(player.totalOrtizCoins || '0') > 0) {
                             players.push({
                                 name: playerName,
                                 coins: parseInt(player.totalOrtizCoins || '0'),
                                 wins: parseInt(player.royalDiceWins || '0'),
-                                losses: parseInt(player.royalDiceLosses || '0')
+                                losses: parseInt(player.royalDiceLosses || '0'),
+                                isOnline: player.online || false
                             });
                         }
                     });
@@ -598,28 +605,28 @@
             playersList.innerHTML = '';
             
             if (players.length === 0) {
-                playersList.innerHTML = '<div class="loading">No hay jugadores online en este momento...</div>';
+                playersList.innerHTML = '<div class="loading">No hay jugadores disponibles en este momento...</div>';
                 return;
             }
             
             players.forEach(player => {
                 const playerCard = document.createElement('div');
-                playerCard.className = 'player-card online';
+                playerCard.className = `player-card ${player.isOnline ? 'online' : 'offline'}`;
                 
                 playerCard.innerHTML = `
                     <div class="player-header">
                         <div class="player-name">${player.name}</div>
                         <div class="player-status">
-                            <div class="status-dot online"></div>
-                            <span>Online</span>
+                            <div class="status-dot ${player.isOnline ? 'online' : 'offline'}"></div>
+                            <span>${player.isOnline ? 'Online' : 'Offline'}</span>
                         </div>
                     </div>
                     <div class="player-info">
                         <div class="player-coins">💰 ${player.coins} monedas</div>
                         <div class="player-stats">🏆 ${player.wins}W - ${player.losses}L</div>
                     </div>
-                    <button class="challenge-btn" onclick="challengePlayer('${player.name}', ${player.coins})">
-                        ⚔️ Retar
+                    <button class="challenge-btn" onclick="challengePlayer('${player.name}', ${player.coins})" ${!player.isOnline ? 'disabled' : ''}>
+                        ${player.isOnline ? '⚔️ Retar' : '🔴 Offline'}
                     </button>
                 `;
                 

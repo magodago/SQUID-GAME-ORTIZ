@@ -554,7 +554,10 @@
         <div class="main-section" id="mainSection">
             <div class="section-header">
                 <h2>👥 Todos los Jugadores</h2>
-                <button class="refresh-header-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="refresh-header-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
+                    <button class="refresh-header-btn" onclick="debugFirebase()" style="background: linear-gradient(45deg, #f44336, #d32f2f); color: white;">🐛 Debug Firebase</button>
+                </div>
             </div>
             
             <div class="players-list" id="playersList">
@@ -675,15 +678,20 @@
         // Load all players
         function loadOnlinePlayers() {
             console.log('🔍 Loading all players...');
+            console.log('👤 Current player:', currentPlayer);
+            
             const usersRef = ref(db, 'users');
             onValue(usersRef, (snapshot) => {
                 const data = snapshot.val();
                 console.log('📊 Firebase data:', data);
-                if (data) {
+                console.log('📊 Firebase data keys:', data ? Object.keys(data) : 'null');
+                
+                if (data && Object.keys(data).length > 0) {
                     const players = [];
                     Object.keys(data).forEach(playerName => {
                         const player = data[playerName];
                         console.log(`👤 Player: ${playerName}`, player);
+                        
                         // Show ALL players except current player
                         if (playerName !== currentPlayer) {
                             players.push({
@@ -693,12 +701,14 @@
                                 losses: parseInt(player.rpsLosses || '0'),
                                 isOnline: true // Show all players as available
                             });
+                        } else {
+                            console.log(`🚫 Skipping current player: ${playerName}`);
                         }
                     });
                     console.log('🎮 Players to display:', players);
                     updatePlayersDisplay(players);
                 } else {
-                    console.log('❌ No data from Firebase');
+                    console.log('❌ No data from Firebase or empty users');
                     updatePlayersDisplay([]);
                 }
             }, (error) => {
@@ -1028,6 +1038,33 @@
                 remove(gameRef);
             }
         }
+
+        // Debug Firebase function
+        window.debugFirebase = function() {
+            console.log('🐛 === DEBUG FIREBASE ===');
+            console.log('👤 Current player:', currentPlayer);
+            console.log('💰 Current coins:', currentCoins);
+            
+            const usersRef = ref(db, 'users');
+            onValue(usersRef, (snapshot) => {
+                const data = snapshot.val();
+                console.log('📊 Raw Firebase data:', data);
+                console.log('📊 Data type:', typeof data);
+                console.log('📊 Data keys:', data ? Object.keys(data) : 'null');
+                console.log('📊 Data length:', data ? Object.keys(data).length : 0);
+                
+                if (data) {
+                    Object.keys(data).forEach(playerName => {
+                        const player = data[playerName];
+                        console.log(`👤 Player "${playerName}":`, player);
+                        console.log(`   - Coins: ${player.totalOrtizCoins || 'undefined'}`);
+                        console.log(`   - Wins: ${player.rpsWins || 'undefined'}`);
+                        console.log(`   - Losses: ${player.rpsLosses || 'undefined'}`);
+                        console.log(`   - Is current player: ${playerName === currentPlayer}`);
+                    });
+                }
+            }, { once: true });
+        };
 
         // Initialize
         createParticles();

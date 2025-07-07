@@ -105,6 +105,12 @@
             opacity: 0.7;
         }
 
+        .player-card.available {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
         .player-header {
             display: flex;
             justify-content: space-between;
@@ -542,12 +548,12 @@
     <div class="container">
         <div class="header">
             <h1>✂️ Piedra Papel Tijera PvP</h1>
-            <p>¡Reta a otros jugadores y gana sus monedas!</p>
+            <p>¡Reta a cualquier jugador registrado y gana sus monedas!</p>
         </div>
 
         <div class="main-section" id="mainSection">
             <div class="section-header">
-                <h2>👥 Jugadores Disponibles</h2>
+                <h2>👥 Todos los Jugadores</h2>
                 <button class="refresh-header-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
             </div>
             
@@ -666,9 +672,9 @@
             });
         }
 
-        // Load online players
+        // Load all players
         function loadOnlinePlayers() {
-            console.log('🔍 Loading players...');
+            console.log('🔍 Loading all players...');
             const usersRef = ref(db, 'users');
             onValue(usersRef, (snapshot) => {
                 const data = snapshot.val();
@@ -685,7 +691,7 @@
                                 coins: parseInt(player.totalOrtizCoins || '0'),
                                 wins: parseInt(player.rpsWins || '0'),
                                 losses: parseInt(player.rpsLosses || '0'),
-                                isOnline: player.online || false
+                                isOnline: true // Show all players as available
                             });
                         }
                     });
@@ -710,7 +716,7 @@
                 playersList.innerHTML = `
                     <div class="no-players">
                         <div class="no-players-icon">✂️</div>
-                        <div class="no-players-text">No hay jugadores disponibles</div>
+                        <div class="no-players-text">No hay otros jugadores registrados</div>
                         <div class="no-players-subtext">Intenta refrescar la página</div>
                         <button class="refresh-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
                     </div>`;
@@ -719,22 +725,22 @@
             
             players.forEach(player => {
                 const playerCard = document.createElement('div');
-                playerCard.className = `player-card ${player.isOnline ? 'online' : 'offline'}`;
+                playerCard.className = 'player-card available';
                 
                 playerCard.innerHTML = `
                     <div class="player-header">
                         <div class="player-name">${player.name}</div>
                         <div class="player-status">
-                            <div class="status-dot ${player.isOnline ? 'online' : 'offline'}"></div>
-                            <span>${player.isOnline ? 'Online' : 'Offline'}</span>
+                            <div class="status-dot online"></div>
+                            <span>Disponible</span>
                         </div>
                     </div>
                     <div class="player-info">
                         <div class="player-coins">💰 ${player.coins} monedas</div>
                         <div class="player-stats">🏆 ${player.wins}W - ${player.losses}L</div>
                     </div>
-                    <button class="challenge-btn" onclick="challengePlayer('${player.name}', ${player.coins})" ${!player.isOnline ? 'disabled' : ''}>
-                        ${player.isOnline ? '⚔️ Retar' : '🔴 Offline'}
+                    <button class="challenge-btn" onclick="challengePlayer('${player.name}', ${player.coins})">
+                        ⚔️ Retar
                     </button>
                 `;
                 

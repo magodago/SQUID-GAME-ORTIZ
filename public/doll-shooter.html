@@ -649,8 +649,47 @@
 
         function gameOver() {
             gameRunning = false;
-            document.getElementById('finalScore').textContent = `Puntuación Final: ${score}`;
+            
+            // Convert score to coins (1 point = 1 coin)
+            const coinsEarned = score;
+            
+            // Add coins to total using safe addition
+            if (window.PlayerDataManager && PlayerDataManager.safeAddCoins) {
+                const success = PlayerDataManager.safeAddCoins(coinsEarned, 'doll-shooter');
+                if (success) {
+                    console.log(`✅ Doll Shooter coins added safely: +${coinsEarned}`);
+                } else {
+                    console.log('⚠️ Failed to add coins safely, using fallback method');
+                    addCoinsFallback(coinsEarned);
+                }
+            } else {
+                addCoinsFallback(coinsEarned);
+            }
+            
+            document.getElementById('finalScore').textContent = `Puntuación Final: ${score} | Monedas Ganadas: +${coinsEarned}`;
             document.getElementById('gameOverModal').style.display = 'flex';
+        }
+
+        function addCoinsFallback(coinsToAdd) {
+            try {
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const newCoins = currentCoins + coinsToAdd;
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                
+                // Sync with Firebase if available
+                if (window.firebase && window.firebase.database) {
+                    const playerName = localStorage.getItem('playerName') || 'Jugador';
+                    const userRef = window.firebase.database().ref(`users/${playerName}`);
+                    userRef.update({
+                        totalOrtizCoins: newCoins,
+                        dollShooterWins: (parseInt(localStorage.getItem('dollShooterWins') || '0') + 1).toString()
+                    });
+                }
+                
+                console.log(`✅ Doll Shooter coins added: ${currentCoins} -> ${newCoins}`);
+            } catch (error) {
+                console.error('❌ Error adding Doll Shooter coins:', error);
+            }
         }
 
         function restartGame() {

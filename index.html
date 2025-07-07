@@ -120,6 +120,17 @@
         box-shadow: 0 0 40px #FFD700, 0 0 60px #FFA500;
       }
     }
+
+    @keyframes goldenButtonPulse {
+      0%, 100% {
+        box-shadow: 0 0 20px #FFD700;
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 40px #FFD700, 0 0 60px #FFA500;
+        transform: scale(1.05);
+      }
+    }
   </style>
   <style>
     html, body {
@@ -4951,6 +4962,27 @@
       animation: surpriseBoxGlow 2s infinite;
     " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
       🎁 CAJA SORPRESA
+    </button>
+
+    <!-- GOLDEN BUTTON -->
+    <button id="goldenButton" onclick="activateGoldenButton()" style="
+      display: block;
+      margin: 1rem auto;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      border: none;
+      border-radius: 15px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 20px #FFD700;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      max-width: 300px;
+      animation: goldenButtonPulse 1.5s infinite;
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      🪙 BOTÓN DE ORO
     </button>
 
     <!-- Daily Reward Button -->
@@ -13628,6 +13660,147 @@
                         modal.parentNode.removeChild(modal);
                     }
                 }, 500);
+            }
+        }
+
+        // GOLDEN BUTTON SYSTEM
+        let goldenButtonActive = false;
+        let goldenButtonTimer = null;
+        let goldenButtonCountdown = 0;
+
+        function activateGoldenButton() {
+            if (goldenButtonActive) {
+                // Button is already active, give coins
+                giveGoldenButtonCoins();
+                return;
+            }
+
+            // Activate golden button for 1 minute
+            goldenButtonActive = true;
+            goldenButtonCountdown = 60; // 60 seconds
+
+            const goldenBtn = document.getElementById('goldenButton');
+            goldenBtn.style.background = 'linear-gradient(135deg, #FF0000 0%, #FF6600 100%)';
+            goldenBtn.style.animation = 'none';
+            goldenBtn.style.boxShadow = '0 0 30px #FF0000';
+            goldenBtn.textContent = `🪙 BOTÓN DE ORO (${goldenButtonCountdown}s)`;
+
+            // Start countdown
+            goldenButtonTimer = setInterval(() => {
+                goldenButtonCountdown--;
+                goldenBtn.textContent = `🪙 BOTÓN DE ORO (${goldenButtonCountdown}s)`;
+                
+                if (goldenButtonCountdown <= 0) {
+                    deactivateGoldenButton();
+                }
+            }, 1000);
+
+            showNotification('🪙 ¡Botón de Oro activado! Haz clic para ganar 100 monedas cada vez', 'success');
+        }
+
+        function giveGoldenButtonCoins() {
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const newCoins = currentCoins + 100;
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+
+            // Update display
+            if (typeof loadTotalCoins === 'function') {
+                loadTotalCoins();
+            }
+
+            // Sync with Firebase
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const currentPlayer = localStorage.getItem('soldierName');
+                if (currentPlayer) {
+                    const playerRef = db.ref(`players/${currentPlayer}`);
+                    playerRef.update({
+                        coins: newCoins,
+                        lastUpdated: Date.now()
+                    }).then(() => {
+                        console.log(`✅ Golden button coins synced to Firebase: +100 coins`);
+                    }).catch((error) => {
+                        console.error('❌ Error syncing golden button coins:', error);
+                    });
+                }
+            }
+
+            // Visual feedback
+            const goldenBtn = document.getElementById('goldenButton');
+            goldenBtn.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                goldenBtn.style.transform = 'scale(1)';
+            }, 200);
+
+            showNotification('💰 +100 monedas del Botón de Oro!', 'success');
+        }
+
+        function deactivateGoldenButton() {
+            goldenButtonActive = false;
+            clearInterval(goldenButtonTimer);
+
+            const goldenBtn = document.getElementById('goldenButton');
+            goldenBtn.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
+            goldenBtn.style.animation = 'goldenButtonPulse 1.5s infinite';
+            goldenBtn.style.boxShadow = '0 0 20px #FFD700';
+            goldenBtn.textContent = '🪙 BOTÓN DE ORO';
+
+            showNotification('⏰ Botón de Oro desactivado. Espera para reactivarlo', 'info');
+        }
+
+        // ANONYMOUS PVP SYSTEM
+        function sendAnonymousRobbery(targetPlayer, betAmount) {
+            const currentPlayer = localStorage.getItem('soldierName');
+            if (!currentPlayer) return;
+
+            // Send anonymous robbery challenge
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const challengeRef = db.ref(`robberyChallenges/${targetPlayer}`);
+                
+                const challenge = {
+                    attacker: '???', // Anonymous
+                    attackerRealName: currentPlayer, // Hidden from target
+                    target: targetPlayer,
+                    bet: betAmount,
+                    timestamp: Date.now(),
+                    status: 'pending'
+                };
+
+                challengeRef.push(challenge).then(() => {
+                    console.log(`✅ Anonymous robbery challenge sent to ${targetPlayer}`);
+                    showNotification(`🕵️‍♂️ Reto anónimo enviado a ${targetPlayer}`, 'success');
+                }).catch((error) => {
+                    console.error('❌ Error sending anonymous robbery challenge:', error);
+                });
+            }
+        }
+
+        function sendAnonymousRPSChallenge(targetPlayer, betAmount, choice) {
+            const currentPlayer = localStorage.getItem('soldierName');
+            if (!currentPlayer) return;
+
+            // Send anonymous RPS challenge
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const challengeRef = db.ref(`rpsChallenges/${targetPlayer}`);
+                
+                const challenge = {
+                    challenger: '???', // Anonymous
+                    challengerRealName: currentPlayer, // Hidden from target
+                    target: targetPlayer,
+                    bet: betAmount,
+                    attackerChoice: choice,
+                    timestamp: Date.now(),
+                    status: 'pending'
+                };
+
+                challengeRef.push(challenge).then(() => {
+                    console.log(`✅ Anonymous RPS challenge sent to ${targetPlayer}`);
+                    showNotification(`🕵️‍♂️ Reto anónimo de Piedra/Papel/Tijeras enviado a ${targetPlayer}`, 'success');
+                }).catch((error) => {
+                    console.error('❌ Error sending anonymous RPS challenge:', error);
+                });
             }
         }
 

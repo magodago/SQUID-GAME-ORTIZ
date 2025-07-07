@@ -198,6 +198,29 @@
 
         .rob-button:disabled {
             background: #666666;
+        }
+
+        .anonymous-rob-button {
+            background: #8B0000;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.75rem;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+                .anonymous-rob-button:hover {
+            background: #DC143C;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .rob-button:disabled {
             cursor: not-allowed;
             transform: none;
         }
@@ -772,6 +795,9 @@
                                                 <button class="rob-button" onclick="challengePlayer('${player.name}', this.previousElementSibling.value)">
                                                     🦹‍♂️ ROBAR
                                                 </button>
+                                                <button class="anonymous-rob-button" onclick="challengePlayerAnonymous('${player.name}', this.previousElementSibling.previousElementSibling.value)">
+                                                    🕵️‍♂️ ROBAR ANÓNIMO
+                                                </button>
                                             </div>
                                         </div>
                                     `;
@@ -884,6 +910,251 @@
             
             // Start robbery immediately
             startRobbery(currentPlayer, targetPlayer, betAmount);
+        }
+
+        // Rob a player anonymously
+        function challengePlayerAnonymous(targetPlayer, betAmount) {
+            betAmount = parseInt(betAmount);
+            
+            if (!betAmount || betAmount <= 0) {
+                alert('Por favor ingresa una cantidad válida para robar');
+                return;
+            }
+            
+            // Check if current player has enough coins
+            if (betAmount > currentCoins) {
+                alert(`No tienes suficientes monedas para este robo. Tienes: ${currentCoins.toLocaleString()} monedas`);
+                return;
+            }
+            
+            // Find target player data to check their coins
+            const targetPlayerData = players.find(p => p.name === targetPlayer);
+            if (!targetPlayerData) {
+                alert('Jugador no encontrado');
+                return;
+            }
+            
+            // Check if target player has enough coins
+            if (betAmount > targetPlayerData.coins) {
+                alert(`No puedes robar más monedas de las que tiene ${targetPlayer}. Tiene: ${targetPlayerData.coins.toLocaleString()} monedas`);
+                return;
+            }
+            
+            // NEW: Check if attacker has more money than target (anti-bullying rule)
+            if (currentCoins > targetPlayerData.coins) {
+                // Punish the attacker for trying to rob someone poorer
+                const punishmentMessage = `🛡️ ¡NO ROBES A LOS POBRES! 🛡️\n\n${targetPlayer} es más pobre que tú.\nTienes: ${currentCoins.toLocaleString()} monedas\nÉl tiene: ${targetPlayerData.coins.toLocaleString()} monedas\n\nComo castigo, pierdes TODAS tus monedas.`;
+                
+                alert(punishmentMessage);
+                
+                // Take all money from attacker as punishment
+                const allMoney = currentCoins;
+                currentCoins = 0;
+                localStorage.setItem('totalOrtizCoins', '0');
+                
+                // Update display immediately
+                document.getElementById('currentPlayerCoins').textContent = '0 monedas';
+                
+                // Update Firebase immediately
+                if (window.firebase && window.firebase.database) {
+                    const db = window.firebase.database();
+                    const playerRef = db.ref(`players/${currentPlayer}`);
+                    playerRef.update({
+                        coins: 0,
+                        lastUpdated: Date.now(),
+                        lastPunishment: {
+                            reason: 'Trying to rob someone poorer (anonymous)',
+                            target: targetPlayer,
+                            amountLost: allMoney,
+                            timestamp: Date.now()
+                        }
+                    }).then(() => {
+                        console.log(`💀 Anonymous punishment applied to ${currentPlayer}: lost all ${allMoney} coins for trying to rob ${targetPlayer}`);
+                    }).catch((error) => {
+                        console.error('❌ Error applying anonymous punishment:', error);
+                    });
+                }
+                
+                return; // Stop the robbery
+            }
+            
+            // Deduct bet amount from attacker immediately
+            currentCoins -= betAmount;
+            localStorage.setItem('totalOrtizCoins', currentCoins.toString());
+            
+            // Update display immediately
+            document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
+            
+            // Update Firebase immediately
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playerRef = db.ref(`players/${currentPlayer}`);
+                playerRef.update({
+                    coins: currentCoins,
+                    lastUpdated: Date.now()
+                }).then(() => {
+                    console.log(`💰 Anonymous bet deducted from ${currentPlayer}: ${betAmount} coins`);
+                }).catch((error) => {
+                    console.error('❌ Error deducting anonymous bet:', error);
+                });
+            }
+            
+            // Start anonymous robbery
+            startAnonymousRobbery(currentPlayer, targetPlayer, betAmount);
+        }
+
+        // Start anonymous robbery
+        function startAnonymousRobbery(attacker, target, betAmount) {
+            console.log(`🕵️‍♂️ STARTING ANONYMOUS ROBBERY: ??? vs ${target} for ${betAmount} coins`);
+            
+            // Start robbery UI with anonymous attacker
+            startAnonymousRobberyUI(attacker, target, betAmount);
+        }
+        
+        // Start anonymous robbery UI
+        function startAnonymousRobberyUI(attacker, target, betAmount) {
+            const battleModal = document.getElementById('battleModal');
+            const battleGameArea = document.getElementById('battleGameArea');
+            const battleStatus = document.getElementById('battleStatus');
+            const progressBar = document.getElementById('progressBar');
+            const battleTimer = document.getElementById('battleTimer');
+            
+            // Reset game area with anonymous attacker
+            battleGameArea.innerHTML = `
+                <div class="battle-status" id="battleStatus">🕵️‍♂️ INICIANDO ROBO ANÓNIMO...</div>
+                <div style="display: flex; justify-content: space-between; margin: 15px 0; font-weight: bold; color: #000000;">
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.1rem; margin-bottom: 5px;">🕵️‍♂️ ???</div>
+                        <div style="font-size: 0.9rem; color: #8B0000;">ATACANDO ANÓNIMAMENTE</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.1rem; margin-bottom: 5px;">🛡️ ${target}</div>
+                        <div style="font-size: 0.9rem; color: #ffae42;">DEFENDIENDO</div>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 50%;">50%</div>
+                </div>
+            `;
+            
+            // Hide result section
+            document.getElementById('battleResult').style.display = 'none';
+            
+            // Show modal
+            battleModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Start countdown
+            let countdown = 3;
+            battleTimer.textContent = countdown;
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                battleTimer.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    startAnonymousRobberyGameplay(attacker, target, betAmount);
+                }
+            }, 1000);
+        }
+
+        // Anonymous robbery gameplay
+        function startAnonymousRobberyGameplay(attacker, target, betAmount) {
+            const battleStatus = document.getElementById('battleStatus');
+            const progressBar = document.getElementById('progressBar');
+            const battleTimer = document.getElementById('battleTimer');
+            
+            let gameTime = 8;
+            let progress = 50;
+            let winner = null;
+            
+            battleTimer.textContent = gameTime;
+            
+            const gameInterval = setInterval(() => {
+                gameTime--;
+                battleTimer.textContent = gameTime;
+                
+                if (gameTime <= 0) {
+                    clearInterval(gameInterval);
+                    clearInterval(progressInterval);
+                    
+                    // Determine winner based on final progress
+                    if (progress > 50) {
+                        winner = attacker;
+                        endAnonymousRobbery(attacker, target, betAmount, true);
+                    } else {
+                        winner = target;
+                        endAnonymousRobbery(attacker, target, betAmount, false);
+                    }
+                }
+            }, 1000);
+            
+            const progressInterval = setInterval(() => {
+                if (gameTime <= 0) {
+                    clearInterval(progressInterval);
+                    return;
+                }
+                
+                // Random movement towards one side or the other
+                const randomMove = (Math.random() - 0.5) * 8;
+                progress += randomMove;
+                progress = Math.max(0, Math.min(100, progress));
+                
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = Math.round(progress) + '%';
+                
+                if (progress > 60) {
+                    battleStatus.textContent = `🕵️‍♂️ ??? DOMINANDO EL ROBO ANÓNIMO`;
+                } else if (progress < 40) {
+                    battleStatus.textContent = `🛡️ ${target} DEFENDIENDO EXITOSAMENTE`;
+                } else {
+                    battleStatus.textContent = '⚔️ ROBO ANÓNIMO EN CURSO - BATALLA EQUILIBRADA';
+                }
+            }, 300);
+        }
+
+        // End anonymous robbery
+        function endAnonymousRobbery(attacker, target, betAmount, attackerWins) {
+            console.log(`🏁 ENDING ANONYMOUS ROBBERY: ??? vs ${target}, ${attackerWins ? 'ATTACKER WINS' : 'DEFENDER WINS'}`);
+            
+            const resultElement = document.getElementById('battleResult');
+            const winnerElement = document.getElementById('winnerAnnouncement');
+            const coinsElement = document.getElementById('coinsWon');
+            
+            if (attackerWins) {
+                // Anonymous attacker wins - rob successful
+                winnerElement.textContent = `🕵️‍♂️ ¡ROBO ANÓNIMO EXITOSO!`;
+                coinsElement.textContent = `💰 Un atacante anónimo robó ${betAmount.toLocaleString()} monedas de ${target}`;
+                
+                console.log(`🎯 ANONYMOUS ATTACKER WINS: ??? gets ${betAmount} coins from ${target}`);
+                
+                // Update Firebase for both players
+                // Attacker gets the stolen coins from target
+                updatePlayerCoinsInFirebase(attacker, betAmount, true);
+                // Target loses the stolen coins
+                updatePlayerCoinsInFirebase(target, betAmount, false);
+                
+            } else {
+                // Target wins - rob failed
+                winnerElement.textContent = `🛡️ ¡ROBO ANÓNIMO FRACASADO!`;
+                coinsElement.textContent = `💰 ${target} defendió exitosamente contra el atacante anónimo`;
+                
+                console.log(`🛡️ DEFENDER WINS: ${target} gets ${betAmount} coins from anonymous attacker`);
+                
+                // Update Firebase for both players
+                // Attacker already lost bet at start, no additional loss needed
+                // Target gets the attacker's bet as reward for defending
+                updatePlayerCoinsInFirebase(target, betAmount, true);
+            }
+            
+            // Show result
+            resultElement.style.display = 'block';
+            
+            // Reload players list after a delay
+            setTimeout(() => {
+                loadPlayers();
+            }, 2000);
         }
 
         // Load challenges

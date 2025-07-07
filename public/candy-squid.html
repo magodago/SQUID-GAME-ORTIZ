@@ -606,16 +606,14 @@
                 <p>• Cada match te da puntos y monedas</p>
                 <p>• Alcanza la puntuación objetivo para subir de nivel</p>
                 <button id="startButton" onclick="startGame()">🎯 COMENZAR JUEGO</button>
+                <button id="backButton" onclick="goBack()" style="margin-top: 10px; background: linear-gradient(45deg, #FF6B6B, #FF8E8E); padding: 10px 20px; border-radius: 10px; border: none; color: white; font-weight: bold; cursor: pointer;">🔙 VOLVER</button>
             </div>
                     <div id="gameStats">
             <div class="stat">
                 <div class="stat-label">NIVEL</div>
                 <div class="stat-value" id="level">1</div>
             </div>
-            <div class="stat">
-                <div class="stat-label">PUNTUACIÓN</div>
-                <div class="stat-value" id="score">0</div>
-            </div>
+
             <div class="stat">
                 <div class="stat-label">MONEDAS</div>
                 <div class="stat-value" id="coins">0</div>
@@ -1054,8 +1052,7 @@
         // Update UI
         function updateUI() {
             document.getElementById('level').textContent = level;
-            document.getElementById('score').textContent = score;
-            document.getElementById('coins').textContent = coins;
+            document.getElementById('coins').textContent = score; // Monedas = puntuación
             document.getElementById('moves').textContent = moves;
             
             // Check if level completed
@@ -1155,21 +1152,20 @@
         function gameOver() {
             gameRunning = false;
             
-            // Save coins to main game
+            // Save coins to main game (monedas = puntuación)
             const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-            const newCoins = currentCoins + coins;
+            const newCoins = currentCoins + score; // Usar puntuación como monedas
             localStorage.setItem('totalOrtizCoins', newCoins.toString());
             
             // Update game over screen
             document.getElementById('finalScore').textContent = `PUNTUACIÓN: ${score}`;
-            document.getElementById('finalCoins').textContent = `MONEDAS: ${coins}`;
+            document.getElementById('finalCoins').textContent = `MONEDAS: ${score}`; // Mostrar puntuación como monedas
             document.getElementById('gameOver').style.display = 'block';
         }
 
         // Restart game
         function restartGame() {
             score = 0;
-            coins = 0;
             moves = 0;
             level = 1;
             targetScore = 1000;

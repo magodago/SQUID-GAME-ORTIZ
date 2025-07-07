@@ -5995,11 +5995,20 @@
               rarity: 'mythic'
             };
             
+            const twoFaces = {
+              id: 'two_faces',
+              name: '🎭 2 Caras',
+              description: 'Aleatoriamente da +25% o -25% de monedas a todos los jugadores',
+              icon: '🎭',
+              value: 20000,
+              rarity: 'mythic'
+            };
+            
 
             
             // Add ONLY FUNCTIONAL items to inventory (avoid duplicates)
             const itemsToAdd = [
-                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, goldenButton, humanitarianAid
+                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, goldenButton, humanitarianAid, twoFaces
             ];
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
@@ -6012,7 +6021,7 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🟡 Botón de Oro\n   • 🤝 Ayuda Humanitaria\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🟡 Botón de Oro\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
             
             console.log('✅ DAGO coins and items added successfully!');
             
@@ -13391,6 +13400,11 @@
                     activateHumanitarianAid();
                     break;
                     
+                case 'two_faces':
+                    // Activate two faces effect
+                    activateTwoFaces();
+                    break;
+                    
                 default:
                     showNotification(`❌ Función no implementada para ${item.name}`, 'error');
                     return;
@@ -14056,6 +14070,14 @@
                         icon: '🤝',
                         value: 15000,
                         rarity: 'mythic'
+                    },
+                    {
+                        id: 'two_faces',
+                        name: '🎭 2 Caras',
+                        description: 'Aleatoriamente da +25% o -25% de monedas a todos los jugadores',
+                        icon: '🎭',
+                        value: 20000,
+                        rarity: 'mythic'
                     }
                 ];
                 const selectedItem = dailyItems[Math.floor(Math.random() * dailyItems.length)];
@@ -14353,6 +14375,227 @@
                     .catch((error) => {
                         console.error('❌ Error activating humanitarian aid:', error);
                         showNotification('❌ Error al activar la ayuda humanitaria', 'error');
+                    });
+            } else {
+                showNotification('❌ Error: Firebase no disponible', 'error');
+            }
+        }
+
+        // TWO FACES SYSTEM
+        function activateTwoFaces() {
+            console.log('🎭 TWO FACES ACTIVATED!');
+            
+            const currentPlayer = localStorage.getItem('soldierName');
+            
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playersRef = db.ref('players');
+                
+                playersRef.once('value')
+                    .then((snapshot) => {
+                        const playersData = snapshot.val() || {};
+                        const winners = [];
+                        const losers = [];
+                        
+                        // Process all players except test users
+                        Object.keys(playersData).forEach(playerName => {
+                            const playerData = playersData[playerName];
+                            const coins = parseInt(playerData.coins || playerData.totalCoins || 0);
+                            
+                            // Skip test users and players with no coins
+                            if (playerName !== 'yo' && 
+                                playerName !== 'prueba' && 
+                                playerName !== 'prueba 2' && 
+                                coins > 0) {
+                                
+                                // Random 50/50 chance for each player
+                                const isWinner = Math.random() < 0.5;
+                                const percentage = 0.25; // 25%
+                                
+                                if (isWinner) {
+                                    // Winner: +25% coins
+                                    const bonus = Math.floor(coins * percentage);
+                                    const newCoins = coins + bonus;
+                                    
+                                    // Update Firebase
+                                    const playerRef = db.ref(`players/${playerName}`);
+                                    playerRef.update({
+                                        coins: newCoins,
+                                        lastUpdated: Date.now()
+                                    });
+                                    
+                                    // Update localStorage if it's the current player
+                                    if (playerName === currentPlayer) {
+                                        localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                                        if (typeof loadTotalCoins === 'function') {
+                                            loadTotalCoins();
+                                        }
+                                    }
+                                    
+                                    winners.push(`${playerName}: +${bonus.toLocaleString()}`);
+                                    
+                                    // Send notification to winner
+                                    const notificationRef = db.ref(`notifications/${playerName}`);
+                                    notificationRef.push({
+                                        message: `🎭 ¡2 CARAS - GANADOR!\n\nHas ganado ${bonus.toLocaleString()} monedas (+25%)\n\nLanzado por: ???`,
+                                        timestamp: Date.now(),
+                                        type: 'two_faces_winner',
+                                        read: false
+                                    });
+                                } else {
+                                    // Loser: -25% coins
+                                    const penalty = Math.floor(coins * percentage);
+                                    const newCoins = Math.max(0, coins - penalty); // Don't go below 0
+                                    
+                                    // Update Firebase
+                                    const playerRef = db.ref(`players/${playerName}`);
+                                    playerRef.update({
+                                        coins: newCoins,
+                                        lastUpdated: Date.now()
+                                    });
+                                    
+                                    // Update localStorage if it's the current player
+                                    if (playerName === currentPlayer) {
+                                        localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                                        if (typeof loadTotalCoins === 'function') {
+                                            loadTotalCoins();
+                                        }
+                                    }
+                                    
+                                    losers.push(`${playerName}: -${penalty.toLocaleString()}`);
+                                    
+                                    // Send notification to loser
+                                    const notificationRef = db.ref(`notifications/${playerName}`);
+                                    notificationRef.push({
+                                        message: `🎭 ¡2 CARAS - PERDEDOR!\n\nHas perdido ${penalty.toLocaleString()} monedas (-25%)\n\nLanzado por: ???`,
+                                        timestamp: Date.now(),
+                                        type: 'two_faces_loser',
+                                        read: false
+                                    });
+                                }
+                            }
+                        });
+                        
+                        // Current player always gets +25% (if they weren't already processed)
+                        const currentPlayerData = playersData[currentPlayer];
+                        if (currentPlayerData) {
+                            const currentPlayerCoins = parseInt(currentPlayerData.coins || currentPlayerData.totalCoins || 0);
+                            const currentPlayerBonus = Math.floor(currentPlayerCoins * 0.25);
+                            const newCurrentPlayerCoins = currentPlayerCoins + currentPlayerBonus;
+                            
+                            // Update Firebase for current player
+                            const currentPlayerRef = db.ref(`players/${currentPlayer}`);
+                            currentPlayerRef.update({
+                                coins: newCurrentPlayerCoins,
+                                lastUpdated: Date.now()
+                            });
+                            
+                            // Update localStorage
+                            localStorage.setItem('totalOrtizCoins', newCurrentPlayerCoins.toString());
+                            if (typeof loadTotalCoins === 'function') {
+                                loadTotalCoins();
+                            }
+                            
+                            // Add to winners list if not already there
+                            if (!winners.some(w => w.startsWith(currentPlayer + ':'))) {
+                                winners.push(`${currentPlayer}: +${currentPlayerBonus.toLocaleString()}`);
+                            }
+                        }
+                        
+                        // Show result modal to the user who used the item
+                        const modal = document.createElement('div');
+                        modal.style.cssText = `
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(0, 0, 0, 0.9);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            z-index: 10000;
+                            animation: fadeIn 0.3s ease-out;
+                        `;
+                        
+                        modal.innerHTML = `
+                            <div style="
+                                background: linear-gradient(135deg, #ff6b35 0%, #1a1a1a 100%);
+                                border: 3px solid #ff6b35;
+                                border-radius: 20px;
+                                padding: 30px;
+                                text-align: center;
+                                max-width: 90%;
+                                width: 600px;
+                                max-height: 80vh;
+                                overflow-y: auto;
+                                box-shadow: 0 0 50px #ff6b35;
+                            ">
+                                <div style="font-size: 4rem; margin-bottom: 20px;">🎭</div>
+                                <h2 style="color: #ff6b35; margin-bottom: 20px; text-shadow: 0 0 10px #ff6b35;">2 CARAS ACTIVADO</h2>
+                                <p style="color: white; margin-bottom: 20px; font-size: 1.1em;">
+                                    El destino ha decidido para todos los jugadores...
+                                </p>
+                                
+                                <div style="
+                                    background: rgba(0, 255, 0, 0.1);
+                                    border: 2px solid #00ff00;
+                                    border-radius: 15px;
+                                    padding: 20px;
+                                    margin-bottom: 20px;
+                                    text-align: left;
+                                ">
+                                    <h3 style="color: #00ff00; margin-bottom: 15px;">🎉 GANADORES (+25%):</h3>
+                                    ${winners.length > 0 ? 
+                                        winners.map(name => `<div style="color: white; margin: 5px 0; font-size: 1.1em;">• ${name}</div>`).join('') :
+                                        '<div style="color: #666; font-style: italic;">Ninguno</div>'
+                                    }
+                                </div>
+                                
+                                <div style="
+                                    background: rgba(255, 0, 0, 0.1);
+                                    border: 2px solid #ff0000;
+                                    border-radius: 15px;
+                                    padding: 20px;
+                                    margin-bottom: 20px;
+                                    text-align: left;
+                                ">
+                                    <h3 style="color: #ff0000; margin-bottom: 15px;">💀 PERDEDORES (-25%):</h3>
+                                    ${losers.length > 0 ? 
+                                        losers.map(name => `<div style="color: white; margin: 5px 0; font-size: 1.1em;">• ${name}</div>`).join('') :
+                                        '<div style="color: #666; font-style: italic;">Ninguno</div>'
+                                    }
+                                </div>
+                                
+                                <p style="color: #ff6b35; font-size: 0.9em; font-style: italic;">
+                                    Tu identidad permanece oculta. ¡El caos ha sido liberado!
+                                </p>
+                                <button onclick="this.parentElement.parentElement.remove()" style="
+                                    background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
+                                    border: none;
+                                    border-radius: 10px;
+                                    padding: 15px 30px;
+                                    color: white;
+                                    font-size: 1.1em;
+                                    font-weight: bold;
+                                    cursor: pointer;
+                                    margin-top: 20px;
+                                    transition: all 0.3s ease;
+                                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                    ENTENDIDO
+                                </button>
+                            </div>
+                        `;
+                        
+                        document.body.appendChild(modal);
+                        
+                        // Show notification
+                        showNotification(`🎭 ¡2 Caras activado! ${winners.length} ganadores, ${losers.length} perdedores`, 'success');
+                        
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error activating two faces:', error);
+                        showNotification('❌ Error al activar 2 Caras', 'error');
                     });
             } else {
                 showNotification('❌ Error: Firebase no disponible', 'error');

@@ -1407,35 +1407,9 @@
             // Show results immediately for defender
             showFinalResults(challengerName, challengedName, challengerChoice, defenderChoice, winner, betAmount);
             
-            // Update coins and stats for defender
+            // Update coins and stats for both players
             if (winner !== 'tie') {
-                if ((winner === 'challenger' && currentPlayer === challengerName) || 
-                    (winner === 'challenged' && currentPlayer === challengedName)) {
-                    // Winner
-                    const newCoins = currentCoins + betAmount;
-                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
-                    currentCoins = newCoins;
-                    
-                    const userRef = db.ref(`players/${currentPlayer}`);
-                    userRef.update({ 
-                        coins: newCoins,
-                        rpsWins: (parseInt(localStorage.getItem('rpsWins') || '0') + 1).toString()
-                    });
-                } else {
-                    // Loser
-                    const newCoins = Math.max(0, currentCoins - betAmount);
-                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
-                    currentCoins = newCoins;
-                    
-                    const userRef = db.ref(`players/${currentPlayer}`);
-                    userRef.update({ 
-                        coins: newCoins,
-                        rpsLosses: (parseInt(localStorage.getItem('rpsLosses') || '0') + 1).toString()
-                    });
-                }
-                
-                // Update display
-                document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
+                updateBothPlayersCoins(challengerName, challengedName, winner, betAmount);
             }
             
             // Save to history
@@ -1467,6 +1441,87 @@
             challengeRef.remove();
             
             currentChallenge = null;
+        }
+
+        // Update coins for both players
+        function updateBothPlayersCoins(challengerName, challengedName, winner, betAmount) {
+            const db = window.firebase.database();
+            
+            // Update challenger
+            const challengerRef = db.ref(`players/${challengerName}`);
+            challengerRef.once('value')
+                .then((snapshot) => {
+                    const challengerData = snapshot.val() || {};
+                    const challengerCoins = challengerData.coins || 0;
+                    const challengerWins = parseInt(challengerData.rpsWins || '0');
+                    const challengerLosses = parseInt(challengerData.rpsLosses || '0');
+                    
+                    let newChallengerCoins, newChallengerWins, newChallengerLosses;
+                    
+                    if (winner === 'challenger') {
+                        newChallengerCoins = challengerCoins + betAmount;
+                        newChallengerWins = challengerWins + 1;
+                        newChallengerLosses = challengerLosses;
+                    } else {
+                        newChallengerCoins = Math.max(0, challengerCoins - betAmount);
+                        newChallengerWins = challengerWins;
+                        newChallengerLosses = challengerLosses + 1;
+                    }
+                    
+                    challengerRef.update({
+                        coins: newChallengerCoins,
+                        rpsWins: newChallengerWins.toString(),
+                        rpsLosses: newChallengerLosses.toString(),
+                        lastUpdated: Date.now()
+                    });
+                    
+                    // Update current player display if they are the challenger
+                    if (currentPlayer === challengerName) {
+                        localStorage.setItem('totalOrtizCoins', newChallengerCoins.toString());
+                        currentCoins = newChallengerCoins;
+                        document.getElementById('currentPlayerCoins').textContent = newChallengerCoins.toLocaleString() + ' monedas';
+                        localStorage.setItem('rpsWins', newChallengerWins.toString());
+                        localStorage.setItem('rpsLosses', newChallengerLosses.toString());
+                    }
+                });
+            
+            // Update challenged
+            const challengedRef = db.ref(`players/${challengedName}`);
+            challengedRef.once('value')
+                .then((snapshot) => {
+                    const challengedData = snapshot.val() || {};
+                    const challengedCoins = challengedData.coins || 0;
+                    const challengedWins = parseInt(challengedData.rpsWins || '0');
+                    const challengedLosses = parseInt(challengedData.rpsLosses || '0');
+                    
+                    let newChallengedCoins, newChallengedWins, newChallengedLosses;
+                    
+                    if (winner === 'challenged') {
+                        newChallengedCoins = challengedCoins + betAmount;
+                        newChallengedWins = challengedWins + 1;
+                        newChallengedLosses = challengedLosses;
+                    } else {
+                        newChallengedCoins = Math.max(0, challengedCoins - betAmount);
+                        newChallengedWins = challengedWins;
+                        newChallengedLosses = challengedLosses + 1;
+                    }
+                    
+                    challengedRef.update({
+                        coins: newChallengedCoins,
+                        rpsWins: newChallengedWins.toString(),
+                        rpsLosses: newChallengedLosses.toString(),
+                        lastUpdated: Date.now()
+                    });
+                    
+                    // Update current player display if they are the challenged
+                    if (currentPlayer === challengedName) {
+                        localStorage.setItem('totalOrtizCoins', newChallengedCoins.toString());
+                        currentCoins = newChallengedCoins;
+                        document.getElementById('currentPlayerCoins').textContent = newChallengedCoins.toLocaleString() + ' monedas';
+                        localStorage.setItem('rpsWins', newChallengedWins.toString());
+                        localStorage.setItem('rpsLosses', newChallengedLosses.toString());
+                    }
+                });
         }
 
         // Show final results
@@ -1575,35 +1630,9 @@
             const winner = result.winner;
             const betAmount = result.betAmount;
             
-            // Update coins and stats for challenger
-            if (winner !== 'tie') {
-                if (winner === 'challenger') {
-                    // Challenger won
-                    const newCoins = currentCoins + betAmount;
-                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
-                    currentCoins = newCoins;
-                    
-                    const userRef = db.ref(`players/${currentPlayer}`);
-                    userRef.update({ 
-                        coins: newCoins,
-                        rpsWins: (parseInt(localStorage.getItem('rpsWins') || '0') + 1).toString()
-                    });
-                } else {
-                    // Challenger lost
-                    const newCoins = Math.max(0, currentCoins - betAmount);
-                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
-                    currentCoins = newCoins;
-                    
-                    const userRef = db.ref(`players/${currentPlayer}`);
-                    userRef.update({ 
-                        coins: newCoins,
-                        rpsLosses: (parseInt(localStorage.getItem('rpsLosses') || '0') + 1).toString()
-                    });
-                }
-                
-                // Update display
-                document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
-            }
+            // Update display with current coins (already updated by updateBothPlayersCoins)
+            const currentCoinsDisplay = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            document.getElementById('currentPlayerCoins').textContent = currentCoinsDisplay.toLocaleString() + ' monedas';
             
             // Save to history if not already saved
             const historyRef = db.ref('rpsHistory');

@@ -62,29 +62,47 @@
         }
 
         .player-card {
-            background: rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(147, 112, 219, 0.1));
             padding: 20px;
             border-radius: 15px;
-            border: 2px solid transparent;
+            border: 2px solid #8A2BE2;
             transition: all 0.3s ease;
             position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .player-card:hover::before {
+            left: 100%;
         }
 
         .player-card:hover {
-            border-color: #9370DB;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(147, 112, 219, 0.3);
+            border-color: #FFD700;
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.5);
         }
 
         .player-card.online {
             border-color: #4CAF50;
-            background: rgba(76, 175, 80, 0.1);
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
         }
 
         .player-card.offline {
             border-color: #666;
-            background: rgba(102, 102, 102, 0.1);
-            opacity: 0.6;
+            background: linear-gradient(135deg, rgba(102, 102, 102, 0.2), rgba(102, 102, 102, 0.1));
+            opacity: 0.7;
         }
 
         .player-header {
@@ -165,6 +183,80 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+
+        .no-players {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(147, 112, 219, 0.1));
+            border-radius: 15px;
+            border: 2px solid #8A2BE2;
+        }
+
+        .no-players-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .no-players-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .no-players-subtext {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .refresh-header-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-header-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
         }
 
         .game-section {
@@ -471,7 +563,10 @@
         </div>
 
         <div class="main-section" id="mainSection">
-            <h2>👥 Jugadores Online</h2>
+            <div class="section-header">
+                <h2>👥 Jugadores Online</h2>
+                <button class="refresh-header-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
+            </div>
             <div class="players-list" id="playersList">
                 <div class="loading">Cargando jugadores...</div>
             </div>
@@ -576,15 +671,18 @@
 
         // Load online players
         function loadOnlinePlayers() {
+            console.log('🔍 Loading players...');
             const usersRef = ref(db, 'users');
             onValue(usersRef, (snapshot) => {
                 const data = snapshot.val();
+                console.log('📊 Firebase data:', data);
                 if (data) {
                     const players = [];
                     Object.keys(data).forEach(playerName => {
                         const player = data[playerName];
-                        // Show all players with coins, not just those marked as online
-                        if (playerName !== currentPlayer && parseInt(player.totalOrtizCoins || '0') > 0) {
+                        console.log(`👤 Player: ${playerName}`, player);
+                        // Show ALL players except current player
+                        if (playerName !== currentPlayer) {
                             players.push({
                                 name: playerName,
                                 coins: parseInt(player.totalOrtizCoins || '0'),
@@ -594,8 +692,15 @@
                             });
                         }
                     });
+                    console.log('🎮 Players to display:', players);
                     updatePlayersDisplay(players);
+                } else {
+                    console.log('❌ No data from Firebase');
+                    updatePlayersDisplay([]);
                 }
+            }, (error) => {
+                console.error('🔥 Firebase error:', error);
+                updatePlayersDisplay([]);
             });
         }
 
@@ -605,7 +710,13 @@
             playersList.innerHTML = '';
             
             if (players.length === 0) {
-                playersList.innerHTML = '<div class="loading">No hay jugadores disponibles en este momento...</div>';
+                playersList.innerHTML = `
+                    <div class="no-players">
+                        <div class="no-players-icon">🎲</div>
+                        <div class="no-players-text">No hay jugadores disponibles</div>
+                        <div class="no-players-subtext">Intenta refrescar la página</div>
+                        <button class="refresh-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
+                    </div>`;
                 return;
             }
             

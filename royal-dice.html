@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✂️ PIEDRA PAPEL O TIJERA - Squid Game Ortiz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>🎲 Royal Dice - Squid Game Ortiz</title>
     <style>
         * {
             margin: 0;
@@ -13,906 +12,1000 @@
         }
 
         body {
-            font-family: 'Orbitron', Arial, sans-serif;
-            background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #1a0033 100%);
-            color: #fff;
-            overflow-x: hidden;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: white;
             min-height: 100vh;
-            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Animated background */
-        body::before {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #ccc;
+        }
+
+        .main-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .players-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .player-card {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(147, 112, 219, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #8A2BE2;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .player-card::before {
             content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .player-card:hover::before {
+            left: 100%;
+        }
+
+        .player-card:hover {
+            border-color: #FFD700;
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.5);
+        }
+
+        .player-card.online {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .player-card.offline {
+            border-color: #666;
+            background: linear-gradient(135deg, rgba(102, 102, 102, 0.2), rgba(102, 102, 102, 0.1));
+            opacity: 0.7;
+        }
+
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .player-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .player-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #666;
+        }
+
+        .status-dot.online {
+            background: #4CAF50;
+            box-shadow: 0 0 10px #4CAF50;
+        }
+
+        .status-dot.offline {
+            background: #666;
+            box-shadow: 0 0 5px #666;
+        }
+
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .player-coins {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .player-stats {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+
+        .challenge-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, #9370DB, #8A2BE2);
+            color: white;
+        }
+
+        .challenge-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(147, 112, 219, 0.4);
+        }
+
+        .challenge-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .no-players {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(147, 112, 219, 0.1));
+            border-radius: 15px;
+            border: 2px solid #8A2BE2;
+        }
+
+        .no-players-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .no-players-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .no-players-subtext {
+            font-size: 1rem;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .refresh-header-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-header-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .game-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .challenge-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .dice {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .dice.rolling {
+            animation: roll 0.5s infinite;
+        }
+
+        @keyframes roll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+        }
+
+        .winner {
+            text-align: center;
+            font-size: 1.5em;
+            color: #FFD700;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .score-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .score-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .score-card.winner {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
+            color: #FFD700;
+            margin: 20px 0;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .challenge-modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(3px 3px at 20px 30px, #FFD700, transparent),
-                radial-gradient(2px 2px at 40px 70px, #FF4500, transparent),
-                radial-gradient(1px 1px at 90px 40px, #00CED1, transparent),
-                radial-gradient(2px 2px at 130px 80px, #8A2BE2, transparent),
-                radial-gradient(1px 1px at 160px 30px, #32CD32, transparent);
-            background-repeat: repeat;
-            background-size: 200px 100px;
-            animation: backgroundMove 15s linear infinite;
-            z-index: -1;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
         }
 
-        @keyframes backgroundMove {
-            0% { transform: translateX(0) translateY(0); }
-            100% { transform: translateX(-200px) translateY(-100px); }
-        }
-
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        #gameHeader {
+        .challenge-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 30px;
+            border-radius: 15px;
             text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
+            max-width: 400px;
+            width: 90%;
+            border: 2px solid #9370DB;
+            box-shadow: 0 0 30px rgba(147, 112, 219, 0.5);
         }
 
-        #gameTitle {
-            font-size: 2.5rem;
-            font-weight: 900;
+        .challenge-title {
+            font-size: 1.5em;
             color: #FFD700;
-            text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700;
-            margin-bottom: 10px;
-            animation: titleGlow 2s ease-in-out infinite alternate;
+            margin-bottom: 15px;
         }
 
-        @keyframes titleGlow {
-            0% { text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700; }
-            100% { text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700, 0 0 80px #FFD700; }
+        .challenge-message {
+            margin-bottom: 20px;
+            color: #ccc;
         }
 
-        #gameStats {
+        .challenge-bet {
+            font-size: 1.2em;
+            color: #FFD700;
+            margin-bottom: 20px;
+        }
+
+        .challenge-buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin-bottom: 20px;
+        }
+
+        .bet-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
             flex-wrap: wrap;
         }
 
-        .stat {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            padding: 10px 15px;
-            border-radius: 10px;
-            border: 2px solid #FFD700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-            color: #000;
-            font-weight: bold;
-            min-width: 100px;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: #000;
-        }
-
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: #000;
-        }
-
-        #mainMenu {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .menuButton {
-            background: linear-gradient(45deg, #FFFFFF, #F0F0F0);
-            color: #333;
-            border: none;
-            border-radius: 15px;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', Arial, sans-serif;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .menuButton:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
-        }
-
-        #challengeScreen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 600px;
-        }
-
-        #playerList {
-            background: rgba(138, 43, 226, 0.2);
-            border: 2px solid #8A2BE2;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            width: 100%;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .playerItem {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .bet-input input {
             padding: 10px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .playerInfo {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .playerName {
-            font-weight: bold;
-            color: #FFD700;
-            font-size: 1.1rem;
-        }
-
-        .playerCoins {
-            font-size: 0.9rem;
-            color: #9370DB;
-        }
-
-        .challengeButton {
-            background: linear-gradient(45deg, #FF4500, #FF6347);
-            color: white;
             border: none;
-            border-radius: 8px;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .challengeButton:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
-        }
-
-        .challengeButton:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        #gameScreen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        #gameInfo {
-            background: rgba(138, 43, 226, 0.2);
-            border: 2px solid #8A2BE2;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            width: 100%;
-        }
-
-        #opponentInfo {
-            font-size: 1.2rem;
-            color: #FFD700;
-            margin-bottom: 10px;
-        }
-
-        #betAmount {
-            font-size: 1.1rem;
-            color: #9370DB;
-        }
-
-        #gameBoard {
-            background: rgba(138, 43, 226, 0.1);
-            border: 3px solid #8A2BE2;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 20px;
-            text-align: center;
-            width: 100%;
-        }
-
-        #gameStatus {
-            font-size: 1.3rem;
-            color: #FFD700;
-            margin-bottom: 20px;
-        }
-
-        #choices {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .choiceButton {
-            background: linear-gradient(45deg, #32CD32, #228B22);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            padding: 20px;
-            font-size: 3rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .choiceButton:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 25px rgba(50, 205, 50, 0.6);
-        }
-
-        .choiceButton.selected {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-        }
-
-        #result {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .result-win {
-            background: rgba(50, 205, 50, 0.3);
-            color: #32CD32;
-            border: 2px solid #32CD32;
-        }
-
-        .result-lose {
-            background: rgba(255, 69, 0, 0.3);
-            color: #FF4500;
-            border: 2px solid #FF4500;
-        }
-
-        .result-draw {
-            background: rgba(255, 215, 0, 0.3);
-            color: #FFD700;
-            border: 2px solid #FFD700;
-        }
-
-        #pendingChallenges {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .challengeItem {
-            background: rgba(138, 43, 226, 0.2);
-            border: 2px solid #8A2BE2;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            width: 100%;
+            border-radius: 5px;
+            font-size: 1em;
+            width: 150px;
             text-align: center;
         }
 
-        .challengeFrom {
-            font-size: 1.2rem;
-            color: #FFD700;
-            margin-bottom: 10px;
-        }
-
-        .challengeBet {
-            font-size: 1.1rem;
-            color: #9370DB;
-            margin-bottom: 15px;
-        }
-
-        .challengeActions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .acceptButton {
-            background: linear-gradient(45deg, #32CD32, #228B22);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .acceptButton:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(50, 205, 50, 0.6);
-        }
-
-        .declineButton {
-            background: linear-gradient(45deg, #FF4500, #FF6347);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .declineButton:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(255, 69, 0, 0.6);
-        }
-
-        #gameControls {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .gameButton {
-            background: linear-gradient(45deg, #8A2BE2, #9370DB);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', Arial, sans-serif;
-            box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
-        }
-
-        .gameButton:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.8);
-        }
-
-        /* Mobile responsive */
         @media (max-width: 768px) {
-            #gameTitle {
-                font-size: 2rem;
-            }
-
-            #gameStats {
-                gap: 10px;
-            }
-
-            .stat {
-                padding: 8px 12px;
-                min-width: 80px;
-            }
-
-            .stat-label {
-                font-size: 0.7rem;
-            }
-
-            .stat-value {
-                font-size: 1rem;
-            }
-
-            .menuButton {
-                padding: 12px 25px;
-                font-size: 1.1rem;
-            }
-
-            #choices {
-                gap: 15px;
-            }
-
-            .choiceButton {
-                width: 80px;
-                height: 80px;
-                font-size: 2.5rem;
-                padding: 15px;
-            }
-
-            #gameBoard {
-                padding: 20px;
-            }
-
-            #gameStatus {
-                font-size: 1.1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #gameTitle {
-                font-size: 1.5rem;
-            }
-
-            .menuButton {
-                padding: 10px 20px;
-                font-size: 1rem;
-            }
-
-            #choices {
-                gap: 10px;
-            }
-
-            .choiceButton {
-                width: 70px;
-                height: 70px;
-                font-size: 2rem;
+            .container {
                 padding: 10px;
             }
-
-            .challengeActions {
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .dice {
+                width: 60px;
+                height: 60px;
+                font-size: 2em;
+            }
+            
+            .controls {
                 flex-direction: column;
-                gap: 8px;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
             }
 
-            .acceptButton, .declineButton {
-                padding: 8px 15px;
-                font-size: 0.9rem;
+            .challenge-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #9370DB;
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
             }
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <div id="gameHeader">
-            <h1 id="gameTitle">✂️ PIEDRA PAPEL O TIJERA</h1>
-            <div id="gameStats">
-                <div class="stat">
-                    <div class="stat-label">MONEDAS</div>
-                    <div class="stat-value" id="coins">1000</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">RETOS ENVIADOS</div>
-                    <div class="stat-value" id="sentChallenges">0</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">RETOS GANADOS</div>
-                    <div class="stat-value" id="wonChallenges">0</div>
-                </div>
+    <div class="particles" id="particles"></div>
+    
+    <button class="btn btn-secondary back-btn" onclick="window.location.href='index.html'">
+        ← Volver
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎲 Royal Dice</h1>
+            <p>Reta a otros jugadores en duelos de dados épicos</p>
+        </div>
+
+        <div class="main-section" id="mainSection">
+            <div class="section-header">
+                <h2>👥 Jugadores Online</h2>
+                <button class="refresh-header-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
+            </div>
+            <div class="players-list" id="playersList">
+                <div class="loading">Cargando jugadores...</div>
             </div>
         </div>
 
-        <!-- Menú principal -->
-        <div id="mainMenu">
-            <button class="menuButton" onclick="showChallengeScreen()">⚔️ ENVIAR RETO</button>
-            <button class="menuButton" onclick="showPendingChallenges()">📬 RETOS PENDIENTES</button>
-            <button class="menuButton" onclick="goBack()">🔙 VOLVER</button>
-        </div>
-
-        <!-- Pantalla de envío de retos -->
-        <div id="challengeScreen">
-            <h2 style="color: #FFD700; margin-bottom: 20px;">⚔️ ENVIAR RETO</h2>
-            <div id="playerList">
-                <div style="text-align: center; color: #9370DB; margin-bottom: 15px;">
-                    Selecciona un jugador para retar:
+        <div class="game-section" id="gameSection">
+            <h2>⚔️ Duelo en Progreso</h2>
+            <div class="challenge-info">
+                <div>
+                    <strong>Retador:</strong>
+                    <span id="challengerName">-</span>
                 </div>
-                <!-- Los jugadores se cargarán dinámicamente -->
-            </div>
-            <button class="gameButton" onclick="showMainMenu()">🔙 VOLVER</button>
-        </div>
-
-        <!-- Pantalla de retos pendientes -->
-        <div id="pendingChallenges">
-            <h2 style="color: #FFD700; margin-bottom: 20px;">📬 RETOS PENDIENTES</h2>
-            <div id="challengesList">
-                <!-- Los retos se cargarán dinámicamente -->
-            </div>
-            <button class="gameButton" onclick="showMainMenu()">🔙 VOLVER</button>
-        </div>
-
-        <!-- Pantalla del juego -->
-        <div id="gameScreen">
-            <div id="gameInfo">
-                <div id="opponentInfo">Retando a: <span id="opponentName">Jugador</span></div>
-                <div id="betAmount">Apuesta: <span id="betValue">0</span> monedas</div>
-            </div>
-
-            <div id="gameBoard">
-                <div id="gameStatus">Elige tu jugada:</div>
-                <div id="choices">
-                    <button class="choiceButton" onclick="selectChoice('rock')">🪨</button>
-                    <button class="choiceButton" onclick="selectChoice('paper')">📄</button>
-                    <button class="choiceButton" onclick="selectChoice('scissors')">✂️</button>
+                <div>
+                    <strong>Retado:</strong>
+                    <span id="challengedName">-</span>
                 </div>
-                <div id="result"></div>
+                <div>
+                    <strong>Apuesta:</strong>
+                    <span id="challengeBet">0</span> monedas
+                </div>
             </div>
 
-            <div id="gameControls">
-                <button class="gameButton" onclick="playGame()">🎮 JUGAR</button>
-                <button class="gameButton" onclick="showMainMenu()">🔙 VOLVER</button>
+            <div class="dice-container" id="diceContainer">
+                <div class="dice" id="dice1">⚀</div>
+                <div class="dice" id="dice2">⚀</div>
+                <div class="dice" id="dice3">⚀</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="rollBtn" onclick="rollDice()">
+                    Lanzar Dados
+                </button>
+            </div>
+
+            <div class="results" id="results" style="display: none;">
+                <div class="winner" id="winnerText"></div>
+                <div class="score-board" id="scoreBoard"></div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Game variables
-        let currentPlayer = '';
-        let currentBet = 0;
-        let selectedChoice = '';
-        let playerCoins = 1000;
-        let sentChallenges = 0;
-        let wonChallenges = 0;
+    <!-- Challenge Modal -->
+    <div class="challenge-modal" id="challengeModal">
+        <div class="challenge-content">
+            <div class="challenge-title">⚔️ ¡Nuevo Reto!</div>
+            <div class="challenge-message" id="challengeMessage"></div>
+            <div class="challenge-bet" id="challengeBetAmount"></div>
+            <div class="challenge-buttons">
+                <button class="btn btn-secondary" onclick="acceptChallenge()">✅ Aceptar</button>
+                <button class="btn btn-danger" onclick="rejectChallenge()">❌ Rechazar</button>
+            </div>
+        </div>
+    </div>
 
-        // Initialize game
-        function initGame() {
-            loadPlayerData();
-            loadPlayers();
-            loadPendingChallenges();
-            showMainMenu();
-        }
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, onValue, push, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
-        // Load player data
-        function loadPlayerData() {
-            const playerName = localStorage.getItem('playerName') || 'Jugador';
-            playerCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '1000');
-            sentChallenges = parseInt(localStorage.getItem('royalSentChallenges') || '0');
-            wonChallenges = parseInt(localStorage.getItem('royalWonChallenges') || '0');
-            
-            updateStats();
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqXqXqXqXqXqXqXqXqXqXqXqXqXqXqXq",
+            authDomain: "squid-game-ortiz.firebaseapp.com",
+            databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
+            projectId: "squid-game-ortiz",
+            storageBucket: "squid-game-ortiz.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdefghijklmnop"
+        };
 
-        // Update stats display
-        function updateStats() {
-            document.getElementById('coins').textContent = playerCoins;
-            document.getElementById('sentChallenges').textContent = sentChallenges;
-            document.getElementById('wonChallenges').textContent = wonChallenges;
-        }
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // Load players from Firebase
-        function loadPlayers() {
-            if (!window.firebase || !window.firebase.database) {
-                console.log('Firebase no disponible');
-                return;
+        let currentPlayer = localStorage.getItem('playerName') || 'Jugador';
+        let currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        let gameState = 'lobby'; // lobby, challenging, playing, finished
+        let currentChallenge = null;
+        let myRoll = null;
+        let opponentRoll = null;
+        let challengeBet = 100;
+
+        // Initialize particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
             }
+        }
 
-            const playersRef = window.firebase.database().ref('users');
-            playersRef.once('value')
-                .then((snapshot) => {
-                    const playerList = document.getElementById('playerList');
-                    playerList.innerHTML = '<div style="text-align: center; color: #9370DB; margin-bottom: 15px;">Selecciona un jugador para retar:</div>';
-                    
-                    const currentPlayerName = localStorage.getItem('playerName') || 'Jugador';
-                    
-                    snapshot.forEach((childSnapshot) => {
-                        const playerData = childSnapshot.val();
-                        const playerName = childSnapshot.key;
-                        
-                        if (playerName !== currentPlayerName && playerName !== 'yo' && playerName !== 'prueba' && playerName !== 'prueba 2') {
-                            const playerCoins = parseInt(playerData.totalOrtizCoins || '0');
-                            
-                            const playerItem = document.createElement('div');
-                            playerItem.className = 'playerItem';
-                            playerItem.innerHTML = `
-                                <div class="playerInfo">
-                                    <div class="playerName">${playerName}</div>
-                                    <div class="playerCoins">${playerCoins} monedas</div>
-                                </div>
-                                <button class="challengeButton" onclick="sendChallenge('${playerName}', ${playerCoins})">
-                                    ⚔️ RETAR
-                                </button>
-                            `;
-                            playerList.appendChild(playerItem);
+        // Set online status
+        function setOnlineStatus() {
+            const userRef = ref(db, `users/${currentPlayer}`);
+            update(userRef, { 
+                online: true,
+                lastSeen: Date.now(),
+                royalDiceActive: true
+            });
+        }
+
+        // Load online players
+        function loadOnlinePlayers() {
+            console.log('🔍 Loading players...');
+            const usersRef = ref(db, 'users');
+            onValue(usersRef, (snapshot) => {
+                const data = snapshot.val();
+                console.log('📊 Firebase data:', data);
+                if (data) {
+                    const players = [];
+                    Object.keys(data).forEach(playerName => {
+                        const player = data[playerName];
+                        console.log(`👤 Player: ${playerName}`, player);
+                        // Show ALL players except current player
+                        if (playerName !== currentPlayer) {
+                            players.push({
+                                name: playerName,
+                                coins: parseInt(player.totalOrtizCoins || '0'),
+                                wins: parseInt(player.royalDiceWins || '0'),
+                                losses: parseInt(player.royalDiceLosses || '0'),
+                                isOnline: player.online || false
+                            });
                         }
                     });
-                })
-                .catch((error) => {
-                    console.error('Error loading players:', error);
-                });
+                    console.log('🎮 Players to display:', players);
+                    updatePlayersDisplay(players);
+                } else {
+                    console.log('❌ No data from Firebase');
+                    updatePlayersDisplay([]);
+                }
+            }, (error) => {
+                console.error('🔥 Firebase error:', error);
+                updatePlayersDisplay([]);
+            });
         }
 
-        // Send challenge
-        function sendChallenge(targetPlayer, targetCoins) {
-            const currentPlayerName = localStorage.getItem('playerName') || 'Jugador';
-            const maxBet = Math.min(playerCoins, targetCoins, 1000);
+        // Update players display
+        function updatePlayersDisplay(players) {
+            const playersList = document.getElementById('playersList');
+            playersList.innerHTML = '';
             
-            if (maxBet < 10) {
-                alert('No hay suficientes monedas para retar (mínimo 10)');
+            if (players.length === 0) {
+                playersList.innerHTML = `
+                    <div class="no-players">
+                        <div class="no-players-icon">🎲</div>
+                        <div class="no-players-text">No hay jugadores disponibles</div>
+                        <div class="no-players-subtext">Intenta refrescar la página</div>
+                        <button class="refresh-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
+                    </div>`;
                 return;
             }
-
-            const betAmount = prompt(`¿Cuántas monedas quieres apostar? (máximo ${maxBet}):`);
-            const bet = parseInt(betAmount);
-
-            if (isNaN(bet) || bet < 10 || bet > maxBet) {
-                alert('Apuesta inválida. Debe ser entre 10 y ' + maxBet + ' monedas');
-                return;
-            }
-
-            if (bet > playerCoins) {
-                alert('No tienes suficientes monedas');
-                return;
-            }
-
-            // Create challenge in Firebase
-            const challengeRef = window.firebase.database().ref('royalChallenges');
-            const newChallenge = challengeRef.push();
             
-            newChallenge.set({
-                from: currentPlayerName,
-                to: targetPlayer,
-                bet: bet,
+            players.forEach(player => {
+                const playerCard = document.createElement('div');
+                playerCard.className = `player-card ${player.isOnline ? 'online' : 'offline'}`;
+                
+                playerCard.innerHTML = `
+                    <div class="player-header">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-status">
+                            <div class="status-dot ${player.isOnline ? 'online' : 'offline'}"></div>
+                            <span>${player.isOnline ? 'Online' : 'Offline'}</span>
+                        </div>
+                    </div>
+                    <div class="player-info">
+                        <div class="player-coins">💰 ${player.coins} monedas</div>
+                        <div class="player-stats">🏆 ${player.wins}W - ${player.losses}L</div>
+                    </div>
+                    <button class="challenge-btn" onclick="challengePlayer('${player.name}', ${player.coins})" ${!player.isOnline ? 'disabled' : ''}>
+                        ${player.isOnline ? '⚔️ Retar' : '🔴 Offline'}
+                    </button>
+                `;
+                
+                playersList.appendChild(playerCard);
+            });
+        }
+
+        // Challenge a player
+        window.challengePlayer = function(playerName, playerCoins) {
+            const maxBet = Math.min(currentCoins, playerCoins, 10000); // Max bet 10,000
+            const betAmount = prompt(`¿Cuántas monedas quieres apostar contra ${playerName}?\nMáximo: ${maxBet} monedas`, '100');
+            
+            if (!betAmount || isNaN(betAmount) || betAmount < 100 || betAmount > maxBet) {
+                alert('Apuesta inválida. Mínimo: 100, Máximo: ' + maxBet);
+                return;
+            }
+
+            challengeBet = parseInt(betAmount);
+            
+            // Create challenge
+            const challengeRef = ref(db, `royalDiceChallenges/${playerName}`);
+            set(challengeRef, {
+                challenger: currentPlayer,
+                challenged: playerName,
+                betAmount: challengeBet,
                 status: 'pending',
-                timestamp: Date.now()
+                createdAt: Date.now()
             });
 
-            // Deduct coins immediately
-            playerCoins -= bet;
-            localStorage.setItem('totalOrtizCoins', playerCoins.toString());
-            
-            // Update stats
-            sentChallenges++;
-            localStorage.setItem('royalSentChallenges', sentChallenges.toString());
-            
-            // Update Firebase
-            const userRef = window.firebase.database().ref(`users/${currentPlayerName}`);
-            userRef.update({
-                totalOrtizCoins: playerCoins,
-                royalSentChallenges: sentChallenges
-            });
+            alert(`Reto enviado a ${playerName} por ${challengeBet} monedas!`);
+        };
 
-            updateStats();
-            alert(`¡Reto enviado a ${targetPlayer} por ${bet} monedas!`);
-            showMainMenu();
+        // Listen for incoming challenges
+        function listenForChallenges() {
+            const challengeRef = ref(db, `royalDiceChallenges/${currentPlayer}`);
+            onValue(challengeRef, (snapshot) => {
+                const challenge = snapshot.val();
+                if (challenge && challenge.status === 'pending') {
+                    showChallengeModal(challenge);
+                }
+            });
         }
 
-        // Load pending challenges
-        function loadPendingChallenges() {
-            if (!window.firebase || !window.firebase.database) {
-                console.log('Firebase no disponible');
-                return;
-            }
-
-            const currentPlayerName = localStorage.getItem('playerName') || 'Jugador';
-            const challengesRef = window.firebase.database().ref('royalChallenges');
-            
-            challengesRef.orderByChild('to').equalTo(currentPlayerName).once('value')
-                .then((snapshot) => {
-                    const challengesList = document.getElementById('challengesList');
-                    challengesList.innerHTML = '';
-                    
-                    if (snapshot.numChildren() === 0) {
-                        challengesList.innerHTML = '<div style="text-align: center; color: #9370DB; padding: 20px;">No tienes retos pendientes</div>';
-                        return;
-                    }
-                    
-                    snapshot.forEach((childSnapshot) => {
-                        const challenge = childSnapshot.val();
-                        if (challenge.status === 'pending') {
-                            const challengeItem = document.createElement('div');
-                            challengeItem.className = 'challengeItem';
-                            challengeItem.innerHTML = `
-                                <div class="challengeFrom">Reto de: ${challenge.from}</div>
-                                <div class="challengeBet">Apuesta: ${challenge.bet} monedas</div>
-                                <div class="challengeActions">
-                                    <button class="acceptButton" onclick="acceptChallenge('${childSnapshot.key}', '${challenge.from}', ${challenge.bet})">
-                                        ✅ ACEPTAR
-                                    </button>
-                                    <button class="declineButton" onclick="declineChallenge('${childSnapshot.key}')">
-                                        ❌ RECHAZAR
-                                    </button>
-                                </div>
-                            `;
-                            challengesList.appendChild(challengeItem);
-                        }
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error loading challenges:', error);
-                });
+        // Show challenge modal
+        function showChallengeModal(challenge) {
+            currentChallenge = challenge;
+            document.getElementById('challengeMessage').textContent = 
+                `${challenge.challenger} te está retando a un duelo de dados!`;
+            document.getElementById('challengeBetAmount').textContent = 
+                `Apuesta: ${challenge.betAmount} monedas`;
+            document.getElementById('challengeModal').style.display = 'block';
         }
 
         // Accept challenge
-        function acceptChallenge(challengeId, challenger, bet) {
-            if (bet > playerCoins) {
-                alert('No tienes suficientes monedas para aceptar este reto');
-                return;
-            }
-
-            // Deduct coins
-            playerCoins -= bet;
-            localStorage.setItem('totalOrtizCoins', playerCoins.toString());
-            
-            // Update Firebase
-            const userRef = window.firebase.database().ref(`users/${localStorage.getItem('playerName') || 'Jugador'}`);
-            userRef.update({
-                totalOrtizCoins: playerCoins
-            });
-
-            // Start game
-            currentPlayer = challenger;
-            currentBet = bet;
-            updateStats();
+        window.acceptChallenge = function() {
+            if (!currentChallenge) return;
             
             // Update challenge status
-            const challengeRef = window.firebase.database().ref(`royalChallenges/${challengeId}`);
-            challengeRef.update({
-                status: 'active',
-                acceptedAt: Date.now()
+            const challengeRef = ref(db, `royalDiceChallenges/${currentChallenge.challenged}`);
+            set(challengeRef, { status: 'accepted' });
+            
+            // Start game
+            startGame(currentChallenge);
+            
+            // Hide modal
+            document.getElementById('challengeModal').style.display = 'none';
+        };
+
+        // Reject challenge
+        window.rejectChallenge = function() {
+            if (!currentChallenge) return;
+            
+            // Remove challenge
+            const challengeRef = ref(db, `royalDiceChallenges/${currentChallenge.challenged}`);
+            remove(challengeRef);
+            
+            // Hide modal
+            document.getElementById('challengeModal').style.display = 'none';
+            currentChallenge = null;
+        };
+
+        // Start game
+        function startGame(challenge) {
+            gameState = 'playing';
+            document.getElementById('mainSection').style.display = 'none';
+            document.getElementById('gameSection').style.display = 'block';
+            
+            document.getElementById('challengerName').textContent = challenge.challenger;
+            document.getElementById('challengedName').textContent = challenge.challenged;
+            document.getElementById('challengeBet').textContent = challenge.betAmount;
+            
+            // Determine turn order (challenger goes first)
+            const isMyTurn = challenge.challenger === currentPlayer;
+            const rollBtn = document.getElementById('rollBtn');
+            rollBtn.disabled = !isMyTurn;
+            rollBtn.textContent = isMyTurn ? 'Lanzar Dados' : 'Esperando al oponente...';
+            
+            // Listen for game updates
+            const gameRef = ref(db, `royalDiceGames/${challenge.challenger}_${challenge.challenged}`);
+            onValue(gameRef, (snapshot) => {
+                const gameData = snapshot.val();
+                if (gameData) {
+                    updateGameState(gameData);
+                }
             });
-
-            showGameScreen();
         }
 
-        // Decline challenge
-        function declineChallenge(challengeId) {
-            const challengeRef = window.firebase.database().ref(`royalChallenges/${challengeId}`);
-            challengeRef.update({
-                status: 'declined'
-            });
-            
-            loadPendingChallenges();
-        }
-
-        // Show main menu
-        function showMainMenu() {
-            document.getElementById('mainMenu').style.display = 'flex';
-            document.getElementById('challengeScreen').style.display = 'none';
-            document.getElementById('pendingChallenges').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'none';
-        }
-
-        // Show challenge screen
-        function showChallengeScreen() {
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('challengeScreen').style.display = 'flex';
-            document.getElementById('pendingChallenges').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'none';
-            loadPlayers();
-        }
-
-        // Show pending challenges
-        function showPendingChallenges() {
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('challengeScreen').style.display = 'none';
-            document.getElementById('pendingChallenges').style.display = 'flex';
-            document.getElementById('gameScreen').style.display = 'none';
-            loadPendingChallenges();
-        }
-
-        // Show game screen
-        function showGameScreen() {
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('challengeScreen').style.display = 'none';
-            document.getElementById('pendingChallenges').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'flex';
-            
-            document.getElementById('opponentName').textContent = currentPlayer;
-            document.getElementById('betValue').textContent = currentBet;
-            document.getElementById('gameStatus').textContent = 'Elige tu jugada:';
-            document.getElementById('result').style.display = 'none';
-            
-            // Reset choice buttons
-            document.querySelectorAll('.choiceButton').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            selectedChoice = '';
-        }
-
-        // Select choice
-        function selectChoice(choice) {
-            selectedChoice = choice;
-            
-            // Update button styles
-            document.querySelectorAll('.choiceButton').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            
-            if (choice === 'rock') {
-                document.querySelector('.choiceButton:nth-child(1)').classList.add('selected');
-            } else if (choice === 'paper') {
-                document.querySelector('.choiceButton:nth-child(2)').classList.add('selected');
-            } else if (choice === 'scissors') {
-                document.querySelector('.choiceButton:nth-child(3)').classList.add('selected');
+        // Update game state
+        function updateGameState(gameData) {
+            if (gameData.challengerRoll && gameData.challengedRoll) {
+                // Both players have rolled
+                showResults(gameData);
+            } else if (gameData.challengerRoll && currentPlayer === gameData.challenged) {
+                // Opponent rolled, now it's my turn
+                document.getElementById('rollBtn').disabled = false;
+                document.getElementById('rollBtn').textContent = 'Lanzar Dados';
+            } else if (gameData.challengedRoll && currentPlayer === gameData.challenger) {
+                // Opponent rolled, now it's my turn
+                document.getElementById('rollBtn').disabled = false;
+                document.getElementById('rollBtn').textContent = 'Lanzar Dados';
             }
         }
 
-        // Play game
-        function playGame() {
-            if (!selectedChoice) {
-                alert('Debes elegir una jugada primero');
-                return;
-            }
+        // Roll dice
+        window.rollDice = function() {
+            if (gameState !== 'playing') return;
+            
+            const dice1 = Math.floor(Math.random() * 6) + 1;
+            const dice2 = Math.floor(Math.random() * 6) + 1;
+            const dice3 = Math.floor(Math.random() * 6) + 1;
+            const total = dice1 + dice2 + dice3;
+            
+            // Animate dice
+            const diceElements = document.querySelectorAll('.dice');
+            diceElements.forEach(dice => dice.classList.add('rolling'));
+            
+            setTimeout(() => {
+                diceElements[0].textContent = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][dice1 - 1];
+                diceElements[1].textContent = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][dice2 - 1];
+                diceElements[2].textContent = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][dice3 - 1];
+                diceElements.forEach(dice => dice.classList.remove('rolling'));
+                
+                // Save roll to Firebase
+                const gameRef = ref(db, `royalDiceGames/${currentChallenge.challenger}_${currentChallenge.challenged}`);
+                if (currentPlayer === currentChallenge.challenger) {
+                    set(gameRef, { challengerRoll: total });
+                } else {
+                    set(gameRef, { challengedRoll: total });
+                }
+                
+                // Disable roll button
+                document.getElementById('rollBtn').disabled = true;
+                document.getElementById('rollBtn').textContent = 'Esperando al oponente...';
+            }, 500);
+        };
 
-            // Generate opponent choice
-            const choices = ['rock', 'paper', 'scissors'];
-            const opponentChoice = choices[Math.floor(Math.random() * 3)];
+        // Show results
+        function showResults(gameData) {
+            const challengerRoll = gameData.challengerRoll;
+            const challengedRoll = gameData.challengedRoll;
+            const challengerName = currentChallenge.challenger;
+            const challengedName = currentChallenge.challenged;
             
-            // Determine winner
-            let result = '';
-            let resultClass = '';
+            let winner, loser, winnerRoll, loserRoll;
             
-            if (selectedChoice === opponentChoice) {
-                result = '¡EMPATE! Nadie gana';
-                resultClass = 'result-draw';
-            } else if (
-                (selectedChoice === 'rock' && opponentChoice === 'scissors') ||
-                (selectedChoice === 'paper' && opponentChoice === 'rock') ||
-                (selectedChoice === 'scissors' && opponentChoice === 'paper')
-            ) {
-                result = '¡GANASTE! +' + (currentBet * 2) + ' monedas';
-                resultClass = 'result-win';
-                
-                // Add winnings
-                playerCoins += currentBet * 2;
-                wonChallenges++;
-                localStorage.setItem('totalOrtizCoins', playerCoins.toString());
-                localStorage.setItem('royalWonChallenges', wonChallenges.toString());
-                
-                // Update Firebase
-                const userRef = window.firebase.database().ref(`users/${localStorage.getItem('playerName') || 'Jugador'}`);
-                userRef.update({
-                    totalOrtizCoins: playerCoins,
-                    royalWonChallenges: wonChallenges
-                });
+            if (challengerRoll > challengedRoll) {
+                winner = challengerName;
+                loser = challengedName;
+                winnerRoll = challengerRoll;
+                loserRoll = challengedRoll;
+            } else if (challengedRoll > challengerRoll) {
+                winner = challengedName;
+                loser = challengerName;
+                winnerRoll = challengedRoll;
+                loserRoll = challengerRoll;
             } else {
-                result = '¡PERDISTE! -' + currentBet + ' monedas';
-                resultClass = 'result-lose';
+                // Tie
+                winner = 'Empate';
+                loser = 'Empate';
+                winnerRoll = challengerRoll;
+                loserRoll = challengedRoll;
             }
-
-            // Show result
-            const resultDiv = document.getElementById('result');
-            resultDiv.textContent = result;
-            resultDiv.className = resultClass;
-            resultDiv.style.display = 'block';
             
-            document.getElementById('gameStatus').textContent = `Tú: ${getChoiceEmoji(selectedChoice)} vs ${getChoiceEmoji(opponentChoice)} :${currentPlayer}`;
+            const results = document.getElementById('results');
+            const winnerText = document.getElementById('winnerText');
+            const scoreBoard = document.getElementById('scoreBoard');
             
-            updateStats();
+            if (winner === 'Empate') {
+                winnerText.textContent = `🤝 ¡Empate! Ambos sacaron ${winnerRoll}`;
+            } else {
+                winnerText.textContent = `🏆 ¡${winner} gana ${currentChallenge.betAmount} monedas!`;
+            }
+            
+            scoreBoard.innerHTML = `
+                <div class="score-card ${winner === challengerName ? 'winner' : ''}">
+                    <div class="player-name">${challengerName}</div>
+                    <div class="player-status">Puntaje: ${challengerRoll}</div>
+                </div>
+                <div class="score-card ${winner === challengedName ? 'winner' : ''}">
+                    <div class="player-name">${challengedName}</div>
+                    <div class="player-status">Puntaje: ${challengedRoll}</div>
+                </div>
+            `;
+            
+            results.style.display = 'block';
+            
+            // Update coins and stats
+            if (winner !== 'Empate') {
+                if (winner === currentPlayer) {
+                    // Winner
+                    const newCoins = currentCoins + currentChallenge.betAmount;
+                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                    
+                    const userRef = ref(db, `users/${currentPlayer}`);
+                    update(userRef, { 
+                        totalOrtizCoins: newCoins,
+                        royalDiceWins: (parseInt(localStorage.getItem('royalDiceWins') || '0') + 1).toString()
+                    });
+                } else {
+                    // Loser
+                    const newCoins = Math.max(0, currentCoins - currentChallenge.betAmount);
+                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                    
+                    const userRef = ref(db, `users/${currentPlayer}`);
+                    update(userRef, { 
+                        totalOrtizCoins: newCoins,
+                        royalDiceLosses: (parseInt(localStorage.getItem('royalDiceLosses') || '0') + 1).toString()
+                    });
+                }
+            }
+            
+            // Return to lobby after 5 seconds
+            setTimeout(() => {
+                resetGame();
+            }, 5000);
         }
 
-        // Get choice emoji
-        function getChoiceEmoji(choice) {
-            switch(choice) {
-                case 'rock': return '🪨';
-                case 'paper': return '📄';
-                case 'scissors': return '✂️';
-                default: return '❓';
+        // Reset game
+        function resetGame() {
+            gameState = 'lobby';
+            currentChallenge = null;
+            myRoll = null;
+            opponentRoll = null;
+            
+            document.getElementById('mainSection').style.display = 'block';
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            
+            // Clean up Firebase
+            if (currentChallenge) {
+                const gameRef = ref(db, `royalDiceGames/${currentChallenge.challenger}_${currentChallenge.challenged}`);
+                remove(gameRef);
             }
         }
 
-        // Go back to main menu
-        function goBack() {
-            window.location.href = 'index.html';
-        }
-
-        // Initialize game when page loads
-        window.addEventListener('load', () => {
-            initGame();
+        // Initialize
+        createParticles();
+        setOnlineStatus();
+        loadOnlinePlayers();
+        listenForChallenges();
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            const userRef = ref(db, `users/${currentPlayer}`);
+            update(userRef, { 
+                online: false,
+                royalDiceActive: false
+            });
         });
     </script>
 </body>

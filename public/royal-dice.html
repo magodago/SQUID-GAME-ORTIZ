@@ -675,132 +675,72 @@
             });
         }
 
-        // Load all players
+        // Load all players - using same logic as robbery game
         function loadOnlinePlayers() {
             console.log('🔍 Loading all players...');
             console.log('👤 Current player:', currentPlayer);
             
-            // Try both 'users' and 'players' collections like the Top 3 does
-            const usersRef = ref(db, 'users');
-            const playersRef = ref(db, 'players');
-            
-            // First try users collection
-            onValue(usersRef, (snapshot) => {
-                const data = snapshot.val();
-                console.log('📊 Firebase users data:', data);
-                
-                if (data && Object.keys(data).length > 0) {
-                    loadPlayersFromData(data, 'users');
-                } else {
-                    console.log('❌ No users found, trying players collection...');
-                    // Try players collection
-                    onValue(playersRef, (snapshot2) => {
-                        const data2 = snapshot2.val();
-                        console.log('📊 Firebase players data:', data2);
-                        loadPlayersFromData(data2, 'players');
-                    }, (error) => {
-                        console.error('🔥 Firebase players error:', error);
-                        updatePlayersDisplay([]);
-                    });
-                }
-            }, (error) => {
-                console.error('🔥 Firebase users error:', error);
-                // Try players collection as fallback
-                onValue(playersRef, (snapshot2) => {
-                    const data2 = snapshot2.val();
-                    console.log('📊 Firebase players data (fallback):', data2);
-                    loadPlayersFromData(data2, 'players');
-                }, (error2) => {
-                    console.error('🔥 Firebase players error (fallback):', error2);
-                    updatePlayersDisplay([]);
-                });
-            });
-        }
-
-        // Load players from Firebase data
-        function loadPlayersFromData(data, collectionType) {
-            console.log(`📊 Loading players from ${collectionType} collection:`, data);
-            
-            if (data && Object.keys(data).length > 0) {
-                const players = [];
-                Object.keys(data).forEach(playerKey => {
-                    const player = data[playerKey];
-                    console.log(`👤 Player from ${collectionType}: ${playerKey}`, player);
-                    
-                    // Check for different possible name fields (like Top 3 does)
-                    const playerName = player?.name || player?.username || player?.displayName || playerKey;
-                    
-                    // Filter out test users (like Top 3 does)
-                    const playerNameLower = playerName.toLowerCase();
-                    if (playerNameLower === 'yo' || playerNameLower === 'prueba' || playerNameLower === 'prueba 2') {
-                        console.log('🚫 Skipping test user:', playerName);
-                        return;
-                    }
-                    
-                    // Show ALL players except current player
-                    if (playerName !== currentPlayer) {
-                        // Get coins from different possible fields (like Top 3 does)
-                        const coins = player.coins || player.totalCoins || player.totalOrtizCoins || 0;
-                        
-                        players.push({
-                            name: playerName,
-                            coins: parseInt(coins),
-                            wins: parseInt(player.rpsWins || player.wins || '0'),
-                            losses: parseInt(player.rpsLosses || player.losses || '0'),
-                            isOnline: true // Show all players as available
-                        });
-                    } else {
-                        console.log(`🚫 Skipping current player: ${playerName}`);
-                    }
-                });
-                console.log('🎮 Players to display:', players);
-                updatePlayersDisplay(players);
-            } else {
-                console.log(`❌ No data from ${collectionType} collection`);
-                updatePlayersDisplay([]);
-            }
-        }
-
-        // Update players display
-        function updatePlayersDisplay(players) {
             const playersList = document.getElementById('playersList');
-            playersList.innerHTML = '';
-            
-            if (players.length === 0) {
-                playersList.innerHTML = `
-                    <div class="no-players">
-                        <div class="no-players-icon">✂️</div>
-                        <div class="no-players-text">No hay otros jugadores registrados</div>
-                        <div class="no-players-subtext">Intenta refrescar la página</div>
-                        <button class="refresh-btn" onclick="loadOnlinePlayers()">🔄 Refrescar</button>
-                    </div>`;
-                return;
+            playersList.innerHTML = '<div class="no-players"><div class="no-players-icon">✂️</div><div class="no-players-text">Cargando jugadores...</div></div>';
+
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playersRef = db.ref('players');
+                
+                playersRef.once('value')
+                    .then((snapshot) => {
+                        const players = [];
+                        let html = '';
+                        
+                        snapshot.forEach((childSnapshot) => {
+                            const player = childSnapshot.val();
+                            
+                            // Validate player data - only show players with valid names (same as robbery)
+                            if (player && player.name && player.name !== 'undefined' && player.name !== currentPlayer) {
+                                // Ocultar jugadores de prueba (same as robbery)
+                                const testPlayers = ['yo', 'prueba', 'prueba 2'];
+                                if (!testPlayers.includes(player.name.toLowerCase())) {
+                                    players.push(player);
+                                    const maxBet = Math.min(player.coins || 0, currentCoins, 10000);
+                                    html += `
+                                        <div class="player-card available">
+                                            <div class="player-header">
+                                                <div class="player-name">${player.name}</div>
+                                                <div class="player-status">
+                                                    <div class="status-dot online"></div>
+                                                    <span>Disponible</span>
+                                                </div>
+                                            </div>
+                                            <div class="player-info">
+                                                <div class="player-coins">💰 ${player.coins ? player.coins.toLocaleString() : 0} monedas</div>
+                                                <div class="player-stats">🏆 ${player.rpsWins || 0}W - ${player.rpsLosses || 0}L</div>
+                                            </div>
+                                            <button class="challenge-btn" onclick="challengePlayer('${player.name}', ${player.coins || 0})">
+                                                ⚔️ Retar
+                                            </button>
+                                        </div>
+                                    `;
+                                }
+                            }
+                        });
+                        
+                        if (html === '') {
+                            html = '<div class="no-players"><div class="no-players-icon">✂️</div><div class="no-players-text">No hay otros jugadores disponibles</div></div>';
+                        }
+                        
+                        playersList.innerHTML = html;
+                        console.log(`✅ Loaded ${players.length} valid players from Firebase`);
+                    })
+                    .catch((error) => {
+                        console.error('Error loading players:', error);
+                        playersList.innerHTML = '<div class="no-players"><div class="no-players-icon">✂️</div><div class="no-players-text">Error cargando jugadores</div></div>';
+                    });
+            } else {
+                playersList.innerHTML = '<div class="no-players"><div class="no-players-icon">✂️</div><div class="no-players-text">Firebase no disponible</div></div>';
             }
-            
-            players.forEach(player => {
-                const playerCard = document.createElement('div');
-                playerCard.className = 'player-card available';
-                
-                playerCard.innerHTML = `
-                    <div class="player-header">
-                        <div class="player-name">${player.name}</div>
-                        <div class="player-status">
-                            <div class="status-dot online"></div>
-                            <span>Disponible</span>
-                        </div>
-                    </div>
-                    <div class="player-info">
-                        <div class="player-coins">💰 ${player.coins} monedas</div>
-                        <div class="player-stats">🏆 ${player.wins}W - ${player.losses}L</div>
-                    </div>
-                    <button class="challenge-btn" onclick="challengePlayer('${player.name}', ${player.coins})">
-                        ⚔️ Retar
-                    </button>
-                `;
-                
-                playersList.appendChild(playerCard);
-            });
         }
+
+
 
         // Challenge a player
         window.challengePlayer = function(playerName, playerCoins) {
@@ -1083,58 +1023,43 @@
             }
         }
 
-        // Debug Firebase function
+        // Debug Firebase function - using same logic as robbery game
         window.debugFirebase = function() {
             console.log('🐛 === DEBUG FIREBASE ===');
             console.log('👤 Current player:', currentPlayer);
             console.log('💰 Current coins:', currentCoins);
             
-            // Check both collections like the Top 3 does
-            const usersRef = ref(db, 'users');
-            const playersRef = ref(db, 'players');
-            
-            console.log('🔍 Checking users collection...');
-            onValue(usersRef, (snapshot) => {
-                const data = snapshot.val();
-                console.log('📊 Users collection data:', data);
-                console.log('📊 Users data type:', typeof data);
-                console.log('📊 Users data keys:', data ? Object.keys(data) : 'null');
-                console.log('📊 Users data length:', data ? Object.keys(data).length : 0);
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const playersRef = db.ref('players');
                 
-                if (data) {
-                    Object.keys(data).forEach(playerKey => {
-                        const player = data[playerKey];
-                        const playerName = player?.name || player?.username || player?.displayName || playerKey;
-                        console.log(`👤 User "${playerName}":`, player);
-                        console.log(`   - Coins: ${player.coins || player.totalCoins || player.totalOrtizCoins || 'undefined'}`);
-                        console.log(`   - Wins: ${player.rpsWins || player.wins || 'undefined'}`);
-                        console.log(`   - Losses: ${player.rpsLosses || player.losses || 'undefined'}`);
-                        console.log(`   - Is current player: ${playerName === currentPlayer}`);
+                console.log('🔍 Checking players collection (same as robbery game)...');
+                playersRef.once('value')
+                    .then((snapshot) => {
+                        console.log('📊 Players collection data:', snapshot.val());
+                        console.log('📊 Players data type:', typeof snapshot.val());
+                        console.log('📊 Players data keys:', snapshot.val() ? Object.keys(snapshot.val()) : 'null');
+                        console.log('📊 Players data length:', snapshot.val() ? Object.keys(snapshot.val()).length : 0);
+                        
+                        if (snapshot.val()) {
+                            snapshot.forEach((childSnapshot) => {
+                                const player = childSnapshot.val();
+                                console.log(`👤 Player "${player.name || childSnapshot.key}":`, player);
+                                console.log(`   - Coins: ${player.coins || 'undefined'}`);
+                                console.log(`   - Wins: ${player.rpsWins || 'undefined'}`);
+                                console.log(`   - Losses: ${player.rpsLosses || 'undefined'}`);
+                                console.log(`   - Is current player: ${(player.name || childSnapshot.key) === currentPlayer}`);
+                                console.log(`   - Valid name: ${player.name && player.name !== 'undefined'}`);
+                                console.log(`   - Test player: ${['yo', 'prueba', 'prueba 2'].includes((player.name || '').toLowerCase())}`);
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error checking players collection:', error);
                     });
-                }
-                
-                // Now check players collection
-                console.log('🔍 Checking players collection...');
-                onValue(playersRef, (snapshot2) => {
-                    const data2 = snapshot2.val();
-                    console.log('📊 Players collection data:', data2);
-                    console.log('📊 Players data type:', typeof data2);
-                    console.log('📊 Players data keys:', data2 ? Object.keys(data2) : 'null');
-                    console.log('📊 Players data length:', data2 ? Object.keys(data2).length : 0);
-                    
-                    if (data2) {
-                        Object.keys(data2).forEach(playerKey => {
-                            const player = data2[playerKey];
-                            const playerName = player?.name || player?.username || player?.displayName || playerKey;
-                            console.log(`👤 Player "${playerName}":`, player);
-                            console.log(`   - Coins: ${player.coins || player.totalCoins || player.totalOrtizCoins || 'undefined'}`);
-                            console.log(`   - Wins: ${player.rpsWins || player.wins || 'undefined'}`);
-                            console.log(`   - Losses: ${player.rpsLosses || player.losses || 'undefined'}`);
-                            console.log(`   - Is current player: ${playerName === currentPlayer}`);
-                        });
-                    }
-                }, { once: true });
-            }, { once: true });
+            } else {
+                console.error('❌ Firebase not available');
+            }
         };
 
         // Initialize

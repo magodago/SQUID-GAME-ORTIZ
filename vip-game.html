@@ -861,6 +861,24 @@
             players.forEach(player => player.score = 0);
             updatePlayersDisplay();
             
+            // Check if Crystal Ball prediction exists and use same seed
+            const crystalBallPrediction = localStorage.getItem('crystalBallPrediction');
+            let usePredictionSeed = false;
+            let predictionSeed = 0;
+            
+            if (crystalBallPrediction) {
+                try {
+                    const prediction = JSON.parse(crystalBallPrediction);
+                    if (prediction.betType === currentBetType && prediction.betOption === currentBetOption) {
+                        usePredictionSeed = true;
+                        predictionSeed = prediction.timestamp;
+                        console.log('🔮 Using Crystal Ball prediction seed for consistent results');
+                    }
+                } catch (e) {
+                    console.log('❌ Error parsing Crystal Ball prediction');
+                }
+            }
+            
             // Simulate game rounds
             let round = 0;
             const totalRounds = 5;
@@ -875,9 +893,22 @@
                     progressBar.style.width = progress + '%';
                 }
                 
-                // Add random scores to players
-                players.forEach(player => {
-                    const scoreIncrease = Math.floor(Math.random() * 20) + 5;
+                // Add scores to players (use same seed if prediction exists)
+                players.forEach((player, index) => {
+                    let scoreIncrease;
+                    if (usePredictionSeed) {
+                        // Use same seeded random as prediction
+                        const seed = predictionSeed + round * 10 + index;
+                        const seededRandom = (seed) => {
+                            const x = Math.sin(seed) * 10000;
+                            return x - Math.floor(x);
+                        };
+                        const randomValue = seededRandom(seed);
+                        scoreIncrease = Math.floor(randomValue * 20) + 5;
+                    } else {
+                        // Use normal random
+                        scoreIncrease = Math.floor(Math.random() * 20) + 5;
+                    }
                     player.score += scoreIncrease;
                     console.log(`👤 ${player.name}: +${scoreIncrease} = ${player.score}`);
                 });
@@ -1077,6 +1108,9 @@
                 currentBetType = null;
                 currentBetOption = null;
                 
+                // Clear Crystal Ball prediction after game
+                localStorage.removeItem('crystalBallPrediction');
+                
                 console.log('✅ Game state reset complete');
             }, 3000);
         }
@@ -1233,17 +1267,26 @@
             let predictionColor = '#00ff00';
             let willWin = false;
             
-            // Simulate the game outcome to make accurate prediction
+            // Use a fixed seed for prediction to ensure consistency
+            const predictionSeed = Date.now() + crystalBallUses;
+            const seededRandom = (seed) => {
+                const x = Math.sin(seed) * 10000;
+                return x - Math.floor(x);
+            };
+            
+            // Simulate the game outcome with fixed seed
             const simulatedPlayers = [
                 { name: '001', score: 0 },
                 { name: '002', score: 0 },
                 { name: '003', score: 0 }
             ];
             
-            // Simulate 5 rounds
+            // Simulate 5 rounds with seeded random
             for (let round = 0; round < 5; round++) {
-                simulatedPlayers.forEach(player => {
-                    const scoreIncrease = Math.floor(Math.random() * 20) + 5;
+                simulatedPlayers.forEach((player, index) => {
+                    const seed = predictionSeed + round * 10 + index;
+                    const randomValue = seededRandom(seed);
+                    const scoreIncrease = Math.floor(randomValue * 20) + 5;
                     player.score += scoreIncrease;
                 });
             }
@@ -1274,6 +1317,14 @@
             
             prediction = willWin ? 'GANARÁS' : 'PERDERÁS';
             predictionColor = willWin ? '#00ff00' : '#ff0000';
+            
+            // Store the prediction result for verification
+            localStorage.setItem('crystalBallPrediction', JSON.stringify({
+                betType: currentBetType,
+                betOption: currentBetOption,
+                willWin: willWin,
+                timestamp: Date.now()
+            }));
             
             // Increment uses
             localStorage.setItem('crystalBallUses', (crystalBallUses + 1).toString());

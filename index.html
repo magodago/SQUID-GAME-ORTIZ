@@ -121,16 +121,7 @@
       }
     }
 
-    @keyframes goldenButtonPulse {
-      0%, 100% {
-        box-shadow: 0 0 20px #FFD700;
-        transform: scale(1);
-      }
-      50% {
-        box-shadow: 0 0 40px #FFD700, 0 0 60px #FFA500;
-        transform: scale(1.05);
-      }
-    }
+
   </style>
   <style>
     html, body {
@@ -4964,26 +4955,7 @@
       🎁 CAJA SORPRESA
     </button>
 
-    <!-- GOLDEN BUTTON -->
-    <button id="goldenButton" onclick="activateGoldenButton()" style="
-      display: block;
-      margin: 1rem auto;
-      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-      color: #000;
-      border: none;
-      border-radius: 15px;
-      padding: 15px 30px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 20px #FFD700;
-      transition: all 0.3s ease;
-      min-width: 200px;
-      max-width: 300px;
-      animation: goldenButtonPulse 1.5s infinite;
-    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-      🪙 BOTÓN DE ORO
-    </button>
+
 
     <!-- Daily Reward Button -->
     <div class="daily-reward-container">
@@ -5986,8 +5958,103 @@
               rarity: 'legendary'
             };
             
+            // Add NEW SPECTACULAR ITEMS
+            const calamarDorado = {
+              id: 'calamar_dorado',
+              name: '🦑 Calamar Dorado',
+              description: 'El símbolo supremo del juego. Te otorga inmunidad total durante 24 horas.',
+              icon: '🦑',
+              value: 50000,
+              rarity: 'mythic'
+            };
+            
+            const tiroPerfecto = {
+              id: 'tiro_perfecto',
+              name: '🎯 Tiro Perfecto',
+              description: 'Tu puntería es legendaria. Gana automáticamente el próximo minijuego de habilidad.',
+              icon: '🎯',
+              value: 15000,
+              rarity: 'legendary'
+            };
+            
+            const cartaDestino = {
+              id: 'carta_destino',
+              name: '🃏 Carta del Destino',
+              description: 'Puedes repetir el resultado de cualquier juego una vez.',
+              icon: '🃏',
+              value: 20000,
+              rarity: 'legendary'
+            };
+            
+            const bombaRobos = {
+              id: 'bomba_robos',
+              name: '💣 Bomba de Robos',
+              description: 'Actívala y todos los jugadores pierden el 10% de sus monedas, que se reparten entre los 3 primeros del ranking.',
+              icon: '💣',
+              value: 30000,
+              rarity: 'mythic'
+            };
+            
+            const visionFuturo = {
+              id: 'vision_futuro',
+              name: '👁️ Visión del Futuro',
+              description: 'Ves el resultado de la próxima ronda de apuestas antes de jugar.',
+              icon: '👁️',
+              value: 25000,
+              rarity: 'legendary'
+            };
+            
+            const escudoAntiRobo = {
+              id: 'escudo_anti_robo',
+              name: '🛡️ Escudo Anti-Robo',
+              description: 'Protección total contra robos durante 3 días.',
+              icon: '🛡️',
+              value: 35000,
+              rarity: 'epic'
+            };
+            
+            const duplicadorPremios = {
+              id: 'duplicador_premios',
+              name: '💸 Duplicador de Premios',
+              description: 'Duplica la recompensa de tu próximo juego, sea cual sea.',
+              icon: '💸',
+              value: 40000,
+              rarity: 'mythic'
+            };
+            
+            const jackpotInstantaneo = {
+              id: 'jackpot_instantaneo',
+              name: '🎰 Jackpot Instantáneo',
+              description: 'Gana instantáneamente el premio máximo del minijuego que elijas.',
+              icon: '🎰',
+              value: 45000,
+              rarity: 'mythic'
+            };
+            
+            const paseVIPTemporal = {
+              id: 'pase_vip_temporal',
+              name: '👑 Pase VIP Temporal',
+              description: 'Acceso VIP a todos los modos y minijuegos durante 48 horas.',
+              icon: '👑',
+              value: 30000,
+              rarity: 'epic'
+            };
+            
+            const invocacionCalamar = {
+              id: 'invocacion_calamar',
+              name: '🦑 Invocación del Calamar',
+              description: 'Invoca al calamar para que te ayude en el próximo reto. Si pierdes, no pierdes monedas.',
+              icon: '🦑',
+              value: 35000,
+              rarity: 'legendary'
+            };
+            
             // Add ALL items to inventory (avoid duplicates)
-            const itemsToAdd = [frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall];
+            const itemsToAdd = [
+                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall,
+                calamarDorado, tiroPerfecto, cartaDestino, bombaRobos, visionFuturo,
+                escudoAntiRobo, duplicadorPremios, jackpotInstantaneo, paseVIPTemporal, invocacionCalamar
+            ];
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
                 inventory.push(item);
@@ -5999,7 +6066,7 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n\n¡Funciona!`);
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🦑 Calamar Dorado (MÍTICO)\n   • 🎯 Tiro Perfecto (LEGENDARIO)\n   • 🃏 Carta del Destino (LEGENDARIO)\n   • 💣 Bomba de Robos (MÍTICO)\n   • 👁️ Visión del Futuro (LEGENDARIO)\n   • 🛡️ Escudo Anti-Robo (ÉPICO)\n   • 💸 Duplicador de Premios (MÍTICO)\n   • 🎰 Jackpot Instantáneo (MÍTICO)\n   • 👑 Pase VIP Temporal (ÉPICO)\n   • 🦑 Invocación del Calamar (LEGENDARIO)\n\n¡OBJETOS ESPECTACULARES DESBLOQUEADOS!`);
             
             console.log('✅ DAGO coins and items added successfully!');
             
@@ -13663,90 +13730,7 @@
             }
         }
 
-        // GOLDEN BUTTON SYSTEM
-        let goldenButtonActive = false;
-        let goldenButtonTimer = null;
-        let goldenButtonCountdown = 0;
 
-        function activateGoldenButton() {
-            if (goldenButtonActive) {
-                // Button is already active, give coins
-                giveGoldenButtonCoins();
-                return;
-            }
-
-            // Activate golden button for 1 minute
-            goldenButtonActive = true;
-            goldenButtonCountdown = 60; // 60 seconds
-
-            const goldenBtn = document.getElementById('goldenButton');
-            goldenBtn.style.background = 'linear-gradient(135deg, #FF0000 0%, #FF6600 100%)';
-            goldenBtn.style.animation = 'none';
-            goldenBtn.style.boxShadow = '0 0 30px #FF0000';
-            goldenBtn.textContent = `🪙 BOTÓN DE ORO (${goldenButtonCountdown}s)`;
-
-            // Start countdown
-            goldenButtonTimer = setInterval(() => {
-                goldenButtonCountdown--;
-                goldenBtn.textContent = `🪙 BOTÓN DE ORO (${goldenButtonCountdown}s)`;
-                
-                if (goldenButtonCountdown <= 0) {
-                    deactivateGoldenButton();
-                }
-            }, 1000);
-
-            showNotification('🪙 ¡Botón de Oro activado! Haz clic para ganar 100 monedas cada vez', 'success');
-        }
-
-        function giveGoldenButtonCoins() {
-            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-            const newCoins = currentCoins + 100;
-            localStorage.setItem('totalOrtizCoins', newCoins.toString());
-
-            // Update display
-            if (typeof loadTotalCoins === 'function') {
-                loadTotalCoins();
-            }
-
-            // Sync with Firebase
-            if (window.firebase && window.firebase.database) {
-                const db = window.firebase.database();
-                const currentPlayer = localStorage.getItem('soldierName');
-                if (currentPlayer) {
-                    const playerRef = db.ref(`players/${currentPlayer}`);
-                    playerRef.update({
-                        coins: newCoins,
-                        lastUpdated: Date.now()
-                    }).then(() => {
-                        console.log(`✅ Golden button coins synced to Firebase: +100 coins`);
-                    }).catch((error) => {
-                        console.error('❌ Error syncing golden button coins:', error);
-                    });
-                }
-            }
-
-            // Visual feedback
-            const goldenBtn = document.getElementById('goldenButton');
-            goldenBtn.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                goldenBtn.style.transform = 'scale(1)';
-            }, 200);
-
-            showNotification('💰 +100 monedas del Botón de Oro!', 'success');
-        }
-
-        function deactivateGoldenButton() {
-            goldenButtonActive = false;
-            clearInterval(goldenButtonTimer);
-
-            const goldenBtn = document.getElementById('goldenButton');
-            goldenBtn.style.background = 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)';
-            goldenBtn.style.animation = 'goldenButtonPulse 1.5s infinite';
-            goldenBtn.style.boxShadow = '0 0 20px #FFD700';
-            goldenBtn.textContent = '🪙 BOTÓN DE ORO';
-
-            showNotification('⏰ Botón de Oro desactivado. Espera para reactivarlo', 'info');
-        }
 
         // ANONYMOUS PVP SYSTEM
         function sendAnonymousRobbery(targetPlayer, betAmount) {

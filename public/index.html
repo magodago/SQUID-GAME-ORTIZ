@@ -13477,56 +13477,62 @@
                     value: selectedCoins
                 };
             }
-            // 35% chance for regular items
-            else if (random < 0.75) {
-                const regularItems = [
-                    {
-                        id: 'vip_card',
-                        name: 'Tarjeta VIP Dorada',
-                        description: 'Acceso VIP por 2 horas',
-                        icon: '💎',
-                        value: 5000,
-                        rarity: 'rare'
-                    },
+            // 60% chance for items (same as daily boxes)
+            else {
+                const dailyItems = [
                     {
                         id: 'frontman_mask',
                         name: 'Máscara del Front Man',
                         description: 'Bonus en juegos VIP por 1 hora',
                         icon: '🎪',
-                        value: 3000,
+                        value: 1000,
                         rarity: 'rare'
+                    },
+                    {
+                        id: 'vip_card',
+                        name: 'Tarjeta VIP Dorada',
+                        description: 'Acceso exclusivo a áreas VIP',
+                        icon: '💎',
+                        value: 2000,
+                        rarity: 'epic'
                     },
                     {
                         id: 'golden_key',
                         name: 'Llave Dorada',
-                        description: 'Abre cofres secretos (+5000 monedas)',
+                        description: 'Abre cajas especiales con mejores recompensas',
                         icon: '🔑',
-                        value: 5000,
+                        value: 1500,
                         rarity: 'rare'
                     },
                     {
-                        id: 'lucky_charm',
-                        name: 'Amuleto de la Suerte',
-                        description: 'Aumenta probabilidades de ganar',
-                        icon: '🍀',
-                        value: 2000,
-                        rarity: 'rare'
+                        id: 'guard_mask',
+                        name: 'Máscara de Guardia',
+                        description: 'Protección contra robos por 24 horas',
+                        icon: '🛡️',
+                        value: 3000,
+                        rarity: 'epic'
+                    },
+                    {
+                        id: 'golden_dice',
+                        name: 'Dado Dorado',
+                        description: 'Doble ganancia en juegos de apuestas por 1 hora',
+                        icon: '🎲',
+                        value: 2500,
+                        rarity: 'epic'
+                    },
+                    {
+                        id: 'crystal_ball',
+                        name: 'Bola de Cristal',
+                        description: 'Predice el resultado del próximo juego (3 usos)',
+                        icon: '🔮',
+                        value: 4000,
+                        rarity: 'legendary'
                     }
                 ];
-                const selectedItem = regularItems[Math.floor(Math.random() * regularItems.length)];
+                const selectedItem = dailyItems[Math.floor(Math.random() * dailyItems.length)];
                 return {
                     type: 'item',
                     value: selectedItem
-                };
-            }
-            // 25% chance for easter egg cards
-            else {
-                const easterEggKeys = Object.keys(EASTER_EGG_CARDS);
-                const randomKey = easterEggKeys[Math.floor(Math.random() * easterEggKeys.length)];
-                const selectedCard = EASTER_EGG_CARDS[randomKey];
-                return {
-                    type: 'item',
-                    value: selectedCard
                 };
             }
         }

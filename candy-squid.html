@@ -69,6 +69,29 @@
             z-index: 100;
         }
 
+        #backButton {
+            position: absolute;
+            top: 0;
+            left: -120px;
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', Arial, sans-serif;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+            z-index: 200;
+        }
+
+        #backButton:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 107, 107, 0.8);
+        }
+
         #gameTitle {
             font-size: 2rem;
             font-weight: bold;
@@ -461,50 +484,105 @@
 
         @media (max-width: 768px) {
             #gameTitle {
-                font-size: 1.8rem;
-                margin-bottom: 3px;
+                font-size: 1.5rem;
+                margin-bottom: 2px;
             }
             
             #gameInstructions p {
-                font-size: 0.8rem;
-                margin-bottom: 5px;
+                font-size: 0.7rem;
+                margin-bottom: 3px;
             }
             
             #gameBoard {
-                width: 320px;
-                height: 320px;
-                margin-top: 10px;
+                width: 280px;
+                height: 280px;
+                margin-top: 5px;
             }
             
             .candy {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             #gameStats {
-                gap: 15px;
-                margin-bottom: 5px;
+                gap: 10px;
+                margin-bottom: 3px;
             }
             
             .stat {
-                padding: 4px 8px;
+                padding: 3px 6px;
             }
             
             .stat-label {
-                font-size: 0.6rem;
+                font-size: 0.5rem;
             }
             
             .stat-value {
-                font-size: 0.9rem;
+                font-size: 0.8rem;
             }
             
             #gameControls {
-                bottom: 10px;
-                gap: 10px;
+                bottom: 5px;
+                gap: 8px;
             }
             
             .gameButton {
-                padding: 6px 12px;
+                padding: 5px 10px;
+                font-size: 0.6rem;
+            }
+
+            #backButton {
+                left: -100px;
+                padding: 6px 10px;
                 font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #gameTitle {
+                font-size: 1.2rem;
+                margin-bottom: 1px;
+            }
+            
+            #gameInstructions p {
+                font-size: 0.6rem;
+                margin-bottom: 2px;
+            }
+            
+            #gameBoard {
+                width: 240px;
+                height: 240px;
+                margin-top: 3px;
+            }
+            
+            .candy {
+                font-size: 0.9rem;
+            }
+            
+            #gameStats {
+                gap: 8px;
+                margin-bottom: 2px;
+            }
+            
+            .stat {
+                padding: 2px 4px;
+            }
+            
+            .stat-label {
+                font-size: 0.4rem;
+            }
+            
+            .stat-value {
+                font-size: 0.7rem;
+            }
+            
+            #gameControls {
+                bottom: 3px;
+                gap: 6px;
+            }
+            
+            .gameButton {
+                padding: 4px 8px;
+                font-size: 0.5rem;
             }
         }
 
@@ -561,6 +639,7 @@
 <body>
     <div id="gameContainer">
         <div id="gameHeader">
+            <button id="backButton" onclick="goBack()">🔙 VOLVER</button>
             <h1 id="gameTitle">🦑 CANDY SQUID</h1>
             <div id="gameInstructions">
                 <p style="color: #9370DB; font-size: 0.9rem; margin-bottom: 10px;">

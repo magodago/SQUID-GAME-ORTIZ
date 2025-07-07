@@ -13088,6 +13088,8 @@
         function activateNuclearBomb() {
             console.log('☢️ NUCLEAR BOMB ACTIVATED! Targeting top 3 richest players...');
             
+            const currentPlayer = localStorage.getItem('soldierName');
+            
             if (window.firebase && window.firebase.database) {
                 const db = window.firebase.database();
                 const playersRef = db.ref('players');
@@ -13142,16 +13144,35 @@
                                 nuclearBombEffect: {
                                     originalCoins: originalCoins,
                                     reduction: reduction,
-                                    timestamp: Date.now()
+                                    timestamp: Date.now(),
+                                    launchedBy: currentPlayer
                                 }
                             }).then(() => {
                                 console.log(`✅ Nuclear bomb effect applied to ${player.name}`);
                                 affectedPlayers.push(`${player.name}: -${reduction.toLocaleString()}`);
                                 
-                                // If this is the last player, show final notification
+                                // Send notification to affected player
+                                const notificationRef = db.ref(`notifications/${player.name}`);
+                                notificationRef.push({
+                                    type: 'nuclear_bomb',
+                                    message: `☢️ ¡BOMBA NUCLEAR DETONADA!\n\nHas perdido ${reduction.toLocaleString()} monedas (30% de tu riqueza)\n\nLanzada por: ${currentPlayer}`,
+                                    timestamp: Date.now(),
+                                    read: false
+                                });
+                                
+                                // If this is the last player, show final notification to launcher
                                 if (affectedPlayers.length === top3Players.length) {
-                                    const message = `☢️ BOMBA NUCLEAR DETONADA!\n\n${affectedPlayers.join('\n')}\n\n¡Los 3 más ricos han perdido 30% de sus monedas!`;
+                                    const message = `☢️ BOMBA NUCLEAR EJECUTADA!\n\n${affectedPlayers.join('\n')}\n\n¡Los 3 más ricos han perdido 30% de sus monedas!`;
                                     showNotification(message, 'success');
+                                    
+                                    // Send notification to launcher
+                                    const launcherNotificationRef = db.ref(`notifications/${currentPlayer}`);
+                                    launcherNotificationRef.push({
+                                        type: 'nuclear_bomb_launched',
+                                        message: `☢️ BOMBA NUCLEAR EJECUTADA EXITOSAMENTE!\n\n${affectedPlayers.join('\n')}\n\n¡Destrucción masiva completada!`,
+                                        timestamp: Date.now(),
+                                        read: false
+                                    });
                                 }
                             }).catch((error) => {
                                 console.error(`❌ Error applying nuclear bomb to ${player.name}:`, error);
@@ -13429,7 +13450,7 @@
         // SURPRISE BOX FUNCTIONS
         function showSurpriseBoxModal() {
             const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-            const boxPrice = Math.floor(currentCoins * 0.25); // 25% of current coins
+            const boxPrice = Math.floor(currentCoins * 0.50); // 50% of current coins
             
             if (boxPrice < 100) {
                 showNotification('❌ Necesitas al menos 400 monedas para comprar una caja sorpresa', 'error');
@@ -13468,7 +13489,7 @@
                     <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #000;">¡CAJA SORPRESA PREMIUM!</div>
                     <div style="font-size: 1.1rem; margin-bottom: 20px; color: #333;">¡Compra una caja sorpresa con recompensas especiales!</div>
                     <div style="font-size: 0.9rem; color: #666; margin-bottom: 30px;">
-                        <div>💰 Precio: ${boxPrice.toLocaleString()} monedas (25% de tus monedas)</div>
+                        <div>💰 Precio: ${boxPrice.toLocaleString()} monedas (50% de tus monedas)</div>
                         <div>🎯 Recompensas: Monedas, objetos raros, tarjetas especiales</div>
                     </div>
                     

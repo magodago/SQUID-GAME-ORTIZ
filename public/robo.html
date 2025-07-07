@@ -790,14 +790,16 @@
                                                 <div class="player-name-display">${player.name}</div>
                                                 <div class="player-coins-display">${player.coins ? player.coins.toLocaleString() : 0} monedas</div>
                                             </div>
-                                            <div class="player-controls">
+                                                                                        <div class="player-controls">
                                                 <input type="number" class="bet-input" placeholder="Cantidad a robar" min="1" max="${maxRobAmount}">
                                                 <button class="rob-button" onclick="challengePlayer('${player.name}', this.previousElementSibling.value)">
                                                     🦹‍♂️ ROBAR
                                                 </button>
+                                                ${isAnonymousRobberyActive() ? `
                                                 <button class="anonymous-rob-button" onclick="challengePlayerAnonymous('${player.name}', this.previousElementSibling.previousElementSibling.value)">
                                                     🕵️‍♂️ ROBAR ANÓNIMO
                                                 </button>
+                                                ` : ''}
                                             </div>
                                         </div>
                                     `;
@@ -818,6 +820,21 @@
                     });
             } else {
                 playersList.innerHTML = '<div class="loading">Firebase no disponible</div>';
+            }
+        }
+
+        // Check if anonymous robbery is active
+        function isAnonymousRobberyActive() {
+            const isActive = localStorage.getItem('anonymousRobberyActive') === 'true';
+            const expiry = parseInt(localStorage.getItem('anonymousRobberyExpiry') || '0');
+            
+            if (isActive && Date.now() < expiry) {
+                return true;
+            } else {
+                // Clear expired status
+                localStorage.removeItem('anonymousRobberyActive');
+                localStorage.removeItem('anonymousRobberyExpiry');
+                return false;
             }
         }
 
@@ -915,6 +932,12 @@
         // Rob a player anonymously
         function challengePlayerAnonymous(targetPlayer, betAmount) {
             betAmount = parseInt(betAmount);
+            
+            // Check if player has enough coins to use anonymous robbery
+            if (currentCoins < 15000) {
+                alert('🕵️‍♂️ El robo anónimo requiere al menos 15,000 monedas para usarlo.');
+                return;
+            }
             
             if (!betAmount || betAmount <= 0) {
                 alert('Por favor ingresa una cantidad válida para robar');

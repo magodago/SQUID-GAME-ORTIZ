@@ -12999,6 +12999,15 @@
                     showNotification(`🔮 ${item.name} activada! Predicción disponible para el próximo juego (${3 - newUses} usos restantes)`, 'success');
                     break;
                     
+                case 'anonymous_robbery':
+                    // Activate anonymous robbery for 24 hours
+                    localStorage.setItem('anonymousRobberyActive', 'true');
+                    localStorage.setItem('anonymousRobberyExpiry', (Date.now() + 86400000).toString());
+                    
+                    // Show notification
+                    showNotification(`🕵️‍♂️ ${item.name} activado! Modo de robo anónimo disponible por 24 horas`, 'success');
+                    break;
+                    
                 default:
                     showNotification(`❌ Función no implementada para ${item.name}`, 'error');
                     return;
@@ -13535,6 +13544,14 @@
                         description: 'Predice el resultado del próximo juego (3 usos)',
                         icon: '🔮',
                         value: 4000,
+                        rarity: 'legendary'
+                    },
+                    {
+                        id: 'anonymous_robbery',
+                        name: '🕵️‍♂️ Roba Anónimo',
+                        description: 'Activa el modo de robo anónimo por 24 horas',
+                        icon: '🕵️‍♂️',
+                        value: 5000,
                         rarity: 'legendary'
                     }
                 ];

@@ -111,6 +111,15 @@
         opacity: 0.8;
       }
     }
+
+    @keyframes surpriseBoxGlow {
+      0%, 100% {
+        box-shadow: 0 0 20px #FFD700;
+      }
+      50% {
+        box-shadow: 0 0 40px #FFD700, 0 0 60px #FFA500;
+      }
+    }
   </style>
   <style>
     html, body {
@@ -4921,6 +4930,27 @@
       max-width: 300px;
     " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
       🎒 INVENTARIO
+    </button>
+
+    <!-- SURPRISE BOX BUTTON -->
+    <button onclick="showSurpriseBoxModal()" style="
+      display: block;
+      margin: 1rem auto;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      color: #000;
+      border: none;
+      border-radius: 15px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 20px #FFD700;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      max-width: 300px;
+      animation: surpriseBoxGlow 2s infinite;
+    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      🎁 CAJA SORPRESA
     </button>
 
     <!-- Daily Reward Button -->
@@ -13271,6 +13301,329 @@
                 type: 'easter_egg'
             }
         };
+
+        // SURPRISE BOX FUNCTIONS
+        function showSurpriseBoxModal() {
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const boxPrice = Math.floor(currentCoins * 0.25); // 25% of current coins
+            
+            if (boxPrice < 100) {
+                showNotification('❌ Necesitas al menos 400 monedas para comprar una caja sorpresa', 'error');
+                return;
+            }
+            
+            // Create modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                    border: 3px solid #FFD700;
+                    border-radius: 20px;
+                    padding: 40px;
+                    text-align: center;
+                    max-width: 90%;
+                    width: 400px;
+                    box-shadow: 0 0 50px #FFD700;
+                    animation: surpriseBoxPulse 2s infinite;
+                ">
+                    <div style="font-size: 4rem; margin-bottom: 20px; animation: bounce 1s infinite;">🎁</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #000;">¡CAJA SORPRESA PREMIUM!</div>
+                    <div style="font-size: 1.1rem; margin-bottom: 20px; color: #333;">¡Compra una caja sorpresa con recompensas especiales!</div>
+                    <div style="font-size: 0.9rem; color: #666; margin-bottom: 30px;">
+                        <div>💰 Precio: ${boxPrice.toLocaleString()} monedas (25% de tus monedas)</div>
+                        <div>🎯 Recompensas: Monedas, objetos raros, tarjetas especiales</div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <button id="buySurpriseBoxBtn" style="
+                            background: linear-gradient(135deg, #e60073 0%, #ff1493 100%);
+                            color: white;
+                            border: none;
+                            border-radius: 15px;
+                            padding: 15px 30px;
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            box-shadow: 0 5px 15px rgba(230, 0, 115, 0.4);
+                            transition: all 0.3s ease;
+                        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            🎯 ¡COMPRAR CAJA!
+                        </button>
+                        <button onclick="closeSurpriseBoxModal()" style="
+                            background: linear-gradient(135deg, #666 0%, #999 100%);
+                            color: white;
+                            border: none;
+                            border-radius: 15px;
+                            padding: 15px 30px;
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            ❌ CANCELAR
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Add click event to buy button
+            document.getElementById('buySurpriseBoxBtn').addEventListener('click', () => {
+                buySurpriseBox(boxPrice);
+            });
+        }
+
+        function closeSurpriseBoxModal() {
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                modal.style.animation = 'fadeOut 0.5s ease-out';
+                setTimeout(() => {
+                    if (modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
+                    }
+                }, 500);
+            }
+        }
+
+        function buySurpriseBox(boxPrice) {
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            
+            if (currentCoins < boxPrice) {
+                showNotification('❌ No tienes suficientes monedas', 'error');
+                return;
+            }
+            
+            // Deduct coins
+            const newCoins = currentCoins - boxPrice;
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            
+            // Update display
+            if (typeof loadTotalCoins === 'function') {
+                loadTotalCoins();
+            }
+            
+            // Generate reward
+            const reward = generateSurpriseBoxReward();
+            
+            // Apply reward
+            if (reward.type === 'coins') {
+                const finalCoins = newCoins + reward.value;
+                localStorage.setItem('totalOrtizCoins', finalCoins.toString());
+                
+                // Update display again
+                if (typeof loadTotalCoins === 'function') {
+                    loadTotalCoins();
+                }
+            } else if (reward.type === 'item') {
+                const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+                inventory.push(reward.value);
+                localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            }
+            
+            // Sync with Firebase
+            if (window.firebase && window.firebase.database) {
+                const db = window.firebase.database();
+                const currentPlayer = localStorage.getItem('soldierName');
+                if (currentPlayer) {
+                    const playerRef = db.ref(`players/${currentPlayer}`);
+                    const updateData = {
+                        coins: reward.type === 'coins' ? newCoins + reward.value : newCoins,
+                        lastUpdated: Date.now()
+                    };
+                    
+                    if (reward.type === 'item') {
+                        updateData.inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+                    }
+                    
+                    playerRef.update(updateData).then(() => {
+                        console.log(`✅ Surprise box purchase synced to Firebase`);
+                    }).catch((error) => {
+                        console.error('❌ Error syncing surprise box purchase:', error);
+                    });
+                }
+            }
+            
+            // Show reward
+            showSurpriseBoxReward(reward);
+            
+            // Close modal
+            closeSurpriseBoxModal();
+        }
+
+        function generateSurpriseBoxReward() {
+            const random = Math.random();
+            
+            // 40% chance for coins
+            if (random < 0.4) {
+                const coinRewards = [1000, 2000, 5000, 10000, 15000, 25000];
+                const selectedCoins = coinRewards[Math.floor(Math.random() * coinRewards.length)];
+                return {
+                    type: 'coins',
+                    value: selectedCoins
+                };
+            }
+            // 35% chance for regular items
+            else if (random < 0.75) {
+                const regularItems = [
+                    {
+                        id: 'vip_card',
+                        name: 'Tarjeta VIP Dorada',
+                        description: 'Acceso VIP por 2 horas',
+                        icon: '💎',
+                        value: 5000,
+                        rarity: 'rare'
+                    },
+                    {
+                        id: 'frontman_mask',
+                        name: 'Máscara del Front Man',
+                        description: 'Bonus en juegos VIP por 1 hora',
+                        icon: '🎪',
+                        value: 3000,
+                        rarity: 'rare'
+                    },
+                    {
+                        id: 'golden_key',
+                        name: 'Llave Dorada',
+                        description: 'Abre cofres secretos (+5000 monedas)',
+                        icon: '🔑',
+                        value: 5000,
+                        rarity: 'rare'
+                    },
+                    {
+                        id: 'lucky_charm',
+                        name: 'Amuleto de la Suerte',
+                        description: 'Aumenta probabilidades de ganar',
+                        icon: '🍀',
+                        value: 2000,
+                        rarity: 'rare'
+                    }
+                ];
+                const selectedItem = regularItems[Math.floor(Math.random() * regularItems.length)];
+                return {
+                    type: 'item',
+                    value: selectedItem
+                };
+            }
+            // 25% chance for easter egg cards
+            else {
+                const easterEggKeys = Object.keys(EASTER_EGG_CARDS);
+                const randomKey = easterEggKeys[Math.floor(Math.random() * easterEggKeys.length)];
+                const selectedCard = EASTER_EGG_CARDS[randomKey];
+                return {
+                    type: 'item',
+                    value: selectedCard
+                };
+            }
+        }
+
+        function showSurpriseBoxReward(reward) {
+            // Create reward reveal modal
+            const rewardModal = document.createElement('div');
+            rewardModal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10001;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            let rewardContent = '';
+            let backgroundGradient = '';
+            let borderColor = '';
+            let shadowColor = '';
+            let icon = '';
+            let title = '';
+            let description = '';
+            
+            if (reward.type === 'coins') {
+                backgroundGradient = 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)';
+                borderColor = '#00ff00';
+                shadowColor = '#00ff00';
+                icon = '💰';
+                title = '¡FELICIDADES!';
+                description = `Has ganado ${reward.value.toLocaleString()} MONEDAS`;
+            } else if (reward.type === 'item') {
+                backgroundGradient = 'linear-gradient(135deg, #ffd700 0%, #ffa500 100%)';
+                borderColor = '#ffd700';
+                shadowColor = '#ffd700';
+                icon = reward.value.icon || '🎁';
+                title = '¡OBJETO ESPECIAL!';
+                description = `Has obtenido: ${reward.value.name}`;
+            }
+            
+            rewardModal.innerHTML = `
+                <div style="
+                    background: ${backgroundGradient};
+                    border: 3px solid ${borderColor};
+                    border-radius: 20px;
+                    padding: 40px;
+                    text-align: center;
+                    max-width: 90%;
+                    width: 400px;
+                    box-shadow: 0 0 50px ${shadowColor};
+                    animation: rewardReveal 1s ease-out;
+                ">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">${icon}</div>
+                    <div style="font-size: 1.8rem; font-weight: bold; margin-bottom: 15px; color: #000;">${title}</div>
+                    <div style="font-size: 1.2rem; margin-bottom: 20px; color: #333;">${description}</div>
+                    ${reward.type === 'item' ? `<div style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">${reward.value.description}</div>` : ''}
+                    
+                    <button onclick="closeSurpriseBoxReward()" style="
+                        background: linear-gradient(135deg, #000 0%, #333 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 15px;
+                        padding: 15px 30px;
+                        font-size: 1.1rem;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        ✅ CONTINUAR
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(rewardModal);
+            
+            // Auto-close after 8 seconds
+            setTimeout(() => {
+                closeSurpriseBoxReward();
+            }, 8000);
+        }
+
+        function closeSurpriseBoxReward() {
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                modal.style.animation = 'fadeOut 0.5s ease-out';
+                setTimeout(() => {
+                    if (modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
+                    }
+                }, 500);
+            }
+        }
 
 
     </script>

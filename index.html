@@ -5977,11 +5977,20 @@
               rarity: 'mythic'
             };
             
+            const goldenButton = {
+              id: 'golden_button',
+              name: 'Botón de Oro',
+              description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
+              icon: '🟡',
+              value: 3000,
+              rarity: 'legendary'
+            };
+            
 
             
             // Add ONLY FUNCTIONAL items to inventory (avoid duplicates)
             const itemsToAdd = [
-                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb
+                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, goldenButton
             ];
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
@@ -5994,7 +6003,7 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🟡 Botón de Oro\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
             
             console.log('✅ DAGO coins and items added successfully!');
             
@@ -13358,6 +13367,11 @@
                     showNotification(`🕵️‍♂️ ${item.name} activado! Modo de robo anónimo disponible por 24 horas`, 'success');
                     break;
                     
+                case 'golden_button':
+                    // Activate golden button for 1 minute
+                    activateGoldenButton();
+                    break;
+                    
                 case 'nuclear_bomb':
                     // Activate nuclear bomb effect
                     activateNuclearBomb();
@@ -14012,6 +14026,14 @@
                         icon: '🕵️‍♂️',
                         value: 5000,
                         rarity: 'legendary'
+                    },
+                    {
+                        id: 'golden_button',
+                        name: 'Botón de Oro',
+                        description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
+                        icon: '🟡',
+                        value: 3000,
+                        rarity: 'legendary'
                     }
                 ];
                 const selectedItem = dailyItems[Math.floor(Math.random() * dailyItems.length)];
@@ -14172,6 +14194,155 @@
                     console.error('❌ Error sending anonymous RPS challenge:', error);
                 });
             }
+        }
+
+        // GOLDEN BUTTON SYSTEM
+        function activateGoldenButton() {
+            console.log('🟡 GOLDEN BUTTON ACTIVATED!');
+            
+            // Show notification
+            showNotification('🟡 ¡Botón de Oro activado! Haz clic en el botón flotante para ganar monedas', 'success');
+            
+            // Create floating golden button
+            const goldenButton = document.createElement('div');
+            goldenButton.id = 'floatingGoldenButton';
+            goldenButton.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 120px;
+                height: 120px;
+                background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                border: 4px solid #FF8C00;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 3rem;
+                cursor: pointer;
+                z-index: 10000;
+                box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+                animation: goldenButtonPulse 1s infinite alternate;
+                transition: all 0.3s ease;
+            `;
+            goldenButton.textContent = '🟡';
+            
+            // Add click event
+            goldenButton.addEventListener('click', function() {
+                // Add coins
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const newCoins = currentCoins + 50;
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                
+                // Update display
+                if (typeof loadTotalCoins === 'function') {
+                    loadTotalCoins();
+                }
+                
+                // Sync with Firebase
+                if (window.firebase && window.firebase.database) {
+                    const db = window.firebase.database();
+                    const currentPlayer = localStorage.getItem('soldierName');
+                    if (currentPlayer) {
+                        const playerRef = db.ref(`players/${currentPlayer}`);
+                        playerRef.update({
+                            coins: newCoins,
+                            lastUpdated: Date.now()
+                        });
+                    }
+                }
+                
+                // Visual feedback
+                this.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                this.style.boxShadow = '0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5)';
+                
+                // Show coin animation
+                const coinAnimation = document.createElement('div');
+                coinAnimation.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 2rem;
+                    color: #FFD700;
+                    pointer-events: none;
+                    z-index: 10001;
+                    animation: coinFloat 1s ease-out forwards;
+                `;
+                coinAnimation.textContent = '+50';
+                document.body.appendChild(coinAnimation);
+                
+                // Remove coin animation after 1 second
+                setTimeout(() => {
+                    if (coinAnimation.parentNode) {
+                        coinAnimation.parentNode.removeChild(coinAnimation);
+                    }
+                }, 1000);
+                
+                // Reset button style
+                setTimeout(() => {
+                    this.style.transform = 'translate(-50%, -50%) scale(1)';
+                    this.style.boxShadow = '0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3)';
+                }, 200);
+                
+                // Show notification
+                showNotification('💰 +50 monedas!', 'success');
+            });
+            
+            // Add hover effects
+            goldenButton.addEventListener('mouseenter', function() {
+                this.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                this.style.boxShadow = '0 0 40px #FFD700, inset 0 0 25px rgba(255, 215, 0, 0.4)';
+            });
+            
+            goldenButton.addEventListener('mouseleave', function() {
+                this.style.transform = 'translate(-50%, -50%) scale(1)';
+                this.style.boxShadow = '0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3)';
+            });
+            
+            // Add to page
+            document.body.appendChild(goldenButton);
+            
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes goldenButtonPulse {
+                    0% { 
+                        transform: translate(-50%, -50%) scale(1);
+                        box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
+                    }
+                    100% { 
+                        transform: translate(-50%, -50%) scale(1.05);
+                        box-shadow: 0 0 40px #FFD700, inset 0 0 25px rgba(255, 215, 0, 0.4);
+                    }
+                }
+                
+                @keyframes coinFloat {
+                    0% { 
+                        transform: translate(-50%, -50%) scale(1);
+                        opacity: 1;
+                    }
+                    100% { 
+                        transform: translate(-50%, -100px) scale(1.5);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Remove button after 60 seconds
+            setTimeout(() => {
+                if (goldenButton.parentNode) {
+                    goldenButton.style.animation = 'fadeOut 0.5s ease-out';
+                    setTimeout(() => {
+                        if (goldenButton.parentNode) {
+                            goldenButton.parentNode.removeChild(goldenButton);
+                        }
+                    }, 500);
+                }
+                showNotification('⏰ El Botón de Oro ha expirado', 'info');
+            }, 60000); // 60 seconds
         }
 
         // AUTO-REFRESH SYSTEM TO REMOVE GOLDEN BUTTON

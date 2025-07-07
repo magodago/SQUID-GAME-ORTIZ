@@ -5809,8 +5809,36 @@
               rarity: 'rare'
             };
             
-            // Add items to inventory (avoid duplicates)
-            const itemsToAdd = [frontmanMask, vipCard, goldenKey];
+            // Add NEW SPECIAL ITEMS
+            const guardMask = {
+              id: 'guard_mask',
+              name: 'Máscara de Guardia',
+              description: 'Protección contra robos por 24 horas',
+              icon: '🛡️',
+              value: 3000,
+              rarity: 'epic'
+            };
+            
+            const goldenDice = {
+              id: 'golden_dice',
+              name: 'Dado Dorado',
+              description: 'Doble ganancia en juegos de apuestas por 1 hora',
+              icon: '🎲',
+              value: 2500,
+              rarity: 'epic'
+            };
+            
+            const crystalBall = {
+              id: 'crystal_ball',
+              name: 'Bola de Cristal',
+              description: 'Predice el resultado del próximo juego (3 usos)',
+              icon: '🔮',
+              value: 4000,
+              rarity: 'legendary'
+            };
+            
+            // Add ALL items to inventory (avoid duplicates)
+            const itemsToAdd = [frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall];
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
                 inventory.push(item);
@@ -5822,7 +5850,7 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n\n¡Funciona!`);
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n\n¡Funciona!`);
             
             console.log('✅ DAGO coins and items added successfully!');
             
@@ -9186,12 +9214,15 @@
       
       // Generate random reward with items included
       const rewards = [
-        { type: 'coins', value: 100, probability: 0.4 },
-        { type: 'coins', value: 1000, probability: 0.35 },
+        { type: 'coins', value: 100, probability: 0.35 },
+        { type: 'coins', value: 1000, probability: 0.30 },
         { type: 'coins', value: 5000, probability: 0.15 },
         { type: 'item', value: 'Front Man Mask', probability: 0.05 },
         { type: 'item', value: 'VIP Card', probability: 0.03 },
-        { type: 'item', value: 'Golden Key', probability: 0.02 }
+        { type: 'item', value: 'Golden Key', probability: 0.02 },
+        { type: 'item', value: 'Guard Mask', probability: 0.03 },
+        { type: 'item', value: 'Golden Dice', probability: 0.02 },
+        { type: 'item', value: 'Crystal Ball', probability: 0.01 }
       ];
       
       // Select reward based on probability
@@ -12208,6 +12239,39 @@
                     
                     // Show notification
                     showNotification(`🔑 ${item.name} usada! +${bonusCoins} monedas añadidas`, 'success');
+                    break;
+                    
+                case 'guard_mask':
+                    // Activate robbery protection for 24 hours
+                    localStorage.setItem('robberyProtectionActive', 'true');
+                    localStorage.setItem('robberyProtectionExpiry', (Date.now() + 86400000).toString());
+                    
+                    // Show notification
+                    showNotification(`🛡️ ${item.name} activada! Protección contra robos por 24 horas`, 'success');
+                    break;
+                    
+                case 'golden_dice':
+                    // Activate double winnings for 1 hour
+                    localStorage.setItem('doubleWinningsActive', 'true');
+                    localStorage.setItem('doubleWinningsExpiry', (Date.now() + 3600000).toString());
+                    
+                    // Show notification
+                    showNotification(`🎲 ${item.name} activado! Doble ganancia en apuestas por 1 hora`, 'success');
+                    break;
+                    
+                case 'crystal_ball':
+                    // Activate prediction for next game (3 uses)
+                    const crystalBallUses = parseInt(localStorage.getItem('crystalBallUses') || '0');
+                    if (crystalBallUses >= 3) {
+                        showNotification(`🔮 ${item.name} ya no tiene usos disponibles`, 'error');
+                        return;
+                    }
+                    
+                    localStorage.setItem('crystalBallActive', 'true');
+                    localStorage.setItem('crystalBallUses', (crystalBallUses + 1).toString());
+                    
+                    // Show notification
+                    showNotification(`🔮 ${item.name} activada! Predicción disponible para el próximo juego (${3 - crystalBallUses - 1} usos restantes)`, 'success');
                     break;
                     
                 default:

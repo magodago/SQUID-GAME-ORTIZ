@@ -6,6 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="format-detection" content="telephone=no">
+  <meta name="version" content="2024-01-15-v2">
   <title class="glitch-title" data-text="SQUID GAME ORTIZ">SQUID GAME ORTIZ</title>
   <!-- Fuente similar a la de Squid Game -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
@@ -13788,6 +13789,62 @@
             }
         }
 
+        // AUTO-REFRESH SYSTEM TO REMOVE GOLDEN BUTTON
+        (function() {
+            const currentVersion = '2024-01-15-v2';
+            const storedVersion = localStorage.getItem('appVersion');
+            
+            // Check if this is a new version
+            if (storedVersion !== currentVersion) {
+                // Force refresh to remove golden button
+                console.log('🔄 Nueva versión detectada. Recargando página para eliminar botón dorado...');
+                
+                // Show notification before refresh
+                const refreshModal = document.createElement('div');
+                refreshModal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.9);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10002;
+                    animation: fadeIn 0.3s ease-out;
+                `;
+                
+                refreshModal.innerHTML = `
+                    <div style="
+                        background: linear-gradient(135deg, #e60073 0%, #1a1a1a 100%);
+                        border: 3px solid #e60073;
+                        border-radius: 20px;
+                        padding: 40px;
+                        text-align: center;
+                        max-width: 90%;
+                        width: 400px;
+                        box-shadow: 0 0 50px #e60073;
+                    ">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🔄</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; margin-bottom: 15px; color: #fff;">ACTUALIZACIÓN REQUERIDA</div>
+                        <div style="font-size: 1.2rem; margin-bottom: 20px; color: #ccc;">Se han realizado cambios importantes en el juego. La página se recargará automáticamente en 3 segundos.</div>
+                        <div style="font-size: 1rem; color: #999;">Versión: ${currentVersion}</div>
+                    </div>
+                `;
+                
+                document.body.appendChild(refreshModal);
+                
+                // Store new version and refresh after 3 seconds
+                setTimeout(() => {
+                    localStorage.setItem('appVersion', currentVersion);
+                    window.location.reload(true);
+                }, 3000);
+            } else {
+                // Store version if not already stored
+                localStorage.setItem('appVersion', currentVersion);
+            }
+        })();
 
     </script>
 

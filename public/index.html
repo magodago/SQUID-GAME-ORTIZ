@@ -12260,18 +12260,20 @@
                     break;
                     
                 case 'crystal_ball':
-                    // Activate prediction for next game (3 uses)
+                    // Activate prediction for next game (3 uses per item)
                     const crystalBallUses = parseInt(localStorage.getItem('crystalBallUses') || '0');
                     if (crystalBallUses >= 3) {
-                        showNotification(`🔮 ${item.name} ya no tiene usos disponibles`, 'error');
-                        return;
+                        // Reset uses when activating a new Crystal Ball
+                        localStorage.setItem('crystalBallUses', '0');
+                        console.log('🔮 Resetting Crystal Ball uses for new item');
                     }
                     
+                    const newUses = parseInt(localStorage.getItem('crystalBallUses') || '0') + 1;
                     localStorage.setItem('crystalBallActive', 'true');
-                    localStorage.setItem('crystalBallUses', (crystalBallUses + 1).toString());
+                    localStorage.setItem('crystalBallUses', newUses.toString());
                     
                     // Show notification
-                    showNotification(`🔮 ${item.name} activada! Predicción disponible para el próximo juego (${3 - crystalBallUses - 1} usos restantes)`, 'success');
+                    showNotification(`🔮 ${item.name} activada! Predicción disponible para el próximo juego (${3 - newUses} usos restantes)`, 'success');
                     break;
                     
                 default:

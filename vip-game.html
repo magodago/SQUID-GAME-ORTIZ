@@ -687,10 +687,10 @@
                 crystalBallButton.style.display = 'block';
                 crystalBallButton.disabled = false;
                 crystalBallButton.textContent = `🔮 CONSULTAR BOLA DE CRISTAL (${3 - crystalBallUses} usos)`;
-                console.log('🔮 Crystal Ball button shown');
+                console.log('🔮 Crystal Ball button shown with', 3 - crystalBallUses, 'uses left');
             } else {
                 crystalBallButton.style.display = 'none';
-                console.log('🔮 Crystal Ball button hidden');
+                console.log('🔮 Crystal Ball button hidden - Active:', crystalBallActive, 'Uses:', crystalBallUses);
             }
         }
 
@@ -1252,8 +1252,13 @@
             const crystalBallActive = localStorage.getItem('crystalBallActive') === 'true';
             const crystalBallUses = parseInt(localStorage.getItem('crystalBallUses') || '0');
             
-            if (!crystalBallActive || crystalBallUses >= 3) {
-                console.log('❌ Crystal Ball not available');
+            if (!crystalBallActive) {
+                console.log('❌ Crystal Ball not active');
+                return;
+            }
+            
+            if (crystalBallUses >= 3) {
+                console.log('❌ Crystal Ball uses exhausted');
                 return;
             }
             

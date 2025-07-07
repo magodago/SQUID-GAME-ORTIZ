@@ -5959,102 +5959,11 @@
               rarity: 'legendary'
             };
             
-            // Add NEW SPECTACULAR ITEMS
-            const calamarDorado = {
-              id: 'calamar_dorado',
-              name: '🦑 Calamar Dorado',
-              description: 'El símbolo supremo del juego. Te otorga inmunidad total durante 24 horas.',
-              icon: '🦑',
-              value: 50000,
-              rarity: 'mythic'
-            };
+
             
-            const tiroPerfecto = {
-              id: 'tiro_perfecto',
-              name: '🎯 Tiro Perfecto',
-              description: 'Tu puntería es legendaria. Gana automáticamente el próximo minijuego de habilidad.',
-              icon: '🎯',
-              value: 15000,
-              rarity: 'legendary'
-            };
-            
-            const cartaDestino = {
-              id: 'carta_destino',
-              name: '🃏 Carta del Destino',
-              description: 'Puedes repetir el resultado de cualquier juego una vez.',
-              icon: '🃏',
-              value: 20000,
-              rarity: 'legendary'
-            };
-            
-            const bombaRobos = {
-              id: 'bomba_robos',
-              name: '💣 Bomba de Robos',
-              description: 'Actívala y todos los jugadores pierden el 10% de sus monedas, que se reparten entre los 3 primeros del ranking.',
-              icon: '💣',
-              value: 30000,
-              rarity: 'mythic'
-            };
-            
-            const visionFuturo = {
-              id: 'vision_futuro',
-              name: '👁️ Visión del Futuro',
-              description: 'Ves el resultado de la próxima ronda de apuestas antes de jugar.',
-              icon: '👁️',
-              value: 25000,
-              rarity: 'legendary'
-            };
-            
-            const escudoAntiRobo = {
-              id: 'escudo_anti_robo',
-              name: '🛡️ Escudo Anti-Robo',
-              description: 'Protección total contra robos durante 3 días.',
-              icon: '🛡️',
-              value: 35000,
-              rarity: 'epic'
-            };
-            
-            const duplicadorPremios = {
-              id: 'duplicador_premios',
-              name: '💸 Duplicador de Premios',
-              description: 'Duplica la recompensa de tu próximo juego, sea cual sea.',
-              icon: '💸',
-              value: 40000,
-              rarity: 'mythic'
-            };
-            
-            const jackpotInstantaneo = {
-              id: 'jackpot_instantaneo',
-              name: '🎰 Jackpot Instantáneo',
-              description: 'Gana instantáneamente el premio máximo del minijuego que elijas.',
-              icon: '🎰',
-              value: 45000,
-              rarity: 'mythic'
-            };
-            
-            const paseVIPTemporal = {
-              id: 'pase_vip_temporal',
-              name: '👑 Pase VIP Temporal',
-              description: 'Acceso VIP a todos los modos y minijuegos durante 48 horas.',
-              icon: '👑',
-              value: 30000,
-              rarity: 'epic'
-            };
-            
-            const invocacionCalamar = {
-              id: 'invocacion_calamar',
-              name: '🦑 Invocación del Calamar',
-              description: 'Invoca al calamar para que te ayude en el próximo reto. Si pierdes, no pierdes monedas.',
-              icon: '🦑',
-              value: 35000,
-              rarity: 'legendary'
-            };
-            
-            // Add ALL items to inventory (avoid duplicates)
+            // Add ONLY FUNCTIONAL items to inventory (avoid duplicates)
             const itemsToAdd = [
-                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall,
-                calamarDorado, tiroPerfecto, cartaDestino, bombaRobos, visionFuturo,
-                escudoAntiRobo, duplicadorPremios, jackpotInstantaneo, paseVIPTemporal, invocacionCalamar
+                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall
             ];
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
@@ -6067,7 +5976,7 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🦑 Calamar Dorado (MÍTICO)\n   • 🎯 Tiro Perfecto (LEGENDARIO)\n   • 🃏 Carta del Destino (LEGENDARIO)\n   • 💣 Bomba de Robos (MÍTICO)\n   • 👁️ Visión del Futuro (LEGENDARIO)\n   • 🛡️ Escudo Anti-Robo (ÉPICO)\n   • 💸 Duplicador de Premios (MÍTICO)\n   • 🎰 Jackpot Instantáneo (MÍTICO)\n   • 👑 Pase VIP Temporal (ÉPICO)\n   • 🦑 Invocación del Calamar (LEGENDARIO)\n\n¡OBJETOS ESPECTACULARES DESBLOQUEADOS!`);
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +10,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
             
             console.log('✅ DAGO coins and items added successfully!');
             

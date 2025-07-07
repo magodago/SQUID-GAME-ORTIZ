@@ -502,8 +502,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🦹‍♂️ SISTEMA DE ROBO</h1>
-            <p>Desafía a otros jugadores y roba sus monedas</p>
+            <h1>🦹‍♂️ SISTEMA DE ROBO PvP</h1>
+            <p>Desafia a otros jugadores y roba sus monedas</p>
         </div>
 
         <div class="player-info">
@@ -828,12 +828,24 @@
             const isActive = localStorage.getItem('anonymousRobberyActive') === 'true';
             const expiry = parseInt(localStorage.getItem('anonymousRobberyExpiry') || '0');
             
+            // Debug logging
+            console.log('🔍 Anonymous Robbery Check:');
+            console.log('  - isActive:', isActive);
+            console.log('  - expiry:', expiry);
+            console.log('  - current time:', Date.now());
+            console.log('  - time remaining:', expiry - Date.now());
+            
             if (isActive && Date.now() < expiry) {
+                console.log('✅ Anonymous robbery is ACTIVE');
                 return true;
             } else {
                 // Clear expired status
-                localStorage.removeItem('anonymousRobberyActive');
-                localStorage.removeItem('anonymousRobberyExpiry');
+                if (isActive) {
+                    console.log('⏰ Anonymous robbery EXPIRED - clearing status');
+                    localStorage.removeItem('anonymousRobberyActive');
+                    localStorage.removeItem('anonymousRobberyExpiry');
+                }
+                console.log('❌ Anonymous robbery is INACTIVE');
                 return false;
             }
         }

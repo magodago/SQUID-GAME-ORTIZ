@@ -5339,9 +5339,54 @@
           <!-- Daily Achievements Tab -->
           <div class="tab-content active" id="daily-tab">
             <div class="achievements-grid" id="dailyAchievementsGrid">
-              <!-- Los logros se cargarán dinámicamente -->
-              <div style="color: #FFD700; font-size: 1.2rem; text-align: center; padding: 2rem;">
-                🏆 Cargando logros diarios...
+              <div class="achievement-item">
+                <div class="achievement-icon">🎮</div>
+                <div class="achievement-title">Jugador Activo</div>
+                <div class="achievement-description">Juega 3 juegos hoy</div>
+                <div class="achievement-progress">
+                  <div class="achievement-bar" style="width: 0%"></div>
+                </div>
+                <div class="achievement-reward">+25 monedas</div>
+              </div>
+              
+              <div class="achievement-item">
+                <div class="achievement-icon">🏆</div>
+                <div class="achievement-title">Ganador</div>
+                <div class="achievement-description">Gana 2 juegos hoy</div>
+                <div class="achievement-progress">
+                  <div class="achievement-bar" style="width: 0%"></div>
+                </div>
+                <div class="achievement-reward">+50 monedas</div>
+              </div>
+              
+              <div class="achievement-item">
+                <div class="achievement-icon">🔍</div>
+                <div class="achievement-title">Detective</div>
+                <div class="achievement-description">Encuentra 1 pista hoy</div>
+                <div class="achievement-progress">
+                  <div class="achievement-bar" style="width: 0%"></div>
+                </div>
+                <div class="achievement-reward">+30 monedas</div>
+              </div>
+              
+              <div class="achievement-item">
+                <div class="achievement-icon">💰</div>
+                <div class="achievement-title">Rico</div>
+                <div class="achievement-description">Gana 100 monedas hoy</div>
+                <div class="achievement-progress">
+                  <div class="achievement-bar" style="width: 0%"></div>
+                </div>
+                <div class="achievement-reward">+40 monedas</div>
+              </div>
+              
+              <div class="achievement-item">
+                <div class="achievement-icon">🎁</div>
+                <div class="achievement-title">Fiel</div>
+                <div class="achievement-description">Cobra tu recompensa diaria</div>
+                <div class="achievement-progress">
+                  <div class="achievement-bar" style="width: 0%"></div>
+                </div>
+                <div class="achievement-reward">+20 monedas</div>
               </div>
             </div>
           </div>
@@ -10346,47 +10391,32 @@
     ];
 
     function showAchievementsModal() {
-      console.log('🏆 showAchievementsModal() llamado');
-      
       const modal = document.getElementById('achievementsModal');
       if (!modal) {
-        console.error('❌ Modal de logros no encontrado');
+        alert('Error: Modal de logros no encontrado');
         return;
       }
       
-      console.log('✅ Modal encontrado, mostrando...');
+      // Mostrar modal
       modal.style.display = 'flex';
       
-      // Siempre cargar datos frescos
-      console.log('🔄 Cargando datos...');
-      loadAchievementsData();
+      // Cargar datos del usuario
+      loadUserData();
       
       // Configurar tabs
-      console.log('🔄 Configurando tabs...');
-      setupTabs();
+      setupSimpleTabs();
       
       // Configurar botón de cerrar
-      console.log('🔄 Configurando botón de cerrar...');
-      setupCloseButton();
-      
-      console.log('✅ Modal de logros mostrado correctamente');
+      setupSimpleCloseButton();
     }
 
-    function setupTabs() {
-      console.log('📑 setupTabs() llamado');
-      
+    function setupSimpleTabs() {
       const tabBtns = document.querySelectorAll('.tab-btn');
       const tabContents = document.querySelectorAll('.tab-content');
       
-      console.log('📑 Tabs encontrados:', tabBtns.length);
-      console.log('📑 Contenidos de tabs encontrados:', tabContents.length);
-      
-      tabBtns.forEach((btn, index) => {
-        const tabName = btn.getAttribute('data-tab');
-        console.log(`📑 Tab ${index + 1}: ${tabName}`);
-        
+      tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-          console.log(`📑 Tab clickeado: ${tabName}`);
+          const tabName = btn.getAttribute('data-tab');
           
           // Update active tab
           tabBtns.forEach(b => b.classList.remove('active'));
@@ -10397,35 +10427,21 @@
             content.classList.remove('active');
             if (content.id === `${tabName}-tab`) {
               content.classList.add('active');
-              console.log(`📑 Contenido activado: ${content.id}`);
             }
           });
         });
       });
-      
-      console.log('✅ Tabs configurados correctamente');
     }
 
-    function setupCloseButton() {
-      console.log('🔒 setupCloseButton() llamado');
-      
+    function setupSimpleCloseButton() {
       const closeBtn = document.getElementById('closeAchievements');
-      console.log('🔒 Botón de cerrar encontrado:', !!closeBtn);
-      
       if (closeBtn) {
         closeBtn.onclick = function() {
-          console.log('🔒 Botón de cerrar clickeado');
           const modal = document.getElementById('achievementsModal');
           if (modal) {
             modal.style.display = 'none';
-            console.log('✅ Modal cerrado correctamente');
-          } else {
-            console.error('❌ Modal no encontrado al cerrar');
           }
         };
-        console.log('✅ Event listener agregado al botón de cerrar');
-      } else {
-        console.error('❌ Botón de cerrar no encontrado');
       }
     }
 
@@ -10435,165 +10451,53 @@
       loadStreaks();
     }
 
-    function loadAchievementsData() {
-      console.log('🔄 loadAchievementsData() llamado');
-      
-      // Load daily achievements
-      console.log('📅 Cargando logros diarios...');
-      loadDailyAchievements();
-      
-      // Load streaks
-      console.log('🔥 Cargando rachas...');
-      loadStreaks();
-      
-      // Load stats
-      console.log('📊 Cargando estadísticas...');
-      loadStats();
-      
-      console.log('✅ loadAchievementsData() completado');
-    }
-
-    function loadDailyAchievements() {
-      console.log('📅 loadDailyAchievements() llamado');
-      
-      const grid = document.getElementById('dailyAchievementsGrid');
-      if (!grid) {
-        console.error('❌ Grid de logros diarios no encontrado');
-        return;
-      }
-      
-      console.log('✅ Grid encontrado, elementos actuales:', grid.children.length);
-      
-      // Siempre cargar los logros (limpiar y recargar)
-      console.log('🔄 Cargando logros...');
-      
-      // Limpiar grid
-      grid.innerHTML = '';
-      
-      const today = new Date().toDateString();
-      const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
-      
-      console.log('📅 Datos de hoy:', todayData);
-      console.log('🏆 Logros disponibles:', dailyAchievements.length);
-      
-      // Crear fragmento para mejor rendimiento
-      const fragment = document.createDocumentFragment();
-      
-      dailyAchievements.forEach((achievement, index) => {
-        console.log(`🏆 Procesando logro ${index + 1}:`, achievement.title);
-        
-        const progress = todayData[achievement.id] || 0;
-        const isCompleted = progress >= achievement.target;
-        
-        console.log(`   Progreso: ${progress}/${achievement.target} (${isCompleted ? 'COMPLETADO' : 'EN PROGRESO'})`);
-        
-        const achievementEl = document.createElement('div');
-        achievementEl.className = `achievement-item ${isCompleted ? 'completed' : ''}`;
-        
-        const progressPercent = Math.min((progress / achievement.target) * 100, 100);
-        
-        achievementEl.innerHTML = `
-          <div class="achievement-icon">${achievement.icon}</div>
-          <div class="achievement-title">${achievement.title}</div>
-          <div class="achievement-description">${achievement.description}</div>
-          <div class="achievement-progress">
-            <div class="achievement-bar" style="width: ${progressPercent}%"></div>
-          </div>
-          <div class="achievement-reward">+${achievement.reward} monedas</div>
-        `;
-        
-        fragment.appendChild(achievementEl);
-      });
-      
-      grid.appendChild(fragment);
-      console.log('✅ Logros diarios cargados:', grid.children.length, 'elementos');
-    }
-
-    function loadStreaks() {
-      console.log('🔥 loadStreaks() llamado');
-      
-      const currentStreakEl = document.getElementById('currentStreak');
-      const streakRewardEl = document.getElementById('streakReward');
-      
-      if (!currentStreakEl || !streakRewardEl) {
-        console.error('❌ Elementos de racha no encontrados');
-        console.log('   currentStreakEl:', !!currentStreakEl);
-        console.log('   streakRewardEl:', !!streakRewardEl);
-        return;
-      }
-      
-      console.log('✅ Elementos de racha encontrados');
-      
-      const streakData = JSON.parse(localStorage.getItem('streakData') || '{}');
-      const currentStreak = streakData.currentStreak || 0;
-      
-      console.log('🔥 Datos de racha:', streakData);
-      console.log('🔥 Racha actual:', currentStreak);
-      
-      currentStreakEl.textContent = `${currentStreak} días`;
-      
-      // Calculate streak reward
-      let reward = 0;
-      if (currentStreak >= 3) reward = 25;
-      if (currentStreak >= 7) reward = 50;
-      if (currentStreak >= 30) reward = 100;
-      
-      console.log('💰 Recompensa de racha:', reward);
-      streakRewardEl.textContent = `+${reward} monedas`;
-      
-      // Update milestones
-      const milestones = document.querySelectorAll('.milestone');
-      console.log('🏆 Milestones encontrados:', milestones.length);
-      
-      milestones.forEach((milestone, index) => {
-        const days = parseInt(milestone.getAttribute('data-days'));
-        const reached = currentStreak >= days;
-        console.log(`   Milestone ${index + 1}: ${days} días - ${reached ? 'ALCANZADO' : 'NO ALCANZADO'}`);
-        
-        if (reached) {
-          milestone.classList.add('reached');
-        } else {
-          milestone.classList.remove('reached');
-        }
-      });
-      
-      console.log('✅ Rachas cargadas correctamente');
-    }
-
-    function loadStats() {
-      console.log('📊 loadStats() llamado');
-      
-      // Use OrtizCoinManager for consistent coin handling
-      const totalCoins = window.OrtizCoinManager ? window.OrtizCoinManager.getTotalCoins() : parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+    function loadUserData() {
+      // Cargar datos básicos del usuario
+      const totalCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
       const easterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
       const daysActive = parseInt(localStorage.getItem('daysActive') || '0');
+      const streakData = JSON.parse(localStorage.getItem('streakData') || '{}');
+      const currentStreak = streakData.currentStreak || 0;
       
-      console.log('📊 Estadísticas cargadas:');
-      console.log('   Monedas totales:', totalCoins);
-      console.log('   Juegos jugados:', gamesPlayed);
-      console.log('   Easter eggs:', easterEggs);
-      console.log('   Días activo:', daysActive);
-      
-      // Actualizar elementos solo si existen
+      // Actualizar estadísticas
       const totalCoinsEl = document.getElementById('totalCoinsStat');
       const gamesPlayedEl = document.getElementById('gamesPlayedStat');
       const easterEggsEl = document.getElementById('easterEggsStat');
       const daysActiveEl = document.getElementById('daysActiveStat');
-      
-      console.log('📊 Elementos encontrados:');
-      console.log('   totalCoinsEl:', !!totalCoinsEl);
-      console.log('   gamesPlayedEl:', !!gamesPlayedEl);
-      console.log('   easterEggsEl:', !!easterEggsEl);
-      console.log('   daysActiveEl:', !!daysActiveEl);
       
       if (totalCoinsEl) totalCoinsEl.textContent = totalCoins.toLocaleString();
       if (gamesPlayedEl) gamesPlayedEl.textContent = gamesPlayed;
       if (easterEggsEl) easterEggsEl.textContent = easterEggs;
       if (daysActiveEl) daysActiveEl.textContent = daysActive;
       
-      console.log('✅ Estadísticas cargadas correctamente');
+      // Actualizar racha
+      const currentStreakEl = document.getElementById('currentStreak');
+      const streakRewardEl = document.getElementById('streakReward');
+      
+      if (currentStreakEl) currentStreakEl.textContent = `${currentStreak} días`;
+      
+      // Calcular recompensa de racha
+      let reward = 0;
+      if (currentStreak >= 3) reward = 25;
+      if (currentStreak >= 7) reward = 50;
+      if (currentStreak >= 30) reward = 100;
+      
+      if (streakRewardEl) streakRewardEl.textContent = `+${reward} monedas`;
+      
+      // Actualizar milestones
+      const milestones = document.querySelectorAll('.milestone');
+      milestones.forEach(milestone => {
+        const days = parseInt(milestone.getAttribute('data-days'));
+        if (currentStreak >= days) {
+          milestone.classList.add('reached');
+        } else {
+          milestone.classList.remove('reached');
+        }
+      });
     }
+
+    // Función simple para cargar datos del usuario (reemplaza las funciones complejas)
 
     // Load and update Top 3 Leaderboard
     function loadTop3Leaderboard() {

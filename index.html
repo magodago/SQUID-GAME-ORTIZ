@@ -7895,7 +7895,7 @@
     // Al cargar la página, mostrar el total correcto
     window.addEventListener('DOMContentLoaded', loadTotalCoins);
 
-    // SUPER SIMPLE: Observer for localStorage changes - WITH ALERTS
+    // SUPER SIMPLE: Observer for localStorage changes - DIRECT FIREBASE SYNC
     function setupLocalStorageObserver() {
       alert('🔍 INICIANDO OBSERVADOR DE MONEDAS...');
       console.log('🔍 Setting up localStorage observer...');
@@ -7913,20 +7913,56 @@
           console.log('💰 localStorage changed:', lastCoins, '->', currentCoins);
           lastCoins = currentCoins;
           
-          // AUTO-SYNC TO FIREBASE USING WORKING CODE
-          alert('🔄 LLAMANDO A autoSyncToFirebase...');
+          // DIRECT FIREBASE SYNC - NO DEPENDENCIES
+          alert('🔄 INICIANDO SYNC DIRECTO A FIREBASE...');
           
-          // Check if function exists
-          if (typeof autoSyncToFirebase === 'function') {
-            alert('✅ Función autoSyncToFirebase existe');
-            try {
-              autoSyncToFirebase(parseInt(currentCoins));
-              alert('✅ Función autoSyncToFirebase llamada correctamente');
-            } catch (error) {
-              alert('❌ ERROR al llamar autoSyncToFirebase: ' + error.message);
+          const playerName = localStorage.getItem('soldierName');
+          if (!playerName) {
+            alert('❌ ERROR: No hay nombre de jugador!');
+            return;
+          }
+          
+          alert('👤 Jugador: ' + playerName + '\n💰 Monedas: ' + currentCoins + '\n\nConectando...');
+          
+          try {
+            // Firebase config
+            const firebaseConfig = {
+              apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
+              authDomain: "squid-game-ortiz.firebaseapp.com",
+              databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
+              projectId: "squid-game-ortiz",
+              storageBucket: "squid-game-ortiz.firebasestorage.app",
+              messagingSenderId: "564790427576",
+              appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
+            };
+            
+            // Initialize Firebase
+            if (!firebase.apps.length) {
+              alert('🔥 Inicializando Firebase...');
+              firebase.initializeApp(firebaseConfig);
             }
-          } else {
-            alert('❌ ERROR: autoSyncToFirebase NO ES UNA FUNCIÓN!\n\nTipo: ' + typeof autoSyncToFirebase);
+            
+            alert('📡 Conectando a la base de datos...');
+            const db = firebase.database();
+            const playerRef = db.ref('players/' + playerName);
+            
+            const playerData = {
+              name: playerName,
+              coins: parseInt(currentCoins),
+              lastUpdated: Date.now(),
+              autoSync: true
+            };
+            
+            alert('📤 Enviando datos a Firebase...');
+            
+            playerRef.update(playerData).then(() => {
+              alert('✅ ¡SYNC EXITOSO!\n\n📱 Datos enviados:\n• Jugador: ' + playerName + '\n• Monedas: ' + currentCoins + '\n• Timestamp: ' + new Date().toLocaleString());
+            }).catch(error => {
+              alert('❌ SYNC FALLIDO\n\nError: ' + error.message);
+            });
+            
+          } catch (error) {
+            alert('❌ ERROR CRÍTICO\n\nError: ' + error.message);
           }
         }
       }, 500);

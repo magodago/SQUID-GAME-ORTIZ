@@ -4154,6 +4154,44 @@
       font-family: 'Orbitron', Arial, sans-serif;
     }
     
+    /* Sync Button */
+    .sync-btn {
+      background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+      border: 2px solid #00ff00;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #000;
+      box-shadow: 0 0 15px #00ff00;
+      transition: all 0.3s ease;
+      animation: syncPulse 2s ease-in-out infinite alternate;
+    }
+    
+    .sync-btn:hover {
+      transform: scale(1.1) rotate(180deg);
+      box-shadow: 0 0 25px #00ff00;
+    }
+    
+    .sync-btn:active {
+      transform: scale(0.95);
+    }
+    
+    @keyframes syncPulse {
+      0% { 
+        box-shadow: 0 0 15px #00ff00;
+        transform: scale(1);
+      }
+      100% { 
+        box-shadow: 0 0 25px #00ff00, 0 0 35px #00ff00;
+        transform: scale(1.05);
+      }
+    }
+    
     /* Soldier Name Display */
     .soldier-name {
       display: flex;
@@ -4998,6 +5036,7 @@
     <div class="coins-counter" id="coinsCounter">
       <span class="coin-icon">🪙</span>
       <span class="coins-text">ORTIZ COINS: <span id="totalCoins">0</span></span>
+      <button class="sync-btn" id="syncBtn" title="Sincronizar datos" onclick="forceSync()">🔄</button>
     </div>
     
 
@@ -7727,6 +7766,10 @@
     
     // Check soldier name when page loads
     checkSoldierName();
+    
+    // 🔄 SISTEMA DE RESPALDO AUTOMÁTICO - Garantiza que nunca se pierdan datos
+    console.log('🔄 Iniciando sistema de respaldo automático...');
+    initializeAutoBackupSystem();
     
     // Easter Egg - Sistema Activo Click Counter
     let sistemaActivoClicks = 0;
@@ -14952,6 +14995,192 @@
                 localStorage.setItem('appVersion', currentVersion);
             }
         })();
+
+        // 🔄 SISTEMA DE RESPALDO AUTOMÁTICO - Garantiza que nunca se pierdan datos
+        function initializeAutoBackupSystem() {
+            console.log('🔄 Sistema de respaldo automático iniciado');
+            
+            // Esperar a que Firebase esté disponible
+            const checkFirebase = setInterval(() => {
+                if (window.firebase && window.firebase.database) {
+                    clearInterval(checkFirebase);
+                    console.log('✅ Firebase disponible, iniciando sincronización automática');
+                    performAutoBackup();
+                }
+            }, 100);
+            
+            // Timeout de seguridad
+            setTimeout(() => {
+                clearInterval(checkFirebase);
+                console.log('⚠️ Firebase no disponible después de 10 segundos');
+            }, 10000);
+        }
+
+        function performAutoBackup() {
+            const playerName = localStorage.getItem('soldierName');
+            if (!playerName) {
+                console.log('⚠️ No hay nombre de jugador, saltando respaldo automático');
+                return;
+            }
+
+            console.log('🔄 Iniciando respaldo automático para:', playerName);
+            
+            const db = window.firebase.database();
+            const playerRef = db.ref(`players/${playerName}`);
+            
+            // Obtener datos de Firebase
+            playerRef.once('value').then((snapshot) => {
+                const firebaseData = snapshot.val();
+                console.log('📊 Datos de Firebase obtenidos:', firebaseData);
+                
+                if (firebaseData) {
+                    // Restaurar datos críticos desde Firebase
+                    restoreDataFromFirebase(firebaseData);
+                } else {
+                    console.log('📝 No hay datos en Firebase, guardando datos locales');
+                    // Si no hay datos en Firebase, guardar los datos locales
+                    saveLocalDataToFirebase();
+                }
+                
+                // Configurar sincronización automática cada 30 segundos
+                setupAutoSync();
+                
+            }).catch((error) => {
+                console.error('❌ Error al obtener datos de Firebase:', error);
+                // En caso de error, intentar guardar datos locales
+                saveLocalDataToFirebase();
+            });
+        }
+
+        function restoreDataFromFirebase(firebaseData) {
+            console.log('🔄 Restaurando datos desde Firebase...');
+            
+            // Restaurar monedas
+            if (firebaseData.coins !== undefined) {
+                const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const firebaseCoins = parseInt(firebaseData.coins);
+                
+                if (firebaseCoins > localCoins) {
+                    console.log(`💰 Restaurando monedas: ${localCoins} → ${firebaseCoins}`);
+                    localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
+                }
+            }
+            
+            // Restaurar inventario
+            if (firebaseData.inventory && Array.isArray(firebaseData.inventory)) {
+                const localInventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+                if (firebaseData.inventory.length > localInventory.length) {
+                    console.log('🎒 Restaurando inventario desde Firebase');
+                    localStorage.setItem('playerInventory', JSON.stringify(firebaseData.inventory));
+                }
+            }
+            
+            // Restaurar estadísticas
+            if (firebaseData.gamesPlayed !== undefined) {
+                localStorage.setItem('gamesPlayed', firebaseData.gamesPlayed.toString());
+            }
+            if (firebaseData.totalWins !== undefined) {
+                localStorage.setItem('totalWins', firebaseData.totalWins.toString());
+            }
+            if (firebaseData.cluesFound !== undefined) {
+                localStorage.setItem('cluesFound', firebaseData.cluesFound.toString());
+            }
+            if (firebaseData.rpsWins !== undefined) {
+                localStorage.setItem('rpsWins', firebaseData.rpsWins.toString());
+            }
+            if (firebaseData.rpsLosses !== undefined) {
+                localStorage.setItem('rpsLosses', firebaseData.rpsLosses.toString());
+            }
+            
+            // Restaurar easter eggs
+            if (firebaseData.easterEggs && Array.isArray(firebaseData.easterEggs)) {
+                firebaseData.easterEggs.forEach(egg => {
+                    localStorage.setItem(`easterEgg_${egg.id}`, 'true');
+                });
+            }
+            
+            console.log('✅ Datos restaurados desde Firebase');
+            
+            // Actualizar displays
+            if (typeof loadTotalCoins === 'function') {
+                loadTotalCoins();
+            }
+            if (typeof loadStats === 'function') {
+                loadStats();
+            }
+        }
+
+        function saveLocalDataToFirebase() {
+            const playerName = localStorage.getItem('soldierName');
+            if (!playerName) return;
+            
+            console.log('💾 Guardando datos locales en Firebase...');
+            
+            const db = window.firebase.database();
+            const playerRef = db.ref(`players/${playerName}`);
+            
+            const updateData = {
+                name: playerName,
+                coins: parseInt(localStorage.getItem('totalOrtizCoins') || '0'),
+                inventory: JSON.parse(localStorage.getItem('playerInventory') || '[]'),
+                gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+                totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+                cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+                rpsWins: parseInt(localStorage.getItem('rpsWins') || '0'),
+                rpsLosses: parseInt(localStorage.getItem('rpsLosses') || '0'),
+                lastUpdated: Date.now()
+            };
+            
+            // Agregar easter eggs encontrados
+            const easterEggs = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('easterEgg_')) {
+                    easterEggs.push({ id: key.replace('easterEgg_', '') });
+                }
+            }
+            if (easterEggs.length > 0) {
+                updateData.easterEggs = easterEggs;
+            }
+            
+            playerRef.update(updateData).then(() => {
+                console.log('✅ Datos locales guardados en Firebase');
+            }).catch((error) => {
+                console.error('❌ Error al guardar en Firebase:', error);
+            });
+        }
+
+        function setupAutoSync() {
+            console.log('🔄 Configurando sincronización automática cada 30 segundos');
+            
+            // Sincronizar cada 30 segundos
+            setInterval(() => {
+                const playerName = localStorage.getItem('soldierName');
+                if (playerName) {
+                    saveLocalDataToFirebase();
+                }
+            }, 30000);
+            
+            // Sincronizar antes de cerrar la página
+            window.addEventListener('beforeunload', () => {
+                saveLocalDataToFirebase();
+            });
+            
+            // Sincronizar cuando la página vuelve a estar visible
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    console.log('🔄 Página visible, sincronizando datos...');
+                    saveLocalDataToFirebase();
+                }
+            });
+        }
+
+        // Función para forzar sincronización manual
+        window.forceSync = function() {
+            console.log('🔄 Sincronización manual forzada');
+            saveLocalDataToFirebase();
+            showNotification('🔄 Datos sincronizados', 'success');
+        };
 
     </script>
 

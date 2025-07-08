@@ -6004,11 +6004,20 @@
               rarity: 'mythic'
             };
             
+            const divineShield = {
+              id: 'divine_shield',
+              name: '🛡️ Escudo Divino',
+              description: 'Protección total contra objetos de otros jugadores por 24 horas',
+              icon: '🛡️',
+              value: 25000,
+              rarity: 'mythic'
+            };
+            
 
             
             // Add ONLY FUNCTIONAL items to inventory (avoid duplicates)
             const itemsToAdd = [
-                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, goldenButton, humanitarianAid, twoFaces
+                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, goldenButton, humanitarianAid, twoFaces, divineShield
             ];
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
@@ -6021,7 +6030,7 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🟡 Botón de Oro\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
+            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🟡 Botón de Oro\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n   • 🛡️ Escudo Divino\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
             
             console.log('✅ DAGO coins and items added successfully!');
             
@@ -13405,6 +13414,11 @@
                     activateTwoFaces();
                     break;
                     
+                case 'divine_shield':
+                    // Activate divine shield effect
+                    activateDivineShield();
+                    break;
+                    
                 default:
                     showNotification(`❌ Función no implementada para ${item.name}`, 'error');
                     return;
@@ -13503,7 +13517,27 @@
                         
                         // Apply nuclear bomb effect to each player
                         let affectedPlayers = [];
+                        let protectedPlayers = [];
                         top3Players.forEach((player, index) => {
+                            // Check if player has divine shield protection
+                            const hasDivineShield = localStorage.getItem('divineShieldActive') === 'true' && 
+                                                   player.name === localStorage.getItem('soldierName');
+                            
+                            if (hasDivineShield) {
+                                protectedPlayers.push(player.name);
+                                console.log(`🛡️ ${player.name} está protegido por Escudo Divino`);
+                                
+                                // Send protection notification
+                                const notificationRef = db.ref(`notifications/${player.name}`);
+                                notificationRef.push({
+                                    type: 'divine_shield_protection',
+                                    message: `🛡️ ¡ESCUDO DIVINO ACTIVO!\n\nHas sido protegido de la Bomba Nuclear\n\nTu identidad permanece oculta.`,
+                                    timestamp: Date.now(),
+                                    read: false
+                                });
+                                return; // Skip this player
+                            }
+                            
                             const originalCoins = player.coins;
                             const reduction = Math.floor(originalCoins * 0.30); // 30% reduction
                             const newCoins = originalCoins - reduction;
@@ -13536,7 +13570,11 @@
                                 
                                 // If this is the last player, show final notification to launcher
                                 if (affectedPlayers.length === top3Players.length) {
-                                    const message = `☢️ BOMBA NUCLEAR EJECUTADA!\n\n${affectedPlayers.join('\n')}\n\n¡Los 3 más ricos han perdido 30% de sus monedas!`;
+                                    let message = `☢️ BOMBA NUCLEAR EJECUTADA!\n\n${affectedPlayers.join('\n')}`;
+                                    if (protectedPlayers.length > 0) {
+                                        message += `\n\n🛡️ Jugadores protegidos: ${protectedPlayers.join(', ')}`;
+                                    }
+                                    message += `\n\n¡Los 3 más ricos han perdido 30% de sus monedas!`;
                                     showNotification(message, 'success');
                                     
                                     // Send notification to launcher (anonymous)
@@ -14078,6 +14116,14 @@
                         icon: '🎭',
                         value: 20000,
                         rarity: 'mythic'
+                    },
+                    {
+                        id: 'divine_shield',
+                        name: '🛡️ Escudo Divino',
+                        description: 'Protección total contra objetos de otros jugadores por 24 horas',
+                        icon: '🛡️',
+                        value: 25000,
+                        rarity: 'mythic'
                     }
                 ];
                 const selectedItem = dailyItems[Math.floor(Math.random() * dailyItems.length)];
@@ -14408,6 +14454,24 @@
                                 playerName !== 'prueba 2' && 
                                 coins > 0) {
                                 
+                                // Check if player has divine shield protection
+                                const hasDivineShield = localStorage.getItem('divineShieldActive') === 'true' && 
+                                                       playerName === localStorage.getItem('soldierName');
+                                
+                                if (hasDivineShield) {
+                                    console.log(`🛡️ ${playerName} está protegido por Escudo Divino de 2 Caras`);
+                                    
+                                    // Send protection notification
+                                    const notificationRef = db.ref(`notifications/${playerName}`);
+                                    notificationRef.push({
+                                        type: 'divine_shield_protection',
+                                        message: `🛡️ ¡ESCUDO DIVINO ACTIVO!\n\nHas sido protegido de 2 Caras\n\nTu identidad permanece oculta.`,
+                                        timestamp: Date.now(),
+                                        read: false
+                                    });
+                                    return; // Skip this player
+                                }
+                                
                                 // Random 50/50 chance for each player
                                 const isWinner = Math.random() < 0.5;
                                 const percentage = 0.25; // 25%
@@ -14600,6 +14664,87 @@
             } else {
                 showNotification('❌ Error: Firebase no disponible', 'error');
             }
+        }
+
+        // DIVINE SHIELD SYSTEM
+        function activateDivineShield() {
+            console.log('🛡️ DIVINE SHIELD ACTIVATED!');
+            
+            // Activate divine shield for 24 hours
+            localStorage.setItem('divineShieldActive', 'true');
+            localStorage.setItem('divineShieldExpiry', (Date.now() + 86400000).toString());
+            
+            // Show notification
+            showNotification('🛡️ ¡Escudo Divino activado! Protección total por 24 horas', 'success');
+            
+            // Show activation modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #4169e1 0%, #1a1a1a 100%);
+                    border: 3px solid #4169e1;
+                    border-radius: 20px;
+                    padding: 30px;
+                    text-align: center;
+                    max-width: 90%;
+                    width: 500px;
+                    box-shadow: 0 0 50px #4169e1;
+                ">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🛡️</div>
+                    <h2 style="color: #4169e1; margin-bottom: 20px; text-shadow: 0 0 10px #4169e1;">ESCUDO DIVINO ACTIVADO</h2>
+                    <p style="color: white; margin-bottom: 20px; font-size: 1.1em;">
+                        Has activado una <strong>protección divina</strong> que te protege de todos los objetos usados por otros jugadores.
+                    </p>
+                    <div style="
+                        background: rgba(65, 105, 225, 0.1);
+                        border: 2px solid #4169e1;
+                        border-radius: 15px;
+                        padding: 20px;
+                        margin-bottom: 20px;
+                        text-align: left;
+                    ">
+                        <h3 style="color: #4169e1; margin-bottom: 15px;">🛡️ Protección Activa:</h3>
+                        <div style="color: white; margin: 5px 0; font-size: 1.1em;">• ☢️ Bomba Nuclear</div>
+                        <div style="color: white; margin: 5px 0; font-size: 1.1em;">• 🎭 2 Caras</div>
+                        <div style="color: white; margin: 5px 0; font-size: 1.1em;">• 🤝 Ayuda Humanitaria</div>
+                        <div style="color: white; margin: 5px 0; font-size: 1.1em;">• 🕵️‍♂️ Roba Anónimo</div>
+                        <div style="color: white; margin: 5px 0; font-size: 1.1em;">• Y cualquier otro objeto futuro</div>
+                    </div>
+                    <p style="color: #4169e1; font-size: 0.9em; font-style: italic;">
+                        Duración: 24 horas | Tu identidad permanece oculta
+                    </p>
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        background: linear-gradient(135deg, #4169e1 0%, #1e3a8a 100%);
+                        border: none;
+                        border-radius: 10px;
+                        padding: 15px 30px;
+                        color: white;
+                        font-size: 1.1em;
+                        font-weight: bold;
+                        cursor: pointer;
+                        margin-top: 20px;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        ENTENDIDO
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
         }
 
         // GOLDEN BUTTON SYSTEM

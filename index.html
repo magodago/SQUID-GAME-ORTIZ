@@ -7915,11 +7915,18 @@
           
           // AUTO-SYNC TO FIREBASE USING WORKING CODE
           alert('🔄 LLAMANDO A autoSyncToFirebase...');
-          try {
-            autoSyncToFirebase(parseInt(currentCoins));
-            alert('✅ Función autoSyncToFirebase llamada correctamente');
-          } catch (error) {
-            alert('❌ ERROR al llamar autoSyncToFirebase: ' + error.message);
+          
+          // Check if function exists
+          if (typeof autoSyncToFirebase === 'function') {
+            alert('✅ Función autoSyncToFirebase existe');
+            try {
+              autoSyncToFirebase(parseInt(currentCoins));
+              alert('✅ Función autoSyncToFirebase llamada correctamente');
+            } catch (error) {
+              alert('❌ ERROR al llamar autoSyncToFirebase: ' + error.message);
+            }
+          } else {
+            alert('❌ ERROR: autoSyncToFirebase NO ES UNA FUNCIÓN!\n\nTipo: ' + typeof autoSyncToFirebase);
           }
         }
       }, 500);
@@ -7929,6 +7936,7 @@
     }
 
     // AUTO-SYNC FUNCTION USING THE WORKING FIREBASE CODE - WITH ALERTS
+    alert('📝 DEFINIENDO FUNCIÓN autoSyncToFirebase...');
     function autoSyncToFirebase(newCoins) {
       alert('🚀 ¡FUNCIÓN autoSyncToFirebase EJECUTÁNDOSE!\n\nMonedas recibidas: ' + newCoins);
       

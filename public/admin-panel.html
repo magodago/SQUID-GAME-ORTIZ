@@ -372,7 +372,7 @@
 
             const db = firebase.database();
             const playersRef = db.ref('players');
-
+            
             playersRef.once('value')
                 .then((snapshot) => {
                     const players = snapshot.val() || {};
@@ -440,19 +440,19 @@
                     }
                     
                     let tableHTML = `
-                        <table class="players-table">
-                            <thead>
-                                <tr>
+                <table class="players-table">
+                    <thead>
+                        <tr>
                                     <th>Jugador</th>
                                     <th>Estado</th>
-                                    <th>Monedas</th>
+                            <th>Monedas</th>
                                     <th>Tiempo Activo</th>
                                     <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-                    
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
                     Object.keys(players).forEach(playerName => {
                         const player = players[playerName];
                         const coins = parseInt(player.coins || 0);
@@ -475,18 +475,18 @@
                                 <td>${isOnline ? '🟢 Online' : '🔴 Offline'}</td>
                                 <td>${coins.toLocaleString()}</td>
                                 <td>${activeTimeFormatted}</td>
-                                <td>
-                                    <div class="coin-controls">
+                        <td>
+                            <div class="coin-controls">
                                         <input type="number" class="coin-input" id="coins_${playerName}" placeholder="Cantidad" min="0">
                                         <button class="coin-button add-button" onclick="addCoins('${playerName}')">➕</button>
                                         <button class="coin-button remove-button" onclick="removeCoins('${playerName}')">➖</button>
-                                    </div>
+                            </div>
                                     <div id="status_${playerName}"></div>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                    
+                        </td>
+                    </tr>
+                `;
+            });
+
                     tableHTML += '</tbody></table>';
                     playersListDiv.innerHTML = tableHTML;
                     
@@ -545,12 +545,12 @@
         function addCoins(playerName) {
             const input = document.getElementById(`coins_${playerName}`);
             const amount = parseInt(input.value);
-            
+
             if (!amount || amount <= 0) {
                 showStatus(playerName, '❌ Ingresa una cantidad válida', 'error');
                 return;
             }
-            
+
             console.log(`💰 Agregando ${amount} monedas a ${playerName}`);
             
             if (!firebase || !firebase.database) {
@@ -565,10 +565,10 @@
                 .then((snapshot) => {
                     const player = snapshot.val() || {};
                     const currentCoins = parseInt(player.coins || 0);
-                    const newCoins = currentCoins + amount;
-                    
+            const newCoins = currentCoins + amount;
+
                     return playerRef.update({
-                        coins: newCoins,
+                coins: newCoins,
                         lastUpdated: Date.now()
                     });
                 })
@@ -603,12 +603,12 @@
         function removeCoins(playerName) {
             const input = document.getElementById(`coins_${playerName}`);
             const amount = parseInt(input.value);
-            
+
             if (!amount || amount <= 0) {
                 showStatus(playerName, '❌ Ingresa una cantidad válida', 'error');
                 return;
             }
-            
+
             console.log(`💰 Removiendo ${amount} monedas de ${playerName}`);
             
             if (!firebase || !firebase.database) {
@@ -623,10 +623,10 @@
                 .then((snapshot) => {
                     const player = snapshot.val() || {};
                     const currentCoins = parseInt(player.coins || 0);
-                    const newCoins = Math.max(0, currentCoins - amount);
-                    
+            const newCoins = Math.max(0, currentCoins - amount);
+
                     return playerRef.update({
-                        coins: newCoins,
+                coins: newCoins,
                         lastUpdated: Date.now()
                     });
                 })
@@ -674,17 +674,17 @@
         function formatTime(seconds) {
             if (!seconds || seconds === 0) return '0s';
             
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = seconds % 60;
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
             
-            if (hours > 0) {
+                if (hours > 0) {
                 return `${hours}h ${minutes}m ${secs}s`;
-            } else if (minutes > 0) {
-                return `${minutes}m ${secs}s`;
-            } else {
-                return `${secs}s`;
-            }
+                } else if (minutes > 0) {
+                    return `${minutes}m ${secs}s`;
+                } else {
+                    return `${secs}s`;
+                }
         }
 
         function updateTimestamp() {

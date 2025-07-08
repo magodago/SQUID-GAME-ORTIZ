@@ -459,6 +459,11 @@
             <button class="back-button" id="backButton">
                 🏠 VOLVER A LA PÁGINA PRINCIPAL
             </button>
+            
+            <!-- Debug button for mobile -->
+            <button class="debug-button" id="debugButton" onclick="showDebugInfo()" style="margin-top: 1rem; background: #FF6B35; padding: 0.5rem 1rem; border: none; border-radius: 5px; color: white; font-size: 0.9rem;">
+                🔍 DEBUG INFO
+            </button>
         </div>
 
         <!-- Race Screen -->
@@ -930,6 +935,21 @@
             
             console.log('🔍 Redirigiendo a index.html');
             window.location.href = 'index.html';
+        }
+
+        // Debug function for mobile
+        function showDebugInfo() {
+            const debugInfo = `
+🔍 DEBUG INFO:
+Jugador actual: ${currentPlayer}
+Database disponible: ${!!database}
+Estado del juego: ${gameState}
+Jugadores online: ${Object.keys(onlinePlayers).length}
+Lista de jugadores: ${JSON.stringify(onlinePlayers)}
+Firebase configurado: ${!!window.firebase}
+            `;
+            
+            alert(debugInfo);
         }
 
         // Set up back button

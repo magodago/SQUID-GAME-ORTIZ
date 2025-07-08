@@ -7925,7 +7925,8 @@
         if (currentCoins !== lastCoins) {
           alert('💰 ¡CAMBIO DETECTADO!\n\nAnterior: ' + lastCoins + '\nNuevo: ' + currentCoins + '\n\nIniciando auto-sync...');
           console.log('💰 localStorage changed:', lastCoins, '->', currentCoins);
-          lastCoins = currentCoins;
+          
+          // NO actualizar lastCoins aquí, solo después del sync exitoso
           
           // DIRECT FIREBASE SYNC - NO DEPENDENCIES
           alert('🔄 INICIANDO SYNC DIRECTO A FIREBASE...');
@@ -7971,8 +7972,12 @@
             
             playerRef.update(playerData).then(() => {
               alert('✅ ¡SYNC EXITOSO!\n\n📱 Datos enviados:\n• Jugador: ' + playerName + '\n• Monedas: ' + currentCoins + '\n• Timestamp: ' + new Date().toLocaleString());
+              // SOLO AQUÍ actualizar lastCoins después del sync exitoso
+              lastCoins = currentCoins;
+              alert('🔄 Valor anterior actualizado a: ' + lastCoins);
             }).catch(error => {
               alert('❌ SYNC FALLIDO\n\nError: ' + error.message);
+              // NO actualizar lastCoins si falla el sync
             });
             
           } catch (error) {

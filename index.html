@@ -7895,99 +7895,63 @@
     // Al cargar la página, mostrar el total correcto
     window.addEventListener('DOMContentLoaded', loadTotalCoins);
 
-    // SUPER SIMPLE: Observer for localStorage changes - DIRECT FIREBASE SYNC
-    function setupLocalStorageObserver() {
-      alert('🔍 INICIANDO OBSERVADOR DE MONEDAS...');
-      console.log('🔍 Setting up localStorage observer...');
+    // SUPER SIMPLE: Sync to Firebase every 5 seconds - NO COMPLEX LOGIC
+    function setupFirebaseSync() {
+      alert('🔄 INICIANDO SINCRONIZACIÓN AUTOMÁTICA...');
+      console.log('🔄 Setting up Firebase sync every 5 seconds...');
       
-      // Store initial value
-      let lastCoins = localStorage.getItem('totalOrtizCoins') || '0';
-      alert('💰 Monedas iniciales: ' + lastCoins);
-      
-      // Check for changes every 500ms
-      alert('⏰ INICIANDO INTERVALO DE VERIFICACIÓN...');
+      // Sync every 5 seconds
       setInterval(() => {
-        // Debug: mostrar que el intervalo se ejecuta
-        console.log('⏰ Intervalo ejecutándose...');
-        
         const currentCoins = localStorage.getItem('totalOrtizCoins') || '0';
+        const playerName = localStorage.getItem('soldierName');
         
-        // Debug: siempre mostrar el estado actual
-        console.log('🔍 Checking coins - Last:', lastCoins, 'Current:', currentCoins, 'Equal:', currentCoins === lastCoins);
-        
-        // MOBILE DEBUG: Mostrar estado cada 10 segundos para no saturar
-        const now = Date.now();
-        if (!window.lastDebugTime || now - window.lastDebugTime > 10000) {
-          alert('🔍 VERIFICANDO MONEDAS:\n\nAnterior: ' + lastCoins + '\nActual: ' + currentCoins + '\n¿Iguales?: ' + (currentCoins === lastCoins ? 'SÍ' : 'NO'));
-          window.lastDebugTime = now;
+        if (!playerName) {
+          console.log('❌ No player name, skipping sync');
+          return;
         }
         
-        if (currentCoins !== lastCoins) {
-          alert('💰 ¡CAMBIO DETECTADO!\n\nAnterior: ' + lastCoins + '\nNuevo: ' + currentCoins + '\n\nIniciando auto-sync...');
-          console.log('💰 localStorage changed:', lastCoins, '->', currentCoins);
+        console.log('🔄 Auto-syncing coins to Firebase:', currentCoins);
+        
+        try {
+          // Firebase config
+          const firebaseConfig = {
+            apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
+            authDomain: "squid-game-ortiz.firebaseapp.com",
+            databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
+            projectId: "squid-game-ortiz",
+            storageBucket: "squid-game-ortiz.firebasestorage.app",
+            messagingSenderId: "564790427576",
+            appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
+          };
           
-          // NO actualizar lastCoins aquí, solo después del sync exitoso
-          
-          // DIRECT FIREBASE SYNC - NO DEPENDENCIES
-          alert('🔄 INICIANDO SYNC DIRECTO A FIREBASE...');
-          
-          const playerName = localStorage.getItem('soldierName');
-          if (!playerName) {
-            alert('❌ ERROR: No hay nombre de jugador!');
-            return;
+          // Initialize Firebase if not already initialized
+          if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
           }
           
-          alert('👤 Jugador: ' + playerName + '\n💰 Monedas: ' + currentCoins + '\n\nConectando...');
+          const db = firebase.database();
+          const playerRef = db.ref('players/' + playerName);
           
-          try {
-            // Firebase config
-            const firebaseConfig = {
-              apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
-              authDomain: "squid-game-ortiz.firebaseapp.com",
-              databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
-              projectId: "squid-game-ortiz",
-              storageBucket: "squid-game-ortiz.firebasestorage.app",
-              messagingSenderId: "564790427576",
-              appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
-            };
-            
-            // Initialize Firebase
-            if (!firebase.apps.length) {
-              alert('🔥 Inicializando Firebase...');
-              firebase.initializeApp(firebaseConfig);
-            }
-            
-            alert('📡 Conectando a la base de datos...');
-            const db = firebase.database();
-            const playerRef = db.ref('players/' + playerName);
-            
-            const playerData = {
-              name: playerName,
-              coins: parseInt(currentCoins),
-              lastUpdated: Date.now(),
-              autoSync: true
-            };
-            
-            alert('📤 Enviando datos a Firebase...');
-            
-            playerRef.update(playerData).then(() => {
-              alert('✅ ¡SYNC EXITOSO!\n\n📱 Datos enviados:\n• Jugador: ' + playerName + '\n• Monedas: ' + currentCoins + '\n• Timestamp: ' + new Date().toLocaleString());
-              // SOLO AQUÍ actualizar lastCoins después del sync exitoso
-              lastCoins = currentCoins;
-              alert('🔄 Valor anterior actualizado a: ' + lastCoins);
-            }).catch(error => {
-              alert('❌ SYNC FALLIDO\n\nError: ' + error.message);
-              // NO actualizar lastCoins si falla el sync
-            });
-            
-          } catch (error) {
-            alert('❌ ERROR CRÍTICO\n\nError: ' + error.message);
-          }
+          const playerData = {
+            name: playerName,
+            coins: parseInt(currentCoins),
+            lastUpdated: Date.now(),
+            autoSync: true
+          };
+          
+          playerRef.update(playerData).then(() => {
+            console.log('✅ Auto-sync successful:', currentCoins, 'coins');
+          }).catch(error => {
+            console.error('❌ Auto-sync error:', error);
+          });
+          
+        } catch (error) {
+          console.error('❌ Auto-sync error:', error);
         }
-      }, 500);
+      }, 5000); // Every 5 seconds
       
-      alert('✅ OBSERVADOR ACTIVO\n\nVigilando cambios cada 500ms...');
-      console.log('✅ localStorage observer setup complete');
+      alert('✅ SINCRONIZACIÓN ACTIVA\n\nSincronizando cada 5 segundos...');
+      console.log('✅ Firebase sync setup complete');
     }
 
     // AUTO-SYNC FUNCTION USING THE WORKING FIREBASE CODE - WITH ALERTS
@@ -8052,8 +8016,8 @@
       }
     }
 
-    // Start observer when page loads
-    window.addEventListener('DOMContentLoaded', setupLocalStorageObserver);
+    // Start Firebase sync when page loads
+    window.addEventListener('DOMContentLoaded', setupFirebaseSync);
 
     // Soldier Name Modal functionality
     const soldierNameModal = document.getElementById('soldierNameModal');

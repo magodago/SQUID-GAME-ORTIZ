@@ -6148,8 +6148,15 @@
             
             // Add ONLY FUNCTIONAL items to inventory (avoid duplicates)
             const itemsToAdd = [
-                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, goldenButton, humanitarianAid, twoFaces, divineShield
+                frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, humanitarianAid, twoFaces, divineShield
             ];
+            
+            // Only add golden button if it hasn't been used
+            const goldenButtonUsed = localStorage.getItem('goldenButtonUsed') === 'true';
+            if (!goldenButtonUsed) {
+                itemsToAdd.push(goldenButton);
+            }
+            
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
                 inventory.push(item);
@@ -6161,7 +6168,15 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            alert(`🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🟡 Botón de Oro\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n   • 🛡️ Escudo Divino\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`);
+            let alertMessage = `🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear`;
+            
+            if (!goldenButtonUsed) {
+                alertMessage += `\n   • 🟡 Botón de Oro`;
+            }
+            
+            alertMessage += `\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n   • 🛡️ Escudo Divino\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`;
+            
+            alert(alertMessage);
             
             console.log('✅ DAGO coins and items added successfully!');
             
@@ -15181,6 +15196,9 @@
         // GOLDEN BUTTON SYSTEM
         function activateGoldenButton() {
             console.log('🟡 GOLDEN BUTTON ACTIVATED!');
+            
+            // Mark golden button as used
+            localStorage.setItem('goldenButtonUsed', 'true');
             
             // Show notification
             showNotification('🟡 ¡Botón de Oro activado! Haz clic en el botón flotante para ganar monedas', 'success');

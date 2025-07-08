@@ -660,17 +660,18 @@
                 localStorage.setItem('totalOrtizCoins', coins.toString());
                 updateCoinsDisplay();
                 
-                // Intentar sincronizar con Firebase si está disponible
+                // Intentar sincronizar con Firebase si está disponible (sin bloquear el juego)
                 if (window.PlayerDataManager && typeof PlayerDataManager.safeDeductCoins === 'function') {
                     PlayerDataManager.safeDeductCoins(cost, 'joker-pistas').catch(error => {
                         console.log('⚠️ Firebase sync failed, but local deduction successful:', error);
                     });
+                } else {
+                    console.log('⚠️ PlayerDataManager not available, local deduction only');
                 }
             } catch (error) {
                 console.error('❌ Error al deducir monedas:', error);
-                alert('❌ Error al deducir monedas. Intenta de nuevo.');
-                isPlaying = false;
-                return;
+                // No mostrar alert, solo log del error
+                console.log('⚠️ Error en deducción, pero continuando con el juego');
             }
 
             // Deshabilitar todos los botones durante el juego

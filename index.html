@@ -10315,40 +10315,57 @@
     ];
 
     function showAchievementsModal() {
+      console.log('🏆 showAchievementsModal() llamado');
+      
       const modal = document.getElementById('achievementsModal');
       if (!modal) {
-        console.error('Modal de logros no encontrado');
+        console.error('❌ Modal de logros no encontrado');
         return;
       }
       
+      console.log('✅ Modal encontrado, mostrando...');
       modal.style.display = 'flex';
       
       // Cargar datos solo una vez al abrir el modal
       if (!modal.dataset.loaded) {
+        console.log('🔄 Primera vez cargando datos...');
         loadAchievementsData();
         modal.dataset.loaded = 'true';
       } else {
+        console.log('🔄 Actualizando datos existentes...');
         // Solo actualizar datos si ya se cargaron antes
         refreshAchievementsData();
       }
       
       // Configurar tabs solo una vez
       if (!modal.dataset.tabsInitialized) {
+        console.log('🔄 Configurando tabs...');
         setupTabs();
         modal.dataset.tabsInitialized = 'true';
       }
       
       // Configurar botón de cerrar
+      console.log('🔄 Configurando botón de cerrar...');
       setupCloseButton();
+      
+      console.log('✅ Modal de logros mostrado correctamente');
     }
 
     function setupTabs() {
+      console.log('📑 setupTabs() llamado');
+      
       const tabBtns = document.querySelectorAll('.tab-btn');
       const tabContents = document.querySelectorAll('.tab-content');
       
-      tabBtns.forEach(btn => {
+      console.log('📑 Tabs encontrados:', tabBtns.length);
+      console.log('📑 Contenidos de tabs encontrados:', tabContents.length);
+      
+      tabBtns.forEach((btn, index) => {
+        const tabName = btn.getAttribute('data-tab');
+        console.log(`📑 Tab ${index + 1}: ${tabName}`);
+        
         btn.addEventListener('click', () => {
-          const tabName = btn.getAttribute('data-tab');
+          console.log(`📑 Tab clickeado: ${tabName}`);
           
           // Update active tab
           tabBtns.forEach(b => b.classList.remove('active'));
@@ -10359,19 +10376,35 @@
             content.classList.remove('active');
             if (content.id === `${tabName}-tab`) {
               content.classList.add('active');
+              console.log(`📑 Contenido activado: ${content.id}`);
             }
           });
         });
       });
+      
+      console.log('✅ Tabs configurados correctamente');
     }
 
     function setupCloseButton() {
+      console.log('🔒 setupCloseButton() llamado');
+      
       const closeBtn = document.getElementById('closeAchievements');
+      console.log('🔒 Botón de cerrar encontrado:', !!closeBtn);
+      
       if (closeBtn) {
         closeBtn.onclick = function() {
+          console.log('🔒 Botón de cerrar clickeado');
           const modal = document.getElementById('achievementsModal');
-          modal.style.display = 'none';
+          if (modal) {
+            modal.style.display = 'none';
+            console.log('✅ Modal cerrado correctamente');
+          } else {
+            console.error('❌ Modal no encontrado al cerrar');
+          }
         };
+        console.log('✅ Event listener agregado al botón de cerrar');
+      } else {
+        console.error('❌ Botón de cerrar no encontrado');
       }
     }
 
@@ -10382,34 +10415,54 @@
     }
 
     function loadAchievementsData() {
+      console.log('🔄 loadAchievementsData() llamado');
+      
       // Load daily achievements
+      console.log('📅 Cargando logros diarios...');
       loadDailyAchievements();
       
       // Load streaks
+      console.log('🔥 Cargando rachas...');
       loadStreaks();
       
       // Load stats
+      console.log('📊 Cargando estadísticas...');
       loadStats();
+      
+      console.log('✅ loadAchievementsData() completado');
     }
 
     function loadDailyAchievements() {
+      console.log('📅 loadDailyAchievements() llamado');
+      
       const grid = document.getElementById('dailyAchievementsGrid');
       if (!grid) {
-        console.error('Grid de logros diarios no encontrado');
+        console.error('❌ Grid de logros diarios no encontrado');
         return;
       }
       
+      console.log('✅ Grid encontrado, elementos actuales:', grid.children.length);
+      
       // Limpiar grid solo si es necesario
       if (grid.children.length === 0) {
+        console.log('🔄 Grid vacío, cargando logros...');
+        
         const today = new Date().toDateString();
         const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
+        
+        console.log('📅 Datos de hoy:', todayData);
+        console.log('🏆 Logros disponibles:', dailyAchievements.length);
         
         // Crear fragmento para mejor rendimiento
         const fragment = document.createDocumentFragment();
         
-        dailyAchievements.forEach(achievement => {
+        dailyAchievements.forEach((achievement, index) => {
+          console.log(`🏆 Procesando logro ${index + 1}:`, achievement.title);
+          
           const progress = todayData[achievement.id] || 0;
           const isCompleted = progress >= achievement.target;
+          
+          console.log(`   Progreso: ${progress}/${achievement.target} (${isCompleted ? 'COMPLETADO' : 'EN PROGRESO'})`);
           
           const achievementEl = document.createElement('div');
           achievementEl.className = `achievement-item ${isCompleted ? 'completed' : ''}`;
@@ -10430,20 +10483,32 @@
         });
         
         grid.appendChild(fragment);
+        console.log('✅ Logros diarios cargados:', grid.children.length, 'elementos');
+      } else {
+        console.log('ℹ️ Grid ya tiene contenido, saltando carga');
       }
     }
 
     function loadStreaks() {
+      console.log('🔥 loadStreaks() llamado');
+      
       const currentStreakEl = document.getElementById('currentStreak');
       const streakRewardEl = document.getElementById('streakReward');
       
       if (!currentStreakEl || !streakRewardEl) {
-        console.error('Elementos de racha no encontrados');
+        console.error('❌ Elementos de racha no encontrados');
+        console.log('   currentStreakEl:', !!currentStreakEl);
+        console.log('   streakRewardEl:', !!streakRewardEl);
         return;
       }
       
+      console.log('✅ Elementos de racha encontrados');
+      
       const streakData = JSON.parse(localStorage.getItem('streakData') || '{}');
       const currentStreak = streakData.currentStreak || 0;
+      
+      console.log('🔥 Datos de racha:', streakData);
+      console.log('🔥 Racha actual:', currentStreak);
       
       currentStreakEl.textContent = `${currentStreak} días`;
       
@@ -10453,26 +10518,42 @@
       if (currentStreak >= 7) reward = 50;
       if (currentStreak >= 30) reward = 100;
       
+      console.log('💰 Recompensa de racha:', reward);
       streakRewardEl.textContent = `+${reward} monedas`;
       
       // Update milestones
       const milestones = document.querySelectorAll('.milestone');
-      milestones.forEach(milestone => {
+      console.log('🏆 Milestones encontrados:', milestones.length);
+      
+      milestones.forEach((milestone, index) => {
         const days = parseInt(milestone.getAttribute('data-days'));
-        if (currentStreak >= days) {
+        const reached = currentStreak >= days;
+        console.log(`   Milestone ${index + 1}: ${days} días - ${reached ? 'ALCANZADO' : 'NO ALCANZADO'}`);
+        
+        if (reached) {
           milestone.classList.add('reached');
         } else {
           milestone.classList.remove('reached');
         }
       });
+      
+      console.log('✅ Rachas cargadas correctamente');
     }
 
     function loadStats() {
+      console.log('📊 loadStats() llamado');
+      
       // Use OrtizCoinManager for consistent coin handling
       const totalCoins = window.OrtizCoinManager ? window.OrtizCoinManager.getTotalCoins() : parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       const gamesPlayed = parseInt(localStorage.getItem('gamesPlayed') || '0');
       const easterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
       const daysActive = parseInt(localStorage.getItem('daysActive') || '0');
+      
+      console.log('📊 Estadísticas cargadas:');
+      console.log('   Monedas totales:', totalCoins);
+      console.log('   Juegos jugados:', gamesPlayed);
+      console.log('   Easter eggs:', easterEggs);
+      console.log('   Días activo:', daysActive);
       
       // Actualizar elementos solo si existen
       const totalCoinsEl = document.getElementById('totalCoinsStat');
@@ -10480,10 +10561,18 @@
       const easterEggsEl = document.getElementById('easterEggsStat');
       const daysActiveEl = document.getElementById('daysActiveStat');
       
+      console.log('📊 Elementos encontrados:');
+      console.log('   totalCoinsEl:', !!totalCoinsEl);
+      console.log('   gamesPlayedEl:', !!gamesPlayedEl);
+      console.log('   easterEggsEl:', !!easterEggsEl);
+      console.log('   daysActiveEl:', !!daysActiveEl);
+      
       if (totalCoinsEl) totalCoinsEl.textContent = totalCoins.toLocaleString();
       if (gamesPlayedEl) gamesPlayedEl.textContent = gamesPlayed;
       if (easterEggsEl) easterEggsEl.textContent = easterEggs;
       if (daysActiveEl) daysActiveEl.textContent = daysActive;
+      
+      console.log('✅ Estadísticas cargadas correctamente');
     }
 
     // Load and update Top 3 Leaderboard

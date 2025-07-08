@@ -731,33 +731,6 @@
             listenForChallenges();
             listenForResults();
             startAutoSync();
-            
-            // Add debug button
-            const debugBtn = document.createElement('button');
-            debugBtn.textContent = '🔍 DEBUG RETOS';
-            debugBtn.style.cssText = `
-                position: fixed;
-                top: 10px;
-                right: 10px;
-                background: #FF6B35;
-                color: white;
-                border: none;
-                padding: 10px;
-                border-radius: 5px;
-                cursor: pointer;
-                z-index: 1000;
-            `;
-            debugBtn.onclick = function() {
-                const debugInfo = `
-🔍 DEBUG RETOS:
-Jugador actual: ${currentPlayer}
-Firebase disponible: ${!!window.firebase}
-Database disponible: ${!!db}
-Reto actual: ${currentChallenge ? JSON.stringify(currentChallenge) : 'Ninguno'}
-                `;
-                alert(debugInfo);
-            };
-            document.body.appendChild(debugBtn);
         });
 
         // Show tab content

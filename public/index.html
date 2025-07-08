@@ -12572,23 +12572,55 @@
     }
     
     function rejectRPSChallenge() {
-      if (window.currentRPSChallenge && window.firebase && window.firebase.database) {
+      console.log('🔍 Reject RPS Challenge clicked');
+      console.log('🔍 Current RPS Challenge:', window.currentRPSChallenge);
+      console.log('🔍 Firebase available:', window.firebase && window.firebase.database);
+      
+      if (!window.currentRPSChallenge) {
+        console.log('❌ No current RPS challenge to reject');
+        alert('No hay reto activo para rechazar');
+        return;
+      }
+      
+      if (!window.firebase || !window.firebase.database) {
+        console.log('❌ Firebase not available');
+        alert('Error: Firebase no está disponible');
+        return;
+      }
+      
+      try {
         const db = window.firebase.database();
         const currentPlayer = localStorage.getItem('soldierName');
         
+        console.log('🔍 Rejecting challenge from:', window.currentRPSChallenge.challenger, 'to:', currentPlayer);
+        
         // Notify challenger
         const challengerRef = db.ref(`rpsChallenges/${window.currentRPSChallenge.challenger}`);
-        challengerRef.set({ status: 'rejected' });
+        challengerRef.set({ status: 'rejected' }).then(() => {
+          console.log('✅ Challenger notified of rejection');
+        }).catch((error) => {
+          console.error('❌ Error notifying challenger:', error);
+        });
         
         // Remove challenge
         const challengeRef = db.ref(`rpsChallenges/${currentPlayer}`);
-        challengeRef.remove();
+        challengeRef.remove().then(() => {
+          console.log('✅ Challenge removed from Firebase');
+        }).catch((error) => {
+          console.error('❌ Error removing challenge:', error);
+        });
         
         // Close modal
         closeRPSChallengeModal();
         
         // Show notification
         showNotification('❌ Reto rechazado', 'info');
+        
+        console.log('✅ RPS challenge rejected successfully');
+        
+      } catch (error) {
+        console.error('❌ Error in rejectRPSChallenge:', error);
+        alert('Error al rechazar el reto: ' + error.message);
       }
     }
     

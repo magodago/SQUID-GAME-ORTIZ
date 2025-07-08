@@ -5074,7 +5074,6 @@
     <div class="coins-counter" id="coinsCounter">
       <span class="coin-icon">🪙</span>
       <span class="coins-text">ORTIZ COINS: <span id="totalCoins">0</span></span>
-      <button class="sync-btn" id="syncBtn" title="Sincronizar datos" onclick="forceSync()">🔄</button>
     </div>
     
 
@@ -9151,11 +9150,9 @@
     
     // Admin panel event listeners
     const adminPanelBtn = document.getElementById('adminPanelBtn');
-    const forceSyncBtn = document.getElementById('forceSyncBtn');
     
     console.log('🔍 Admin panel button element:', adminPanelBtn);
     console.log('🔍 Admin panel element:', adminPanel);
-    console.log('🔍 Force sync button element:', forceSyncBtn);
     console.log('🔍 Close admin button element:', closeAdminBtn);
     
     if (adminPanelBtn) {
@@ -9174,7 +9171,7 @@
       console.error('❌ Admin panel button not found!');
     }
     
-    // Force sync button event listener is now added when admin panel opens
+
     
     if (closeAdminBtn) {
       closeAdminBtn.addEventListener('click', () => {
@@ -12504,7 +12501,7 @@
       </div>
       
       <div class="admin-footer">
-        <button class="admin-btn" id="forceSyncBtn">🔄 Forzar Sincronización</button>
+
         <button class="admin-btn" id="closeAdminBtn">❌ Volver</button>
       </div>
     </div>
@@ -15298,12 +15295,7 @@
             });
         }
 
-        // Función para forzar sincronización manual
-        window.forceSync = function() {
-            console.log('🔄 Sincronización manual forzada');
-            saveLocalDataToFirebase();
-            showNotification('🔄 Datos sincronizados', 'success');
-        };
+
 
     </script>
 

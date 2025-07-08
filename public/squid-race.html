@@ -586,10 +586,19 @@
         function setupFirebaseListeners() {
             console.log('🔍 Configurando listeners de Firebase...');
             
-            // Listen for online players
-            database.ref('squidRace/online').on('value', (snapshot) => {
-                console.log('🔍 Jugadores online actualizados:', snapshot.val());
-                onlinePlayers = snapshot.val() || {};
+            // Listen for online players - use players branch instead
+            database.ref('players').on('value', (snapshot) => {
+                console.log('🔍 Jugadores actualizados:', snapshot.val());
+                const allPlayers = snapshot.val() || {};
+                
+                // Filter only players with squidRace data
+                onlinePlayers = {};
+                Object.keys(allPlayers).forEach(playerName => {
+                    if (allPlayers[playerName].squidRace) {
+                        onlinePlayers[playerName] = allPlayers[playerName].squidRace;
+                    }
+                });
+                
                 console.log('🔍 onlinePlayers después del listener:', onlinePlayers);
                 console.log('🔍 Número de jugadores:', Object.keys(onlinePlayers).length);
                 updatePlayersList();
@@ -634,9 +643,9 @@
                 return;
             }
             
-            const playerRef = database.ref(`squidRace/online/${currentPlayer}`);
+            const playerRef = database.ref(`players/${currentPlayer}/squidRace`);
             console.log('🔍 Referencia del jugador creada:', playerRef);
-            console.log('🔍 Ruta completa:', `squidRace/online/${currentPlayer}`);
+            console.log('🔍 Ruta completa:', `players/${currentPlayer}/squidRace`);
             
             const playerData = {
                 name: currentPlayer,
@@ -652,11 +661,19 @@
                 
                 // Force immediate update of players list
                 console.log('🔍 Forzando actualización inmediata de lista');
-                database.ref('squidRace/online').once('value').then((snapshot) => {
-                    const data = snapshot.val();
-                    console.log('🔍 Datos obtenidos directamente:', data);
-                    alert(`🔍 DATOS EN FIREBASE: ${JSON.stringify(data)}`);
-                    onlinePlayers = data || {};
+                database.ref('players').once('value').then((snapshot) => {
+                    const allPlayers = snapshot.val() || {};
+                    const squidRacePlayers = {};
+                    
+                    Object.keys(allPlayers).forEach(playerName => {
+                        if (allPlayers[playerName].squidRace) {
+                            squidRacePlayers[playerName] = allPlayers[playerName].squidRace;
+                        }
+                    });
+                    
+                    console.log('🔍 Datos obtenidos directamente:', squidRacePlayers);
+                    alert(`🔍 DATOS EN FIREBASE: ${JSON.stringify(squidRacePlayers)}`);
+                    onlinePlayers = squidRacePlayers;
                     updatePlayersList();
                 }).catch((error) => {
                     console.error('❌ Error obteniendo datos:', error);
@@ -945,7 +962,7 @@
             
             // Leave lobby
             if (database) {
-                database.ref(`squidRace/online/${currentPlayer}`).remove();
+                database.ref(`players/${currentPlayer}/squidRace`).remove();
             }
             
             console.log('🔍 Redirigiendo a index.html');

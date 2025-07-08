@@ -4519,6 +4519,16 @@
       box-shadow: 0 0 50px #8A2BE2, inset 0 0 30px rgba(138, 43, 226, 0.5);
     }
     
+    .squidrace-btn {
+      background: linear-gradient(45deg, #FF4500, #FF6347);
+      box-shadow: 0 0 30px #FF4500, inset 0 0 20px rgba(255, 69, 0, 0.3);
+    }
+    
+    .squidrace-btn:hover {
+      transform: scale(1.1) rotateY(-10deg);
+      box-shadow: 0 0 50px #FF4500, inset 0 0 30px rgba(255, 69, 0, 0.5);
+    }
+    
     .candysquid-btn {
       background: linear-gradient(45deg, #00CED1, #20B2AA);
       box-shadow: 0 0 30px #00CED1, inset 0 0 20px rgba(0, 206, 209, 0.3);
@@ -5120,6 +5130,11 @@
       <button class="envelope-btn squidfly-btn" id="squidFlyBtn">
         <div class="envelope-content">
           <span class="envelope-text">🦑 SQUID FLY</span>
+        </div>
+      </button>
+      <button class="envelope-btn squidrace-btn" id="squidRaceBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🏃 SQUID RACE</span>
         </div>
       </button>
       <button class="envelope-btn candysquid-btn" id="candySquidBtn">
@@ -6962,6 +6977,101 @@
             messageEl.parentNode.removeChild(messageEl);
           }
           window.location.href = 'squid-fly.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // SQUID RACE Button Event Listener
+    const squidRaceBtn = document.getElementById('squidRaceBtn');
+    squidRaceBtn.addEventListener('click', () => {
+      console.log('🏃 SQUID RACE seleccionado');
+      
+      // Add dramatic effect
+      squidRaceBtn.style.transform = 'scale(0.9) rotateY(-10deg)';
+      squidRaceBtn.style.boxShadow = '0 0 80px #FF4500, inset 0 0 40px rgba(255, 69, 0, 0.7)';
+      
+      // Create race explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#FF4500';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = squidRaceBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        squidRaceBtn.style.transform = '';
+        squidRaceBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🏃 SQUID RACE ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#FF4500';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #FF4500';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'squid-race.html';
         }, 2000);
       }, 1000);
     });

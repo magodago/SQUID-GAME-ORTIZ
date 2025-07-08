@@ -10952,14 +10952,58 @@
       }, 4000);
     }
 
-    // CENTRALIZED COIN MANAGEMENT SYSTEM
+    // CENTRALIZED COIN MANAGEMENT SYSTEM - SIMPLE FIREBASE SYNC
     window.OrtizCoinManager = {
       // Get current total coins
       getTotalCoins: function() {
         return parseInt(localStorage.getItem('totalOrtizCoins') || '0');
       },
       
-      // Add coins safely (accumulate, don't overwrite) - WITH FIREBASE SYNC
+      // Simple Firebase sync function
+      syncToFirebase: function(newCoins, source = 'game') {
+        const playerName = localStorage.getItem('soldierName');
+        if (!playerName) {
+          console.error('❌ No player name found for Firebase sync');
+          return;
+        }
+        
+        // Wait for Firebase to be ready
+        const waitForFirebase = () => {
+          if (window.firebase && window.firebase.database) {
+            console.log('🔄 Syncing to Firebase directly...');
+            const db = firebase.database();
+            const playerRef = db.ref('players/' + playerName);
+            
+            const playerData = {
+              name: playerName,
+              coins: newCoins,
+              lastUpdated: Date.now(),
+              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+              easterEggsFound: parseInt(localStorage.getItem('easterEggsFound') || '0'),
+              deviceInfo: {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                timestamp: new Date().toISOString()
+              }
+            };
+            
+            playerRef.update(playerData).then(() => {
+              console.log('✅ Firebase sync successful:', newCoins, 'coins');
+            }).catch(error => {
+              console.error('❌ Firebase sync error:', error);
+            });
+          } else {
+            console.log('⏳ Waiting for Firebase...');
+            setTimeout(waitForFirebase, 100);
+          }
+        };
+        
+        waitForFirebase();
+      },
+      
+      // Add coins safely (accumulate, don't overwrite) - SIMPLE FIREBASE SYNC
       addCoins: function(amount, source = 'game') {
         const currentCoins = this.getTotalCoins();
         const newTotal = currentCoins + amount;
@@ -10968,48 +11012,7 @@
         console.log(`💰 OrtizCoinManager: +${amount} coins from ${source}. Total: ${newTotal}`);
         
         // SYNC TO FIREBASE IMMEDIATELY
-        console.log('🔄 Attempting Firebase sync...');
-        console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
-        console.log('🔍 Firebase available:', !!window.firebase);
-        console.log('🔍 Database available:', !!db);
-        
-        if (window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
-          console.log('🔄 Syncing to Firebase via PlayerDataManager.safeAddCoins...');
-          try {
-            const result = PlayerDataManager.safeAddCoins(amount, source);
-            console.log('✅ PlayerDataManager.safeAddCoins result:', result);
-          } catch (error) {
-            console.error('❌ Error in PlayerDataManager.safeAddCoins:', error);
-          }
-        } else {
-          console.warn('⚠️ PlayerDataManager.safeAddCoins not available');
-          // Fallback: try to save player data directly
-          const playerName = localStorage.getItem('soldierName');
-          console.log('🔍 Player name:', playerName);
-          
-          if (playerName && window.PlayerDataManager && typeof PlayerDataManager.savePlayerData === 'function') {
-            console.log('🔄 Trying direct savePlayerData...');
-            try {
-              PlayerDataManager.savePlayerData(playerName, newTotal, {
-                gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-                totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-                cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-                lastSync: new Date().toISOString(),
-                autoSync: true,
-                gameType: source,
-                coinChange: amount
-              }).then(result => {
-                console.log('✅ Direct savePlayerData result:', result);
-              }).catch(error => {
-                console.error('❌ Error in direct savePlayerData:', error);
-              });
-            } catch (error) {
-              console.error('❌ Error calling savePlayerData:', error);
-            }
-          } else {
-            console.error('❌ No fallback available - PlayerDataManager not ready');
-          }
-        }
+        this.syncToFirebase(newTotal, source);
         
         // Update display if on main page
         if (typeof loadTotalCoins === 'function') {
@@ -11024,42 +11027,14 @@
         return newTotal;
       },
       
-      // Set coins (overwrite total) - WITH FIREBASE SYNC
+      // Set coins (overwrite total) - SIMPLE FIREBASE SYNC
       setCoins: function(amount, source = 'game') {
         localStorage.setItem('totalOrtizCoins', amount.toString());
         
         console.log(`💰 OrtizCoinManager: Set to ${amount} coins from ${source}`);
         
         // SYNC TO FIREBASE IMMEDIATELY
-        console.log('🔄 Attempting Firebase sync for setCoins...');
-        console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
-        console.log('🔍 Firebase available:', !!window.firebase);
-        
-        const playerName = localStorage.getItem('soldierName');
-        console.log('🔍 Player name:', playerName);
-        
-        if (playerName && window.PlayerDataManager && typeof PlayerDataManager.savePlayerData === 'function') {
-          console.log('🔄 Syncing to Firebase via PlayerDataManager.savePlayerData...');
-          try {
-            PlayerDataManager.savePlayerData(playerName, amount, {
-              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-              lastSync: new Date().toISOString(),
-              autoSync: true,
-              gameType: source,
-              coinChange: amount
-            }).then(result => {
-              console.log('✅ setCoins savePlayerData result:', result);
-            }).catch(error => {
-              console.error('❌ Error in setCoins savePlayerData:', error);
-            });
-          } catch (error) {
-            console.error('❌ Error calling setCoins savePlayerData:', error);
-          }
-        } else {
-          console.error('❌ PlayerDataManager not available for setCoins Firebase sync');
-        }
+        this.syncToFirebase(amount, source);
         
         // Update display if on main page
         if (typeof loadTotalCoins === 'function') {
@@ -11074,7 +11049,7 @@
         return amount;
       },
       
-      // Deduct coins safely - WITH FIREBASE SYNC
+      // Deduct coins safely - SIMPLE FIREBASE SYNC
       deductCoins: function(amount, source = 'game') {
         const currentCoins = this.getTotalCoins();
         const newTotal = Math.max(0, currentCoins - amount); // Don't go below 0
@@ -11083,47 +11058,7 @@
         console.log(`💰 OrtizCoinManager: -${amount} coins from ${source}. Total: ${newTotal}`);
         
         // SYNC TO FIREBASE IMMEDIATELY
-        console.log('🔄 Attempting Firebase sync for deductCoins...');
-        console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
-        console.log('🔍 Firebase available:', !!window.firebase);
-        
-        if (window.PlayerDataManager && typeof PlayerDataManager.safeDeductCoins === 'function') {
-          console.log('🔄 Syncing to Firebase via PlayerDataManager.safeDeductCoins...');
-          try {
-            const result = PlayerDataManager.safeDeductCoins(amount, source);
-            console.log('✅ PlayerDataManager.safeDeductCoins result:', result);
-          } catch (error) {
-            console.error('❌ Error in PlayerDataManager.safeDeductCoins:', error);
-          }
-        } else {
-          console.warn('⚠️ PlayerDataManager.safeDeductCoins not available');
-          // Fallback: try to save player data directly
-          const playerName = localStorage.getItem('soldierName');
-          console.log('🔍 Player name:', playerName);
-          
-          if (playerName && window.PlayerDataManager && typeof PlayerDataManager.savePlayerData === 'function') {
-            console.log('🔄 Trying direct savePlayerData for deduction...');
-            try {
-              PlayerDataManager.savePlayerData(playerName, newTotal, {
-                gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-                totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-                cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-                lastSync: new Date().toISOString(),
-                autoSync: true,
-                gameType: source,
-                coinChange: -amount
-              }).then(result => {
-                console.log('✅ Deduction savePlayerData result:', result);
-              }).catch(error => {
-                console.error('❌ Error in deduction savePlayerData:', error);
-              });
-            } catch (error) {
-              console.error('❌ Error calling deduction savePlayerData:', error);
-            }
-          } else {
-            console.error('❌ No fallback available for deduction - PlayerDataManager not ready');
-          }
-        }
+        this.syncToFirebase(newTotal, source);
         
         // Update display if on main page
         if (typeof loadTotalCoins === 'function') {

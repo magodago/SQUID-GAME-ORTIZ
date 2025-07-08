@@ -7905,8 +7905,15 @@
       alert('💰 Monedas iniciales: ' + lastCoins);
       
       // Check for changes every 500ms
+      alert('⏰ INICIANDO INTERVALO DE VERIFICACIÓN...');
       setInterval(() => {
+        // Debug: mostrar que el intervalo se ejecuta
+        console.log('⏰ Intervalo ejecutándose...');
+        
         const currentCoins = localStorage.getItem('totalOrtizCoins') || '0';
+        
+        // Debug: siempre mostrar el estado actual
+        console.log('🔍 Checking coins - Last:', lastCoins, 'Current:', currentCoins, 'Equal:', currentCoins === lastCoins);
         
         if (currentCoins !== lastCoins) {
           alert('💰 ¡CAMBIO DETECTADO!\n\nAnterior: ' + lastCoins + '\nNuevo: ' + currentCoins + '\n\nIniciando auto-sync...');

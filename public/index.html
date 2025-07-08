@@ -7895,18 +7895,21 @@
     // Al cargar la página, mostrar el total correcto
     window.addEventListener('DOMContentLoaded', loadTotalCoins);
 
-    // SUPER SIMPLE: Observer for localStorage changes - USING WORKING FIREBASE CODE
+    // SUPER SIMPLE: Observer for localStorage changes - WITH ALERTS
     function setupLocalStorageObserver() {
+      alert('🔍 INICIANDO OBSERVADOR DE MONEDAS...');
       console.log('🔍 Setting up localStorage observer...');
       
       // Store initial value
       let lastCoins = localStorage.getItem('totalOrtizCoins') || '0';
+      alert('💰 Monedas iniciales: ' + lastCoins);
       
       // Check for changes every 500ms
       setInterval(() => {
         const currentCoins = localStorage.getItem('totalOrtizCoins') || '0';
         
         if (currentCoins !== lastCoins) {
+          alert('💰 ¡CAMBIO DETECTADO!\n\nAnterior: ' + lastCoins + '\nNuevo: ' + currentCoins + '\n\nIniciando auto-sync...');
           console.log('💰 localStorage changed:', lastCoins, '->', currentCoins);
           lastCoins = currentCoins;
           
@@ -7915,17 +7918,22 @@
         }
       }, 500);
       
+      alert('✅ OBSERVADOR ACTIVO\n\nVigilando cambios cada 500ms...');
       console.log('✅ localStorage observer setup complete');
     }
 
-    // AUTO-SYNC FUNCTION USING THE WORKING FIREBASE CODE
+    // AUTO-SYNC FUNCTION USING THE WORKING FIREBASE CODE - WITH ALERTS
     function autoSyncToFirebase(newCoins) {
+      alert('🔄 INICIANDO AUTO-SYNC...\n\nMonedas: ' + newCoins);
+      
       const playerName = localStorage.getItem('soldierName');
       if (!playerName) {
+        alert('❌ ERROR: No hay nombre de jugador!\n\nAuto-sync cancelado.');
         console.log('❌ No player name, skipping auto-sync');
         return;
       }
       
+      alert('👤 Jugador: ' + playerName + '\n💰 Monedas: ' + newCoins + '\n\nConectando con Firebase...');
       console.log('💰 Auto-syncing coins to Firebase:', newCoins);
       
       try {
@@ -7942,9 +7950,11 @@
         
         // Initialize Firebase if not already initialized
         if (!firebase.apps.length) {
+          alert('🔥 Inicializando Firebase...');
           firebase.initializeApp(firebaseConfig);
         }
         
+        alert('📡 Conectando a la base de datos...');
         const db = firebase.database();
         const playerRef = db.ref('players/' + playerName);
         
@@ -7955,13 +7965,18 @@
           autoSync: true
         };
         
+        alert('📤 Enviando datos a Firebase...\n\n' + JSON.stringify(playerData, null, 2));
+        
         playerRef.update(playerData).then(() => {
+          alert('✅ ¡AUTO-SYNC EXITOSO!\n\n📱 Datos enviados:\n• Jugador: ' + playerName + '\n• Monedas: ' + newCoins + '\n• Timestamp: ' + new Date().toLocaleString());
           console.log('✅ Auto-sync successful:', newCoins, 'coins');
         }).catch(error => {
+          alert('❌ AUTO-SYNC FALLIDO\n\nError: ' + error.message + '\n\nCódigo: ' + error.code);
           console.error('❌ Auto-sync error:', error);
         });
         
       } catch (error) {
+        alert('❌ ERROR CRÍTICO EN AUTO-SYNC\n\nError: ' + error.message);
         console.error('❌ Auto-sync error:', error);
       }
     }
@@ -15502,74 +15517,7 @@
 
     </script>
 
-    <!-- SUPER SIMPLE TEST BUTTON - MOBILE FRIENDLY -->
-    <button id="testFirebaseBtn" style="position: fixed; top: 20px; left: 20px; background: linear-gradient(135deg, #ff0000, #cc0000); color: white; border: 3px solid #fff; padding: 20px; border-radius: 15px; font-size: 18px; font-weight: bold; z-index: 10000; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); min-width: 150px;">
-      🧪 TEST FIREBASE
-    </button>
-    
-    <script>
-      // SUPER SIMPLE TEST FUNCTION - MOBILE FRIENDLY
-      document.getElementById('testFirebaseBtn').addEventListener('click', function() {
-        alert('🧪 INICIANDO TEST FIREBASE...');
-        
-        const playerName = localStorage.getItem('soldierName');
-        const currentCoins = localStorage.getItem('totalOrtizCoins') || '0';
-        
-        let testInfo = '🧪 TEST FIREBASE\n\n';
-        testInfo += '📱 Jugador: ' + (playerName || 'NO ENCONTRADO') + '\n';
-        testInfo += '💰 Monedas: ' + currentCoins + '\n';
-        testInfo += '🔥 Firebase: ' + (window.firebase ? 'CARGADO' : 'NO CARGADO') + '\n\n';
-        
-        if (!playerName) {
-          alert(testInfo + '❌ ERROR: No hay nombre de jugador!\n\nPon tu nombre primero.');
-          return;
-        }
-        
-        if (!window.firebase) {
-          alert(testInfo + '❌ ERROR: Firebase no está cargado!\n\nProblema de conexión.');
-          return;
-        }
-        
-        alert(testInfo + '🔄 Intentando conectar con Firebase...');
-        
-        try {
-          // Firebase config
-          const firebaseConfig = {
-            apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
-            authDomain: "squid-game-ortiz.firebaseapp.com",
-            databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
-            projectId: "squid-game-ortiz",
-            storageBucket: "squid-game-ortiz.firebasestorage.app",
-            messagingSenderId: "564790427576",
-            appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
-          };
-          
-          // Initialize Firebase
-          if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-          }
-          
-          const db = firebase.database();
-          const playerRef = db.ref('players/' + playerName);
-          
-          const testData = {
-            name: playerName,
-            coins: parseInt(currentCoins),
-            lastUpdated: Date.now(),
-            test: true
-          };
-          
-          playerRef.update(testData).then(() => {
-            alert('✅ ¡TEST EXITOSO!\n\n📱 Datos enviados a Firebase:\n• Jugador: ' + playerName + '\n• Monedas: ' + currentCoins + '\n• Timestamp: ' + new Date().toLocaleString() + '\n\n¡Firebase funciona perfectamente!');
-          }).catch(error => {
-            alert('❌ TEST FALLIDO\n\nError: ' + error.message + '\n\nCódigo: ' + error.code + '\n\nProblema de conexión con Firebase.');
-          });
-          
-        } catch (error) {
-          alert('❌ ERROR CRÍTICO\n\nError: ' + error.message + '\n\nProblema en la configuración de Firebase.');
-        }
-      });
-    </script>
+
 
 
 </body>

@@ -7895,7 +7895,7 @@
     // Al cargar la página, mostrar el total correcto
     window.addEventListener('DOMContentLoaded', loadTotalCoins);
 
-    // SUPER SIMPLE: Observer for localStorage changes
+    // SUPER SIMPLE: Observer for localStorage changes - USING WORKING FIREBASE CODE
     function setupLocalStorageObserver() {
       console.log('🔍 Setting up localStorage observer...');
       
@@ -7910,16 +7910,60 @@
           console.log('💰 localStorage changed:', lastCoins, '->', currentCoins);
           lastCoins = currentCoins;
           
-          // Auto-sync to Firebase
-          if (window.OrtizCoinManager && typeof OrtizCoinManager.syncCoinsToFirebase === 'function') {
-            OrtizCoinManager.syncCoinsToFirebase(parseInt(currentCoins));
-          } else {
-            console.log('❌ OrtizCoinManager not available for auto-sync');
-          }
+          // AUTO-SYNC TO FIREBASE USING WORKING CODE
+          autoSyncToFirebase(parseInt(currentCoins));
         }
       }, 500);
       
       console.log('✅ localStorage observer setup complete');
+    }
+
+    // AUTO-SYNC FUNCTION USING THE WORKING FIREBASE CODE
+    function autoSyncToFirebase(newCoins) {
+      const playerName = localStorage.getItem('soldierName');
+      if (!playerName) {
+        console.log('❌ No player name, skipping auto-sync');
+        return;
+      }
+      
+      console.log('💰 Auto-syncing coins to Firebase:', newCoins);
+      
+      try {
+        // Firebase config (same as working test button)
+        const firebaseConfig = {
+          apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
+          authDomain: "squid-game-ortiz.firebaseapp.com",
+          databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
+          projectId: "squid-game-ortiz",
+          storageBucket: "squid-game-ortiz.firebasestorage.app",
+          messagingSenderId: "564790427576",
+          appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
+        };
+        
+        // Initialize Firebase if not already initialized
+        if (!firebase.apps.length) {
+          firebase.initializeApp(firebaseConfig);
+        }
+        
+        const db = firebase.database();
+        const playerRef = db.ref('players/' + playerName);
+        
+        const playerData = {
+          name: playerName,
+          coins: newCoins,
+          lastUpdated: Date.now(),
+          autoSync: true
+        };
+        
+        playerRef.update(playerData).then(() => {
+          console.log('✅ Auto-sync successful:', newCoins, 'coins');
+        }).catch(error => {
+          console.error('❌ Auto-sync error:', error);
+        });
+        
+      } catch (error) {
+        console.error('❌ Auto-sync error:', error);
+      }
     }
 
     // Start observer when page loads

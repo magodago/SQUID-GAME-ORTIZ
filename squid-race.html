@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏃 SQUID RACE - Squid Game Ortiz</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,7 +12,7 @@
         }
 
         body {
-            font-family: 'Orbitron', monospace;
+            font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
             color: #fff;
             overflow: hidden;
@@ -65,17 +64,39 @@
             text-shadow: 0 0 20px #FFD700;
         }
 
-        .lobby-timer {
-            font-size: 2.5rem;
-            color: #FF6B35;
+        .countdown-container {
+            background: rgba(0,0,0,0.9);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 3rem;
             margin-bottom: 2rem;
-            text-shadow: 0 0 20px #FF6B35;
-            animation: pulse 1s infinite;
+            text-align: center;
+            box-shadow: 0 0 30px #FFD700;
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .countdown-title {
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+
+        .countdown-timer {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #FF6B35;
+            text-shadow: 0 0 20px #FF6B35;
+            margin-bottom: 1rem;
+        }
+
+        .countdown-subtitle {
+            font-size: 1.2rem;
+            color: #fff;
         }
 
         .players-list {
@@ -85,8 +106,6 @@
             padding: 2rem;
             margin-bottom: 2rem;
             min-width: 300px;
-            max-height: 300px;
-            overflow-y: auto;
         }
 
         .player-item {
@@ -111,28 +130,22 @@
             box-shadow: 0 0 10px #00ff00;
         }
 
-        .start-button {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000;
+        .back-button {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
+            color: #fff;
             border: none;
             padding: 1rem 2rem;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 0 20px #FFD700;
             transition: all 0.3s;
+            margin-bottom: 1rem;
         }
 
-        .start-button:hover {
+        .back-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 30px #FFD700;
-        }
-
-        .start-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
+            box-shadow: 0 0 20px #FF6B35;
         }
 
         /* Race Screen */
@@ -171,7 +184,6 @@
             flex-direction: column;
             gap: 1rem;
             overflow-y: auto;
-            margin-bottom: 2rem;
         }
 
         .racer {
@@ -242,102 +254,82 @@
             100% { transform: translateX(100%); }
         }
 
-        /* Run Button */
-        .run-button {
-            background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
-            color: #fff;
-            border: none;
-            padding: 1.5rem 3rem;
-            font-size: 2rem;
-            font-weight: bold;
-            border-radius: 15px;
+        .click-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             cursor: pointer;
-            box-shadow: 0 0 30px #FF6B35;
-            transition: all 0.3s;
-            margin: 0 auto;
-            display: block;
+            z-index: 10;
         }
 
-        .run-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 40px #FF6B35;
-        }
-
-        .run-button:active {
-            transform: scale(0.95);
-        }
-
-        .run-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Results Screen */
-        .results-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        /* Winner/Loser Banners */
+        .banner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            padding: 2rem;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
-        .results-title {
-            font-size: 3rem;
-            color: #FFD700;
-            margin-bottom: 2rem;
-            text-shadow: 0 0 20px #FFD700;
-        }
-
-        .winner-announcement {
-            font-size: 2rem;
-            color: #00ff00;
-            margin-bottom: 2rem;
+        .winner-banner {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            padding: 3rem;
+            border-radius: 20px;
             text-align: center;
-            animation: winnerGlow 2s infinite;
+            box-shadow: 0 0 50px #FFD700;
+            animation: winnerPulse 2s infinite;
         }
 
-        @keyframes winnerGlow {
-            0%, 100% { text-shadow: 0 0 20px #00ff00; }
-            50% { text-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00; }
+        @keyframes winnerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
-        .results-list {
-            background: rgba(0,0,0,0.8);
-            border: 2px solid #FFD700;
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            min-width: 300px;
+        .loser-banner {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            color: #fff;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 50px #ff0000;
+            animation: loserShake 0.5s infinite;
         }
 
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem;
-            margin: 0.5rem 0;
-            background: rgba(255,215,0,0.1);
-            border-radius: 8px;
+        @keyframes loserShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
-        .result-position {
+        .banner-title {
+            font-size: 3rem;
             font-weight: bold;
-            color: #FFD700;
+            margin-bottom: 1rem;
         }
 
-        .result-name {
-            color: #fff;
+        .banner-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .result-time {
-            color: #FF6B35;
+        .banner-reward {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
         }
 
-        .back-button {
-            background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
-            color: #fff;
-            border: none;
+        .banner-button {
+            background: rgba(0,0,0,0.3);
+            color: inherit;
+            border: 2px solid currentColor;
             padding: 1rem 2rem;
             font-size: 1.2rem;
             font-weight: bold;
@@ -346,7 +338,8 @@
             transition: all 0.3s;
         }
 
-        .back-button:hover {
+        .banner-button:hover {
+            background: rgba(0,0,0,0.5);
             transform: scale(1.05);
         }
 
@@ -377,22 +370,21 @@
             .game-title {
                 font-size: 1.5rem;
             }
-
+            
             .lobby-title {
                 font-size: 2rem;
             }
-
-            .results-title {
-                font-size: 2rem;
+            
+            .countdown-timer {
+                font-size: 3rem;
             }
-
+            
             .race-timer {
                 font-size: 1.5rem;
             }
-
-            .run-button {
-                font-size: 1.5rem;
-                padding: 1rem 2rem;
+            
+            .banner-title {
+                font-size: 2rem;
             }
         }
     </style>
@@ -410,21 +402,24 @@
                 <div class="game-title">🏃 SQUID RACE</div>
                 <div class="game-subtitle">¡La carrera más intensa de Squid Game!</div>
             </div>
-
+            
             <div class="lobby-title">🏁 SALA DE ESPERA</div>
             
-            <div class="lobby-timer" id="lobbyTimer">
-                Esperando jugadores...
+            <!-- Countdown Container -->
+            <div class="countdown-container" id="countdownContainer" style="display: none;">
+                <div class="countdown-title">¡LA CARRERA EMPIEZA EN!</div>
+                <div class="countdown-timer" id="countdownTimer">10</div>
+                <div class="countdown-subtitle">Preparados... ¡Listos... ¡YA!</div>
             </div>
-
+            
             <div class="players-list" id="playersList">
                 <div style="text-align: center; color: #FFD700; margin-bottom: 1rem;">
                     Esperando jugadores...
                 </div>
             </div>
-
-            <button class="start-button" id="startButton" disabled>
-                🏁 INICIAR CARRERA (Mínimo 2 jugadores)
+            
+            <button class="back-button" id="backButton">
+                🏠 VOLVER A LA PÁGINA PRINCIPAL
             </button>
         </div>
 
@@ -432,44 +427,39 @@
         <div class="race-screen" id="raceScreen">
             <div class="game-header">
                 <div class="game-title">🏃 SQUID RACE</div>
-                <div class="game-subtitle">¡Corre para ganar 10,000 monedas!</div>
+                <div class="game-subtitle">¡Haz 200 clics para ganar!</div>
             </div>
-
+            
             <div class="race-header">
                 <div class="race-info">
                     <div class="race-timer" id="raceTimer">00:00</div>
-                    <div class="race-status" id="raceStatus">¡CORRE!</div>
+                    <div class="race-status" id="raceStatus">¡CARRERA EN PROGRESO!</div>
                 </div>
             </div>
-
+            
             <div class="race-track" id="raceTrack">
                 <!-- Los corredores se cargarán dinámicamente -->
             </div>
-
-            <button class="run-button" id="runButton" onclick="clickToAdvance()">
-                🏃 CORRER
-            </button>
         </div>
 
-        <!-- Results Screen -->
-        <div class="results-screen" id="resultsScreen">
-            <div class="game-header">
-                <div class="game-title">🏆 RESULTADOS</div>
-                <div class="game-subtitle">¡Carrera terminada!</div>
+        <!-- Winner Banner -->
+        <div class="banner-overlay" id="winnerBanner">
+            <div class="winner-banner">
+                <div class="banner-title">🏆 ¡GANADOR!</div>
+                <div class="banner-subtitle" id="winnerName">¡FELICIDADES!</div>
+                <div class="banner-reward">💰 +10,000 MONEDAS</div>
+                <button class="banner-button" onclick="closeBanner()">¡GENIAL!</button>
             </div>
+        </div>
 
-            <div class="results-title">🏆 RESULTADOS</div>
-            <div class="winner-announcement" id="winnerAnnouncement">
-                <!-- El ganador se mostrará aquí -->
+        <!-- Loser Banner -->
+        <div class="banner-overlay" id="loserBanner">
+            <div class="loser-banner">
+                <div class="banner-title">💀 ¡PERDEDOR!</div>
+                <div class="banner-subtitle" id="loserName">Mejor suerte la próxima vez</div>
+                <div class="banner-reward">😔 No ganaste monedas</div>
+                <button class="banner-button" onclick="closeBanner()">ENTENDIDO</button>
             </div>
-
-            <div class="results-list" id="resultsList">
-                <!-- Los resultados se cargarán dinámicamente -->
-            </div>
-
-            <button class="back-button" id="backButton">
-                🏠 VOLVER AL LOBBY
-            </button>
         </div>
     </div>
 
@@ -477,61 +467,143 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
     <script src="firebase-config.js"></script>
-
+    
     <script>
+        // Firebase config y setup
+        if (!window.firebase || !window.firebase.database) {
+          document.write('<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"><\/script>');
+          document.write('<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"><\/script>');
+        }
+
+        // Esperar a que Firebase esté listo
+        function waitForFirebase(cb) {
+          if (window.firebase && window.firebase.database) {
+            cb();
+          } else {
+            setTimeout(() => waitForFirebase(cb), 200);
+          }
+        }
+
+        waitForFirebase(() => {
+          // Configuración (si no está inicializado)
+          if (!firebase.apps.length && window.firebaseConfig) {
+            firebase.initializeApp(window.firebaseConfig);
+          }
+          const db = firebase.database();
+
+          // Variables globales
+          let currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
+          let onlinePlayers = {};
+          let joinedRef = null;
+
+          // DOM
+          const playersList = document.getElementById('playersList');
+          const backButton = document.getElementById('backButton');
+
+          // Función para mostrar jugadores
+          function renderPlayers() {
+            const players = Object.keys(onlinePlayers);
+            if (players.length === 0) {
+              playersList.innerHTML = '<div style="text-align: center; color: #FFD700;">Esperando jugadores...</div>';
+              return;
+            }
+            let html = '';
+            players.forEach(name => {
+              const isCurrent = name === currentPlayer;
+              html += `<div class="player-item${isCurrent ? ' current-player' : ''}"><div class="player-status online"></div><div class="player-name">${name}${isCurrent ? ' (Tú)' : ''}</div></div>`;
+            });
+            playersList.innerHTML = html;
+          }
+
+          // Escuchar jugadores online
+          db.ref('squidRace/online').on('value', snap => {
+            onlinePlayers = snap.val() || {};
+            renderPlayers();
+          });
+
+          // Unirse a la sala
+          joinedRef = db.ref('squidRace/online/' + currentPlayer);
+          joinedRef.set({ name: currentPlayer, joinedAt: Date.now(), status: 'online' });
+          joinedRef.onDisconnect().remove();
+
+          // Botón de volver
+          function leaveAndGoBack() {
+            if (joinedRef) joinedRef.remove();
+            window.location.href = 'index.html';
+          }
+          backButton.onclick = leaveAndGoBack;
+          backButton.addEventListener('touchend', leaveAndGoBack);
+        });
+
         // Game state
         let currentPlayer = '';
-        let gameState = 'lobby'; // lobby, racing, finished
+        let gameState = 'lobby'; // lobby, countdown, racing, finished
         let raceStartTime = 0;
         let raceTimer = null;
-        let lobbyTimer = null;
+        let countdownTimer = null;
         let playerProgress = {};
         let onlinePlayers = {};
-        let lobbyStartTime = Date.now();
-        let lobbyDuration = 30000; // 30 segundos
+        let countdownActive = false;
 
         // DOM elements
         const loadingScreen = document.getElementById('loadingScreen');
         const lobbyScreen = document.getElementById('lobbyScreen');
         const raceScreen = document.getElementById('raceScreen');
-        const resultsScreen = document.getElementById('resultsScreen');
+        const countdownContainer = document.getElementById('countdownContainer');
+        const countdownTimerElement = document.getElementById('countdownTimer');
         const playersList = document.getElementById('playersList');
-        const startButton = document.getElementById('startButton');
+        const backButton = document.getElementById('backButton');
         const raceTrack = document.getElementById('raceTrack');
         const raceTimerElement = document.getElementById('raceTimer');
         const raceStatus = document.getElementById('raceStatus');
-        const resultsList = document.getElementById('resultsList');
-        const winnerAnnouncement = document.getElementById('winnerAnnouncement');
-        const backButton = document.getElementById('backButton');
-        const runButton = document.getElementById('runButton');
-        const lobbyTimerElement = document.getElementById('lobbyTimer');
+        const winnerBanner = document.getElementById('winnerBanner');
+        const loserBanner = document.getElementById('loserBanner');
+        const winnerName = document.getElementById('winnerName');
+        const loserName = document.getElementById('loserName');
 
         // Initialize game
         function initGame() {
             // Get player name from localStorage
             currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
-
+            
+            console.log('🔍 Initializing game for player:', currentPlayer);
+            
             // Hide loading screen
             loadingScreen.style.display = 'none';
             lobbyScreen.style.display = 'flex';
-
-            // Set up Firebase listeners
-            setupFirebaseListeners();
-
-            // Join lobby
-            joinLobby();
-
-            // Start lobby timer
-            startLobbyTimer();
+            
+            // Wait for Firebase to be ready
+            if (window.firebase && window.firebase.database) {
+                console.log('🔍 Firebase is ready, setting up listeners');
+                setupFirebaseListeners();
+                joinLobby();
+            } else {
+                console.log('🔍 Firebase not ready yet, waiting...');
+                // Wait a bit and try again
+                setTimeout(() => {
+                    if (window.firebase && window.firebase.database) {
+                        console.log('🔍 Firebase ready on retry, setting up listeners');
+                        setupFirebaseListeners();
+                        joinLobby();
+                    } else {
+                        console.error('❌ Firebase still not available');
+                        alert('Error: No se pudo conectar con Firebase. Recarga la página.');
+                    }
+                }, 2000);
+            }
         }
 
         // Set up Firebase listeners
         function setupFirebaseListeners() {
+            console.log('🔍 Setting up Firebase listeners');
+            
             // Listen for online players
             database.ref('squidRace/online').on('value', (snapshot) => {
+                console.log('🔍 Firebase online players update:', snapshot.val());
                 onlinePlayers = snapshot.val() || {};
+                console.log('🔍 onlinePlayers after update:', onlinePlayers);
                 updatePlayersList();
-                updateStartButton();
+                checkCountdownStart();
             });
 
             // Listen for game state changes
@@ -547,46 +619,30 @@
             database.ref('squidRace/progress').on('value', (snapshot) => {
                 playerProgress = snapshot.val() || {};
                 updateRaceDisplay();
+                checkRaceFinish();
             });
 
-            // Listen for race results
-            database.ref('squidRace/results').on('value', (snapshot) => {
-                const results = snapshot.val();
-                if (results && gameState === 'finished') {
-                    showResults(results);
+            // Listen for countdown
+            database.ref('squidRace/countdown').on('value', (snapshot) => {
+                const countdown = snapshot.val();
+                if (countdown && countdown > 0) {
+                    updateCountdown(countdown);
                 }
             });
-        }
-
-        // Start lobby timer
-        function startLobbyTimer() {
-            lobbyTimer = setInterval(() => {
-                const elapsed = Date.now() - lobbyStartTime;
-                const remaining = Math.max(0, lobbyDuration - elapsed);
-                const seconds = Math.ceil(remaining / 1000);
-
-                if (remaining <= 0) {
-                    // Auto-start race if enough players
-                    if (Object.keys(onlinePlayers).length >= 2) {
-                        database.ref('squidRace/gameState').set('racing');
-                    } else {
-                        // Reset lobby timer
-                        lobbyStartTime = Date.now();
-                        lobbyTimerElement.textContent = 'Esperando jugadores...';
-                    }
-                } else {
-                    lobbyTimerElement.textContent = `Tiempo restante: ${seconds}s`;
-                }
-            }, 1000);
         }
 
         // Join lobby
         function joinLobby() {
+            console.log('🔍 Joining lobby as:', currentPlayer);
             const playerRef = database.ref(`squidRace/online/${currentPlayer}`);
             playerRef.set({
                 name: currentPlayer,
                 joinedAt: Date.now(),
                 status: 'online'
+            }).then(() => {
+                console.log('🔍 Successfully joined lobby');
+            }).catch((error) => {
+                console.error('❌ Error joining lobby:', error);
             });
 
             // Set up disconnect handler
@@ -596,7 +652,10 @@
         // Update players list
         function updatePlayersList() {
             const players = Object.keys(onlinePlayers);
-
+            
+            console.log('🔍 UpdatePlayersList - Players:', players);
+            console.log('🔍 UpdatePlayersList - onlinePlayers:', onlinePlayers);
+            
             if (players.length === 0) {
                 playersList.innerHTML = '<div style="text-align: center; color: #FFD700;">Esperando jugadores...</div>';
                 return;
@@ -615,17 +674,43 @@
             });
 
             playersList.innerHTML = html;
+            console.log('🔍 UpdatePlayersList - HTML generated:', html);
         }
 
-        // Update start button
-        function updateStartButton() {
+        // Check if countdown should start
+        function checkCountdownStart() {
             const playerCount = Object.keys(onlinePlayers).length;
-            const canStart = playerCount >= 2;
+            
+            if (playerCount >= 2 && !countdownActive && gameState === 'lobby') {
+                startCountdown();
+            }
+        }
 
-            startButton.disabled = !canStart;
-            startButton.textContent = canStart ?
-                `🏁 INICIAR CARRERA (${playerCount} jugadores)` :
-                `🏁 INICIAR CARRERA (Mínimo 2 jugadores)`;
+        // Start countdown
+        function startCountdown() {
+            countdownActive = true;
+            countdownContainer.style.display = 'block';
+            
+            let countdown = 10;
+            updateCountdown(countdown);
+            
+            countdownTimer = setInterval(() => {
+                countdown--;
+                updateCountdown(countdown);
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownTimer);
+                    startRace();
+                }
+            }, 1000);
+            
+            // Update Firebase countdown
+            database.ref('squidRace/countdown').set(countdown);
+        }
+
+        // Update countdown display
+        function updateCountdown(countdown) {
+            countdownTimerElement.textContent = countdown;
         }
 
         // Handle game state changes
@@ -638,7 +723,7 @@
                     startRace();
                     break;
                 case 'finished':
-                    // Results will be shown by Firebase listener
+                    // Results will be shown by checkRaceFinish
                     break;
             }
         }
@@ -647,34 +732,32 @@
         function showLobby() {
             lobbyScreen.style.display = 'flex';
             raceScreen.style.display = 'none';
-            resultsScreen.style.display = 'none';
-
-            // Clear race timer
+            countdownContainer.style.display = 'none';
+            countdownActive = false;
+            
+            // Clear timers
             if (raceTimer) {
                 clearInterval(raceTimer);
                 raceTimer = null;
             }
-
-            // Reset lobby timer
-            lobbyStartTime = Date.now();
-            startLobbyTimer();
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
         }
 
         // Start race
         function startRace() {
             lobbyScreen.style.display = 'none';
             raceScreen.style.display = 'flex';
-            resultsScreen.style.display = 'none';
-
-            // Clear lobby timer
-            if (lobbyTimer) {
-                clearInterval(lobbyTimer);
-                lobbyTimer = null;
-            }
-
+            countdownContainer.style.display = 'none';
+            
             raceStartTime = Date.now();
             startRaceTimer();
             updateRaceDisplay();
+            
+            // Clear countdown
+            database.ref('squidRace/countdown').set(null);
         }
 
         // Start race timer
@@ -691,143 +774,125 @@
         function updateRaceDisplay() {
             const players = Object.keys(onlinePlayers);
             let html = '';
-
+            
             players.forEach(playerName => {
                 const progress = playerProgress[playerName] || 0;
                 const isCurrentPlayer = playerName === currentPlayer;
                 const isWinning = progress === Math.max(...Object.values(playerProgress));
-                const isFinished = progress >= 100;
-
+                const isFinished = progress >= 200;
+                
                 html += `
                     <div class="racer ${isWinning ? 'winning' : ''} ${isFinished ? 'finished' : ''}">
                         <div class="racer-header">
                             <div class="racer-name">${playerName} ${isCurrentPlayer ? '(Tú)' : ''}</div>
-                            <div class="racer-progress">${progress}%</div>
+                            <div class="racer-progress">${progress}/200 clics</div>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${progress}%"></div>
+                            <div class="progress-fill" style="width: ${(progress/200)*100}%"></div>
+                            ${isCurrentPlayer && !isFinished ? '<div class="click-area" onclick="clickToAdvance()"></div>' : ''}
                         </div>
                     </div>
                 `;
             });
-
+            
             raceTrack.innerHTML = html;
-
-            // Update run button state
-            const currentProgress = playerProgress[currentPlayer] || 0;
-            if (currentProgress >= 100) {
-                runButton.disabled = true;
-                runButton.textContent = '🏁 ¡TERMINADO!';
-            } else {
-                runButton.disabled = false;
-                runButton.textContent = '🏃 CORRER';
-            }
         }
 
         // Click to advance
         function clickToAdvance() {
             if (gameState !== 'racing') return;
-
+            
             const currentProgress = playerProgress[currentPlayer] || 0;
-            if (currentProgress >= 100) return;
-
-            const newProgress = Math.min(100, currentProgress + 1);
+            if (currentProgress >= 200) return;
+            
+            const newProgress = currentProgress + 1;
             database.ref(`squidRace/progress/${currentPlayer}`).set(newProgress);
-
-            // Check if race is finished
-            if (newProgress >= 100) {
-                checkRaceFinish();
-            }
         }
 
         // Check if race is finished
         function checkRaceFinish() {
             const players = Object.keys(onlinePlayers);
-            const allFinished = players.every(player => (playerProgress[player] || 0) >= 100);
-
-            if (allFinished) {
-                finishRace();
+            const winner = players.find(player => (playerProgress[player] || 0) >= 200);
+            
+            if (winner) {
+                finishRace(winner);
             }
         }
 
         // Finish race
-        function finishRace() {
+        function finishRace(winner) {
             clearInterval(raceTimer);
-
-            // Calculate results
-            const players = Object.keys(onlinePlayers);
-            const results = players.map(playerName => ({
-                name: playerName,
-                progress: playerProgress[playerName] || 0,
-                time: Date.now() - raceStartTime
-            })).sort((a, b) => b.progress - a.progress || a.time - b.time);
-
-            // Save results
-            database.ref('squidRace/results').set(results);
             database.ref('squidRace/gameState').set('finished');
-
-            // Award winner
-            if (results.length > 0) {
-                const winner = results[0];
-                if (winner.name === currentPlayer) {
-                    // Add coins to winner
-                    const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                    const newCoins = currentCoins + 10000;
-                    localStorage.setItem('totalOrtizCoins', newCoins.toString());
-
-                    // Sync with Firebase
-                    if (window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
-                        PlayerDataManager.safeAddCoins(10000, 'squid-race-winner');
-                    }
-
-                    console.log('🏆 ¡GANASTE LA CARRERA! +10,000 monedas');
+            
+            // Show winner/loser banners
+            if (winner === currentPlayer) {
+                showWinnerBanner();
+                // Add coins to winner
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const newCoins = currentCoins + 10000;
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                
+                // Sync to Firebase
+                if (window.firebase && window.firebase.database) {
+                    const db = window.firebase.database();
+                    const playerRef = db.ref(`players/${currentPlayer}`);
+                    playerRef.update({
+                        coins: newCoins,
+                        lastUpdated: Date.now()
+                    });
                 }
+            } else {
+                showLoserBanner(winner);
             }
         }
 
-        // Show results
-        function showResults(results) {
-            raceScreen.style.display = 'none';
-            resultsScreen.style.display = 'flex';
+        // Show winner banner
+        function showWinnerBanner() {
+            winnerName.textContent = `¡${currentPlayer} GANÓ!`;
+            winnerBanner.style.display = 'flex';
+        }
 
-            const winner = results[0];
-            winnerAnnouncement.textContent = `🏆 ¡${winner.name} GANÓ! +10,000 monedas`;
+        // Show loser banner
+        function showLoserBanner(winner) {
+            loserName.textContent = `¡${winner} ganó la carrera!`;
+            loserBanner.style.display = 'flex';
+        }
 
-            let html = '';
-            results.forEach((result, index) => {
-                const position = index + 1;
-                const time = Math.floor(result.time / 1000);
-                html += `
-                    <div class="result-item">
-                        <div class="result-position">${position}º</div>
-                        <div class="result-name">${result.name}</div>
-                        <div class="result-time">${time}s</div>
-                    </div>
-                `;
-            });
-
-            resultsList.innerHTML = html;
+        // Close banner
+        function closeBanner() {
+            winnerBanner.style.display = 'none';
+            loserBanner.style.display = 'none';
+            
+            // Reset game
+            database.ref('squidRace/gameState').set('lobby');
+            database.ref('squidRace/progress').set({});
+            database.ref('squidRace/countdown').set(null);
         }
 
         // Event listeners
-        startButton.addEventListener('click', () => {
-            if (Object.keys(onlinePlayers).length >= 2) {
-                database.ref('squidRace/gameState').set('racing');
-                database.ref('squidRace/progress').set({});
-                database.ref('squidRace/results').set(null);
+        backButton.addEventListener('click', () => {
+            console.log('🔍 Back button clicked');
+            // Leave lobby
+            if (window.firebase && window.firebase.database) {
+                database.ref(`squidRace/online/${currentPlayer}`).remove();
             }
+            console.log('🔍 Redirecting to index.html');
+            window.location.href = 'index.html';
         });
 
-        backButton.addEventListener('click', () => {
-            // Reset game state
-            database.ref('squidRace/gameState').set('lobby');
-            database.ref('squidRace/progress').set({});
-            database.ref('squidRace/results').set(null);
-        });
+        // Alternative click handler in case addEventListener doesn't work
+        backButton.onclick = function() {
+            console.log('🔍 Back button onclick triggered');
+            // Leave lobby
+            if (window.firebase && window.firebase.database) {
+                database.ref(`squidRace/online/${currentPlayer}`).remove();
+            }
+            console.log('🔍 Redirecting to index.html');
+            window.location.href = 'index.html';
+        };
 
         // Initialize game when page loads
         window.addEventListener('load', initGame);
     </script>
 </body>
-</html>
- 
+</html> 

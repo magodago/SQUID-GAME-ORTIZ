@@ -630,25 +630,37 @@
             
             if (!database) {
                 console.error('❌ Database no disponible en joinLobby');
+                alert('❌ ERROR: Database no disponible');
                 return;
             }
             
             const playerRef = database.ref(`squidRace/online/${currentPlayer}`);
             console.log('🔍 Referencia del jugador creada:', playerRef);
+            console.log('🔍 Ruta completa:', `squidRace/online/${currentPlayer}`);
             
-            playerRef.set({
+            const playerData = {
                 name: currentPlayer,
                 joinedAt: Date.now(),
                 status: 'online'
-            }).then(() => {
+            };
+            
+            console.log('🔍 Datos a guardar:', playerData);
+            
+            playerRef.set(playerData).then(() => {
                 console.log('🔍 Unido al lobby exitosamente');
+                alert('✅ SET EXITOSO: Jugador agregado a Firebase');
                 
                 // Force immediate update of players list
                 console.log('🔍 Forzando actualización inmediata de lista');
                 database.ref('squidRace/online').once('value').then((snapshot) => {
-                    console.log('🔍 Datos obtenidos directamente:', snapshot.val());
-                    onlinePlayers = snapshot.val() || {};
+                    const data = snapshot.val();
+                    console.log('🔍 Datos obtenidos directamente:', data);
+                    alert(`🔍 DATOS EN FIREBASE: ${JSON.stringify(data)}`);
+                    onlinePlayers = data || {};
                     updatePlayersList();
+                }).catch((error) => {
+                    console.error('❌ Error obteniendo datos:', error);
+                    alert(`❌ ERROR OBTENIENDO DATOS: ${error.message}`);
                 });
                 
                 // Also force update after a delay
@@ -658,6 +670,7 @@
                 }, 1000);
             }).catch((error) => {
                 console.error('❌ Error al unirse al lobby:', error);
+                alert(`❌ ERROR EN SET: ${error.message}`);
             });
 
             // Set up disconnect handler

@@ -111,10 +111,6 @@
             box-shadow: 0 0 10px #00ff00;
         }
 
-        .player-status.offline {
-            background: #ff0000;
-        }
-
         .start-button {
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             color: #000;
@@ -735,7 +731,7 @@
             const currentProgress = playerProgress[currentPlayer] || 0;
             if (currentProgress >= 100) return;
 
-            const newProgress = Math.min(100, currentProgress + 2);
+            const newProgress = Math.min(100, currentProgress + 1);
             database.ref(`squidRace/progress/${currentPlayer}`).set(newProgress);
 
             // Check if race is finished
@@ -831,4 +827,7 @@
 
         // Initialize game when page loads
         window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>
  

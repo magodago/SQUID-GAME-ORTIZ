@@ -10952,23 +10952,46 @@
         console.log(`💰 OrtizCoinManager: +${amount} coins from ${source}. Total: ${newTotal}`);
         
         // SYNC TO FIREBASE IMMEDIATELY
+        console.log('🔄 Attempting Firebase sync...');
+        console.log('🔍 PlayerDataManager available:', !!window.PlayerDataManager);
+        console.log('🔍 Firebase available:', !!window.firebase);
+        console.log('🔍 Database available:', !!db);
+        
         if (window.PlayerDataManager && typeof PlayerDataManager.safeAddCoins === 'function') {
-          console.log('🔄 Syncing to Firebase via PlayerDataManager...');
-          PlayerDataManager.safeAddCoins(amount, source);
+          console.log('🔄 Syncing to Firebase via PlayerDataManager.safeAddCoins...');
+          try {
+            const result = PlayerDataManager.safeAddCoins(amount, source);
+            console.log('✅ PlayerDataManager.safeAddCoins result:', result);
+          } catch (error) {
+            console.error('❌ Error in PlayerDataManager.safeAddCoins:', error);
+          }
         } else {
-          console.warn('⚠️ PlayerDataManager not available for Firebase sync');
+          console.warn('⚠️ PlayerDataManager.safeAddCoins not available');
           // Fallback: try to save player data directly
           const playerName = localStorage.getItem('soldierName');
+          console.log('🔍 Player name:', playerName);
+          
           if (playerName && window.PlayerDataManager && typeof PlayerDataManager.savePlayerData === 'function') {
-            PlayerDataManager.savePlayerData(playerName, newTotal, {
-              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-              lastSync: new Date().toISOString(),
-              autoSync: true,
-              gameType: source,
-              coinChange: amount
-            });
+            console.log('🔄 Trying direct savePlayerData...');
+            try {
+              PlayerDataManager.savePlayerData(playerName, newTotal, {
+                gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+                totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+                cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+                lastSync: new Date().toISOString(),
+                autoSync: true,
+                gameType: source,
+                coinChange: amount
+              }).then(result => {
+                console.log('✅ Direct savePlayerData result:', result);
+              }).catch(error => {
+                console.error('❌ Error in direct savePlayerData:', error);
+              });
+            } catch (error) {
+              console.error('❌ Error calling savePlayerData:', error);
+            }
+          } else {
+            console.error('❌ No fallback available - PlayerDataManager not ready');
           }
         }
         

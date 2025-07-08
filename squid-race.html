@@ -469,81 +469,16 @@
     <script src="firebase-config.js"></script>
     
     <script>
-        // Firebase config y setup
-        if (!window.firebase || !window.firebase.database) {
-          document.write('<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"><\/script>');
-          document.write('<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"><\/script>');
-        }
-
-        // Esperar a que Firebase esté listo
-        function waitForFirebase(cb) {
-          if (window.firebase && window.firebase.database) {
-            cb();
-          } else {
-            setTimeout(() => waitForFirebase(cb), 200);
-          }
-        }
-
-        waitForFirebase(() => {
-          // Configuración (si no está inicializado)
-          if (!firebase.apps.length && window.firebaseConfig) {
-            firebase.initializeApp(window.firebaseConfig);
-          }
-          const db = firebase.database();
-
-          // Variables globales
-          let currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
-          let onlinePlayers = {};
-          let joinedRef = null;
-
-          // DOM
-          const playersList = document.getElementById('playersList');
-          const backButton = document.getElementById('backButton');
-
-          // Función para mostrar jugadores
-          function renderPlayers() {
-            const players = Object.keys(onlinePlayers);
-            if (players.length === 0) {
-              playersList.innerHTML = '<div style="text-align: center; color: #FFD700;">Esperando jugadores...</div>';
-              return;
-            }
-            let html = '';
-            players.forEach(name => {
-              const isCurrent = name === currentPlayer;
-              html += `<div class="player-item${isCurrent ? ' current-player' : ''}"><div class="player-status online"></div><div class="player-name">${name}${isCurrent ? ' (Tú)' : ''}</div></div>`;
-            });
-            playersList.innerHTML = html;
-          }
-
-          // Escuchar jugadores online
-          db.ref('squidRace/online').on('value', snap => {
-            onlinePlayers = snap.val() || {};
-            renderPlayers();
-          });
-
-          // Unirse a la sala
-          joinedRef = db.ref('squidRace/online/' + currentPlayer);
-          joinedRef.set({ name: currentPlayer, joinedAt: Date.now(), status: 'online' });
-          joinedRef.onDisconnect().remove();
-
-          // Botón de volver
-          function leaveAndGoBack() {
-            if (joinedRef) joinedRef.remove();
-            window.location.href = 'index.html';
-          }
-          backButton.onclick = leaveAndGoBack;
-          backButton.addEventListener('touchend', leaveAndGoBack);
-        });
-
-        // Game state
+        // Variables globales
         let currentPlayer = '';
-        let gameState = 'lobby'; // lobby, countdown, racing, finished
+        let gameState = 'lobby';
         let raceStartTime = 0;
         let raceTimer = null;
         let countdownTimer = null;
         let playerProgress = {};
         let onlinePlayers = {};
         let countdownActive = false;
+        let database = null;
 
         // DOM elements
         const loadingScreen = document.getElementById('loadingScreen');
@@ -563,45 +498,47 @@
 
         // Initialize game
         function initGame() {
-            // Get player name from localStorage
-            currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
+            console.log('🔍 Inicializando juego...');
             
-            console.log('🔍 Initializing game for player:', currentPlayer);
+            // Get player name
+            currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
+            console.log('🔍 Jugador actual:', currentPlayer);
             
             // Hide loading screen
             loadingScreen.style.display = 'none';
             lobbyScreen.style.display = 'flex';
             
-            // Wait for Firebase to be ready
+            // Setup Firebase
+            setupFirebase();
+        }
+
+        // Setup Firebase
+        function setupFirebase() {
+            console.log('🔍 Configurando Firebase...');
+            
             if (window.firebase && window.firebase.database) {
-                console.log('🔍 Firebase is ready, setting up listeners');
+                database = firebase.database();
+                console.log('🔍 Firebase listo');
+                
+                // Setup listeners
                 setupFirebaseListeners();
+                
+                // Join lobby
                 joinLobby();
             } else {
-                console.log('🔍 Firebase not ready yet, waiting...');
-                // Wait a bit and try again
-                setTimeout(() => {
-                    if (window.firebase && window.firebase.database) {
-                        console.log('🔍 Firebase ready on retry, setting up listeners');
-                        setupFirebaseListeners();
-                        joinLobby();
-                    } else {
-                        console.error('❌ Firebase still not available');
-                        alert('Error: No se pudo conectar con Firebase. Recarga la página.');
-                    }
-                }, 2000);
+                console.log('🔍 Firebase no está listo, esperando...');
+                setTimeout(setupFirebase, 1000);
             }
         }
 
-        // Set up Firebase listeners
+        // Setup Firebase listeners
         function setupFirebaseListeners() {
-            console.log('🔍 Setting up Firebase listeners');
+            console.log('🔍 Configurando listeners de Firebase...');
             
             // Listen for online players
             database.ref('squidRace/online').on('value', (snapshot) => {
-                console.log('🔍 Firebase online players update:', snapshot.val());
+                console.log('🔍 Jugadores online actualizados:', snapshot.val());
                 onlinePlayers = snapshot.val() || {};
-                console.log('🔍 onlinePlayers after update:', onlinePlayers);
                 updatePlayersList();
                 checkCountdownStart();
             });
@@ -633,16 +570,16 @@
 
         // Join lobby
         function joinLobby() {
-            console.log('🔍 Joining lobby as:', currentPlayer);
+            console.log('🔍 Uniéndose al lobby como:', currentPlayer);
             const playerRef = database.ref(`squidRace/online/${currentPlayer}`);
             playerRef.set({
                 name: currentPlayer,
                 joinedAt: Date.now(),
                 status: 'online'
             }).then(() => {
-                console.log('🔍 Successfully joined lobby');
+                console.log('🔍 Unido al lobby exitosamente');
             }).catch((error) => {
-                console.error('❌ Error joining lobby:', error);
+                console.error('❌ Error al unirse al lobby:', error);
             });
 
             // Set up disconnect handler
@@ -652,9 +589,7 @@
         // Update players list
         function updatePlayersList() {
             const players = Object.keys(onlinePlayers);
-            
-            console.log('🔍 UpdatePlayersList - Players:', players);
-            console.log('🔍 UpdatePlayersList - onlinePlayers:', onlinePlayers);
+            console.log('🔍 Actualizando lista de jugadores:', players);
             
             if (players.length === 0) {
                 playersList.innerHTML = '<div style="text-align: center; color: #FFD700;">Esperando jugadores...</div>';
@@ -674,12 +609,13 @@
             });
 
             playersList.innerHTML = html;
-            console.log('🔍 UpdatePlayersList - HTML generated:', html);
+            console.log('🔍 Lista de jugadores actualizada');
         }
 
         // Check if countdown should start
         function checkCountdownStart() {
             const playerCount = Object.keys(onlinePlayers).length;
+            console.log('🔍 Verificando inicio de countdown. Jugadores:', playerCount);
             
             if (playerCount >= 2 && !countdownActive && gameState === 'lobby') {
                 startCountdown();
@@ -688,6 +624,7 @@
 
         // Start countdown
         function startCountdown() {
+            console.log('🔍 Iniciando countdown');
             countdownActive = true;
             countdownContainer.style.display = 'block';
             
@@ -869,27 +806,21 @@
             database.ref('squidRace/countdown').set(null);
         }
 
-        // Event listeners
-        backButton.addEventListener('click', () => {
-            console.log('🔍 Back button clicked');
+        // Back button function
+        function goBack() {
+            console.log('🔍 Botón volver clickeado');
+            
             // Leave lobby
-            if (window.firebase && window.firebase.database) {
+            if (database) {
                 database.ref(`squidRace/online/${currentPlayer}`).remove();
             }
-            console.log('🔍 Redirecting to index.html');
+            
+            console.log('🔍 Redirigiendo a index.html');
             window.location.href = 'index.html';
-        });
+        }
 
-        // Alternative click handler in case addEventListener doesn't work
-        backButton.onclick = function() {
-            console.log('🔍 Back button onclick triggered');
-            // Leave lobby
-            if (window.firebase && window.firebase.database) {
-                database.ref(`squidRace/online/${currentPlayer}`).remove();
-            }
-            console.log('🔍 Redirecting to index.html');
-            window.location.href = 'index.html';
-        };
+        // Set up back button
+        backButton.onclick = goBack;
 
         // Initialize game when page loads
         window.addEventListener('load', initGame);

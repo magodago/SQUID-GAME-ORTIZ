@@ -15145,31 +15145,11 @@
 
             console.log('🔄 Iniciando respaldo automático para:', playerName);
             
-            const db = window.firebase.database();
-            const playerRef = db.ref(`players/${playerName}`);
+            // Solo guardar datos locales en Firebase, NO restaurar
+            saveLocalDataToFirebase();
             
-            // Obtener datos de Firebase
-            playerRef.once('value').then((snapshot) => {
-                const firebaseData = snapshot.val();
-                console.log('📊 Datos de Firebase obtenidos:', firebaseData);
-                
-                if (firebaseData) {
-                    // Restaurar datos críticos desde Firebase
-                    restoreDataFromFirebase(firebaseData);
-                } else {
-                    console.log('📝 No hay datos en Firebase, guardando datos locales');
-                    // Si no hay datos en Firebase, guardar los datos locales
-                    saveLocalDataToFirebase();
-                }
-                
-                // Configurar sincronización automática cada 30 segundos
-                setupAutoSync();
-                
-            }).catch((error) => {
-                console.error('❌ Error al obtener datos de Firebase:', error);
-                // En caso de error, intentar guardar datos locales
-                saveLocalDataToFirebase();
-            });
+            // Configurar sincronización automática cada 30 segundos
+            setupAutoSync();
         }
 
         function restoreDataFromFirebase(firebaseData) {
@@ -15273,7 +15253,7 @@
         function setupAutoSync() {
             console.log('🔄 Configurando sincronización automática cada 30 segundos');
             
-            // Sincronizar cada 30 segundos
+            // Sincronizar cada 30 segundos SOLO hacia Firebase (no restaurar)
             setInterval(() => {
                 const playerName = localStorage.getItem('soldierName');
                 if (playerName) {
@@ -15286,13 +15266,13 @@
                 saveLocalDataToFirebase();
             });
             
-            // Sincronizar cuando la página vuelve a estar visible
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) {
-                    console.log('🔄 Página visible, sincronizando datos...');
-                    saveLocalDataToFirebase();
-                }
-            });
+            // NO sincronizar cuando la página vuelve a estar visible para evitar sobrescribir
+            // document.addEventListener('visibilitychange', () => {
+            //     if (!document.hidden) {
+            //         console.log('🔄 Página visible, sincronizando datos...');
+            //         saveLocalDataToFirebase();
+            //     }
+            // });
         }
 
 

@@ -12649,6 +12649,45 @@
       }
     }
     
+    // Function to clear stuck RPS challenges (emergency button for mobile)
+    window.clearStuckRPSChallenges = function() {
+      console.log('🔍 Clearing stuck RPS challenges...');
+      
+      if (!window.firebase || !window.firebase.database) {
+        alert('Firebase no está disponible');
+        return;
+      }
+      
+      try {
+        const db = window.firebase.database();
+        const currentPlayer = localStorage.getItem('soldierName');
+        
+        // Clear current challenge
+        window.currentRPSChallenge = null;
+        
+        // Remove any pending challenges for current player
+        const challengeRef = db.ref(`rpsChallenges/${currentPlayer}`);
+        challengeRef.remove().then(() => {
+          console.log('✅ Stuck RPS challenges cleared');
+          alert('✅ Retos persistentes eliminados. Recarga la página.');
+          
+          // Close any open modals
+          const modal = document.getElementById('rpsChallengeModal');
+          if (modal) {
+            modal.style.display = 'none';
+          }
+          
+        }).catch((error) => {
+          console.error('❌ Error clearing challenges:', error);
+          alert('❌ Error al limpiar retos: ' + error.message);
+        });
+        
+      } catch (error) {
+        console.error('❌ Error in clearStuckRPSChallenges:', error);
+        alert('❌ Error: ' + error.message);
+      }
+    };
+
     // Initialize RPS notifications when page loads
     document.addEventListener('DOMContentLoaded', function() {
       setTimeout(initializeRPSNotifications, 2000); // Wait for Firebase to load
@@ -15499,12 +15538,56 @@
             // });
         }
 
-
+        // Emergency button for mobile - clear stuck RPS challenges
+        document.addEventListener('DOMContentLoaded', function() {
+          // Add emergency button after 3 seconds
+          setTimeout(() => {
+            const emergencyBtn = document.createElement('button');
+            emergencyBtn.innerHTML = '🚨 LIMPIAR RETOS';
+            emergencyBtn.style.cssText = `
+              position: fixed;
+              bottom: 20px;
+              left: 20px;
+              background: linear-gradient(45deg, #ff4444, #cc0000);
+              color: white;
+              border: none;
+              border-radius: 10px;
+              padding: 10px 15px;
+              font-size: 0.9rem;
+              font-weight: bold;
+              cursor: pointer;
+              z-index: 10000;
+              box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+              transition: all 0.3s ease;
+            `;
+            emergencyBtn.onclick = function() {
+              if (confirm('¿Limpiar retos persistentes de Piedra Papel Tijera?')) {
+                clearStuckRPSChallenges();
+              }
+            };
+            document.body.appendChild(emergencyBtn);
+          }, 3000);
+        });
 
     </script>
 
-
-
+    <!-- Emergency Clear RPS Button -->
+    <button onclick="clearStuckRPSChallenges()" style="
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: linear-gradient(45deg, #ff4444, #cc0000);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10000;
+      box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+      transition: all 0.3s ease;
+    ">🚨 LIMPIAR RETOS</button>
 
 </body>
 </html> 

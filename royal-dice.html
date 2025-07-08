@@ -731,6 +731,33 @@
             listenForChallenges();
             listenForResults();
             startAutoSync();
+            
+            // Add debug button
+            const debugBtn = document.createElement('button');
+            debugBtn.textContent = '🔍 DEBUG RETOS';
+            debugBtn.style.cssText = `
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background: #FF6B35;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                z-index: 1000;
+            `;
+            debugBtn.onclick = function() {
+                const debugInfo = `
+🔍 DEBUG RETOS:
+Jugador actual: ${currentPlayer}
+Firebase disponible: ${!!window.firebase}
+Database disponible: ${!!db}
+Reto actual: ${currentChallenge ? JSON.stringify(currentChallenge) : 'Ninguno'}
+                `;
+                alert(debugInfo);
+            };
+            document.body.appendChild(debugBtn);
         });
 
         // Show tab content
@@ -1741,6 +1768,8 @@
 
         // Listen for incoming challenges
         function listenForChallenges() {
+            console.log('🔍 Setting up challenge listener for:', currentPlayer);
+            
             const challengeRef = db.ref(`rpsChallenges/${currentPlayer}`);
             challengeRef.on('value', (snapshot) => {
                 const challenge = snapshot.val();
@@ -1748,7 +1777,7 @@
                 
                 if (challenge && challenge.status === 'pending') {
                     // Check if this challenge is not too old (more than 5 minutes)
-                    const challengeAge = Date.now() - (challenge.timestamp || 0);
+                    const challengeAge = Date.now() - (challenge.createdAt || 0);
                     if (challengeAge > 300000) { // 5 minutes
                         console.log('🔍 Challenge too old, removing:', challenge);
                         challengeRef.remove();
@@ -1761,6 +1790,7 @@
                         return;
                     }
                     
+                    console.log('🔍 Showing challenge modal for:', challenge);
                     showChallengeModal(challenge);
                 } else if (challenge && challenge.status === 'rejected') {
                     alert(`${challenge.challenger} rechazó tu reto.`);
@@ -1771,6 +1801,8 @@
                     startGame(challenge);
                     challengeRef.remove(); // Clean up the challenge
                 }
+            }, (error) => {
+                console.error('❌ Error in challenge listener:', error);
             });
         }
 

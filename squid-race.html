@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>🏃 SQUID RACE - Squid Game Ortiz</title>
     <style>
         * {
@@ -17,6 +17,13 @@
             color: #fff;
             overflow: hidden;
             height: 100vh;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         .game-container {
@@ -200,6 +207,21 @@
             box-shadow: 0 0 20px #FFD700;
         }
 
+        .racer.current-player {
+            border-color: #FF6B35;
+            box-shadow: 0 0 20px #FF6B35;
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .current-player-indicator {
+            text-align: center;
+            color: #FF6B35;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            text-shadow: 0 0 10px #FF6B35;
+        }
+
         .racer.finished {
             border-color: #00ff00;
             box-shadow: 0 0 20px #00ff00;
@@ -267,20 +289,23 @@
 
         /* Click Button */
         .click-button {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000;
+            background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
+            color: #fff;
             border: none;
-            padding: 1.5rem 3rem;
-            font-size: 1.5rem;
+            padding: 2rem 4rem;
+            font-size: 2rem;
             font-weight: bold;
-            border-radius: 15px;
+            border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s;
-            margin: 2rem auto;
-            display: block;
-            box-shadow: 0 0 20px #FFD700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            box-shadow: 0 0 30px #FF6B35;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         .click-button:hover {
@@ -834,14 +859,15 @@
                 const isFinished = progress >= 200;
                 
                 html += `
-                    <div class="racer ${isWinning ? 'winning' : ''} ${isFinished ? 'finished' : ''}">
+                    <div class="racer ${isCurrentPlayer ? 'current-player' : ''} ${isWinning ? 'winning' : ''} ${isFinished ? 'finished' : ''}">
                         <div class="racer-header">
-                            <div class="racer-name">${playerName} ${isCurrentPlayer ? '(Tú)' : ''}</div>
+                            <div class="racer-name">${playerName} ${isCurrentPlayer ? '(TÚ)' : ''}</div>
                             <div class="racer-progress">${progress}/200 clics</div>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${(progress/200)*100}%"></div>
                         </div>
+                        ${isCurrentPlayer ? '<div class="current-player-indicator">🎯 TU PROGRESO</div>' : ''}
                     </div>
                 `;
             });

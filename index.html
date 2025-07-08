@@ -15458,32 +15458,35 @@
 
     </script>
 
-    <!-- SUPER SIMPLE TEST BUTTON -->
-    <button id="testFirebaseBtn" style="position: fixed; bottom: 20px; right: 20px; background: red; color: white; border: none; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; z-index: 10000; cursor: pointer;">
+    <!-- SUPER SIMPLE TEST BUTTON - MOBILE FRIENDLY -->
+    <button id="testFirebaseBtn" style="position: fixed; top: 20px; left: 20px; background: linear-gradient(135deg, #ff0000, #cc0000); color: white; border: 3px solid #fff; padding: 20px; border-radius: 15px; font-size: 18px; font-weight: bold; z-index: 10000; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); min-width: 150px;">
       🧪 TEST FIREBASE
     </button>
     
     <script>
-      // SUPER SIMPLE TEST FUNCTION
+      // SUPER SIMPLE TEST FUNCTION - MOBILE FRIENDLY
       document.getElementById('testFirebaseBtn').addEventListener('click', function() {
-        console.log('🧪 TEST BUTTON CLICKED!');
+        alert('🧪 INICIANDO TEST FIREBASE...');
         
         const playerName = localStorage.getItem('soldierName');
         const currentCoins = localStorage.getItem('totalOrtizCoins') || '0';
         
-        console.log('Player name:', playerName);
-        console.log('Current coins:', currentCoins);
-        console.log('Firebase available:', !!window.firebase);
+        let testInfo = '🧪 TEST FIREBASE\n\n';
+        testInfo += '📱 Jugador: ' + (playerName || 'NO ENCONTRADO') + '\n';
+        testInfo += '💰 Monedas: ' + currentCoins + '\n';
+        testInfo += '🔥 Firebase: ' + (window.firebase ? 'CARGADO' : 'NO CARGADO') + '\n\n';
         
         if (!playerName) {
-          alert('❌ No player name found!');
+          alert(testInfo + '❌ ERROR: No hay nombre de jugador!\n\nPon tu nombre primero.');
           return;
         }
         
         if (!window.firebase) {
-          alert('❌ Firebase not loaded!');
+          alert(testInfo + '❌ ERROR: Firebase no está cargado!\n\nProblema de conexión.');
           return;
         }
+        
+        alert(testInfo + '🔄 Intentando conectar con Firebase...');
         
         try {
           // Firebase config
@@ -15512,19 +15515,14 @@
             test: true
           };
           
-          console.log('🔄 Sending test data to Firebase:', testData);
-          
           playerRef.update(testData).then(() => {
-            console.log('✅ TEST SUCCESSFUL!');
-            alert('✅ TEST SUCCESSFUL! Check console for details.');
+            alert('✅ ¡TEST EXITOSO!\n\n📱 Datos enviados a Firebase:\n• Jugador: ' + playerName + '\n• Monedas: ' + currentCoins + '\n• Timestamp: ' + new Date().toLocaleString() + '\n\n¡Firebase funciona perfectamente!');
           }).catch(error => {
-            console.error('❌ TEST FAILED:', error);
-            alert('❌ TEST FAILED: ' + error.message);
+            alert('❌ TEST FALLIDO\n\nError: ' + error.message + '\n\nCódigo: ' + error.code + '\n\nProblema de conexión con Firebase.');
           });
           
         } catch (error) {
-          console.error('❌ TEST ERROR:', error);
-          alert('❌ TEST ERROR: ' + error.message);
+          alert('❌ ERROR CRÍTICO\n\nError: ' + error.message + '\n\nProblema en la configuración de Firebase.');
         }
       });
     </script>

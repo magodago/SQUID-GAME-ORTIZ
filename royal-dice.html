@@ -1744,14 +1744,63 @@
             const challengeRef = db.ref(`rpsChallenges/${currentPlayer}`);
             challengeRef.on('value', (snapshot) => {
                 const challenge = snapshot.val();
+                console.log('🔍 Challenge received:', challenge);
+                
                 if (challenge && challenge.status === 'pending') {
+                    // Check if this challenge is not too old (more than 5 minutes)
+                    const challengeAge = Date.now() - (challenge.timestamp || 0);
+                    if (challengeAge > 300000) { // 5 minutes
+                        console.log('🔍 Challenge too old, removing:', challenge);
+                        challengeRef.remove();
+                        return;
+                    }
+                    
+                    // Check if we already have a current challenge
+                    if (currentChallenge) {
+                        console.log('🔍 Already have a challenge, ignoring new one');
+                        return;
+                    }
+                    
                     showChallengeModal(challenge);
                 } else if (challenge && challenge.status === 'rejected') {
                     alert(`${challenge.challenger} rechazó tu reto.`);
                     challengeRef.remove();
+                } else if (challenge && challenge.status === 'accepted') {
+                    // Challenge was accepted, start the game
+                    currentChallenge = challenge;
+                    startGame(challenge);
+                    challengeRef.remove(); // Clean up the challenge
                 }
             });
         }
+
+        // Function to clear stuck challenges
+        window.clearStuckChallenges = function() {
+            console.log('🔍 Clearing stuck challenges...');
+            
+            // Clear current challenge
+            currentChallenge = null;
+            
+            // Remove any pending challenges for current player
+            const challengeRef = db.ref(`rpsChallenges/${currentPlayer}`);
+            challengeRef.remove().then(() => {
+                console.log('✅ Stuck challenges cleared');
+                alert('Retos persistentes eliminados. Recarga la página.');
+            }).catch((error) => {
+                console.error('❌ Error clearing challenges:', error);
+            });
+            
+            // Hide any open modals
+            const challengeModal = document.getElementById('challengeModal');
+            if (challengeModal) {
+                challengeModal.style.display = 'none';
+            }
+            
+            const gameModal = document.getElementById('gameModal');
+            if (gameModal) {
+                gameModal.style.display = 'none';
+            }
+        };
 
         // Listen for game results (for challenger)
         function listenForResults() {
@@ -1767,19 +1816,49 @@
 
         // Reject challenge
         window.rejectChallenge = function() {
-            if (!currentChallenge) return;
+            console.log('🔍 Reject challenge clicked');
+            console.log('🔍 Current challenge:', currentChallenge);
             
-            // Notify challenger
-            const challengerRef = db.ref(`rpsChallenges/${currentChallenge.challenger}`);
-            challengerRef.set({ status: 'rejected' });
+            if (!currentChallenge) {
+                console.log('❌ No current challenge to reject');
+                return;
+            }
             
-            // Remove challenge
-            const challengeRef = db.ref(`rpsChallenges/${currentChallenge.challenged}`);
-            challengeRef.remove();
+            console.log('🔍 Rejecting challenge from:', currentChallenge.challenger, 'to:', currentChallenge.challenged);
             
-            // Hide modal
-            document.getElementById('challengeModal').style.display = 'none';
-            currentChallenge = null;
+            try {
+                // Notify challenger
+                const challengerRef = db.ref(`rpsChallenges/${currentChallenge.challenger}`);
+                challengerRef.set({ status: 'rejected' }).then(() => {
+                    console.log('✅ Challenger notified of rejection');
+                }).catch((error) => {
+                    console.error('❌ Error notifying challenger:', error);
+                });
+                
+                // Remove challenge
+                const challengeRef = db.ref(`rpsChallenges/${currentChallenge.challenged}`);
+                challengeRef.remove().then(() => {
+                    console.log('✅ Challenge removed from Firebase');
+                }).catch((error) => {
+                    console.error('❌ Error removing challenge:', error);
+                });
+                
+                // Hide modal
+                const modal = document.getElementById('challengeModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                    console.log('✅ Challenge modal hidden');
+                } else {
+                    console.error('❌ Challenge modal not found');
+                }
+                
+                // Reset current challenge
+                currentChallenge = null;
+                console.log('✅ Current challenge reset');
+                
+            } catch (error) {
+                console.error('❌ Error in rejectChallenge:', error);
+            }
         };
 
         // Start game

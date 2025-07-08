@@ -5177,6 +5177,8 @@
         <span class="admin-btn-icon">🔐</span>
         <span class="admin-btn-text">PANEL ADMIN</span>
       </button>
+      
+
     </div>
     
     <div class="main-content">
@@ -9173,6 +9175,8 @@
     
 
     
+
+    
     if (closeAdminBtn) {
       closeAdminBtn.addEventListener('click', () => {
         console.log('❌ Close admin button clicked!');
@@ -10951,40 +10955,58 @@
           return;
         }
         
-        // Wait for Firebase to be ready
-        const waitForFirebase = () => {
-          if (window.firebase && window.firebase.database) {
-            console.log('🔄 Syncing to Firebase directly...');
-            const db = firebase.database();
-            const playerRef = db.ref('players/' + playerName);
-            
-            const playerData = {
-              name: playerName,
-              coins: newCoins,
-              lastUpdated: Date.now(),
-              gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
-              totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
-              cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
-              easterEggsFound: parseInt(localStorage.getItem('easterEggsFound') || '0'),
-              deviceInfo: {
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                timestamp: new Date().toISOString()
-              }
-            };
-            
-            playerRef.update(playerData).then(() => {
-              console.log('✅ Firebase sync successful:', newCoins, 'coins');
-            }).catch(error => {
-              console.error('❌ Firebase sync error:', error);
-            });
-          } else {
-            console.log('⏳ Waiting for Firebase...');
-            setTimeout(waitForFirebase, 100);
-          }
-        };
+        // Initialize Firebase if not already done
+        if (!window.firebase) {
+          console.error('❌ Firebase not loaded');
+          return;
+        }
         
-        waitForFirebase();
+        try {
+          // Firebase config
+          const firebaseConfig = {
+            apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
+            authDomain: "squid-game-ortiz.firebaseapp.com",
+            databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
+            projectId: "squid-game-ortiz",
+            storageBucket: "squid-game-ortiz.firebasestorage.app",
+            messagingSenderId: "564790427576",
+            appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
+          };
+          
+          // Initialize Firebase if not already initialized
+          if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+          }
+          
+          const db = firebase.database();
+          const playerRef = db.ref('players/' + playerName);
+          
+          const playerData = {
+            name: playerName,
+            coins: newCoins,
+            lastUpdated: Date.now(),
+            gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+            totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+            cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+            easterEggsFound: parseInt(localStorage.getItem('easterEggsFound') || '0'),
+            deviceInfo: {
+              userAgent: navigator.userAgent,
+              platform: navigator.platform,
+              timestamp: new Date().toISOString()
+            }
+          };
+          
+          console.log('🔄 Syncing to Firebase:', playerData);
+          
+          playerRef.update(playerData).then(() => {
+            console.log('✅ Firebase sync successful:', newCoins, 'coins');
+          }).catch(error => {
+            console.error('❌ Firebase sync error:', error);
+          });
+          
+        } catch (error) {
+          console.error('❌ Error in Firebase sync:', error);
+        }
       },
       
       // Add coins safely (accumulate, don't overwrite) - SIMPLE FIREBASE SYNC
@@ -11062,6 +11084,8 @@
     function initializeAchievements() {
       updateStreak();
     }
+
+
 
     // ALL IN GAME FUNCTIONS (SIMPLE VERSION)
     function initializeAllInGame() {

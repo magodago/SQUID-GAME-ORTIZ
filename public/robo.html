@@ -527,7 +527,6 @@
             <div class="player-name" id="currentPlayerName">Jugador</div>
             <div class="player-coins" id="currentPlayerCoins">0 monedas</div>
             <button class="back-button" onclick="window.location.href='index.html'">← VOLVER</button>
-            <button class="debug-button" onclick="showAllPlayersDebug()" title="Ver todos los jugadores en Firebase">🔍 DEBUG</button>
         </div>
 
         <div class="battle-section">
@@ -629,7 +628,7 @@
             console.log('⚠️ Limpieza automática de jugadores DESACTIVADA para evitar pérdida de datos');
             
             // Add debug button for player analysis
-            addDebugButton();
+            // addDebugButton(); // Eliminado el bloque de función addDebugButton y referencias a debug-button
         });
 
         // Auto-sync player data with Firebase every 30 seconds
@@ -1550,11 +1549,11 @@
                 winnerElement.textContent = `🦹‍♂️ ¡ROBO EXITOSO!`;
                 coinsElement.textContent = `💰 Robaste ${betAmount.toLocaleString()} monedas de ${player2}`;
                 
-                console.log(`🎯 ATTACKER WINS: ${player1} gets ${betAmount} coins from ${player2}`);
+                console.log(`🎯 ATTACKER WINS: ${player1} gets ${betAmount} coins from ${player2} + recovers his bet`);
                 
                 // Update Firebase for both players
-                // Player 1 (attacker) gets the stolen coins from player 2
-                updatePlayerCoinsInFirebase(player1, betAmount, true);
+                // Player 1 (attacker) gets the stolen coins from player 2 + recovers his original bet
+                updatePlayerCoinsInFirebase(player1, betAmount * 2, true);
                 // Player 2 (target) loses the stolen coins
                 updatePlayerCoinsInFirebase(player2, betAmount, false);
                 
@@ -1823,91 +1822,38 @@
                             } else {
                                 invalidPlayers++;
                                 playersToClean.push({key: playerKey, name: player.name});
-                                console.log(`❌ ${totalPlayers}. [INVÁLIDO] ${playerKey} → name: "${player.name}" (${player.coins || 0} monedas)`);
+                                console.log(`❌ Jugador inválido: ${childSnapshot.key} - name: "${player?.name}"`);
                             }
-                        } else {
-                            invalidPlayers++;
-                            playersToClean.push({key: playerKey, name: 'null'});
-                            console.log(`❌ ${totalPlayers}. [NULL] ${playerKey} → datos nulos`);
-                        }
-                    });
-                    
-                    console.log('==========================================');
-                    console.log(`📊 RESUMEN DEBUG:`);
-                    console.log(`   Total en Firebase: ${totalPlayers}`);
-                    console.log(`   Jugadores válidos: ${validPlayers}`);
-                    console.log(`   Jugadores inválidos: ${invalidPlayers}`);
-                    console.log(`   Jugadores de prueba: ${testPlayers}`);
-                    console.log(`   Jugador actual: ${currentPlayerCount}`);
-                    console.log(`   Jugadores disponibles para robo: ${allPlayers.length}`);
-                    console.log('==========================================');
-                    
-                    // Show alert with summary and option to clean
-                    let summary = `🔍 DEBUG - JUGADORES EN FIREBASE:
-
-📊 TOTAL: ${totalPlayers} jugadores
-✅ VÁLIDOS: ${validPlayers} jugadores  
-❌ INVÁLIDOS: ${invalidPlayers} jugadores
-🧪 PRUEBA: ${testPlayers} jugadores
-👤 ACTUAL: ${currentPlayerCount} jugador
-🎯 DISPONIBLES: ${allPlayers.length} jugadores
-
-Revisa la consola para ver detalles completos.`;
-
-                    if (playersToClean.length > 0) {
-                        summary += `\n\n⚠️ HAY ${playersToClean.length} JUGADORES INVÁLIDOS QUE SE PUEDEN LIMPIAR.`;
-                        const shouldClean = confirm(summary + '\n\n¿Quieres limpiar los jugadores inválidos?');
-                        if (shouldClean) {
-                            cleanInvalidPlayers(playersToClean);
-                        }
-                    } else {
-                        alert(summary);
-                    }
-                    
-                    // Also show in console the available players for robbery
-                    if (allPlayers.length > 0) {
-                        console.log('🎯 JUGADORES DISPONIBLES PARA ROBO:');
-                        allPlayers.forEach((player, index) => {
-                            const lastUpdate = player.lastUpdated ? new Date(player.lastUpdated).toLocaleString() : 'N/A';
-                            console.log(`   ${index + 1}. ${player.name} (${player.coins.toLocaleString()} monedas) - Última actualización: ${lastUpdate}`);
                         });
-                    }
-                    
-                })
-                .catch((error) => {
-                    console.error('❌ Error en debug:', error);
-                    alert('❌ Error al cargar datos de Firebase');
-                });
-        }
-
-        // 🧹 FUNCIÓN PARA LIMPIAR JUGADORES INVÁLIDOS MANUALMENTE
-        function cleanInvalidPlayers(playersToClean) {
-            if (!window.firebase || !window.firebase.database) {
-                alert('❌ Firebase no disponible');
-                return;
-            }
-
-            const db = window.firebase.database();
-            const playersRef = db.ref('players');
-            const updates = {};
-            
-            playersToClean.forEach(player => {
-                updates[player.key] = null; // Remove invalid player
-            });
-            
-            console.log(`🧹 Limpiando ${playersToClean.length} jugadores inválidos...`);
-            
-            playersRef.update(updates)
-                .then(() => {
-                    console.log(`✅ Limpieza completada: ${playersToClean.length} jugadores eliminados`);
-                    alert(`✅ Limpieza completada:\n${playersToClean.length} jugadores inválidos eliminados de Firebase.`);
-                    loadPlayers(); // Reload the list
-                })
-                .catch((error) => {
-                    console.error('❌ Error durante la limpieza:', error);
-                    alert('❌ Error durante la limpieza de jugadores');
-                });
+                        
+                        console.log(`📊 RESUMEN FILTROS: Total: ${totalPlayers}, Mostrados: ${validPlayers}, Filtrados por ser actual: ${currentPlayerCount}, Filtrados por ser prueba: ${testPlayers}, Inválidos: ${invalidPlayers}`);
+                        
+                        if (playersToClean.length > 0) {
+                            console.log('🧹 LIMPIANDO JUGADORES INVÁLIDOS EN FIREBASE:');
+                            console.log('==========================================');
+                            playersToClean.forEach(invalid => {
+                                console.log(`🧹 ${invalid.key} → "${invalid.name}"`);
+                            });
+                            const updates = {};
+                            playersToClean.forEach(invalid => {
+                                updates[invalid.key] = null;
+                            });
+                            playersRef.update(updates)
+                                .then(() => {
+                                    console.log(`✅ Cleaned up ${playersToClean.length} invalid players from Firebase`);
+                                    loadPlayers(); // Reload the list
+                                })
+                                .catch((error) => {
+                                    console.error('❌ Error cleaning up players:', error);
+                                });
+                        } else {
+                            console.log('✅ No hay jugadores inválidos para limpiar');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error reading players for debug:', error);
+                    });
         }
     </script>
 </body>
-</html> 
+</html>

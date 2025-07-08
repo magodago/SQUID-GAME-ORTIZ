@@ -459,11 +459,6 @@
             <button class="back-button" id="backButton">
                 🏠 VOLVER A LA PÁGINA PRINCIPAL
             </button>
-            
-            <!-- Debug button for mobile -->
-            <button class="debug-button" id="debugButton" onclick="showDebugInfo()" style="margin-top: 1rem; background: #FF6B35; padding: 0.5rem 1rem; border: none; border-radius: 5px; color: white; font-size: 0.9rem;">
-                🔍 DEBUG INFO
-            </button>
         </div>
 
         <!-- Race Screen -->
@@ -556,6 +551,13 @@
             // Hide loading screen
             loadingScreen.style.display = 'none';
             lobbyScreen.style.display = 'flex';
+            
+            // Add debug button dynamically
+            const debugButton = document.createElement('button');
+            debugButton.textContent = '🔍 DEBUG INFO';
+            debugButton.style.cssText = 'margin-top: 1rem; background: #FF6B35; padding: 1rem 2rem; border: none; border-radius: 10px; color: white; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #FF6B35;';
+            debugButton.onclick = showDebugInfo;
+            lobbyScreen.appendChild(debugButton);
             
             // Setup Firebase
             setupFirebase();

@@ -3666,18 +3666,46 @@
 
     .tab-content {
       display: none;
+      min-height: 200px;
+      border: 1px solid #333;
+      padding: 1rem;
     }
 
     .tab-content.active {
       display: block;
     }
+    
+    /* Debug styles to ensure content is visible */
+    .achievements-grid {
+      min-height: 100px;
+      border: 1px solid #666;
+      padding: 1rem;
+    }
+    
+    .streaks-container {
+      min-height: 100px;
+      border: 1px solid #666;
+      padding: 1rem;
+    }
+    
+    .stats-container {
+      min-height: 100px;
+      border: 1px solid #666;
+      padding: 1rem;
+    }
 
     /* Daily Achievements Grid */
     .achievements-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: 1fr;
       gap: 1rem;
       margin-bottom: 1rem;
+    }
+    
+    @media (min-width: 768px) {
+      .achievements-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
     }
 
     .achievement-item {
@@ -5312,6 +5340,9 @@
           <div class="tab-content active" id="daily-tab">
             <div class="achievements-grid" id="dailyAchievementsGrid">
               <!-- Los logros se cargarán dinámicamente -->
+              <div style="color: #FFD700; font-size: 1.2rem; text-align: center; padding: 2rem;">
+                🏆 Cargando logros diarios...
+              </div>
             </div>
           </div>
           
@@ -10326,23 +10357,13 @@
       console.log('✅ Modal encontrado, mostrando...');
       modal.style.display = 'flex';
       
-      // Cargar datos solo una vez al abrir el modal
-      if (!modal.dataset.loaded) {
-        console.log('🔄 Primera vez cargando datos...');
-        loadAchievementsData();
-        modal.dataset.loaded = 'true';
-      } else {
-        console.log('🔄 Actualizando datos existentes...');
-        // Solo actualizar datos si ya se cargaron antes
-        refreshAchievementsData();
-      }
+      // Siempre cargar datos frescos
+      console.log('🔄 Cargando datos...');
+      loadAchievementsData();
       
-      // Configurar tabs solo una vez
-      if (!modal.dataset.tabsInitialized) {
-        console.log('🔄 Configurando tabs...');
-        setupTabs();
-        modal.dataset.tabsInitialized = 'true';
-      }
+      // Configurar tabs
+      console.log('🔄 Configurando tabs...');
+      setupTabs();
       
       // Configurar botón de cerrar
       console.log('🔄 Configurando botón de cerrar...');
@@ -10443,50 +10464,49 @@
       
       console.log('✅ Grid encontrado, elementos actuales:', grid.children.length);
       
-      // Limpiar grid solo si es necesario
-      if (grid.children.length === 0) {
-        console.log('🔄 Grid vacío, cargando logros...');
+      // Siempre cargar los logros (limpiar y recargar)
+      console.log('🔄 Cargando logros...');
+      
+      // Limpiar grid
+      grid.innerHTML = '';
+      
+      const today = new Date().toDateString();
+      const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
+      
+      console.log('📅 Datos de hoy:', todayData);
+      console.log('🏆 Logros disponibles:', dailyAchievements.length);
+      
+      // Crear fragmento para mejor rendimiento
+      const fragment = document.createDocumentFragment();
+      
+      dailyAchievements.forEach((achievement, index) => {
+        console.log(`🏆 Procesando logro ${index + 1}:`, achievement.title);
         
-        const today = new Date().toDateString();
-        const todayData = JSON.parse(localStorage.getItem(`achievements_${today}`) || '{}');
+        const progress = todayData[achievement.id] || 0;
+        const isCompleted = progress >= achievement.target;
         
-        console.log('📅 Datos de hoy:', todayData);
-        console.log('🏆 Logros disponibles:', dailyAchievements.length);
+        console.log(`   Progreso: ${progress}/${achievement.target} (${isCompleted ? 'COMPLETADO' : 'EN PROGRESO'})`);
         
-        // Crear fragmento para mejor rendimiento
-        const fragment = document.createDocumentFragment();
+        const achievementEl = document.createElement('div');
+        achievementEl.className = `achievement-item ${isCompleted ? 'completed' : ''}`;
         
-        dailyAchievements.forEach((achievement, index) => {
-          console.log(`🏆 Procesando logro ${index + 1}:`, achievement.title);
-          
-          const progress = todayData[achievement.id] || 0;
-          const isCompleted = progress >= achievement.target;
-          
-          console.log(`   Progreso: ${progress}/${achievement.target} (${isCompleted ? 'COMPLETADO' : 'EN PROGRESO'})`);
-          
-          const achievementEl = document.createElement('div');
-          achievementEl.className = `achievement-item ${isCompleted ? 'completed' : ''}`;
-          
-          const progressPercent = Math.min((progress / achievement.target) * 100, 100);
-          
-          achievementEl.innerHTML = `
-            <div class="achievement-icon">${achievement.icon}</div>
-            <div class="achievement-title">${achievement.title}</div>
-            <div class="achievement-description">${achievement.description}</div>
-            <div class="achievement-progress">
-              <div class="achievement-bar" style="width: ${progressPercent}%"></div>
-            </div>
-            <div class="achievement-reward">+${achievement.reward} monedas</div>
-          `;
-          
-          fragment.appendChild(achievementEl);
-        });
+        const progressPercent = Math.min((progress / achievement.target) * 100, 100);
         
-        grid.appendChild(fragment);
-        console.log('✅ Logros diarios cargados:', grid.children.length, 'elementos');
-      } else {
-        console.log('ℹ️ Grid ya tiene contenido, saltando carga');
-      }
+        achievementEl.innerHTML = `
+          <div class="achievement-icon">${achievement.icon}</div>
+          <div class="achievement-title">${achievement.title}</div>
+          <div class="achievement-description">${achievement.description}</div>
+          <div class="achievement-progress">
+            <div class="achievement-bar" style="width: ${progressPercent}%"></div>
+          </div>
+          <div class="achievement-reward">+${achievement.reward} monedas</div>
+        `;
+        
+        fragment.appendChild(achievementEl);
+      });
+      
+      grid.appendChild(fragment);
+      console.log('✅ Logros diarios cargados:', grid.children.length, 'elementos');
     }
 
     function loadStreaks() {

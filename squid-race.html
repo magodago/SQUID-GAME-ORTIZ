@@ -552,6 +552,13 @@
             loadingScreen.style.display = 'none';
             lobbyScreen.style.display = 'flex';
             
+            // Add debug button dynamically
+            const debugButton = document.createElement('button');
+            debugButton.textContent = '🔍 DEBUG INFO';
+            debugButton.style.cssText = 'margin-top: 1rem; background: #FF6B35; padding: 1rem 2rem; border: none; border-radius: 10px; color: white; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #FF6B35;';
+            debugButton.onclick = showDebugInfo;
+            lobbyScreen.appendChild(debugButton);
+            
             // Setup Firebase
             setupFirebase();
         }
@@ -583,8 +590,12 @@
             database.ref('squidRace/online').on('value', (snapshot) => {
                 console.log('🔍 Jugadores online actualizados:', snapshot.val());
                 onlinePlayers = snapshot.val() || {};
+                console.log('🔍 onlinePlayers después del listener:', onlinePlayers);
+                console.log('🔍 Número de jugadores:', Object.keys(onlinePlayers).length);
                 updatePlayersList();
                 checkCountdownStart();
+            }, (error) => {
+                console.error('❌ Error en listener de jugadores online:', error);
             });
 
             // Listen for game state changes
@@ -631,11 +642,20 @@
                 status: 'online'
             }).then(() => {
                 console.log('🔍 Unido al lobby exitosamente');
-                // Force update players list after joining
+                
+                // Force immediate update of players list
+                console.log('🔍 Forzando actualización inmediata de lista');
+                database.ref('squidRace/online').once('value').then((snapshot) => {
+                    console.log('🔍 Datos obtenidos directamente:', snapshot.val());
+                    onlinePlayers = snapshot.val() || {};
+                    updatePlayersList();
+                });
+                
+                // Also force update after a delay
                 setTimeout(() => {
                     console.log('🔍 Forzando actualización de lista después de unirse');
                     updatePlayersList();
-                }, 500);
+                }, 1000);
             }).catch((error) => {
                 console.error('❌ Error al unirse al lobby:', error);
             });
@@ -917,6 +937,21 @@
             
             console.log('🔍 Redirigiendo a index.html');
             window.location.href = 'index.html';
+        }
+
+        // Debug function for mobile
+        function showDebugInfo() {
+            const debugInfo = `
+🔍 DEBUG INFO:
+Jugador actual: ${currentPlayer}
+Database disponible: ${!!database}
+Estado del juego: ${gameState}
+Jugadores online: ${Object.keys(onlinePlayers).length}
+Lista de jugadores: ${JSON.stringify(onlinePlayers)}
+Firebase configurado: ${!!window.firebase}
+            `;
+            
+            alert(debugInfo);
         }
 
         // Set up back button

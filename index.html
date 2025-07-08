@@ -4568,6 +4568,16 @@
       transform: scale(1.1) rotateY(10deg);
       box-shadow: 0 0 50px #FFFFFF, inset 0 0 30px rgba(255, 255, 255, 0.5);
     }
+
+    .squidpadel-btn {
+      background: linear-gradient(45deg, #1e3a8a, #1e40af);
+      box-shadow: 0 0 30px #1e3a8a, inset 0 0 20px rgba(30, 58, 138, 0.3);
+    }
+
+    .squidpadel-btn:hover {
+      transform: scale(1.1) rotateY(10deg);
+      box-shadow: 0 0 50px #1e3a8a, inset 0 0 30px rgba(30, 58, 138, 0.5);
+    }
     
     .daily-reward-btn {
       background: linear-gradient(45deg, #FF6B35, #F7931E);
@@ -5154,6 +5164,11 @@
       <button class="envelope-btn royaldice-btn" id="royalDiceBtn">
         <div class="envelope-content">
           <span class="envelope-text">✂️ PIEDRA PAPEL O TIJERA</span>
+        </div>
+      </button>
+      <button class="envelope-btn squidpadel-btn" id="squidPadelBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🏓 SQUID PADEL</span>
         </div>
       </button>
     </div>
@@ -7470,6 +7485,146 @@
           window.location.href = 'royal-dice.html';
         }, 2000);
       }, 1000);
+    });
+
+    // SQUID PADEL Button Event Listener
+    const squidPadelBtn = document.getElementById('squidPadelBtn');
+    let squidPadelClickCount = 0;
+    
+    squidPadelBtn.addEventListener('click', () => {
+      squidPadelClickCount++;
+      console.log(`🏓 SQUID PADEL click ${squidPadelClickCount}/4`);
+      
+      // Add dramatic effect
+      squidPadelBtn.style.transform = 'scale(0.9) rotateY(10deg)';
+      squidPadelBtn.style.boxShadow = '0 0 80px #1e3a8a, inset 0 0 40px rgba(30, 58, 138, 0.7)';
+      
+      // Create padel explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#1e3a8a';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = squidPadelBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        squidPadelBtn.style.transform = '';
+        squidPadelBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Check if 4 clicks reached
+      if (squidPadelClickCount >= 4) {
+        // Show message and redirect
+        setTimeout(() => {
+          const messageEl = document.createElement('div');
+          messageEl.textContent = '🏓 SQUID PADEL ACTIVADO';
+          messageEl.style.position = 'fixed';
+          messageEl.style.top = '50%';
+          messageEl.style.left = '50%';
+          messageEl.style.transform = 'translate(-50%, -50%)';
+          messageEl.style.color = '#1e3a8a';
+          messageEl.style.fontSize = '1.5rem';
+          messageEl.style.fontWeight = 'bold';
+          messageEl.style.textShadow = '0 0 20px #1e3a8a';
+          messageEl.style.zIndex = '2000';
+          messageEl.style.pointerEvents = 'none';
+          messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+          
+          document.body.appendChild(messageEl);
+          
+          // Animate message
+          messageEl.animate([
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+          ], {
+            duration: 2000,
+            easing: 'ease-in-out'
+          });
+          
+          // Remove message and redirect
+          setTimeout(() => {
+            if (messageEl.parentNode) {
+              messageEl.parentNode.removeChild(messageEl);
+            }
+            window.location.href = 'squid-padel.html';
+          }, 2000);
+        }, 1000);
+        
+        // Reset click count
+        squidPadelClickCount = 0;
+      } else {
+        // Show click progress
+        setTimeout(() => {
+          const progressEl = document.createElement('div');
+          progressEl.textContent = `${squidPadelClickCount}/4`;
+          progressEl.style.position = 'fixed';
+          progressEl.style.top = '50%';
+          progressEl.style.left = '50%';
+          progressEl.style.transform = 'translate(-50%, -50%)';
+          progressEl.style.color = '#1e3a8a';
+          progressEl.style.fontSize = '2rem';
+          progressEl.style.fontWeight = 'bold';
+          progressEl.style.textShadow = '0 0 20px #1e3a8a';
+          progressEl.style.zIndex = '2000';
+          progressEl.style.pointerEvents = 'none';
+          progressEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+          
+          document.body.appendChild(progressEl);
+          
+          // Animate progress
+          progressEl.animate([
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+          ], {
+            duration: 1500,
+            easing: 'ease-in-out'
+          });
+          
+          // Remove progress
+          setTimeout(() => {
+            if (progressEl.parentNode) {
+              progressEl.parentNode.removeChild(progressEl);
+            }
+          }, 1500);
+        }, 1000);
+      }
     });
 
     // DAILY REWARD Button Event Listener

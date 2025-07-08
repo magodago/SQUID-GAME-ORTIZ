@@ -64,12 +64,13 @@
             text-shadow: 0 0 20px #FFD700;
         }
 
+        /* Countdown */
         .countdown-container {
             background: rgba(0,0,0,0.9);
             border: 3px solid #FFD700;
             border-radius: 20px;
-            padding: 3rem;
-            margin-bottom: 2rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
             text-align: center;
             box-shadow: 0 0 30px #FFD700;
             animation: pulse 2s infinite;
@@ -81,21 +82,21 @@
         }
 
         .countdown-title {
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: #FFD700;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .countdown-timer {
-            font-size: 4rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: #FF6B35;
             text-shadow: 0 0 20px #FF6B35;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .countdown-subtitle {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #fff;
         }
 
@@ -408,7 +409,7 @@
             <!-- Countdown Container -->
             <div class="countdown-container" id="countdownContainer" style="display: none;">
                 <div class="countdown-title">¡LA CARRERA EMPIEZA EN!</div>
-                <div class="countdown-timer" id="countdownTimer">10</div>
+                <div class="countdown-timer" id="countdownTimer">30</div>
                 <div class="countdown-subtitle">Preparados... ¡Listos... ¡YA!</div>
             </div>
             
@@ -624,11 +625,11 @@
 
         // Start countdown
         function startCountdown() {
-            console.log('🔍 Iniciando countdown');
+            console.log('🔍 Iniciando countdown de 30 segundos');
             countdownActive = true;
             countdownContainer.style.display = 'block';
             
-            let countdown = 10;
+            let countdown = 30;
             updateCountdown(countdown);
             
             countdownTimer = setInterval(() => {
@@ -685,9 +686,14 @@
 
         // Start race
         function startRace() {
+            console.log('🔍 Iniciando carrera!');
             lobbyScreen.style.display = 'none';
             raceScreen.style.display = 'flex';
             countdownContainer.style.display = 'none';
+            
+            // Set game state to racing
+            gameState = 'racing';
+            database.ref('squidRace/gameState').set('racing');
             
             raceStartTime = Date.now();
             startRaceTimer();
@@ -695,6 +701,8 @@
             
             // Clear countdown
             database.ref('squidRace/countdown').set(null);
+            
+            console.log('🔍 Estado del juego establecido como racing');
         }
 
         // Start race timer
@@ -726,7 +734,7 @@
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${(progress/200)*100}%"></div>
-                            ${isCurrentPlayer && !isFinished ? '<div class="click-area" onclick="clickToAdvance()"></div>' : ''}
+                            ${isCurrentPlayer && !isFinished && gameState === 'racing' ? '<div class="click-area" onclick="clickToAdvance()"></div>' : ''}
                         </div>
                     </div>
                 `;
@@ -737,13 +745,30 @@
 
         // Click to advance
         function clickToAdvance() {
-            if (gameState !== 'racing') return;
+            console.log('🔍 Click detectado!');
+            console.log('🔍 Game state:', gameState);
+            
+            if (gameState !== 'racing') {
+                console.log('❌ No está en estado de carrera');
+                return;
+            }
             
             const currentProgress = playerProgress[currentPlayer] || 0;
-            if (currentProgress >= 200) return;
+            console.log('🔍 Progreso actual:', currentProgress);
+            
+            if (currentProgress >= 200) {
+                console.log('❌ Ya llegó a 200 clicks');
+                return;
+            }
             
             const newProgress = currentProgress + 1;
-            database.ref(`squidRace/progress/${currentPlayer}`).set(newProgress);
+            console.log('🔍 Nuevo progreso:', newProgress);
+            
+            database.ref(`squidRace/progress/${currentPlayer}`).set(newProgress).then(() => {
+                console.log('✅ Progreso actualizado en Firebase');
+            }).catch((error) => {
+                console.error('❌ Error actualizando progreso:', error);
+            });
         }
 
         // Check if race is finished

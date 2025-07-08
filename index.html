@@ -7895,6 +7895,36 @@
     // Al cargar la página, mostrar el total correcto
     window.addEventListener('DOMContentLoaded', loadTotalCoins);
 
+    // SUPER SIMPLE: Observer for localStorage changes
+    function setupLocalStorageObserver() {
+      console.log('🔍 Setting up localStorage observer...');
+      
+      // Store initial value
+      let lastCoins = localStorage.getItem('totalOrtizCoins') || '0';
+      
+      // Check for changes every 500ms
+      setInterval(() => {
+        const currentCoins = localStorage.getItem('totalOrtizCoins') || '0';
+        
+        if (currentCoins !== lastCoins) {
+          console.log('💰 localStorage changed:', lastCoins, '->', currentCoins);
+          lastCoins = currentCoins;
+          
+          // Auto-sync to Firebase
+          if (window.OrtizCoinManager && typeof OrtizCoinManager.syncCoinsToFirebase === 'function') {
+            OrtizCoinManager.syncCoinsToFirebase(parseInt(currentCoins));
+          } else {
+            console.log('❌ OrtizCoinManager not available for auto-sync');
+          }
+        }
+      }, 500);
+      
+      console.log('✅ localStorage observer setup complete');
+    }
+
+    // Start observer when page loads
+    window.addEventListener('DOMContentLoaded', setupLocalStorageObserver);
+
     // Soldier Name Modal functionality
     const soldierNameModal = document.getElementById('soldierNameModal');
     const soldierNameInput = document.getElementById('soldierNameInput');

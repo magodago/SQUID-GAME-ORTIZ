@@ -58,8 +58,18 @@ const PlayerDataManager = {
         localStorage.setItem('totalOrtizCoins', newCoins.toString());
         console.log(`✅ Safe coin update: ${currentCoins} -> ${newCoins} (${gameType})`);
         
-        // No automatic sync - only sync when page loads
-        console.log(`✅ Coins updated locally: ${currentCoins} -> ${newCoins} (${gameType})`);
+        // Sync to Firebase immediately to update the correct value
+        this.savePlayerData(playerName, newCoins, {
+          gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+          totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+          cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+          lastSync: new Date().toISOString(),
+          autoSync: true,
+          gameType: gameType,
+          coinChange: newCoins - currentCoins
+        });
+        
+        console.log(`✅ Coins updated and synced: ${currentCoins} -> ${newCoins} (${gameType})`);
         
         return true;
       } else {
@@ -88,8 +98,18 @@ const PlayerDataManager = {
         localStorage.setItem('totalOrtizCoins', newCoins.toString());
         console.log(`✅ Safe coin deduction: ${currentCoins} - ${amount} = ${newCoins} (${gameType})`);
         
-        // No automatic sync - only sync when page loads
-        console.log(`✅ Coins deducted locally: ${currentCoins} - ${amount} = ${newCoins} (${gameType})`);
+        // Sync to Firebase immediately to update the correct value
+        this.savePlayerData(playerName, newCoins, {
+          gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+          totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+          cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+          lastSync: new Date().toISOString(),
+          autoSync: true,
+          gameType: gameType,
+          coinChange: -amount
+        });
+        
+        console.log(`✅ Coins deducted and synced: ${currentCoins} - ${amount} = ${newCoins} (${gameType})`);
         
         return true;
       } else {
@@ -123,8 +143,18 @@ const PlayerDataManager = {
         updateAchievementProgress('games', 1);
       }
       
-      // No automatic sync - only sync when page loads
-      console.log(`✅ Coins added locally: ${currentCoins} + ${amount} = ${newCoins} (${gameType})`);
+      // Sync to Firebase immediately to update the correct value
+      this.savePlayerData(playerName, newCoins, {
+        gamesPlayed: parseInt(localStorage.getItem('gamesPlayed') || '0'),
+        totalWins: parseInt(localStorage.getItem('totalWins') || '0'),
+        cluesFound: parseInt(localStorage.getItem('cluesFound') || '0'),
+        lastSync: new Date().toISOString(),
+        autoSync: true,
+        gameType: gameType,
+        coinChange: amount
+      });
+      
+      console.log(`✅ Coins added and synced: ${currentCoins} + ${amount} = ${newCoins} (${gameType})`);
       
       return true;
     } catch (error) {
@@ -151,7 +181,7 @@ const PlayerDataManager = {
       const currentLocalEasterEggs = parseInt(localStorage.getItem('easterEggsFound') || '0');
       
       // Use the maximum value between local storage and existing data
-      // But prioritize the coins parameter if it's from a recent game transaction
+      // Always use the coins parameter for game transactions to ensure correct value
       const finalCoins = gameData.autoSync ? coins : Math.max(coins, currentLocalCoins, existingData.coins || 0);
       const finalGames = Math.max(gameData.gamesPlayed || 0, currentLocalGames, existingData.gamesPlayed || 0);
       const finalWins = Math.max(gameData.totalWins || 0, currentLocalWins, existingData.totalWins || 0);

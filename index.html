@@ -7914,7 +7914,13 @@
           lastCoins = currentCoins;
           
           // AUTO-SYNC TO FIREBASE USING WORKING CODE
-          autoSyncToFirebase(parseInt(currentCoins));
+          alert('🔄 LLAMANDO A autoSyncToFirebase...');
+          try {
+            autoSyncToFirebase(parseInt(currentCoins));
+            alert('✅ Función autoSyncToFirebase llamada correctamente');
+          } catch (error) {
+            alert('❌ ERROR al llamar autoSyncToFirebase: ' + error.message);
+          }
         }
       }, 500);
       
@@ -7924,6 +7930,8 @@
 
     // AUTO-SYNC FUNCTION USING THE WORKING FIREBASE CODE - WITH ALERTS
     function autoSyncToFirebase(newCoins) {
+      alert('🚀 ¡FUNCIÓN autoSyncToFirebase EJECUTÁNDOSE!\n\nMonedas recibidas: ' + newCoins);
+      
       alert('🔄 INICIANDO AUTO-SYNC...\n\nMonedas: ' + newCoins);
       
       const playerName = localStorage.getItem('soldierName');

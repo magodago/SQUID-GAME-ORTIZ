@@ -83,6 +83,23 @@
             box-shadow: 0 0 20px #ffae42;
         }
 
+        .debug-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .debug-button:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
         .battle-section {
             background: rgba(255, 127, 80, 0.08);
             border: 2px solid #ffae42;
@@ -510,6 +527,7 @@
             <div class="player-name" id="currentPlayerName">Jugador</div>
             <div class="player-coins" id="currentPlayerCoins">0 monedas</div>
             <button class="back-button" onclick="window.location.href='index.html'">← VOLVER</button>
+            <button class="debug-button" onclick="showAllPlayersDebug()" title="Ver todos los jugadores en Firebase">🔍 DEBUG</button>
         </div>
 
         <div class="battle-section">
@@ -608,6 +626,9 @@
             setTimeout(() => {
                 cleanupUndefinedPlayers();
             }, 2000);
+            
+            // Add debug button for player analysis
+            addDebugButton();
         });
 
         // Auto-sync player data with Firebase every 30 seconds
@@ -773,39 +794,68 @@
                     .then((snapshot) => {
                         players = [];
                         let html = '';
+                        let totalPlayers = 0;
+                        let filteredPlayers = 0;
+                        let testPlayersFiltered = 0;
+                        let currentPlayerFiltered = 0;
+                        let invalidPlayers = 0;
+                        
+                        console.log('🔍 CARGANDO JUGADORES DESDE FIREBASE:');
                         
                         snapshot.forEach((childSnapshot) => {
                             const player = childSnapshot.val();
+                            totalPlayers++;
+                            
+                            // Log all players for debugging
+                            console.log(`👤 Player ${totalPlayers}: ${childSnapshot.key} - name: "${player?.name}" - coins: ${player?.coins || 0}`);
                             
                             // Validate player data - only show players with valid names
-                            if (player && player.name && player.name !== 'undefined' && player.name !== currentPlayer) {
-                                // Ocultar jugadores de prueba
-                                const testPlayers = ['yo', 'prueba', 'prueba 2'];
-                                if (!testPlayers.includes(player.name.toLowerCase())) {
-                                    players.push(player);
-                                    const maxRobAmount = Math.min(player.coins || 0, currentCoins);
-                                    html += `
-                                        <div class="player-item">
-                                            <div class="player-details">
-                                                <div class="player-name-display">${player.name}</div>
-                                                <div class="player-coins-display">${player.coins ? player.coins.toLocaleString() : 0} monedas</div>
-                                            </div>
-                                                                                        <div class="player-controls">
-                                                <input type="number" class="bet-input" placeholder="Cantidad a robar" min="1" max="${maxRobAmount}">
-                                                <button class="rob-button" onclick="challengePlayer('${player.name}', this.previousElementSibling.value)">
-                                                    🦹‍♂️ ROBAR
-                                                </button>
-                                                ${isAnonymousRobberyActive() ? `
-                                                <button class="anonymous-rob-button" onclick="challengePlayerAnonymous('${player.name}', this.previousElementSibling.previousElementSibling.value)">
-                                                    🕵️‍♂️ ROBAR ANÓNIMO
-                                                </button>
-                                                ` : ''}
-                                            </div>
-                                        </div>
-                                    `;
+                            if (player && player.name && player.name !== 'undefined' && player.name !== 'null') {
+                                // Check if it's the current player
+                                if (player.name === currentPlayer) {
+                                    currentPlayerFiltered++;
+                                    console.log(`🚫 Filtrado (jugador actual): ${player.name}`);
+                                    return;
                                 }
+                                
+                                // Check if it's a test player
+                                const testPlayers = ['yo', 'prueba', 'prueba 2'];
+                                if (testPlayers.includes(player.name.toLowerCase())) {
+                                    testPlayersFiltered++;
+                                    console.log(`🚫 Filtrado (jugador de prueba): ${player.name}`);
+                                    return;
+                                }
+                                
+                                // Valid player - add to list
+                                players.push(player);
+                                filteredPlayers++;
+                                const maxRobAmount = Math.min(player.coins || 0, currentCoins);
+                                html += `
+                                    <div class="player-item">
+                                        <div class="player-details">
+                                            <div class="player-name-display">${player.name}</div>
+                                            <div class="player-coins-display">${player.coins ? player.coins.toLocaleString() : 0} monedas</div>
+                                        </div>
+                                        <div class="player-controls">
+                                            <input type="number" class="bet-input" placeholder="Cantidad a robar" min="1" max="${maxRobAmount}">
+                                            <button class="rob-button" onclick="challengePlayer('${player.name}', this.previousElementSibling.value)">
+                                                🦹‍♂️ ROBAR
+                                            </button>
+                                            ${isAnonymousRobberyActive() ? `
+                                            <button class="anonymous-rob-button" onclick="challengePlayerAnonymous('${player.name}', this.previousElementSibling.previousElementSibling.value)">
+                                                🕵️‍♂️ ROBAR ANÓNIMO
+                                            </button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                invalidPlayers++;
+                                console.log(`❌ Jugador inválido: ${childSnapshot.key} - name: "${player?.name}"`);
                             }
                         });
+                        
+                        console.log(`📊 RESUMEN FILTROS: Total: ${totalPlayers}, Mostrados: ${filteredPlayers}, Filtrados por ser actual: ${currentPlayerFiltered}, Filtrados por ser prueba: ${testPlayersFiltered}, Inválidos: ${invalidPlayers}`);
                         
                         if (html === '') {
                             html = '<div class="loading">No hay otros jugadores disponibles</div>';
@@ -1671,14 +1721,30 @@
                     .then((snapshot) => {
                         const updates = {};
                         let cleanedCount = 0;
+                        let totalPlayers = 0;
+                        let validPlayers = 0;
+                        let invalidPlayers = 0;
+                        
+                        console.log('🔍 ANALIZANDO JUGADORES EN FIREBASE:');
                         
                         snapshot.forEach((childSnapshot) => {
                             const player = childSnapshot.val();
-                            if (player && (!player.name || player.name === 'undefined' || player.name === 'null')) {
-                                updates[childSnapshot.key] = null; // Remove invalid player
-                                cleanedCount++;
+                            totalPlayers++;
+                            
+                            if (player && player.name && player.name !== 'undefined' && player.name !== 'null') {
+                                validPlayers++;
+                                console.log(`✅ Jugador válido: ${player.name} (${player.coins || 0} monedas)`);
+                            } else {
+                                invalidPlayers++;
+                                console.log(`❌ Jugador inválido: ${childSnapshot.key} - name: "${player?.name}"`);
+                                if (player && (!player.name || player.name === 'undefined' || player.name === 'null')) {
+                                    updates[childSnapshot.key] = null; // Remove invalid player
+                                    cleanedCount++;
+                                }
                             }
                         });
+                        
+                        console.log(`📊 RESUMEN: Total: ${totalPlayers}, Válidos: ${validPlayers}, Inválidos: ${invalidPlayers}, A limpiar: ${cleanedCount}`);
                         
                         if (cleanedCount > 0) {
                             playersRef.update(updates)
@@ -1689,12 +1755,117 @@
                                 .catch((error) => {
                                     console.error('❌ Error cleaning up players:', error);
                                 });
+                        } else {
+                            console.log('✅ No hay jugadores inválidos para limpiar');
                         }
                     })
                     .catch((error) => {
                         console.error('❌ Error reading players for cleanup:', error);
                     });
             }
+        }
+
+        // 🔍 FUNCIÓN DE DEBUG - Mostrar todos los jugadores sin filtros
+        function showAllPlayersDebug() {
+            if (!window.firebase || !window.firebase.database) {
+                alert('❌ Firebase no disponible');
+                return;
+            }
+
+            const db = window.firebase.database();
+            const playersRef = db.ref('players');
+            
+            console.log('🔍 DEBUG: Cargando TODOS los jugadores de Firebase...');
+            
+            playersRef.once('value')
+                .then((snapshot) => {
+                    let allPlayers = [];
+                    let totalPlayers = 0;
+                    let validPlayers = 0;
+                    let invalidPlayers = 0;
+                    let testPlayers = 0;
+                    let currentPlayerCount = 0;
+                    
+                    console.log('🔍 DEBUG: ANÁLISIS COMPLETO DE JUGADORES:');
+                    console.log('==========================================');
+                    
+                    snapshot.forEach((childSnapshot) => {
+                        const player = childSnapshot.val();
+                        const playerKey = childSnapshot.key;
+                        totalPlayers++;
+                        
+                        if (player) {
+                            if (player.name && player.name !== 'undefined' && player.name !== 'null') {
+                                validPlayers++;
+                                
+                                // Check if it's current player
+                                if (player.name === currentPlayer) {
+                                    currentPlayerCount++;
+                                    console.log(`👤 ${totalPlayers}. [ACTUAL] ${playerKey} → "${player.name}" (${player.coins || 0} monedas)`);
+                                }
+                                // Check if it's a test player
+                                else if (['yo', 'prueba', 'prueba 2'].includes(player.name.toLowerCase())) {
+                                    testPlayers++;
+                                    console.log(`🧪 ${totalPlayers}. [TEST] ${playerKey} → "${player.name}" (${player.coins || 0} monedas)`);
+                                }
+                                // Regular player
+                                else {
+                                    console.log(`✅ ${totalPlayers}. [VÁLIDO] ${playerKey} → "${player.name}" (${player.coins || 0} monedas)`);
+                                    allPlayers.push({
+                                        key: playerKey,
+                                        name: player.name,
+                                        coins: player.coins || 0,
+                                        lastUpdated: player.lastUpdated
+                                    });
+                                }
+                            } else {
+                                invalidPlayers++;
+                                console.log(`❌ ${totalPlayers}. [INVÁLIDO] ${playerKey} → name: "${player.name}" (${player.coins || 0} monedas)`);
+                            }
+                        } else {
+                            invalidPlayers++;
+                            console.log(`❌ ${totalPlayers}. [NULL] ${playerKey} → datos nulos`);
+                        }
+                    });
+                    
+                    console.log('==========================================');
+                    console.log(`📊 RESUMEN DEBUG:`);
+                    console.log(`   Total en Firebase: ${totalPlayers}`);
+                    console.log(`   Jugadores válidos: ${validPlayers}`);
+                    console.log(`   Jugadores inválidos: ${invalidPlayers}`);
+                    console.log(`   Jugadores de prueba: ${testPlayers}`);
+                    console.log(`   Jugador actual: ${currentPlayerCount}`);
+                    console.log(`   Jugadores disponibles para robo: ${allPlayers.length}`);
+                    console.log('==========================================');
+                    
+                    // Show alert with summary
+                    const summary = `🔍 DEBUG - JUGADORES EN FIREBASE:
+
+📊 TOTAL: ${totalPlayers} jugadores
+✅ VÁLIDOS: ${validPlayers} jugadores  
+❌ INVÁLIDOS: ${invalidPlayers} jugadores
+🧪 PRUEBA: ${testPlayers} jugadores
+👤 ACTUAL: ${currentPlayerCount} jugador
+🎯 DISPONIBLES: ${allPlayers.length} jugadores
+
+Revisa la consola para ver detalles completos.`;
+                    
+                    alert(summary);
+                    
+                    // Also show in console the available players for robbery
+                    if (allPlayers.length > 0) {
+                        console.log('🎯 JUGADORES DISPONIBLES PARA ROBO:');
+                        allPlayers.forEach((player, index) => {
+                            const lastUpdate = player.lastUpdated ? new Date(player.lastUpdated).toLocaleString() : 'N/A';
+                            console.log(`   ${index + 1}. ${player.name} (${player.coins.toLocaleString()} monedas) - Última actualización: ${lastUpdate}`);
+                        });
+                    }
+                    
+                })
+                .catch((error) => {
+                    console.error('❌ Error en debug:', error);
+                    alert('❌ Error al cargar datos de Firebase');
+                });
         }
     </script>
 </body>

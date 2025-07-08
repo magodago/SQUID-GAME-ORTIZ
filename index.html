@@ -15458,6 +15458,77 @@
 
     </script>
 
+    <!-- SUPER SIMPLE TEST BUTTON -->
+    <button id="testFirebaseBtn" style="position: fixed; bottom: 20px; right: 20px; background: red; color: white; border: none; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; z-index: 10000; cursor: pointer;">
+      🧪 TEST FIREBASE
+    </button>
+    
+    <script>
+      // SUPER SIMPLE TEST FUNCTION
+      document.getElementById('testFirebaseBtn').addEventListener('click', function() {
+        console.log('🧪 TEST BUTTON CLICKED!');
+        
+        const playerName = localStorage.getItem('soldierName');
+        const currentCoins = localStorage.getItem('totalOrtizCoins') || '0';
+        
+        console.log('Player name:', playerName);
+        console.log('Current coins:', currentCoins);
+        console.log('Firebase available:', !!window.firebase);
+        
+        if (!playerName) {
+          alert('❌ No player name found!');
+          return;
+        }
+        
+        if (!window.firebase) {
+          alert('❌ Firebase not loaded!');
+          return;
+        }
+        
+        try {
+          // Firebase config
+          const firebaseConfig = {
+            apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
+            authDomain: "squid-game-ortiz.firebaseapp.com",
+            databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
+            projectId: "squid-game-ortiz",
+            storageBucket: "squid-game-ortiz.firebasestorage.app",
+            messagingSenderId: "564790427576",
+            appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
+          };
+          
+          // Initialize Firebase
+          if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+          }
+          
+          const db = firebase.database();
+          const playerRef = db.ref('players/' + playerName);
+          
+          const testData = {
+            name: playerName,
+            coins: parseInt(currentCoins),
+            lastUpdated: Date.now(),
+            test: true
+          };
+          
+          console.log('🔄 Sending test data to Firebase:', testData);
+          
+          playerRef.update(testData).then(() => {
+            console.log('✅ TEST SUCCESSFUL!');
+            alert('✅ TEST SUCCESSFUL! Check console for details.');
+          }).catch(error => {
+            console.error('❌ TEST FAILED:', error);
+            alert('❌ TEST FAILED: ' + error.message);
+          });
+          
+        } catch (error) {
+          console.error('❌ TEST ERROR:', error);
+          alert('❌ TEST ERROR: ' + error.message);
+        }
+      });
+    </script>
+
 
 </body>
 </html> 

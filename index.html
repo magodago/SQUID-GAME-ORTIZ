@@ -7915,6 +7915,13 @@
         // Debug: siempre mostrar el estado actual
         console.log('🔍 Checking coins - Last:', lastCoins, 'Current:', currentCoins, 'Equal:', currentCoins === lastCoins);
         
+        // MOBILE DEBUG: Mostrar estado cada 10 segundos para no saturar
+        const now = Date.now();
+        if (!window.lastDebugTime || now - window.lastDebugTime > 10000) {
+          alert('🔍 VERIFICANDO MONEDAS:\n\nAnterior: ' + lastCoins + '\nActual: ' + currentCoins + '\n¿Iguales?: ' + (currentCoins === lastCoins ? 'SÍ' : 'NO'));
+          window.lastDebugTime = now;
+        }
+        
         if (currentCoins !== lastCoins) {
           alert('💰 ¡CAMBIO DETECTADO!\n\nAnterior: ' + lastCoins + '\nNuevo: ' + currentCoins + '\n\nIniciando auto-sync...');
           console.log('💰 localStorage changed:', lastCoins, '->', currentCoins);

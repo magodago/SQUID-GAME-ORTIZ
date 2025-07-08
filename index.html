@@ -12883,48 +12883,48 @@
             notificationModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
             
-            // Force immediate coins sync when robbery notification is shown
-            setTimeout(() => {
-                forceCoinsSync();
-            }, 500);
+            // DISABLED: Force immediate coins sync when robbery notification is shown
+            // setTimeout(() => {
+            //     forceCoinsSync();
+            // }, 500);
             
             console.log('🚨 Showing robbery notification for:', attacker, '->', target);
         }
 
-        // Function to force immediate coins sync
-        function forceCoinsSync() {
-            if (window.firebase && window.firebase.database) {
-                const db = window.firebase.database();
-                const currentPlayer = localStorage.getItem('soldierName');
-                
-                if (!currentPlayer) return;
-                
-                const playerRef = db.ref(`players/${currentPlayer}`);
-                
-                playerRef.once('value')
-                    .then((snapshot) => {
-                        const playerData = snapshot.val();
-                        if (playerData && playerData.coins !== undefined) {
-                            const firebaseCoins = playerData.coins;
-                            const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                            
-                            if (firebaseCoins !== localCoins) {
-                                localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
-                                
-                                // Update display if loadTotalCoins function exists
-                                if (typeof loadTotalCoins === 'function') {
-                                    loadTotalCoins();
-                                }
-                                
-                                console.log(`🔄 Force coins sync: ${localCoins} -> ${firebaseCoins}`);
-                            }
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('❌ Error in force coins sync:', error);
-                    });
-            }
-        }
+        // DISABLED: Function to force immediate coins sync to prevent overwriting local data
+        // function forceCoinsSync() {
+        //     if (window.firebase && window.firebase.database) {
+        //         const db = window.firebase.database();
+        //         const currentPlayer = localStorage.getItem('soldierName');
+        //         
+        //         if (!currentPlayer) return;
+        //         
+        //         const playerRef = db.ref(`players/${currentPlayer}`);
+        //         
+        //         playerRef.once('value')
+        //             .then((snapshot) => {
+        //                 const playerData = snapshot.val();
+        //                 if (playerData && playerData.coins !== undefined) {
+        //                     const firebaseCoins = playerData.coins;
+        //                     const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+        //                     
+        //                         if (firebaseCoins !== localCoins) {
+        //                             localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
+        //                             
+        //                             // Update display if loadTotalCoins function exists
+        //                             if (typeof loadTotalCoins === 'function') {
+        //                                 loadTotalCoins();
+        //                             }
+        //                             
+        //                             console.log(`🔄 Force coins sync: ${localCoins} -> ${firebaseCoins}`);
+        //                         }
+        //                 }
+        //             })
+        //             .catch((error) => {
+        //                 console.error('❌ Error in force coins sync:', error);
+        //             });
+        //     }
+        // }
 
         function closeRobberyNotification() {
             const notificationModal = document.getElementById('notificationModal');
@@ -12932,10 +12932,10 @@
             document.body.style.overflow = 'auto';
             robberyNotificationShown = false; // Reset flag to allow future notifications
             
-            // Force coins sync when notification is closed
-            setTimeout(() => {
-                forceCoinsSync();
-            }, 200);
+            // DISABLED: Force coins sync when notification is closed to prevent overwriting
+            // setTimeout(() => {
+            //     forceCoinsSync();
+            // }, 200);
             
             console.log('✅ Robbery notification closed');
         }
@@ -12997,6 +12997,19 @@
                 startRobberyListener();
                 startCoinsSync(); // Start coins synchronization
                 startAdminCoinsListener(); // Listen for admin coin updates
+                
+                // RESTAURAR MONEDAS DESDE FIREBASE SOLO EN LA CARGA INICIAL
+                const playerName = localStorage.getItem('soldierName');
+                if (playerName && window.firebase && window.firebase.database) {
+                    const db = window.firebase.database();
+                    const playerRef = db.ref('players/' + playerName);
+                    playerRef.once('value').then(snapshot => {
+                        const firebaseData = snapshot.val();
+                        if (firebaseData) {
+                            restoreDataFromFirebase(firebaseData);
+                        }
+                    });
+                }
             }, 5000); // Wait longer for Firebase to load completely
         });
 
@@ -13188,26 +13201,26 @@
                 
                 const playerRef = db.ref(`players/${currentPlayer}`);
                 
-                // Listen for changes in player's coins
-                playerRef.on('value', (snapshot) => {
-                    const playerData = snapshot.val();
-                    if (playerData && playerData.coins !== undefined) {
-                        const firebaseCoins = playerData.coins;
-                        const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                        
-                        // Update if different
-                        if (firebaseCoins !== localCoins) {
-                            localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
-                            
-                            // Update display if loadTotalCoins function exists
-                            if (typeof loadTotalCoins === 'function') {
-                                loadTotalCoins();
-                            }
-                            
-                            console.log(`🔄 Coins synced from Firebase: ${localCoins} -> ${firebaseCoins}`);
-                        }
-                    }
-                });
+                // NO escuchar cambios de Firebase para evitar sobrescribir datos locales
+                // playerRef.on('value', (snapshot) => {
+                //     const playerData = snapshot.val();
+                //     if (playerData && playerData.coins !== undefined) {
+                //         const firebaseCoins = playerData.coins;
+                //         const localCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                //         
+                //         // Update if different
+                //         if (firebaseCoins !== localCoins) {
+                //             localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
+                //             
+                //             // Update display if loadTotalCoins function exists
+                //             if (typeof loadTotalCoins === 'function') {
+                //                 loadTotalCoins();
+                //             }
+                //             
+                //             console.log(`🔄 Coins synced from Firebase: ${localCoins} -> ${firebaseCoins}`);
+                //         }
+                //     }
+                // });
                 
                 console.log('✅ Coins sync started for player:', currentPlayer);
             } else {

@@ -615,27 +615,45 @@
         // Join lobby
         function joinLobby() {
             console.log('🔍 Uniéndose al lobby como:', currentPlayer);
+            console.log('🔍 Database disponible:', !!database);
+            
+            if (!database) {
+                console.error('❌ Database no disponible en joinLobby');
+                return;
+            }
+            
             const playerRef = database.ref(`squidRace/online/${currentPlayer}`);
+            console.log('🔍 Referencia del jugador creada:', playerRef);
+            
             playerRef.set({
                 name: currentPlayer,
                 joinedAt: Date.now(),
                 status: 'online'
             }).then(() => {
                 console.log('🔍 Unido al lobby exitosamente');
+                // Force update players list after joining
+                setTimeout(() => {
+                    console.log('🔍 Forzando actualización de lista después de unirse');
+                    updatePlayersList();
+                }, 500);
             }).catch((error) => {
                 console.error('❌ Error al unirse al lobby:', error);
             });
 
             // Set up disconnect handler
             playerRef.onDisconnect().remove();
+            console.log('🔍 Disconnect handler configurado');
         }
 
         // Update players list
         function updatePlayersList() {
             const players = Object.keys(onlinePlayers);
             console.log('🔍 Actualizando lista de jugadores:', players);
+            console.log('🔍 onlinePlayers objeto completo:', onlinePlayers);
+            console.log('🔍 playersList elemento:', playersList);
             
             if (players.length === 0) {
+                console.log('🔍 No hay jugadores, mostrando mensaje de espera');
                 playersList.innerHTML = '<div style="text-align: center; color: #FFD700;">Esperando jugadores...</div>';
                 return;
             }
@@ -644,6 +662,7 @@
             players.forEach(playerName => {
                 const player = onlinePlayers[playerName];
                 const isCurrentPlayer = playerName === currentPlayer;
+                console.log(`🔍 Procesando jugador: ${playerName}, es actual: ${isCurrentPlayer}`);
                 html += `
                     <div class="player-item ${isCurrentPlayer ? 'current-player' : ''}">
                         <div class="player-status online"></div>
@@ -652,6 +671,7 @@
                 `;
             });
 
+            console.log('🔍 HTML generado:', html);
             playersList.innerHTML = html;
             console.log('🔍 Lista de jugadores actualizada');
         }

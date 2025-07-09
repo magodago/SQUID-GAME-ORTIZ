@@ -270,6 +270,16 @@
 
             updatePlayersList(players);
             checkGameStart(players);
+            
+            // Verificar si todos los jugadores están listos para calcular resultados
+            const onlinePlayers = Object.values(players).filter(p => p.online);
+            const readyPlayers = onlinePlayers.filter(p => p.ready && p.selectedNumber && p.guess);
+            
+            if (onlinePlayers.length >= 2 && readyPlayers.length === onlinePlayers.length) {
+                // Todos los jugadores están listos, calcular resultados
+                console.log('🎯 Todos los jugadores están listos, calculando resultados...');
+                calculateResults();
+            }
         });
 
         function showWaitingRoom() {
@@ -390,7 +400,8 @@
                 startTime: Date.now()
             });
             
-            // Verificar resultados después de 60 segundos
+            // Verificar resultados inmediatamente y también después de 60 segundos como respaldo
+            calculateResults();
             setTimeout(() => {
                 calculateResults();
             }, 60000);
@@ -399,16 +410,31 @@
         function calculateResults() {
             onValue(playersRef, (snapshot) => {
                 const players = snapshot.val();
-                if (!players) return;
+                if (!players) {
+                    console.log('❌ No hay jugadores para calcular resultados');
+                    return;
+                }
 
-                const onlinePlayers = Object.values(players).filter(p => p.online && p.ready);
-                if (onlinePlayers.length < 2) return;
+                const onlinePlayers = Object.values(players).filter(p => p.online && p.ready && p.selectedNumber && p.guess);
+                console.log('👥 Jugadores online y listos:', onlinePlayers);
+                
+                if (onlinePlayers.length < 2) {
+                    console.log('❌ No hay suficientes jugadores para calcular resultados');
+                    return;
+                }
 
                 // Calcular suma total
                 const totalSum = onlinePlayers.reduce((sum, player) => sum + player.selectedNumber, 0);
+                console.log('🔢 Suma total de números seleccionados:', totalSum);
+                
+                // Mostrar las elecciones de cada jugador
+                onlinePlayers.forEach(player => {
+                    console.log(`👤 ${player.name}: Número=${player.selectedNumber}, Predicción=${player.guess}`);
+                });
                 
                 // Encontrar ganador (el que predijo correctamente la suma)
                 const winner = onlinePlayers.find(player => player.guess === totalSum);
+                console.log('🏆 Ganador:', winner ? winner.name : 'Ninguno');
                 
                 const gameState = {
                     phase: 'results',
@@ -419,7 +445,7 @@
                 };
 
                 set(gameStateRef, gameState);
-                console.log('Resultados calculados:', gameState);
+                console.log('✅ Resultados calculados y guardados:', gameState);
             }, { onlyOnce: true });
         }
 
@@ -444,18 +470,18 @@
         submitBtn.addEventListener('click', () => {
             if (!selectedNumber || !myGuess) return;
 
-            const playerData = {
-                selectedNumber: selectedNumber,
-                guess: myGuess,
-                ready: true
-            };
+            // Actualizar solo los campos necesarios sin sobrescribir datos existentes
+            const updates = {};
+            updates[`chinos/${gameId}/players/${playerId}/selectedNumber`] = selectedNumber;
+            updates[`chinos/${gameId}/players/${playerId}/guess`] = myGuess;
+            updates[`chinos/${gameId}/players/${playerId}/ready`] = true;
 
-            set(ref(db, `chinos/${gameId}/players/${playerId}`), playerData);
+            set(ref(db), updates);
             
             submitBtn.disabled = true;
             submitBtn.textContent = 'Enviado ✓';
             
-            console.log('Elección enviada:', playerData);
+            console.log('Elección enviada:', { selectedNumber, guess: myGuess, ready: true });
         });
 
         function addCoins(amount) {

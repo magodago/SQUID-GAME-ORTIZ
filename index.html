@@ -6599,14 +6599,15 @@
               rarity: 'mythic'
             };
             
-            const goldenButton = {
-              id: 'golden_button',
-              name: 'Botón de Oro',
-              description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
-              icon: '🟡',
-              value: 3000,
-              rarity: 'legendary'
-            };
+            // REMOVED: Golden button completely disabled
+            // const goldenButton = {
+            //   id: 'golden_button',
+            //   name: 'Botón de Oro',
+            //   description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
+            //   icon: '🟡',
+            //   value: 3000,
+            //   rarity: 'legendary'
+            // };
             
             const humanitarianAid = {
               id: 'humanitarian_aid',
@@ -6642,11 +6643,12 @@
                 frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, humanitarianAid, twoFaces, divineShield
             ];
             
-            // Only add golden button if it hasn't been used permanently
-            const goldenButtonUsed = localStorage.getItem('goldenButtonUsed') === 'true';
-            if (!goldenButtonUsed) {
-                itemsToAdd.push(goldenButton);
-            }
+            // REMOVED: Golden button completely disabled to prevent farming
+            // const goldenButtonUsed = localStorage.getItem('goldenButtonUsed') === 'true';
+            // if (!goldenButtonUsed) {
+            //     itemsToAdd.push(goldenButton);
+            // }
+            console.log('🟡 Golden button completely REMOVED from DAGO code');
             
             itemsToAdd.forEach(item => {
               if (!inventory.find(existingItem => existingItem.id === item.id)) {
@@ -6659,13 +6661,7 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
-            let alertMessage = `🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear`;
-            
-            if (!goldenButtonUsed) {
-                alertMessage += `\n   • 🟡 Botón de Oro`;
-            }
-            
-            alertMessage += `\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n   • 🛡️ Escudo Divino\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`;
+            let alertMessage = `🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n   • 🛡️ Escudo Divino\n\n⚠️ 🟡 Botón de Oro ELIMINADO (prevención de farming)\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`;
             
             alert(alertMessage);
             
@@ -14591,10 +14587,11 @@
                     showNotification(`🕵️‍♂️ ${item.name} activado! Modo de robo anónimo disponible por 24 horas`, 'success');
                     break;
                     
-                case 'golden_button':
-                    // Activate golden button for 1 minute
-                    activateGoldenButton();
-                    break;
+                // REMOVED: Golden button case completely disabled
+                // case 'golden_button':
+                //     // Activate golden button for 1 minute
+                //     activateGoldenButton();
+                //     break;
                     
                 case 'nuclear_bomb':
                     // Activate nuclear bomb effect
@@ -15948,20 +15945,21 @@
             document.body.appendChild(modal);
         }
 
-        // GOLDEN BUTTON SYSTEM
-        function activateGoldenButton() {
-            console.log('🟡 GOLDEN BUTTON ACTIVATED!');
+        // REMOVED: Golden button system completely disabled
+        // function activateGoldenButton() {
+        //     console.log('🟡 GOLDEN BUTTON ACTIVATED!');
+        //     
+        //     // Mark golden button as used permanently
+        //     localStorage.setItem('goldenButtonUsed', 'true');
+        //     
+        //     // Remove golden button from inventory permanently
+        //     const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+        //     const updatedInventory = inventory.filter(item => item.id !== 'golden_button');
+        //     localStorage.setItem('playerInventory', JSON.stringify(updatedInventory));
             
-            // Mark golden button as used permanently
-            localStorage.setItem('goldenButtonUsed', 'true');
-            
-            // Remove golden button from inventory permanently
-            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-            const updatedInventory = inventory.filter(item => item.id !== 'golden_button');
-            localStorage.setItem('playerInventory', JSON.stringify(updatedInventory));
-            
-            // Show notification
-            showNotification('🟡 ¡Botón de Oro activado! Haz clic en el botón para ganar monedas', 'success');
+            // REMOVED: All golden button functionality commented out
+            // // Show notification
+            // showNotification('🟡 ¡Botón de Oro activado! Haz clic en el botón para ganar monedas', 'success');
             
             // Create modal overlay
             const modalOverlay = document.createElement('div');

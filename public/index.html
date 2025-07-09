@@ -7923,97 +7923,163 @@
 
     // CHINOS Button Event Listener
     const chinosBtn = document.getElementById('chinosBtn');
+    let chinosClickCount = 0;
+    let chinosClickTimeout = null;
+    
     chinosBtn.addEventListener('click', () => {
-      console.log('🎲 CHINOS seleccionado');
+      chinosClickCount++;
+      console.log(`🎲 CHINOS click ${chinosClickCount}/4`);
       
       // Add dramatic effect
       chinosBtn.style.transform = 'scale(0.9) rotateY(10deg)';
-      chinosBtn.style.boxShadow = '0 0 80px #4ecdc4, inset 0 0 40px rgba(78, 205, 196, 0.7)';
+      chinosBtn.style.boxShadow = `0 0 80px #4ecdc4, inset 0 0 40px rgba(78, 205, 196, 0.7)`;
       
-      // Create dice explosion effect
-      for (let i = 0; i < 8; i++) {
-        const particle = document.createElement('div');
-        particle.style.position = 'absolute';
-        particle.style.width = '4px';
-        particle.style.height = '4px';
-        particle.style.background = '#4ecdc4';
-        particle.style.borderRadius = '50%';
-        particle.style.pointerEvents = 'none';
-        particle.style.zIndex = '1000';
+      // Show click counter
+      const counterEl = document.createElement('div');
+      counterEl.textContent = `${chinosClickCount}/4`;
+      counterEl.style.position = 'fixed';
+      counterEl.style.top = '50%';
+      counterEl.style.left = '50%';
+      counterEl.style.transform = 'translate(-50%, -50%)';
+      counterEl.style.color = '#4ecdc4';
+      counterEl.style.fontSize = '2rem';
+      counterEl.style.fontWeight = 'bold';
+      counterEl.style.textShadow = '0 0 20px #4ecdc4';
+      counterEl.style.zIndex = '2000';
+      counterEl.style.pointerEvents = 'none';
+      counterEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+      
+      document.body.appendChild(counterEl);
+      
+      // Animate counter
+      counterEl.animate([
+        { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+        { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+        { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+      ], {
+        duration: 1000,
+        easing: 'ease-in-out'
+      });
+      
+      // Remove counter after animation
+      setTimeout(() => {
+        if (counterEl.parentNode) {
+          counterEl.parentNode.removeChild(counterEl);
+        }
+      }, 1000);
+      
+      // Reset click count after 3 seconds
+      if (chinosClickTimeout) {
+        clearTimeout(chinosClickTimeout);
+      }
+      chinosClickTimeout = setTimeout(() => {
+        chinosClickCount = 0;
+        console.log('🎲 CHINOS click count reset');
+      }, 3000);
+      
+      // Check if 4 clicks reached
+      if (chinosClickCount >= 4) {
+        console.log('🎲 CHINOS ACTIVADO - 4 clicks alcanzados');
         
-        const rect = chinosBtn.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+        // Clear timeout
+        if (chinosClickTimeout) {
+          clearTimeout(chinosClickTimeout);
+        }
         
-        particle.style.left = centerX + 'px';
-        particle.style.top = centerY + 'px';
+        // Create dice explosion effect
+        for (let i = 0; i < 12; i++) {
+          const particle = document.createElement('div');
+          particle.style.position = 'absolute';
+          particle.style.width = '6px';
+          particle.style.height = '6px';
+          particle.style.background = '#4ecdc4';
+          particle.style.borderRadius = '50%';
+          particle.style.pointerEvents = 'none';
+          particle.style.zIndex = '1000';
+          
+          const rect = chinosBtn.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          particle.style.left = centerX + 'px';
+          particle.style.top = centerY + 'px';
+          
+          document.body.appendChild(particle);
+          
+          // Animate particle
+          const angle = (i / 12) * Math.PI * 2;
+          const distance = 80;
+          const targetX = centerX + Math.cos(angle) * distance;
+          const targetY = centerY + Math.sin(angle) * distance;
+          
+          particle.animate([
+            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+            { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+          ], {
+            duration: 1500,
+            easing: 'ease-out'
+          });
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 1500);
+        }
         
-        document.body.appendChild(particle);
-        
-        // Animate particle
-        const angle = (i / 8) * Math.PI * 2;
-        const distance = 50;
-        const targetX = centerX + Math.cos(angle) * distance;
-        const targetY = centerY + Math.sin(angle) * distance;
-        
-        particle.animate([
-          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
-        ], {
-          duration: 1000,
-          easing: 'ease-out'
-        });
-        
-        // Remove particle after animation
+        // Reset button after animation
         setTimeout(() => {
-          if (particle.parentNode) {
-            particle.parentNode.removeChild(particle);
-          }
+          chinosBtn.style.transform = '';
+          chinosBtn.style.boxShadow = '';
+        }, 1500);
+        
+        // Show activation message and redirect
+        setTimeout(() => {
+          const messageEl = document.createElement('div');
+          messageEl.textContent = '🎲 CHINOS DESBLOQUEADO!';
+          messageEl.style.position = 'fixed';
+          messageEl.style.top = '50%';
+          messageEl.style.left = '50%';
+          messageEl.style.transform = 'translate(-50%, -50%)';
+          messageEl.style.color = '#4ecdc4';
+          messageEl.style.fontSize = '1.8rem';
+          messageEl.style.fontWeight = 'bold';
+          messageEl.style.textShadow = '0 0 30px #4ecdc4';
+          messageEl.style.zIndex = '2000';
+          messageEl.style.pointerEvents = 'none';
+          messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+          
+          document.body.appendChild(messageEl);
+          
+          // Animate message
+          messageEl.animate([
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+          ], {
+            duration: 2500,
+            easing: 'ease-in-out'
+          });
+          
+          // Remove message and redirect
+          setTimeout(() => {
+            if (messageEl.parentNode) {
+              messageEl.parentNode.removeChild(messageEl);
+            }
+            window.location.href = 'chinos.html';
+          }, 2500);
+        }, 1500);
+        
+        // Reset click count
+        chinosClickCount = 0;
+      } else {
+        // Reset button after animation for non-activation clicks
+        setTimeout(() => {
+          chinosBtn.style.transform = '';
+          chinosBtn.style.boxShadow = '';
         }, 1000);
       }
-      
-      // Reset button after animation
-      setTimeout(() => {
-        chinosBtn.style.transform = '';
-        chinosBtn.style.boxShadow = '';
-      }, 1000);
-      
-      // Show message and redirect
-      setTimeout(() => {
-        const messageEl = document.createElement('div');
-        messageEl.textContent = '🎲 CHINOS ACTIVADO';
-        messageEl.style.position = 'fixed';
-        messageEl.style.top = '50%';
-        messageEl.style.left = '50%';
-        messageEl.style.transform = 'translate(-50%, -50%)';
-        messageEl.style.color = '#4ecdc4';
-        messageEl.style.fontSize = '1.5rem';
-        messageEl.style.fontWeight = 'bold';
-        messageEl.style.textShadow = '0 0 20px #4ecdc4';
-        messageEl.style.zIndex = '2000';
-        messageEl.style.pointerEvents = 'none';
-        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
-        
-        document.body.appendChild(messageEl);
-        
-        // Animate message
-        messageEl.animate([
-          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
-          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
-        ], {
-          duration: 2000,
-          easing: 'ease-in-out'
-        });
-        
-        // Remove message and redirect
-        setTimeout(() => {
-          if (messageEl.parentNode) {
-            messageEl.parentNode.removeChild(messageEl);
-          }
-          window.location.href = 'chinos.html';
-        }, 2000);
-      }, 1000);
     });
 
     // PIEDRA PAPEL O TIJERA Button Event Listener

@@ -6602,7 +6602,7 @@
             const goldenButton = {
               id: 'golden_button',
               name: 'Botón de Oro',
-              description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
+              description: 'Activa un botón flotante por 1 segundo. +50 monedas por clic',
               icon: '🟡',
               value: 3000,
               rarity: 'legendary'
@@ -6642,24 +6642,25 @@
                 frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, humanitarianAid, twoFaces, divineShield
             ];
             
-            // Only add golden button if it hasn't been used permanently
+            // Reactivated: Golden button now has 1 second duration to prevent easy farming
             const goldenButtonUsed = localStorage.getItem('goldenButtonUsed') === 'true';
             if (!goldenButtonUsed) {
                 itemsToAdd.push(goldenButton);
             }
+            console.log('🟡 Golden button reactivated with 1-second duration');
             
             itemsToAdd.forEach(item => {
               addItemToInventory(item);
             });
             
             // Show alert to confirm it works
-            let alertMessage = `🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear`;
+            let alertMessage = `🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n   • 🛡️ Escudo Divino`;
             
             if (!goldenButtonUsed) {
-                alertMessage += `\n   • 🟡 Botón de Oro`;
+                alertMessage += `\n   • 🟡 Botón de Oro (1 segundo)`;
             }
             
-            alertMessage += `\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n   • 🛡️ Escudo Divino\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`;
+            alertMessage += `\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`;
             
             alert(alertMessage);
             
@@ -15331,14 +15332,15 @@
                         value: 5000,
                         rarity: 'legendary'
                     },
-                    {
-                        id: 'golden_button',
-                        name: 'Botón de Oro',
-                        description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
-                        icon: '🟡',
-                        value: 3000,
-                        rarity: 'legendary'
-                    },
+                    // PAUSED: Golden button temporarily removed from surprise boxes
+                    // {
+                    //     id: 'golden_button',
+                    //     name: 'Botón de Oro',
+                    //     description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
+                    //     icon: '🟡',
+                    //     value: 3000,
+                    //     rarity: 'legendary'
+                    // },
                     {
                         id: 'humanitarian_aid',
                         name: '🤝 Ayuda Humanitaria',
@@ -16061,7 +16063,7 @@
                 margin-bottom: 1rem;
                 font-weight: bold;
             `;
-            timerDisplay.textContent = '⏰ Tiempo restante: 1:00';
+            timerDisplay.textContent = '⏰ Tiempo restante: 0:01';
             
             // Create instructions
             const instructions = document.createElement('div');
@@ -16070,7 +16072,7 @@
                 color: #fff;
                 margin-bottom: 1rem;
             `;
-            instructions.textContent = '¡Haz clic en el botón dorado para ganar +50 monedas!';
+            instructions.textContent = '¡Haz clic en el botón dorado para ganar +50 monedas! (Solo 1 segundo disponible)';
             
             // Create back button (initially hidden)
             const backButton = document.createElement('button');
@@ -16210,7 +16212,7 @@
             document.head.appendChild(style);
             
             // Timer countdown
-            let timeLeft = 60; // 60 seconds
+            let timeLeft = 1; // 1 second
             const timerInterval = setInterval(() => {
                 timeLeft--;
                 const minutes = Math.floor(timeLeft / 60);

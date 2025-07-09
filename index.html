@@ -16242,15 +16242,20 @@
             // }, 1000);
         // }
 
-        // AUTO-REFRESH SYSTEM TO REMOVE GOLDEN BUTTON
+        // GLOBAL GOLDEN BUTTON REMOVAL SYSTEM
         (function() {
-            const currentVersion = '2024-01-15-v2';
+            const currentVersion = '2024-01-16-v1';
             const storedVersion = localStorage.getItem('appVersion');
             
             // Check if this is a new version
             if (storedVersion !== currentVersion) {
-                // Force refresh to remove golden button
-                console.log('🔄 Nueva versión detectada. Recargando página para eliminar botón dorado...');
+                console.log('🔄 Nueva versión detectada. Eliminando botón dorado de todos los jugadores...');
+                
+                // Remove golden button from current player's inventory
+                removeGoldenButtonFromCurrentPlayer();
+                
+                // Remove golden button from all players in Firebase
+                removeGoldenButtonFromAllPlayers();
                 
                 // Show notification before refresh
                 const refreshModal = document.createElement('div');
@@ -16279,9 +16284,9 @@
                         width: 400px;
                         box-shadow: 0 0 50px #e60073;
                     ">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">🔄</div>
-                        <div style="font-size: 1.8rem; font-weight: bold; margin-bottom: 15px; color: #fff;">ACTUALIZACIÓN REQUERIDA</div>
-                        <div style="font-size: 1.2rem; margin-bottom: 20px; color: #ccc;">Se han realizado cambios importantes en el juego. La página se recargará automáticamente en 3 segundos.</div>
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🟡</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; margin-bottom: 15px; color: #fff;">BOTÓN DORADO ELIMINADO</div>
+                        <div style="font-size: 1.2rem; margin-bottom: 20px; color: #ccc;">El botón dorado ha sido eliminado del inventario de todos los jugadores para prevenir farming.</div>
                         <div style="font-size: 1rem; color: #999;">Versión: ${currentVersion}</div>
                     </div>
                 `;
@@ -16298,6 +16303,73 @@
                 localStorage.setItem('appVersion', currentVersion);
             }
         })();
+
+        // Function to remove golden button from current player's inventory
+        function removeGoldenButtonFromCurrentPlayer() {
+            try {
+                // Remove from playerInventory
+                const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+                const updatedInventory = inventory.filter(item => item.id !== 'golden_button');
+                localStorage.setItem('playerInventory', JSON.stringify(updatedInventory));
+                
+                // Remove from old inventory key too
+                const oldInventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+                const updatedOldInventory = oldInventory.filter(item => item.id !== 'golden_button');
+                localStorage.setItem('inventory', JSON.stringify(updatedOldInventory));
+                
+                // Mark as used to prevent future additions
+                localStorage.setItem('goldenButtonUsed', 'true');
+                
+                console.log('✅ Botón dorado eliminado del inventario local');
+            } catch (error) {
+                console.error('❌ Error eliminando botón dorado del inventario local:', error);
+            }
+        }
+
+        // Function to remove golden button from all players in Firebase
+        function removeGoldenButtonFromAllPlayers() {
+            if (!window.firebase || !window.firebase.database) {
+                console.log('⚠️ Firebase no disponible para eliminar botón dorado globalmente');
+                return;
+            }
+
+            const db = firebase.database();
+            
+            // Get all players
+            db.ref('players').once('value')
+                .then((snapshot) => {
+                    const updates = {};
+                    let playersUpdated = 0;
+                    
+                    snapshot.forEach((childSnapshot) => {
+                        const player = childSnapshot.val();
+                        if (player && player.inventory && Array.isArray(player.inventory)) {
+                            // Remove golden button from inventory
+                            const updatedInventory = player.inventory.filter(item => item.id !== 'golden_button');
+                            
+                            if (updatedInventory.length !== player.inventory.length) {
+                                updates[`players/${childSnapshot.key}/inventory`] = updatedInventory;
+                                updates[`players/${childSnapshot.key}/lastUpdated`] = Date.now();
+                                playersUpdated++;
+                                console.log(`🟡 Eliminando botón dorado de: ${childSnapshot.key}`);
+                            }
+                        }
+                    });
+                    
+                    if (Object.keys(updates).length > 0) {
+                        return db.ref().update(updates);
+                    } else {
+                        console.log('✅ No se encontraron botones dorados para eliminar');
+                        return Promise.resolve();
+                    }
+                })
+                .then(() => {
+                    console.log(`✅ Botón dorado eliminado de ${playersUpdated} jugadores en Firebase`);
+                })
+                .catch((error) => {
+                    console.error('❌ Error eliminando botón dorado de Firebase:', error);
+                });
+        }
 
         // 🔄 SISTEMA DE RESPALDO AUTOMÁTICO - Garantiza que nunca se pierdan datos
         function initializeAutoBackupSystem() {

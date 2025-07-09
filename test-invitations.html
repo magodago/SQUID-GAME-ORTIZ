@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Sistema de Invitaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #00d4ff;
+            color: white;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: rgba(0,255,0,0.2); }
+        .error { background: rgba(255,0,0,0.2); }
+        .info { background: rgba(0,212,255,0.2); }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Sistema de Invitaciones</h1>
+        
+        <div class="test-section">
+            <h3>1. Configuración</h3>
+            <label>Nombre del jugador: </label>
+            <input type="text" id="playerName" placeholder="Tu nombre" value="TestPlayer">
+            <button onclick="setPlayerName()">Establecer Nombre</button>
+            <div id="nameStatus" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Simular Juego</h3>
+            <button onclick="simulateGame('chinos')">Simular Chinos</button>
+            <button onclick="simulateGame('bomba-explosiva')">Simular Bomba</button>
+            <button onclick="simulateGame('squid-race')">Simular Squid Race</button>
+            <div id="gameStatus" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Crear Jugadores de Prueba</h3>
+            <button onclick="createTestPlayers()">Crear Jugadores Test</button>
+            <button onclick="clearTestPlayers()">Limpiar Jugadores</button>
+            <div id="testStatus" class="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Sistema de Invitaciones</h3>
+            <div id="invitation-section"></div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="invitation-config.js"></script>
+    <script src="invitation-system.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
+            authDomain: "squid-game-ortiz.firebaseapp.com",
+            databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
+            projectId: "squid-game-ortiz",
+            storageBucket: "squid-game-ortiz.firebasestorage.app",
+            messagingSenderId: "564790427576",
+            appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        function setPlayerName() {
+            const name = document.getElementById('playerName').value;
+            if (name.trim()) {
+                localStorage.setItem('soldierName', name);
+                document.getElementById('nameStatus').innerHTML = 
+                    '<span class="success">✅ Nombre establecido: ' + name + '</span>';
+            } else {
+                document.getElementById('nameStatus').innerHTML = 
+                    '<span class="error">❌ Por favor ingresa un nombre</span>';
+            }
+        }
+
+        function simulateGame(gameType) {
+            // Simular estar en un juego específico
+            const originalPathname = window.location.pathname;
+            Object.defineProperty(window.location, 'pathname', {
+                value: '/' + gameType + '.html',
+                writable: true
+            });
+
+            // Reinicializar el sistema de invitaciones
+            if (window.invitationSystem) {
+                // Limpiar UI existente
+                const existingSection = document.getElementById('invitation-section');
+                if (existingSection) {
+                    existingSection.innerHTML = '';
+                }
+            }
+
+            // Crear nueva instancia
+            window.invitationSystem = new InvitationSystem();
+
+            document.getElementById('gameStatus').innerHTML = 
+                '<span class="info">🎮 Simulando juego: ' + gameType + '</span>';
+
+            // Restaurar pathname original
+            setTimeout(() => {
+                Object.defineProperty(window.location, 'pathname', {
+                    value: originalPathname,
+                    writable: true
+                });
+            }, 100);
+        }
+
+        async function createTestPlayers() {
+            try {
+                const testPlayers = {
+                    'test_player_1': {
+                        name: 'Jugador Test 1',
+                        lastSeen: Date.now(),
+                        online: true,
+                        currentGame: 'chinos'
+                    },
+                    'test_player_2': {
+                        name: 'Jugador Test 2',
+                        lastSeen: Date.now(),
+                        online: true,
+                        currentGame: 'bomba-explosiva'
+                    },
+                    'test_player_3': {
+                        name: 'Jugador Test 3',
+                        lastSeen: Date.now(),
+                        online: true,
+                        currentGame: 'squid-race'
+                    }
+                };
+
+                await firebase.database().ref('onlinePlayers').set(testPlayers);
+                document.getElementById('testStatus').innerHTML = 
+                    '<span class="success">✅ Jugadores de prueba creados</span>';
+            } catch (error) {
+                document.getElementById('testStatus').innerHTML = 
+                    '<span class="error">❌ Error: ' + error.message + '</span>';
+            }
+        }
+
+        async function clearTestPlayers() {
+            try {
+                await firebase.database().ref('onlinePlayers').remove();
+                document.getElementById('testStatus').innerHTML = 
+                    '<span class="info">🗑️ Jugadores de prueba eliminados</span>';
+            } catch (error) {
+                document.getElementById('testStatus').innerHTML = 
+                    '<span class="error">❌ Error: ' + error.message + '</span>';
+            }
+        }
+
+        // Inicializar cuando la página cargue
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🧪 Test page loaded');
+            setPlayerName(); // Establecer nombre por defecto
+        });
+    </script>
+</body>
+</html> 

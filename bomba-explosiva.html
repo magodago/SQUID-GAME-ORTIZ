@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💣 BOMBA EXPLOSIVA - Squid Game Ortiz</title>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', Arial, sans-serif;
+            background: radial-gradient(circle at 60% 40%, #e60073 0%, #1a1a1a 80%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .game-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #e60073;
+            animation: titleGlow 2s infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px #e60073; }
+            50% { text-shadow: 0 0 40px #e60073, 0 0 60px #ff1493; }
+        }
+
+        .game-status {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            border: 2px solid #e60073;
+        }
+
+        .bomb-info {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255,0,0,0.3);
+            border-radius: 15px;
+            border: 3px solid #ff0000;
+            animation: bombPulse 1s infinite;
+        }
+
+        @keyframes bombPulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px #ff0000;
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 40px #ff0000, 0 0 60px #ff4444;
+                transform: scale(1.05);
+            }
+        }
+
+        .timer {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #ff0000;
+            text-shadow: 0 0 20px #ff0000;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .player-card {
+            background: rgba(0,0,0,0.7);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .player-card.has-bomb {
+            border-color: #ff0000;
+            background: rgba(255,0,0,0.3);
+            animation: bombCardPulse 0.5s infinite;
+        }
+
+        @keyframes bombCardPulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px #ff0000;
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 40px #ff0000, 0 0 60px #ff4444;
+                transform: scale(1.02);
+            }
+        }
+
+        .player-name {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .pass-bomb-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #e60073, #ff1493);
+            color: white;
+        }
+
+        .pass-bomb-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #e60073;
+        }
+
+        .pass-bomb-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .pass-bomb-btn.has-bomb {
+            background: linear-gradient(135deg, #ff0000, #ff4444);
+            animation: bombButtonPulse 0.3s infinite;
+        }
+
+        @keyframes bombButtonPulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px #ff0000;
+            }
+            50% { 
+                box-shadow: 0 0 40px #ff0000, 0 0 60px #ff4444;
+            }
+        }
+
+        .game-controls {
+            margin-top: 30px;
+        }
+
+        .control-btn {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: white;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #666, #999);
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .explosion {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #ff0000 0%, #ff4444 50%, transparent 100%);
+            animation: explosionEffect 2s ease-out;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        @keyframes explosionEffect {
+            0% { 
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1.5);
+            }
+            100% { 
+                opacity: 0;
+                transform: scale(2);
+            }
+        }
+
+        .winner-announcement {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #00ff00;
+            text-align: center;
+            z-index: 1001;
+            animation: winnerGlow 1s infinite;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        @keyframes winnerGlow {
+            0%, 100% { box-shadow: 0 0 20px #00ff00; }
+            50% { box-shadow: 0 0 40px #00ff00, 0 0 60px #00cc00; }
+        }
+
+        .waiting-room {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .waiting-players {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .waiting-player {
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e60073;
+        }
+
+        .countdown {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #e60073;
+            text-shadow: 0 0 20px #e60073;
+            margin: 30px 0;
+        }
+
+        .waiting-message {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #e60073;
+        }
+
+        .join-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,255,0,0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2rem;
+            }
+            
+            .players-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timer {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="game-title">💣 BOMBA EXPLOSIVA</h1>
+        
+        <!-- Waiting Room -->
+        <div id="waitingRoom" class="waiting-room">
+            <h2>🕐 SALA DE ESPERA</h2>
+            <div class="waiting-message" id="waitingMessage">
+                Esperando jugadores... (30 segundos)
+            </div>
+            <div id="waitingPlayers" class="waiting-players"></div>
+            <div id="countdown" class="countdown">30</div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" style="display: none;">
+            <div class="game-status" id="gameStatus">
+                💣 LA BOMBA ESTÁ ACTIVA
+            </div>
+            
+            <div class="bomb-info" id="bombInfo">
+                💣 BOMBA EN: <span id="currentBombHolder">Esperando...</span>
+            </div>
+            
+            <div class="timer" id="timer">00:00</div>
+            
+            <div class="players-grid" id="playersGrid">
+                <!-- Players will be added here dynamically -->
+            </div>
+            
+            <div class="game-controls">
+                <button class="control-btn back-btn" onclick="goBack()">🔙 VOLVER</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxGUOlwOIPI5y3XjqOjJqQZqQZqQZqQZqQZqQ",
+            authDomain: "squid-game-ortiz.firebaseapp.com",
+            databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
+            projectId: "squid-game-ortiz",
+            storageBucket: "squid-game-ortiz.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Game variables
+        let gameId = null;
+        let playerId = null;
+        let playerName = null;
+        let gameState = {
+            status: 'waiting', // waiting, playing, finished
+            players: {},
+            currentBombHolder: null,
+            gameStartTime: null,
+            explosionTime: null,
+            lastPassTime: null,
+            winner: null,
+            loser: null,
+            waitingStartTime: null
+        };
+
+        // Initialize game
+        function initGame() {
+            // Get player info from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            gameId = urlParams.get('gameId');
+            playerId = urlParams.get('playerId') || generatePlayerId();
+            playerName = urlParams.get('playerName') || localStorage.getItem('playerName') || 'Jugador ' + playerId;
+
+            console.log('🎮 Iniciando juego:', { gameId, playerId, playerName });
+
+            if (!gameId) {
+                console.error('❌ No se proporcionó gameId en la URL');
+                alert('Error: No se pudo unir al juego. Vuelve al menú principal.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Try to verify game room exists, with retry mechanism
+            verifyAndJoinGameWithRetry();
+        }
+
+        function verifyAndJoinGame() {
+            console.log('🔍 Verificando sala de juego:', gameId);
+            
+            database.ref(`gameRooms/${gameId}`).once('value', (snapshot) => {
+                const gameRoom = snapshot.val();
+                if (!gameRoom) {
+                    console.log('⏳ Sala de juego no encontrada, reintentando en 2 segundos...');
+                    // Retry after 2 seconds
+                    setTimeout(() => {
+                        verifyAndJoinGame();
+                    }, 2000);
+                    return;
+                }
+                
+                console.log('✅ Sala de juego verificada:', gameRoom);
+                
+                // Add player to game
+                const playerData = {
+                    name: playerName,
+                    joinedAt: Date.now(),
+                    isOnline: true
+                };
+                
+                console.log('👤 Agregando jugador al juego:', { playerId, playerData });
+                
+                database.ref(`bombGames/${gameId}/players/${playerId}`).set(playerData).then(() => {
+                    console.log('✅ Jugador agregado exitosamente al juego');
+                }).catch((error) => {
+                    console.error('❌ Error al agregar jugador:', error);
+                });
+
+                // Listen for game state changes
+                database.ref(`bombGames/${gameId}`).on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const oldPlayerCount = Object.keys(gameState.players || {}).length;
+                        gameState = { ...gameState, ...data };
+                        const newPlayerCount = Object.keys(gameState.players || {}).length;
+                        
+                        console.log('🔄 Estado del juego actualizado:', { oldPlayerCount, newPlayerCount, status: gameState.status });
+                        
+                        updateUI();
+                        
+                                    // Check if new players joined
+            if (newPlayerCount > oldPlayerCount && gameState.status === 'waiting') {
+                setTimeout(() => {
+                    checkAndStartGame();
+                }, 500);
+            }
+            
+            // Check if players left and game should be reset
+            if (newPlayerCount < oldPlayerCount && gameState.status === 'playing') {
+                const currentOnlinePlayers = Object.keys(gameState.players).filter(pid => gameState.players[pid].isOnline);
+                if (currentOnlinePlayers.length < 2) {
+                    console.log('❌ No hay suficientes jugadores, reseteando juego');
+                    database.ref(`bombGames/${gameId}`).update({
+                        status: 'waiting',
+                        currentBombHolder: null,
+                        gameStartTime: null,
+                        explosionTime: null,
+                        lastPassTime: null,
+                        winner: null,
+                        loser: null,
+                        winnerName: null,
+                        loserName: null,
+                        waitingStartTime: Date.now()
+                    });
+                }
+            }
+                    }
+                });
+
+                // Set up online status
+                const playerRef = database.ref(`bombGames/${gameId}/players/${playerId}`);
+                playerRef.onDisconnect().update({ isOnline: false });
+
+                // Initialize waiting room if this is the first player
+                database.ref(`bombGames/${gameId}`).once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (!data) {
+                        // Initialize game state
+                        database.ref(`bombGames/${gameId}`).set({
+                            status: 'waiting',
+                            waitingStartTime: Date.now(),
+                            players: {}
+                        });
+                        console.log('🎮 Estado inicial del juego creado');
+                    } else if (!data.waitingStartTime) {
+                        database.ref(`bombGames/${gameId}`).update({
+                            waitingStartTime: Date.now()
+                        });
+                        console.log('⏰ Tiempo de espera inicializado');
+                    }
+                });
+
+                // Check if we should start the game immediately
+                setTimeout(() => {
+                    checkAndStartGame();
+                }, 2000); // Increased delay to ensure player is fully connected
+            });
+        }
+
+        function verifyAndJoinGameWithRetry(retryCount = 0) {
+            const maxRetries = 5;
+            console.log(`🔍 Verificando sala de juego (intento ${retryCount + 1}/${maxRetries}):`, gameId);
+            
+            database.ref(`gameRooms/${gameId}`).once('value', (snapshot) => {
+                const gameRoom = snapshot.val();
+                if (!gameRoom) {
+                    if (retryCount < maxRetries) {
+                        console.log(`⏳ Sala de juego no encontrada, reintentando en 2 segundos... (${retryCount + 1}/${maxRetries})`);
+                        setTimeout(() => {
+                            verifyAndJoinGameWithRetry(retryCount + 1);
+                        }, 2000);
+                    } else {
+                        console.error('❌ Sala de juego no encontrada después de múltiples intentos:', gameId);
+                        alert('Error: No se pudo conectar a la sala de juego. Vuelve al menú principal.');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
+                
+                console.log('✅ Sala de juego verificada:', gameRoom);
+                
+                // Add player to game
+                const playerData = {
+                    name: playerName,
+                    joinedAt: Date.now(),
+                    isOnline: true
+                };
+                
+                console.log('👤 Agregando jugador al juego:', { playerId, playerData });
+                
+                database.ref(`bombGames/${gameId}/players/${playerId}`).set(playerData).then(() => {
+                    console.log('✅ Jugador agregado exitosamente al juego');
+                }).catch((error) => {
+                    console.error('❌ Error al agregar jugador:', error);
+                });
+
+                // Listen for game state changes
+                database.ref(`bombGames/${gameId}`).on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const oldPlayerCount = Object.keys(gameState.players || {}).length;
+                        gameState = { ...gameState, ...data };
+                        const newPlayerCount = Object.keys(gameState.players || {}).length;
+                        
+                        console.log('🔄 Estado del juego actualizado:', { oldPlayerCount, newPlayerCount, status: gameState.status });
+                        
+                        updateUI();
+                        
+                                    // Check if new players joined
+            if (newPlayerCount > oldPlayerCount && gameState.status === 'waiting') {
+                setTimeout(() => {
+                    checkAndStartGame();
+                }, 500);
+            }
+            
+            // Check if players left and game should be reset
+            if (newPlayerCount < oldPlayerCount && gameState.status === 'playing') {
+                const currentOnlinePlayers = Object.keys(gameState.players).filter(pid => gameState.players[pid].isOnline);
+                if (currentOnlinePlayers.length < 2) {
+                    console.log('❌ No hay suficientes jugadores, reseteando juego');
+                    database.ref(`bombGames/${gameId}`).update({
+                        status: 'waiting',
+                        currentBombHolder: null,
+                        gameStartTime: null,
+                        explosionTime: null,
+                        lastPassTime: null,
+                        winner: null,
+                        loser: null,
+                        winnerName: null,
+                        loserName: null,
+                        waitingStartTime: Date.now()
+                    });
+                }
+            }
+                    }
+                });
+
+                // Set up online status
+                const playerRef = database.ref(`bombGames/${gameId}/players/${playerId}`);
+                playerRef.onDisconnect().update({ isOnline: false });
+
+                // Initialize waiting room if this is the first player
+                database.ref(`bombGames/${gameId}`).once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (!data) {
+                        // Initialize game state
+                        database.ref(`bombGames/${gameId}`).set({
+                            status: 'waiting',
+                            waitingStartTime: Date.now(),
+                            players: {}
+                        });
+                        console.log('🎮 Estado inicial del juego creado');
+                    } else if (!data.waitingStartTime) {
+                        database.ref(`bombGames/${gameId}`).update({
+                            waitingStartTime: Date.now()
+                        });
+                        console.log('⏰ Tiempo de espera inicializado');
+                    }
+                });
+
+                // Check if we should start the game immediately
+                setTimeout(() => {
+                    checkAndStartGame();
+                }, 2000); // Increased delay to ensure player is fully connected
+            });
+        }
+
+        function checkAndStartGame() {
+            const onlinePlayers = Object.values(gameState.players).filter(p => p.isOnline);
+            console.log('🔍 Verificando inicio del juego:', { onlinePlayers: onlinePlayers.length, gameState: gameState.status });
+            
+            if (onlinePlayers.length >= 2 && gameState.status === 'waiting') {
+                const waitingTime = Date.now() - (gameState.waitingStartTime || Date.now());
+                const timeLeft = Math.max(0, 30000 - waitingTime);
+                
+                if (timeLeft <= 0) {
+                    console.log('🚀 Iniciando juego automáticamente');
+                    // Double check that both players are still online before starting
+                    const currentOnlinePlayers = Object.keys(gameState.players).filter(pid => gameState.players[pid].isOnline);
+                    if (currentOnlinePlayers.length >= 2) {
+                        startGame();
+                    } else {
+                        console.log('❌ No se puede iniciar - no hay suficientes jugadores online');
+                    }
+                } else {
+                    console.log('⏰ Iniciando countdown:', timeLeft);
+                    startWaitingCountdown(timeLeft);
+                }
+            } else {
+                console.log('⏳ Esperando más jugadores o juego ya iniciado');
+            }
+        }
+
+        function updateUI() {
+            console.log('🔄 Actualizando UI:', { 
+                status: gameState.status, 
+                players: Object.keys(gameState.players || {}).length,
+                playerId: playerId,
+                hasPlayer: !!gameState.players[playerId]
+            });
+            
+            // Show UI immediately, but with reduced functionality if player not fully joined
+            if (gameState.status === 'waiting') {
+                showWaitingRoom();
+            } else if (gameState.status === 'playing') {
+                showGameScreen();
+            } else if (gameState.status === 'finished') {
+                showGameResult();
+            }
+        }
+
+        function showWaitingRoom() {
+            document.getElementById('waitingRoom').style.display = 'block';
+            document.getElementById('gameScreen').style.display = 'none';
+
+            // Show waiting players
+            const waitingPlayersDiv = document.getElementById('waitingPlayers');
+            waitingPlayersDiv.innerHTML = '';
+            
+            console.log('👥 Mostrando jugadores en sala:', gameState.players);
+            
+            if (Object.keys(gameState.players || {}).length === 0) {
+                waitingPlayersDiv.innerHTML = '<div class="waiting-player">⏳ Conectando jugadores...</div>';
+            } else {
+                Object.keys(gameState.players).forEach(pid => {
+                    const player = gameState.players[pid];
+                    const playerDiv = document.createElement('div');
+                    playerDiv.className = 'waiting-player';
+                    playerDiv.innerHTML = `
+                        <div>🎮 ${player.name}</div>
+                        <div>${player.isOnline ? '🟢 Online' : '🔴 Offline'}</div>
+                        <div style="font-size: 0.8rem; color: #ccc;">ID: ${pid.substring(0, 8)}...</div>
+                    `;
+                    waitingPlayersDiv.appendChild(playerDiv);
+                });
+            }
+
+            // Start countdown if enough players and waiting time has passed
+            const onlinePlayers = Object.values(gameState.players || {}).filter(p => p.isOnline);
+            if (onlinePlayers.length >= 2 && gameState.waitingStartTime) {
+                const waitingTime = Date.now() - gameState.waitingStartTime;
+                const timeLeft = Math.max(0, 30000 - waitingTime); // 30 seconds
+                
+                console.log('⏰ Countdown check:', { onlinePlayers: onlinePlayers.length, waitingTime, timeLeft });
+                
+                if (timeLeft > 0) {
+                    startWaitingCountdown(timeLeft);
+                } else {
+                    console.log('🚀 Tiempo agotado, iniciando juego');
+                    startGame();
+                }
+            } else {
+                console.log('⏳ Esperando más jugadores:', { onlinePlayers: onlinePlayers.length, waitingStartTime: gameState.waitingStartTime });
+                // Update message if not enough players
+                if (onlinePlayers.length < 2) {
+                    document.getElementById('waitingMessage').textContent = `Esperando más jugadores... (${onlinePlayers.length}/2)`;
+                    document.getElementById('countdown').textContent = '30';
+                }
+            }
+        }
+
+        function startWaitingCountdown(timeLeft) {
+            const countdownDiv = document.getElementById('countdown');
+            const messageDiv = document.getElementById('waitingMessage');
+            
+            // Clear any existing interval
+            if (window.waitingCountdownInterval) {
+                clearInterval(window.waitingCountdownInterval);
+            }
+            
+            window.waitingCountdownInterval = setInterval(() => {
+                const seconds = Math.floor(timeLeft / 1000);
+                countdownDiv.textContent = seconds;
+                messageDiv.textContent = `Esperando jugadores... (${seconds} segundos)`;
+                
+                if (seconds <= 0) {
+                    clearInterval(window.waitingCountdownInterval);
+                    startGame();
+                }
+                
+                timeLeft -= 1000;
+            }, 1000);
+        }
+
+        function startGame() {
+            console.log('🚀 Iniciando juego');
+            
+            // Check if both players are actually online and have joined the game
+            const onlinePlayers = Object.keys(gameState.players).filter(pid => gameState.players[pid].isOnline);
+            if (onlinePlayers.length < 2) {
+                console.log('⏳ No hay suficientes jugadores online, esperando...');
+                return;
+            }
+            
+            // Additional check: ensure both players have been in the room for at least 3 seconds
+            const now = Date.now();
+            const playersInRoom = onlinePlayers.filter(pid => {
+                const player = gameState.players[pid];
+                return player && (now - player.joinedAt) > 3000; // At least 3 seconds in room
+            });
+            
+            if (playersInRoom.length < 2) {
+                console.log('⏳ Esperando que los jugadores se unan completamente a la sala...');
+                // Retry after 2 seconds
+                setTimeout(() => {
+                    if (gameState.status === 'waiting') {
+                        checkAndStartGame();
+                    }
+                }, 2000);
+                return;
+            }
+            
+            const randomPlayer = playersInRoom[Math.floor(Math.random() * playersInRoom.length)];
+            
+            const gameStartTime = Date.now();
+            const explosionDelay = Math.random() * 25000 + 5000; // 5-30 seconds
+            const explosionTime = gameStartTime + explosionDelay;
+
+            console.log('💣 Tiempo de explosión configurado:', { 
+                gameStartTime, 
+                explosionTime, 
+                explosionDelay: Math.floor(explosionDelay / 1000) + ' segundos',
+                onlinePlayers: onlinePlayers.length,
+                playersInRoom: playersInRoom.length
+            });
+
+            database.ref(`bombGames/${gameId}`).update({
+                status: 'playing',
+                currentBombHolder: randomPlayer,
+                gameStartTime: gameStartTime,
+                explosionTime: explosionTime,
+                lastPassTime: gameStartTime
+            });
+
+            console.log('🎮 Juego iniciado - la explosión será manejada por el timer');
+        }
+
+        function showGameScreen() {
+            document.getElementById('waitingRoom').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+
+            // Update bomb holder info
+            const bombHolder = gameState.currentBombHolder;
+            const bombHolderName = bombHolder ? gameState.players[bombHolder]?.name : 'Nadie';
+            document.getElementById('currentBombHolder').textContent = bombHolderName;
+
+            // Update timer
+            updateTimer();
+
+            // Update players grid
+            updatePlayersGrid();
+        }
+
+        function updateTimer() {
+            if (gameState.gameStartTime && gameState.explosionTime) {
+                const now = Date.now();
+                const timeLeft = Math.max(0, gameState.explosionTime - now);
+                const seconds = Math.floor(timeLeft / 1000);
+                const milliseconds = Math.floor((timeLeft % 1000) / 10);
+                
+                document.getElementById('timer').textContent = 
+                    `${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(2, '0')}`;
+                
+                // Check if explosion should happen now
+                if (timeLeft <= 0 && gameState.status === 'playing') {
+                    console.log('💥 Timer llegó a 0, ejecutando explosión');
+                    explodeBomb();
+                }
+                
+                // Log timer update for debugging
+                if (seconds % 5 === 0 && milliseconds === 0) {
+                    console.log('⏰ Timer actualizado:', { 
+                        timeLeft: Math.floor(timeLeft / 1000) + 's', 
+                        explosionTime: gameState.explosionTime,
+                        now: now 
+                    });
+                }
+            }
+        }
+
+        function updatePlayersGrid() {
+            const playersGrid = document.getElementById('playersGrid');
+            playersGrid.innerHTML = '';
+
+            Object.keys(gameState.players).forEach(pid => {
+                const player = gameState.players[pid];
+                const hasBomb = pid === gameState.currentBombHolder;
+                const isCurrentPlayer = pid === playerId;
+
+                const playerCard = document.createElement('div');
+                playerCard.className = `player-card ${hasBomb ? 'has-bomb' : ''}`;
+                
+                playerCard.innerHTML = `
+                    <div class="player-name">🎮 ${player.name}</div>
+                    <button class="pass-bomb-btn ${hasBomb ? 'has-bomb' : ''}" 
+                            onclick="passBomb()" 
+                            ${!hasBomb || !isCurrentPlayer ? 'disabled' : ''}>
+                        ${hasBomb ? '💣 PASAR BOMBA' : '⏳ ESPERANDO'}
+                    </button>
+                `;
+
+                playersGrid.appendChild(playerCard);
+            });
+        }
+
+        function passBomb() {
+            if (gameState.currentBombHolder !== playerId) return;
+
+            // Get online players excluding current holder
+            const onlinePlayers = Object.keys(gameState.players).filter(pid => 
+                pid !== playerId && gameState.players[pid].isOnline
+            );
+
+            if (onlinePlayers.length === 0) return;
+
+            // Randomly select next player
+            const nextPlayer = onlinePlayers[Math.floor(Math.random() * onlinePlayers.length)];
+
+            database.ref(`bombGames/${gameId}`).update({
+                currentBombHolder: nextPlayer,
+                lastPassTime: Date.now()
+            });
+        }
+
+        function explodeBomb() {
+            console.log('💥 Explosión ejecutada en:', new Date().toLocaleTimeString());
+            
+            // Final verification: ensure both players are still in the room
+            const now = Date.now();
+            const onlinePlayers = Object.keys(gameState.players).filter(pid => gameState.players[pid].isOnline);
+            const playersInRoom = onlinePlayers.filter(pid => {
+                const player = gameState.players[pid];
+                return player && (now - player.joinedAt) > 3000;
+            });
+            
+            if (playersInRoom.length < 2) {
+                console.log('❌ Explosión cancelada - no hay suficientes jugadores en la sala al momento de la explosión');
+                return;
+            }
+            
+            const loser = gameState.currentBombHolder;
+            const loserName = gameState.players[loser]?.name || 'Desconocido';
+            
+            // Get winner (player with most coins or random)
+            const availablePlayers = onlinePlayers.filter(pid => 
+                pid !== loser && gameState.players[pid].isOnline
+            );
+            const winner = availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
+            const winnerName = gameState.players[winner]?.name || 'Desconocido';
+
+            console.log('🏆 Resultado:', { winner: winnerName, loser: loserName, playersInRoom: playersInRoom.length });
+
+            // Update coins for winner and loser
+            handleCoinRewards(winner, loser);
+
+            database.ref(`bombGames/${gameId}`).update({
+                status: 'finished',
+                winner: winner,
+                loser: loser,
+                winnerName: winnerName,
+                loserName: loserName
+            });
+
+            // Show explosion effect
+            showExplosion();
+        }
+
+        function showExplosion() {
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            document.body.appendChild(explosion);
+
+            setTimeout(() => {
+                explosion.remove();
+            }, 2000);
+        }
+
+        function showGameResult() {
+            // Only show result if player is actually in the game room
+            const now = Date.now();
+            const player = gameState.players[playerId];
+            if (!player || (now - player.joinedAt) < 3000) {
+                console.log('❌ No mostrar resultado - jugador no está completamente en la sala');
+                return;
+            }
+            
+            const winner = gameState.winnerName || 'Desconocido';
+            const loser = gameState.loserName || 'Desconocido';
+
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'winner-announcement';
+            resultDiv.innerHTML = `
+                <h2>💥 ¡BOOM! 💥</h2>
+                <div style="margin: 20px 0;">
+                    <p style="font-size: 1.2rem; margin: 10px 0;">💣 ${loser} perdió la bomba</p>
+                    <p style="font-size: 1.2rem; margin: 10px 0;">🏆 ${winner} sobrevivió</p>
+                    <p style="font-size: 1.1rem; margin: 10px 0; color: #00ff00;">💰 ${winner} gana 1000 monedas</p>
+                    <p style="font-size: 1.1rem; margin: 10px 0; color: #ff0000;">💸 ${loser} pierde 500 monedas</p>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="control-btn start-btn" onclick="restartGame()" style="margin: 5px;">🔄 JUGAR DE NUEVO</button>
+                    <button class="control-btn back-btn" onclick="goBack()" style="margin: 5px;">🔙 VOLVER</button>
+                </div>
+            `;
+
+            document.body.appendChild(resultDiv);
+        }
+
+        function restartGame() {
+            // Remove result announcement
+            const announcement = document.querySelector('.winner-announcement');
+            if (announcement) announcement.remove();
+
+            // Reset game state
+            database.ref(`bombGames/${gameId}`).update({
+                status: 'waiting',
+                currentBombHolder: null,
+                gameStartTime: null,
+                explosionTime: null,
+                lastPassTime: null,
+                winner: null,
+                loser: null,
+                winnerName: null,
+                loserName: null,
+                waitingStartTime: Date.now()
+            });
+        }
+
+        function updatePlayerCoins(playerId, coinChange, reason) {
+            const playerName = gameState.players[playerId]?.name;
+            if (!playerName) {
+                console.error('❌ No se pudo actualizar monedas - jugador no encontrado:', playerId);
+                return;
+            }
+
+            console.log(`💰 Actualizando monedas para ${playerName}: ${coinChange > 0 ? '+' : ''}${coinChange} (${reason})`);
+
+            // Update local storage for current player
+            if (playerName === playerName) {
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const newCoins = Math.max(0, currentCoins + coinChange);
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                console.log(`💰 Monedas locales actualizadas: ${currentCoins} → ${newCoins}`);
+            }
+
+            // Update Firebase for all players
+            const db = firebase.database();
+            db.ref(`players/${playerName}`).once('value', (snapshot) => {
+                const playerData = snapshot.val() || {};
+                const currentCoins = parseInt(playerData.coins || '0');
+                const newCoins = Math.max(0, currentCoins + coinChange);
+                
+                db.ref(`players/${playerName}`).update({
+                    coins: newCoins,
+                    lastUpdated: Date.now()
+                }).then(() => {
+                    console.log(`💰 Monedas de Firebase actualizadas para ${playerName}: ${currentCoins} → ${newCoins}`);
+                }).catch((error) => {
+                    console.error(`❌ Error al actualizar monedas en Firebase para ${playerName}:`, error);
+                });
+            });
+        }
+
+        function updatePlayerCoinsFixed(playerId, coinChange, reason) {
+            const playerName = gameState.players[playerId]?.name;
+            if (!playerName) {
+                console.error('❌ No se pudo actualizar monedas - jugador no encontrado:', playerId);
+                return;
+            }
+
+            console.log(`💰 Actualizando monedas para ${playerName}: ${coinChange > 0 ? '+' : ''}${coinChange} (${reason})`);
+
+            // Update local storage for current player
+            if (playerName === playerName) {
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const newCoins = Math.max(0, currentCoins + coinChange);
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                console.log(`💰 Monedas locales actualizadas: ${currentCoins} → ${newCoins}`);
+            }
+
+            // Update Firebase for all players
+            const db = firebase.database();
+            db.ref(`players/${playerName}`).once('value', (snapshot) => {
+                const playerData = snapshot.val() || {};
+                const currentCoins = parseInt(playerData.coins || '0');
+                const newCoins = Math.max(0, currentCoins + coinChange);
+                
+                db.ref(`players/${playerName}`).update({
+                    coins: newCoins,
+                    lastUpdated: Date.now()
+                }).then(() => {
+                    console.log(`💰 Monedas de Firebase actualizadas para ${playerName}: ${currentCoins} → ${newCoins}`);
+                }).catch((error) => {
+                    console.error(`❌ Error al actualizar monedas en Firebase para ${playerName}:`, error);
+                });
+            });
+        }
+
+        function handleCoinRewards(winnerId, loserId) {
+            const winnerName = gameState.players[winnerId]?.name;
+            const loserName = gameState.players[loserId]?.name;
+            
+            if (!winnerName || !loserName) {
+                console.error('❌ No se pudieron obtener los nombres de los jugadores');
+                return;
+            }
+
+            console.log(`💰 Procesando recompensas: ${winnerName} gana 1000, ${loserName} pierde 500`);
+
+            // Update local storage for current player if they are winner or loser
+            if (winnerName === playerName) {
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const newCoins = currentCoins + 1000;
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                console.log(`💰 Monedas locales actualizadas (ganador): ${currentCoins} → ${newCoins}`);
+            } else if (loserName === playerName) {
+                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+                const newCoins = Math.max(0, currentCoins - 500);
+                localStorage.setItem('totalOrtizCoins', newCoins.toString());
+                console.log(`💰 Monedas locales actualizadas (perdedor): ${currentCoins} → ${newCoins}`);
+            }
+
+            // Update Firebase for winner
+            const db = firebase.database();
+            db.ref(`players/${winnerName}`).once('value', (snapshot) => {
+                const playerData = snapshot.val() || {};
+                const currentCoins = parseInt(playerData.coins || '0');
+                const newCoins = currentCoins + 1000;
+                
+                db.ref(`players/${winnerName}`).update({
+                    coins: newCoins,
+                    lastUpdated: Date.now()
+                }).then(() => {
+                    console.log(`💰 Monedas de Firebase actualizadas para ${winnerName}: ${currentCoins} → ${newCoins}`);
+                }).catch((error) => {
+                    console.error(`❌ Error al actualizar monedas en Firebase para ${winnerName}:`, error);
+                });
+            });
+
+            // Update Firebase for loser
+            db.ref(`players/${loserName}`).once('value', (snapshot) => {
+                const playerData = snapshot.val() || {};
+                const currentCoins = parseInt(playerData.coins || '0');
+                const newCoins = Math.max(0, currentCoins - 500);
+                
+                db.ref(`players/${loserName}`).update({
+                    coins: newCoins,
+                    lastUpdated: Date.now()
+                }).then(() => {
+                    console.log(`💰 Monedas de Firebase actualizadas para ${loserName}: ${currentCoins} → ${newCoins}`);
+                }).catch((error) => {
+                    console.error(`❌ Error al actualizar monedas en Firebase para ${loserName}:`, error);
+                });
+            });
+        }
+
+        function goBack() {
+            // Leave game
+            database.ref(`bombGames/${gameId}/players/${playerId}`).remove();
+            window.location.href = 'index.html';
+        }
+
+        function verifyAndJoinGameWithRetry(retryCount = 0) {
+            const maxRetries = 5;
+            console.log(`🔍 Verificando sala de juego (intento ${retryCount + 1}/${maxRetries}):`, gameId);
+            
+            database.ref(`gameRooms/${gameId}`).once('value', (snapshot) => {
+                const gameRoom = snapshot.val();
+                if (!gameRoom) {
+                    if (retryCount < maxRetries) {
+                        console.log(`⏳ Sala de juego no encontrada, reintentando en 2 segundos... (${retryCount + 1}/${maxRetries})`);
+                        setTimeout(() => {
+                            verifyAndJoinGameWithRetry(retryCount + 1);
+                        }, 2000);
+                    } else {
+                        console.error('❌ Sala de juego no encontrada después de múltiples intentos:', gameId);
+                        alert('Error: No se pudo conectar a la sala de juego. Vuelve al menú principal.');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
+                
+                console.log('✅ Sala de juego verificada:', gameRoom);
+                
+                // Join game
+                joinGame();
+
+                // Check for game invitations
+                checkForGameInvitations();
+            });
+        }
+
+        function generateGameId() {
+            return 'bomba_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function generatePlayerId() {
+            return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function checkForGameInvitations() {
+            // Listen for game invitations
+            database.ref(`gameInvitations/${playerName}`).on('child_added', (snapshot) => {
+                const invitation = snapshot.val();
+                if (invitation && invitation.gameId === gameId) {
+                    console.log('📨 Invitación recibida:', invitation);
+                    showJoinNotification(invitation);
+                }
+            });
+
+            // Also check if we're already in the right room
+            database.ref(`gameRooms/${gameId}`).once('value', (snapshot) => {
+                const gameRoom = snapshot.val();
+                if (gameRoom) {
+                    console.log('🏠 Sala de juego encontrada:', gameRoom);
+                    // Update game room status
+                    database.ref(`gameRooms/${gameId}`).update({
+                        status: 'active',
+                        lastActivity: Date.now()
+                    });
+                }
+            });
+        }
+
+        function showJoinNotification(invitation) {
+            const notification = document.createElement('div');
+            notification.className = 'join-notification';
+            notification.innerHTML = `
+                <div>🎮 ¡Invitación de juego!</div>
+                <div>${invitation.inviter} te invita a jugar</div>
+                <button onclick="joinGameRoom('${invitation.gameUrl}')" style="margin-top: 10px; padding: 5px 10px; background: #00ff00; border: none; border-radius: 5px; color: white; cursor: pointer;">
+                    UNIRSE
+                </button>
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 10000);
+        }
+
+        function joinGameRoom(gameUrl) {
+            window.location.href = gameUrl;
+        }
+
+        function joinGame() {
+            console.log('👥 Uniéndose al juego:', { gameId, playerId, playerName });
+            
+            // Add player to game
+            const playerData = {
+                name: playerName,
+                joinedAt: Date.now(),
+                isOnline: true
+            };
+            
+            console.log('👤 Agregando jugador al juego:', { playerId, playerData });
+            
+            database.ref(`bombGames/${gameId}/players/${playerId}`).set(playerData).then(() => {
+                console.log('✅ Jugador agregado exitosamente al juego');
+            }).catch((error) => {
+                console.error('❌ Error al agregar jugador:', error);
+            });
+
+            // Listen for game state changes
+            database.ref(`bombGames/${gameId}`).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const oldPlayerCount = Object.keys(gameState.players || {}).length;
+                    gameState = { ...gameState, ...data };
+                    const newPlayerCount = Object.keys(gameState.players || {}).length;
+                    
+                    console.log('🔄 Estado del juego actualizado:', { oldPlayerCount, newPlayerCount, status: gameState.status });
+                    
+                    updateUI();
+                    
+                    // Check if new players joined
+                    if (newPlayerCount > oldPlayerCount && gameState.status === 'waiting') {
+                        setTimeout(() => {
+                            checkAndStartGame();
+                        }, 500);
+                    }
+                    
+                    // Check if players left and game should be reset
+                    if (newPlayerCount < oldPlayerCount && gameState.status === 'playing') {
+                        const currentOnlinePlayers = Object.keys(gameState.players).filter(pid => gameState.players[pid].isOnline);
+                        if (currentOnlinePlayers.length < 2) {
+                            console.log('❌ No hay suficientes jugadores, reseteando juego');
+                            database.ref(`bombGames/${gameId}`).update({
+                                status: 'waiting',
+                                currentBombHolder: null,
+                                gameStartTime: null,
+                                explosionTime: null,
+                                lastPassTime: null,
+                                winner: null,
+                                loser: null,
+                                winnerName: null,
+                                loserName: null,
+                                waitingStartTime: Date.now()
+                            });
+                        }
+                    }
+                }
+            });
+
+            // Set up online status
+            const playerRef = database.ref(`bombGames/${gameId}/players/${playerId}`);
+            playerRef.onDisconnect().update({ isOnline: false });
+
+            // Initialize waiting room if this is the first player
+            database.ref(`bombGames/${gameId}`).once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) {
+                    // Initialize game state
+                    database.ref(`bombGames/${gameId}`).set({
+                        status: 'waiting',
+                        waitingStartTime: Date.now(),
+                        players: {}
+                    });
+                    console.log('🎮 Estado inicial del juego creado');
+                } else if (!data.waitingStartTime) {
+                    database.ref(`bombGames/${gameId}`).update({
+                        waitingStartTime: Date.now()
+                    });
+                    console.log('⏰ Tiempo de espera inicializado');
+                }
+            });
+
+            // Check if we should start the game immediately
+            setTimeout(() => {
+                checkAndStartGame();
+            }, 2000); // Increased delay to ensure player is fully connected
+        }
+
+        // Update timer every 50ms for more precision
+        setInterval(() => {
+            if (gameState.status === 'playing') {
+                updateTimer();
+            }
+        }, 50);
+
+        // Initialize when page loads
+        window.onload = initGame;
+    </script>
+</body>
+</html> 

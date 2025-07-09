@@ -3762,6 +3762,13 @@
       max-width: 400px;
       width: 90%;
       box-shadow: 0 0 30px #e60073;
+      /* Ensure visibility on mobile */
+      position: relative;
+      z-index: 10001;
+      /* Mobile-specific adjustments */
+      margin: 20px;
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     .invitation-content h3,
@@ -3845,6 +3852,40 @@
     .decline-invitation-btn:hover,
     .cancel-invitation-btn:hover {
       transform: scale(1.05);
+    }
+
+    /* Mobile-specific styles for invitation modal */
+    @media (max-width: 768px) {
+      .invitation-modal,
+      .invitation-received-modal {
+        padding: 10px;
+      }
+      
+      .invitation-content,
+      .invitation-received-content {
+        padding: 1.5rem;
+        margin: 10px;
+        max-width: 95%;
+        font-size: 0.9rem;
+      }
+      
+      .invitation-content h3,
+      .invitation-received-content h3 {
+        font-size: 1.1rem;
+      }
+      
+      .game-option {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .accept-invitation-btn,
+      .decline-invitation-btn,
+      .cancel-invitation-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.8rem;
+      }
     }
 
     /* Achievements Button Styles */
@@ -4878,6 +4919,16 @@
       transform: scale(1.1) rotateY(10deg);
       box-shadow: 0 0 50px #1e3a8a, inset 0 0 30px rgba(30, 58, 138, 0.5);
     }
+
+    .tresenraya-btn {
+      background: linear-gradient(45deg, #FFFF00, #FFD700);
+      box-shadow: 0 0 30px #FFFF00, inset 0 0 20px rgba(255, 255, 0, 0.3);
+    }
+
+    .tresenraya-btn:hover {
+      transform: scale(1.1) rotateY(-10deg);
+      box-shadow: 0 0 50px #FFFF00, inset 0 0 30px rgba(255, 255, 0, 0.5);
+    }
     
     .daily-reward-btn {
       background: linear-gradient(45deg, #FF6B35, #F7931E);
@@ -5297,6 +5348,7 @@
       <div class="online-players-header">
         <span class="online-players-title">👥 JUGADORES ONLINE</span>
         <span class="online-count" id="onlineCount">0</span>
+
       </div>
       
       <div class="online-players-list" id="onlinePlayersList">
@@ -5343,8 +5395,12 @@
           <button class="game-option" data-game="race">
             🏃 SQUID RACE
           </button>
-          <button class="game-option" data-game="padel">
-            🏓 SQUID PADEL
+
+          <button class="game-option" data-game="bombaExplosiva">
+            💣 BOMBA EXPLOSIVA
+          </button>
+          <button class="game-option" data-game="chinos">
+            🎲 CHINOS
           </button>
         </div>
         <button class="cancel-invitation-btn">❌ CANCELAR</button>
@@ -5538,11 +5594,17 @@
           <span class="envelope-text">✂️ PIEDRA PAPEL O TIJERA</span>
         </div>
       </button>
-      <button class="envelope-btn squidpadel-btn" id="squidPadelBtn">
+      <button class="envelope-btn bombaexplosiva-btn" id="bombaExplosivaBtn">
         <div class="envelope-content">
-          <span class="envelope-text">🏓 SQUID PADEL</span>
+          <span class="envelope-text">💣 BOMBA EXPLOSIVA</span>
         </div>
       </button>
+      <button class="envelope-btn chinos-btn" id="chinosBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🎲 CHINOS</span>
+        </div>
+      </button>
+
     </div>
     
     <!-- Access Panel -->
@@ -6538,7 +6600,7 @@
                 frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, humanitarianAid, twoFaces, divineShield
             ];
             
-            // Only add golden button if it hasn't been used
+            // Only add golden button if it hasn't been used permanently
             const goldenButtonUsed = localStorage.getItem('goldenButtonUsed') === 'true';
             if (!goldenButtonUsed) {
                 itemsToAdd.push(goldenButton);
@@ -7764,6 +7826,262 @@
       }, 1000);
     });
 
+    // BOMBA EXPLOSIVA Button Event Listener
+    const bombaExplosivaBtn = document.getElementById('bombaExplosivaBtn');
+    bombaExplosivaBtn.addEventListener('click', () => {
+      console.log('💣 BOMBA EXPLOSIVA seleccionado');
+      
+      // Add dramatic effect
+      bombaExplosivaBtn.style.transform = 'scale(0.9) rotateY(10deg)';
+      bombaExplosivaBtn.style.boxShadow = '0 0 80px #ff0000, inset 0 0 40px rgba(255, 0, 0, 0.7)';
+      
+      // Create bomb explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#ff0000';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = bombaExplosivaBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        bombaExplosivaBtn.style.transform = '';
+        bombaExplosivaBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '💣 BOMBA EXPLOSIVA ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#ff0000';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #ff0000';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'bomba-explosiva.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // CHINOS Button Event Listener
+    const chinosBtn = document.getElementById('chinosBtn');
+    let chinosClickCount = 0;
+    let chinosClickTimeout = null;
+    
+    chinosBtn.addEventListener('click', () => {
+      chinosClickCount++;
+      console.log(`🎲 CHINOS click ${chinosClickCount}/4`);
+      
+      // Add dramatic effect
+      chinosBtn.style.transform = 'scale(0.9) rotateY(10deg)';
+      chinosBtn.style.boxShadow = `0 0 80px #4ecdc4, inset 0 0 40px rgba(78, 205, 196, 0.7)`;
+      
+      // Show click counter
+      const counterEl = document.createElement('div');
+      counterEl.textContent = `${chinosClickCount}/4`;
+      counterEl.style.position = 'fixed';
+      counterEl.style.top = '50%';
+      counterEl.style.left = '50%';
+      counterEl.style.transform = 'translate(-50%, -50%)';
+      counterEl.style.color = '#4ecdc4';
+      counterEl.style.fontSize = '2rem';
+      counterEl.style.fontWeight = 'bold';
+      counterEl.style.textShadow = '0 0 20px #4ecdc4';
+      counterEl.style.zIndex = '2000';
+      counterEl.style.pointerEvents = 'none';
+      counterEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+      
+      document.body.appendChild(counterEl);
+      
+      // Animate counter
+      counterEl.animate([
+        { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+        { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+        { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+      ], {
+        duration: 1000,
+        easing: 'ease-in-out'
+      });
+      
+      // Remove counter after animation
+      setTimeout(() => {
+        if (counterEl.parentNode) {
+          counterEl.parentNode.removeChild(counterEl);
+        }
+      }, 1000);
+      
+      // Reset click count after 3 seconds
+      if (chinosClickTimeout) {
+        clearTimeout(chinosClickTimeout);
+      }
+      chinosClickTimeout = setTimeout(() => {
+        chinosClickCount = 0;
+        console.log('🎲 CHINOS click count reset');
+      }, 3000);
+      
+      // Check if 4 clicks reached
+      if (chinosClickCount >= 4) {
+        console.log('🎲 CHINOS ACTIVADO - 4 clicks alcanzados');
+        
+        // Clear timeout
+        if (chinosClickTimeout) {
+          clearTimeout(chinosClickTimeout);
+        }
+        
+        // Create dice explosion effect
+        for (let i = 0; i < 12; i++) {
+          const particle = document.createElement('div');
+          particle.style.position = 'absolute';
+          particle.style.width = '6px';
+          particle.style.height = '6px';
+          particle.style.background = '#4ecdc4';
+          particle.style.borderRadius = '50%';
+          particle.style.pointerEvents = 'none';
+          particle.style.zIndex = '1000';
+          
+          const rect = chinosBtn.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          particle.style.left = centerX + 'px';
+          particle.style.top = centerY + 'px';
+          
+          document.body.appendChild(particle);
+          
+          // Animate particle
+          const angle = (i / 12) * Math.PI * 2;
+          const distance = 80;
+          const targetX = centerX + Math.cos(angle) * distance;
+          const targetY = centerY + Math.sin(angle) * distance;
+          
+          particle.animate([
+            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+            { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+          ], {
+            duration: 1500,
+            easing: 'ease-out'
+          });
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 1500);
+        }
+        
+        // Reset button after animation
+        setTimeout(() => {
+          chinosBtn.style.transform = '';
+          chinosBtn.style.boxShadow = '';
+        }, 1500);
+        
+        // Show activation message and redirect
+        setTimeout(() => {
+          const messageEl = document.createElement('div');
+          messageEl.textContent = '🎲 CHINOS DESBLOQUEADO!';
+          messageEl.style.position = 'fixed';
+          messageEl.style.top = '50%';
+          messageEl.style.left = '50%';
+          messageEl.style.transform = 'translate(-50%, -50%)';
+          messageEl.style.color = '#4ecdc4';
+          messageEl.style.fontSize = '1.8rem';
+          messageEl.style.fontWeight = 'bold';
+          messageEl.style.textShadow = '0 0 30px #4ecdc4';
+          messageEl.style.zIndex = '2000';
+          messageEl.style.pointerEvents = 'none';
+          messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+          
+          document.body.appendChild(messageEl);
+          
+          // Animate message
+          messageEl.animate([
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+            { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+          ], {
+            duration: 2500,
+            easing: 'ease-in-out'
+          });
+          
+          // Remove message and redirect
+          setTimeout(() => {
+            if (messageEl.parentNode) {
+              messageEl.parentNode.removeChild(messageEl);
+            }
+            window.location.href = 'chinos.html';
+          }, 2500);
+        }, 1500);
+        
+        // Reset click count
+        chinosClickCount = 0;
+      } else {
+        // Reset button after animation for non-activation clicks
+        setTimeout(() => {
+          chinosBtn.style.transform = '';
+          chinosBtn.style.boxShadow = '';
+        }, 1000);
+      }
+    });
+
     // PIEDRA PAPEL O TIJERA Button Event Listener
     const royalDiceBtn = document.getElementById('royalDiceBtn');
     royalDiceBtn.addEventListener('click', () => {
@@ -7859,145 +8177,9 @@
       }, 1000);
     });
 
-    // SQUID PADEL Button Event Listener
-    const squidPadelBtn = document.getElementById('squidPadelBtn');
-    let squidPadelClickCount = 0;
-    
-    squidPadelBtn.addEventListener('click', () => {
-      squidPadelClickCount++;
-      console.log(`🏓 SQUID PADEL click ${squidPadelClickCount}/4`);
-      
-      // Add dramatic effect
-      squidPadelBtn.style.transform = 'scale(0.9) rotateY(10deg)';
-      squidPadelBtn.style.boxShadow = '0 0 80px #1e3a8a, inset 0 0 40px rgba(30, 58, 138, 0.7)';
-      
-      // Create padel explosion effect
-      for (let i = 0; i < 8; i++) {
-        const particle = document.createElement('div');
-        particle.style.position = 'absolute';
-        particle.style.width = '4px';
-        particle.style.height = '4px';
-        particle.style.background = '#1e3a8a';
-        particle.style.borderRadius = '50%';
-        particle.style.pointerEvents = 'none';
-        particle.style.zIndex = '1000';
-        
-        const rect = squidPadelBtn.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        
-        particle.style.left = centerX + 'px';
-        particle.style.top = centerY + 'px';
-        
-        document.body.appendChild(particle);
-        
-        // Animate particle
-        const angle = (i / 8) * Math.PI * 2;
-        const distance = 50;
-        const targetX = centerX + Math.cos(angle) * distance;
-        const targetY = centerY + Math.sin(angle) * distance;
-        
-        particle.animate([
-          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
-        ], {
-          duration: 1000,
-          easing: 'ease-out'
-        });
-        
-        // Remove particle after animation
-        setTimeout(() => {
-          if (particle.parentNode) {
-            particle.parentNode.removeChild(particle);
-          }
-        }, 1000);
-      }
-      
-      // Reset button after animation
-      setTimeout(() => {
-        squidPadelBtn.style.transform = '';
-        squidPadelBtn.style.boxShadow = '';
-      }, 1000);
-      
-      // Check if 4 clicks reached
-      if (squidPadelClickCount >= 4) {
-        // Show message and redirect
-        setTimeout(() => {
-          const messageEl = document.createElement('div');
-          messageEl.textContent = '🏓 SQUID PADEL ACTIVADO';
-          messageEl.style.position = 'fixed';
-          messageEl.style.top = '50%';
-          messageEl.style.left = '50%';
-          messageEl.style.transform = 'translate(-50%, -50%)';
-          messageEl.style.color = '#1e3a8a';
-          messageEl.style.fontSize = '1.5rem';
-          messageEl.style.fontWeight = 'bold';
-          messageEl.style.textShadow = '0 0 20px #1e3a8a';
-          messageEl.style.zIndex = '2000';
-          messageEl.style.pointerEvents = 'none';
-          messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
-          
-          document.body.appendChild(messageEl);
-          
-          // Animate message
-          messageEl.animate([
-            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
-            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-            { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
-          ], {
-            duration: 2000,
-            easing: 'ease-in-out'
-          });
-          
-          // Remove message and redirect
-          setTimeout(() => {
-            if (messageEl.parentNode) {
-              messageEl.parentNode.removeChild(messageEl);
-            }
-            window.location.href = 'squid-padel.html';
-          }, 2000);
-        }, 1000);
-        
-        // Reset click count
-        squidPadelClickCount = 0;
-      } else {
-        // Show click progress
-        setTimeout(() => {
-          const progressEl = document.createElement('div');
-          progressEl.textContent = `${squidPadelClickCount}/4`;
-          progressEl.style.position = 'fixed';
-          progressEl.style.top = '50%';
-          progressEl.style.left = '50%';
-          progressEl.style.transform = 'translate(-50%, -50%)';
-          progressEl.style.color = '#1e3a8a';
-          progressEl.style.fontSize = '2rem';
-          progressEl.style.fontWeight = 'bold';
-          progressEl.style.textShadow = '0 0 20px #1e3a8a';
-          progressEl.style.zIndex = '2000';
-          progressEl.style.pointerEvents = 'none';
-          progressEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
-          
-          document.body.appendChild(progressEl);
-          
-          // Animate progress
-          progressEl.animate([
-            { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
-            { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-            { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
-          ], {
-            duration: 1500,
-            easing: 'ease-in-out'
-          });
-          
-          // Remove progress
-          setTimeout(() => {
-            if (progressEl.parentNode) {
-              progressEl.parentNode.removeChild(progressEl);
-            }
-          }, 1500);
-        }, 1000);
-      }
-    });
+
+
+
 
     // DAILY REWARD Button Event Listener
     const dailyRewardBtn = document.getElementById('dailyRewardBtn');
@@ -15724,38 +15906,112 @@
         function activateGoldenButton() {
             console.log('🟡 GOLDEN BUTTON ACTIVATED!');
             
-            // Mark golden button as used
+            // Mark golden button as used permanently
             localStorage.setItem('goldenButtonUsed', 'true');
             
-            // Show notification
-            showNotification('🟡 ¡Botón de Oro activado! Haz clic en el botón flotante para ganar monedas', 'success');
+            // Remove golden button from inventory permanently
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            const updatedInventory = inventory.filter(item => item.id !== 'golden_button');
+            localStorage.setItem('playerInventory', JSON.stringify(updatedInventory));
             
-            // Create floating golden button
+            // Show notification
+            showNotification('🟡 ¡Botón de Oro activado! Haz clic en el botón para ganar monedas', 'success');
+            
+            // Create modal overlay
+            const modalOverlay = document.createElement('div');
+            modalOverlay.id = 'goldenButtonModal';
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease-out;
+            `;
+            
+            // Create modal content
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+                border: 3px solid #FFD700;
+                border-radius: 20px;
+                padding: 2rem;
+                text-align: center;
+                max-width: 90%;
+                width: 400px;
+                box-shadow: 0 0 50px #FFD700;
+                position: relative;
+            `;
+            
+            // Create golden button
             const goldenButton = document.createElement('div');
             goldenButton.id = 'floatingGoldenButton';
             goldenButton.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 120px;
-                height: 120px;
+                width: 150px;
+                height: 150px;
                 background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
                 border: 4px solid #FF8C00;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 3rem;
+                font-size: 4rem;
                 cursor: pointer;
-                z-index: 10000;
+                margin: 0 auto 1rem auto;
                 box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
                 animation: goldenButtonPulse 1s infinite alternate;
                 transition: all 0.3s ease;
             `;
             goldenButton.textContent = '🟡';
             
-            // Add click event
+            // Create timer display
+            const timerDisplay = document.createElement('div');
+            timerDisplay.id = 'goldenButtonTimer';
+            timerDisplay.style.cssText = `
+                font-size: 1.2rem;
+                color: #FFD700;
+                margin-bottom: 1rem;
+                font-weight: bold;
+            `;
+            timerDisplay.textContent = '⏰ Tiempo restante: 1:00';
+            
+            // Create instructions
+            const instructions = document.createElement('div');
+            instructions.style.cssText = `
+                font-size: 1rem;
+                color: #fff;
+                margin-bottom: 1rem;
+            `;
+            instructions.textContent = '¡Haz clic en el botón dorado para ganar +50 monedas!';
+            
+            // Create back button (initially hidden)
+            const backButton = document.createElement('button');
+            backButton.id = 'goldenButtonBackBtn';
+            backButton.style.cssText = `
+                background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                padding: 1rem 2rem;
+                font-size: 1.2rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+                display: none;
+            `;
+            backButton.textContent = '🏠 VOLVER';
+            backButton.onclick = () => {
+                if (modalOverlay.parentNode) {
+                    modalOverlay.parentNode.removeChild(modalOverlay);
+                }
+            };
+            
+            // Add click event to golden button
             goldenButton.addEventListener('click', function() {
                 // Add coins
                 const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
@@ -15781,13 +16037,13 @@
                 }
                 
                 // Visual feedback
-                this.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                this.style.transform = 'scale(1.2)';
                 this.style.boxShadow = '0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5)';
                 
                 // Show coin animation
                 const coinAnimation = document.createElement('div');
                 coinAnimation.style.cssText = `
-                    position: fixed;
+                    position: absolute;
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
@@ -15798,7 +16054,7 @@
                     animation: coinFloat 1s ease-out forwards;
                 `;
                 coinAnimation.textContent = '+50';
-                document.body.appendChild(coinAnimation);
+                modalContent.appendChild(coinAnimation);
                 
                 // Remove coin animation after 1 second
                 setTimeout(() => {
@@ -15809,7 +16065,7 @@
                 
                 // Reset button style
                 setTimeout(() => {
-                    this.style.transform = 'translate(-50%, -50%) scale(1)';
+                    this.style.transform = 'scale(1)';
                     this.style.boxShadow = '0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3)';
                 }, 200);
                 
@@ -15819,28 +16075,35 @@
             
             // Add hover effects
             goldenButton.addEventListener('mouseenter', function() {
-                this.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                this.style.transform = 'scale(1.1)';
                 this.style.boxShadow = '0 0 40px #FFD700, inset 0 0 25px rgba(255, 215, 0, 0.4)';
             });
             
             goldenButton.addEventListener('mouseleave', function() {
-                this.style.transform = 'translate(-50%, -50%) scale(1)';
+                this.style.transform = 'scale(1)';
                 this.style.boxShadow = '0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3)';
             });
             
+            // Assemble modal
+            modalContent.appendChild(timerDisplay);
+            modalContent.appendChild(instructions);
+            modalContent.appendChild(goldenButton);
+            modalContent.appendChild(backButton);
+            modalOverlay.appendChild(modalContent);
+            
             // Add to page
-            document.body.appendChild(goldenButton);
+            document.body.appendChild(modalOverlay);
             
             // Add CSS animations
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes goldenButtonPulse {
                     0% { 
-                        transform: translate(-50%, -50%) scale(1);
+                        transform: scale(1);
                         box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
                     }
                     100% { 
-                        transform: translate(-50%, -50%) scale(1.05);
+                        transform: scale(1.05);
                         box-shadow: 0 0 40px #FFD700, inset 0 0 25px rgba(255, 215, 0, 0.4);
                     }
                 }
@@ -15855,21 +16118,45 @@
                         opacity: 0;
                     }
                 }
+                
+                @keyframes fadeIn {
+                    0% { opacity: 0; }
+                    100% { opacity: 1; }
+                }
             `;
             document.head.appendChild(style);
             
-            // Remove button after 60 seconds
-            setTimeout(() => {
-                if (goldenButton.parentNode) {
-                    goldenButton.style.animation = 'fadeOut 0.5s ease-out';
-                    setTimeout(() => {
-                        if (goldenButton.parentNode) {
-                            goldenButton.parentNode.removeChild(goldenButton);
-                        }
-                    }, 500);
+            // Timer countdown
+            let timeLeft = 60; // 60 seconds
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `⏰ Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    
+                    // Hide golden button and show back button
+                    goldenButton.style.display = 'none';
+                    instructions.style.display = 'none';
+                    timerDisplay.style.display = 'none';
+                    backButton.style.display = 'block';
+                    
+                    // Show expiration message
+                    const expirationMessage = document.createElement('div');
+                    expirationMessage.style.cssText = `
+                        font-size: 1.5rem;
+                        color: #FFD700;
+                        margin-bottom: 1rem;
+                        font-weight: bold;
+                    `;
+                    expirationMessage.textContent = '⏰ ¡Tiempo agotado!';
+                    modalContent.insertBefore(expirationMessage, backButton);
+                    
+                    showNotification('⏰ El Botón de Oro ha expirado', 'info');
                 }
-                showNotification('⏰ El Botón de Oro ha expirado', 'info');
-            }, 60000); // 60 seconds
+            }, 1000);
         }
 
         // AUTO-REFRESH SYSTEM TO REMOVE GOLDEN BUTTON
@@ -16037,7 +16324,8 @@
             
             snapshot.forEach((childSnapshot) => {
                 const player = childSnapshot.val();
-                if (player) {
+                
+                if (player && player.name) {
                     allPlayers.push(player);
                     // Only show other players (not current player)
                     if (player.name !== playerName) {
@@ -16046,23 +16334,28 @@
                 }
             });
             
-            console.log('👥 Jugadores totales en Firebase:', allPlayers.length);
-            console.log('👥 Jugadores online (excluyendo actual):', players.length);
-            
             onlinePlayers = players;
             updateOnlinePlayersList();
             updateOnlineCount();
         });
 
-        // Clean up offline players (older than 30 seconds)
+        // Clean up offline players (older than 30 seconds) and invalid players
         setInterval(() => {
             const cutoff = Date.now() - 30000;
             onlinePlayersRef.once('value', (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
                     const player = childSnapshot.val();
-                    if (player && player.lastSeen < cutoff) {
-                        console.log('🧹 Limpiando jugador offline:', player.name);
-                        childSnapshot.ref.remove();
+                    if (player) {
+                        // Remove offline players
+                        if (player.lastSeen < cutoff) {
+                            console.log('🧹 Limpiando jugador offline:', player.name);
+                            childSnapshot.ref.remove();
+                        }
+                        // Remove players with invalid names
+                        else if (!player.name || player.name === 'undefined' || player.name === 'null') {
+                            console.log('🧹 Limpiando jugador con nombre inválido:', childSnapshot.key);
+                            childSnapshot.ref.remove();
+                        }
                     }
                 });
             });
@@ -16079,17 +16372,25 @@
             return;
         }
 
-        playersList.innerHTML = onlinePlayers.map(player => `
-            <div class="player-item">
-                <div class="player-info">
-                    <div class="player-status"></div>
-                    <span class="player-name">${player.name}</span>
+        let html = '';
+        onlinePlayers.forEach((player) => {
+            // Ensure we have a valid name
+            const playerName = player.name || player.username || 'Jugador Desconocido';
+            
+            html += `
+                <div class="player-item">
+                    <div class="player-info">
+                        <div class="player-status"></div>
+                        <span class="player-name">${playerName}</span>
+                    </div>
+                    <button class="invite-btn" onclick="invitePlayer('${playerName}')">
+                        🎮 JUGAR
+                    </button>
                 </div>
-                <button class="invite-btn" onclick="invitePlayer('${player.name}')">
-                    🎮 JUGAR
-                </button>
-            </div>
-        `).join('');
+            `;
+        });
+
+        playersList.innerHTML = html;
     }
 
     // Update online count
@@ -16252,11 +16553,37 @@
         const db = firebase.database();
         const invitationsRef = db.ref(`invitations/${playerName}`);
         
-        // Listen for incoming invitations
+        // Listen for incoming invitations (only show if we are the invited player)
         invitationsRef.on('child_added', (snapshot) => {
             const invitation = snapshot.val();
-            if (invitation && !invitation.responded) {
+            if (invitation && !invitation.responded && invitation.invitedPlayer === playerName) {
+                console.log('🎮 Invitación recibida:', invitation);
                 showInvitationReceived(invitation);
+            }
+        });
+
+        // Listen for invitation responses (for the inviter)
+        invitationsRef.on('child_changed', (snapshot) => {
+            const invitation = snapshot.val();
+            if (invitation && invitation.responded && invitation.inviterPlayer === playerName) {
+                // We are the inviter, check response
+                if (invitation.accepted) {
+                    // Invitation was accepted, navigate to game
+                    if (invitation.game === 'race') {
+                        showNotification(`🎮 ${invitation.invitedPlayer} aceptó tu invitación a Squid Race!`, 'success');
+                        setTimeout(() => {
+                            window.location.href = 'squid-race.html';
+                        }, 2000);
+                    } else if (invitation.game === 'tresEnRaya') {
+                        showNotification(`🎮 ${invitation.invitedPlayer} aceptó tu invitación a 3 en Raya!`, 'success');
+                        setTimeout(() => {
+                            window.location.href = 'tres-en-raya.html';
+                        }, 2000);
+                    }
+                } else {
+                    // Invitation was declined
+                    showNotification(`❌ ${invitation.invitedPlayer} rechazó tu invitación`, 'error');
+                }
             }
         });
 
@@ -16271,8 +16598,16 @@
             inviterPlayer: localStorage.getItem('soldierName')
         };
 
-        document.getElementById('invitedPlayerName').textContent = playerName;
-        document.getElementById('invitationModal').style.display = 'flex';
+        const invitedPlayerNameEl = document.getElementById('invitedPlayerName');
+        const invitationModalEl = document.getElementById('invitationModal');
+        
+        if (invitedPlayerNameEl) {
+            invitedPlayerNameEl.textContent = playerName;
+        }
+        
+        if (invitationModalEl) {
+            invitationModalEl.style.display = 'flex';
+        }
     }
 
     // Setup invitation modal buttons
@@ -16318,11 +16653,20 @@
             responded: false
         };
 
+        // Save invitation for invited player
         invitationRef.set(invitation);
+        
+        // Also save invitation for inviter to track response
+        const inviterInvitationRef = db.ref(`invitations/${currentInvitation.inviterPlayer}/${invitationRef.key}`);
+        inviterInvitationRef.set(invitation);
         
         // Close modal and show notification
         document.getElementById('invitationModal').style.display = 'none';
-        showNotification(`🎮 Invitación enviada a ${currentInvitation.invitedPlayer} para ${game === 'race' ? 'Squid Race' : 'Squid Padel'}`, 'info');
+        let gameName = 'Juego';
+        if (game === 'race') gameName = 'Squid Race';
+        else if (game === 'bombaExplosiva') gameName = 'Bomba Explosiva';
+        else if (game === 'chinos') gameName = 'Chinos';
+        showNotification(`🎮 Invitación enviada a ${currentInvitation.invitedPlayer} para ${gameName}`, 'info');
         
         currentInvitation = null;
     }
@@ -16330,7 +16674,11 @@
     // Show invitation received modal
     function showInvitationReceived(invitation) {
         document.getElementById('inviterPlayerName').textContent = invitation.inviterPlayer;
-        document.getElementById('invitedGameName').textContent = invitation.game === 'race' ? 'Squid Race' : 'Squid Padel';
+        let gameName = 'Juego';
+        if (invitation.game === 'race') gameName = 'Squid Race';
+        else if (invitation.game === 'bombaExplosiva') gameName = 'Bomba Explosiva';
+        else if (invitation.game === 'chinos') gameName = 'Chinos';
+        document.getElementById('invitedGameName').textContent = gameName;
         
         // Store current invitation
         currentInvitation = invitation;
@@ -16338,31 +16686,116 @@
         document.getElementById('invitationReceivedModal').style.display = 'flex';
     }
 
-    // Accept game invitation
-    function acceptGameInvitation() {
-        if (!currentInvitation) return;
+            // Accept game invitation
+        function acceptGameInvitation() {
+            if (!currentInvitation) return;
 
-        const db = firebase.database();
-        
-        // Mark invitation as accepted
-        db.ref(`invitations/${currentInvitation.invitedPlayer}/${currentInvitation.id}`).update({
-            responded: true,
-            accepted: true,
-            responseTime: Date.now()
-        });
+            const db = firebase.database();
+            
+            // Mark invitation as accepted for invited player
+            db.ref(`invitations/${currentInvitation.invitedPlayer}/${currentInvitation.id}`).update({
+                responded: true,
+                accepted: true,
+                responseTime: Date.now()
+            });
 
-        // Close modal
-        document.getElementById('invitationReceivedModal').style.display = 'none';
-        
-        // Navigate to game
-        if (currentInvitation.game === 'race') {
-            window.location.href = 'squid-race.html';
-        } else if (currentInvitation.game === 'padel') {
-            window.location.href = 'squid-padel.html';
+            // Also update invitation for inviter
+            db.ref(`invitations/${currentInvitation.inviterPlayer}/${currentInvitation.id}`).update({
+                responded: true,
+                accepted: true,
+                responseTime: Date.now()
+            });
+
+            // Close modal
+            document.getElementById('invitationReceivedModal').style.display = 'none';
+            
+            // Navigate to game
+            if (currentInvitation.game === 'race') {
+                window.location.href = 'squid-race.html';
+            } else if (currentInvitation.game === 'bombaExplosiva') {
+                // Create game room and redirect both players
+                const gameId = 'bomba_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                
+                // Create URLs with proper encoding
+                const inviterPlayerId = 'inviter_' + currentInvitation.inviterPlayer.replace(/\s+/g, '_');
+                const invitedPlayerId = 'invited_' + currentInvitation.invitedPlayer.replace(/\s+/g, '_');
+                
+                const gameUrl = `bomba-explosiva.html?gameId=${gameId}&playerId=${inviterPlayerId}&playerName=${encodeURIComponent(currentInvitation.inviterPlayer)}`;
+                const invitedGameUrl = `bomba-explosiva.html?gameId=${gameId}&playerId=${invitedPlayerId}&playerName=${encodeURIComponent(currentInvitation.invitedPlayer)}`;
+                
+                console.log('🎮 Creando sala de juego:', { gameId, inviter: currentInvitation.inviterPlayer, invited: currentInvitation.invitedPlayer });
+                
+                // Save game room info in Firebase
+                db.ref(`gameRooms/${gameId}`).set({
+                    gameId: gameId,
+                    inviter: currentInvitation.inviterPlayer,
+                    invited: currentInvitation.invitedPlayer,
+                    inviterPlayerId: inviterPlayerId,
+                    invitedPlayerId: invitedPlayerId,
+                    gameUrl: gameUrl,
+                    invitedGameUrl: invitedGameUrl,
+                    status: 'waiting',
+                    createdAt: Date.now()
+                });
+                
+                // Redirect invited player immediately
+                console.log('🎮 Redirigiendo jugador invitado a:', invitedGameUrl);
+                window.location.href = invitedGameUrl;
+                
+                // Send notification to inviter to join
+                const inviterNotification = {
+                    gameId: gameId,
+                    gameUrl: gameUrl,
+                    invited: currentInvitation.invitedPlayer,
+                    timestamp: Date.now()
+                };
+                
+                console.log('📨 Enviando notificación al invitador:', inviterNotification);
+                db.ref(`gameInvitations/${currentInvitation.inviterPlayer}`).push(inviterNotification);
+            } else if (currentInvitation.game === 'chinos') {
+                // Create game room and redirect both players
+                const gameId = 'chinos_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                
+                // Create URLs with proper encoding
+                const inviterPlayerId = 'inviter_' + currentInvitation.inviterPlayer.replace(/\s+/g, '_');
+                const invitedPlayerId = 'invited_' + currentInvitation.invitedPlayer.replace(/\s+/g, '_');
+                
+                const gameUrl = `chinos.html?gameId=${gameId}&playerId=${inviterPlayerId}&playerName=${encodeURIComponent(currentInvitation.inviterPlayer)}`;
+                const invitedGameUrl = `chinos.html?gameId=${gameId}&playerId=${invitedPlayerId}&playerName=${encodeURIComponent(currentInvitation.invitedPlayer)}`;
+                
+                console.log('🎮 Creando sala de juego Chinos:', { gameId, inviter: currentInvitation.inviterPlayer, invited: currentInvitation.invitedPlayer });
+                
+                // Save game room info in Firebase
+                db.ref(`gameRooms/${gameId}`).set({
+                    gameId: gameId,
+                    inviter: currentInvitation.inviterPlayer,
+                    invited: currentInvitation.invitedPlayer,
+                    inviterPlayerId: inviterPlayerId,
+                    invitedPlayerId: invitedPlayerId,
+                    gameUrl: gameUrl,
+                    invitedGameUrl: invitedGameUrl,
+                    status: 'waiting',
+                    createdAt: Date.now()
+                });
+                
+                // Redirect invited player immediately
+                console.log('🎮 Redirigiendo jugador invitado a:', invitedGameUrl);
+                window.location.href = invitedGameUrl;
+                
+                // Send notification to inviter to join
+                const inviterNotification = {
+                    gameId: gameId,
+                    gameUrl: gameUrl,
+                    invited: currentInvitation.invitedPlayer,
+                    timestamp: Date.now()
+                };
+                
+                console.log('📨 Enviando notificación al invitador:', inviterNotification);
+                db.ref(`gameInvitations/${currentInvitation.inviterPlayer}`).push(inviterNotification);
+            }
+            
+            currentInvitation = null;
         }
-        
-        currentInvitation = null;
-    }
 
     // Decline game invitation
     function declineGameInvitation() {
@@ -16370,8 +16803,15 @@
 
         const db = firebase.database();
         
-        // Mark invitation as declined
+        // Mark invitation as declined for invited player
         db.ref(`invitations/${currentInvitation.invitedPlayer}/${currentInvitation.id}`).update({
+            responded: true,
+            accepted: false,
+            responseTime: Date.now()
+        });
+
+        // Also update invitation for inviter
+        db.ref(`invitations/${currentInvitation.inviterPlayer}/${currentInvitation.id}`).update({
             responded: true,
             accepted: false,
             responseTime: Date.now()
@@ -16384,8 +16824,65 @@
         currentInvitation = null;
     }
 
-    // Initialize online system when page loads
-    window.addEventListener('DOMContentLoaded', initializeOnlineSystem);
+            // Initialize online system when page loads
+        window.addEventListener('DOMContentLoaded', initializeOnlineSystem);
+
+        // Listen for invitation responses
+        function listenForInvitationResponses() {
+            const playerName = localStorage.getItem('soldierName') || 'Jugador';
+            const db = firebase.database();
+            
+            // Track processed invitations to avoid duplicates
+            const processedInvitations = new Set();
+            
+            db.ref(`invitations/${playerName}`).on('child_changed', (snapshot) => {
+                const invitation = snapshot.val();
+                if (invitation && invitation.responded && !processedInvitations.has(invitation.id)) {
+                    processedInvitations.add(invitation.id);
+                    
+                    if (invitation.accepted) {
+                        showNotification(`✅ ${invitation.invitedPlayer} aceptó tu invitación para ${getGameName(invitation.game)}`, 'success');
+                        
+                        // If it's a bomb game or chinos game, redirect to the game room
+                        if (invitation.game === 'bombaExplosiva' || invitation.game === 'chinos') {
+                            setTimeout(() => {
+                                // Listen for game invitation notification
+                                const db = firebase.database();
+                                db.ref(`gameInvitations/${invitation.inviterPlayer}`).on('child_added', (snapshot) => {
+                                    const gameInvitation = snapshot.val();
+                                    if (gameInvitation && gameInvitation.gameUrl) {
+                                        console.log('🎮 Redirigiendo a la sala de juego:', gameInvitation.gameUrl);
+                                        
+                                        // Remove the listener first to avoid duplicates
+                                        db.ref(`gameInvitations/${invitation.inviterPlayer}`).off('child_added');
+                                        
+                                        // Remove the notification after using it
+                                        snapshot.ref.remove();
+                                        
+                                        // Redirect to game
+                                        window.location.href = gameInvitation.gameUrl;
+                                    }
+                                });
+                            }, 1000);
+                        }
+                    } else {
+                        showNotification(`❌ ${invitation.invitedPlayer} rechazó tu invitación para ${getGameName(invitation.game)}`, 'error');
+                    }
+                }
+            });
+        }
+
+        function getGameName(game) {
+            if (game === 'race') return 'Squid Race';
+            if (game === 'bombaExplosiva') return 'Bomba Explosiva';
+            if (game === 'chinos') return 'Chinos';
+            return 'Juego';
+        }
+
+        // Start listening for responses when page loads
+        window.addEventListener('DOMContentLoaded', listenForInvitationResponses);
+
+
 
     function restoreDataFromFirebase(firebaseData) {
             console.log('🔄 Restaurando datos desde Firebase...');

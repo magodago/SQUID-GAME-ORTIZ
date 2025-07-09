@@ -14500,6 +14500,8 @@
             }
             
             const item = inventory[itemIndex];
+            console.log(`🎒 Item found: ${item.name} (${item.id})`);
+            console.log(`🎒 Inventory before use: ${inventory.length} items`);
             
             // Apply item effect
             switch (item.id) {
@@ -14564,18 +14566,18 @@
                 case 'crystal_ball':
                     // Activate prediction for next game (3 uses per item)
                     const crystalBallUses = parseInt(localStorage.getItem('crystalBallUses') || '0');
-                    if (crystalBallUses >= 3) {
-                        // Reset uses when activating a new Crystal Ball
-                        localStorage.setItem('crystalBallUses', '0');
-                        console.log('🔮 Resetting Crystal Ball uses for new item');
+                    
+                    // If we already have a crystal ball active, just add uses
+                    if (localStorage.getItem('crystalBallActive') === 'true') {
+                        const newUses = crystalBallUses + 3; // Add 3 more uses
+                        localStorage.setItem('crystalBallUses', newUses.toString());
+                        showNotification(`🔮 ${item.name} activada! +3 usos añadidos (${newUses} usos totales)`, 'success');
+                    } else {
+                        // First time activating crystal ball
+                        localStorage.setItem('crystalBallActive', 'true');
+                        localStorage.setItem('crystalBallUses', '3'); // Start with 3 uses
+                        showNotification(`🔮 ${item.name} activada! Predicción disponible para el próximo juego (3 usos disponibles)`, 'success');
                     }
-                    
-                    const newUses = parseInt(localStorage.getItem('crystalBallUses') || '0') + 1;
-                    localStorage.setItem('crystalBallActive', 'true');
-                    localStorage.setItem('crystalBallUses', newUses.toString());
-                    
-                    // Show notification
-                    showNotification(`🔮 ${item.name} activada! Predicción disponible para el próximo juego (${3 - newUses} usos restantes)`, 'success');
                     break;
                     
                 case 'anonymous_robbery':
@@ -14615,14 +14617,16 @@
                     
                 default:
                     showNotification(`❌ Función no implementada para ${item.name}`, 'error');
-                    return;
+                    break;
             }
             
             // Remove item from inventory
             inventory.splice(itemIndex, 1);
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
-            console.log(`✅ Item ${item.name} removed from inventory. Remaining items:`, inventory);
+            console.log(`✅ Item ${item.name} removed from inventory.`);
+            console.log(`🎒 Inventory after use: ${inventory.length} items`);
+            console.log(`🎒 Remaining items:`, inventory.map(item => `${item.name} (${item.id})`));
             
             // Close current modal and reopen with updated inventory
             closeInventoryModal();

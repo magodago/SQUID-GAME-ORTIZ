@@ -6599,14 +6599,15 @@
               rarity: 'mythic'
             };
             
-            const goldenButton = {
-              id: 'golden_button',
-              name: 'Botón de Oro',
-              description: 'Activa un botón flotante por 1 segundo. +1 moneda por clic',
-              icon: '🟡',
-              value: 3000,
-              rarity: 'legendary'
-            };
+            // REMOVED: Golden button completely disabled
+            // const goldenButton = {
+            //   id: 'golden_button',
+            //   name: 'Botón de Oro',
+            //   description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
+            //   icon: '🟡',
+            //   value: 3000,
+            //   rarity: 'legendary'
+            // };
             
             const humanitarianAid = {
               id: 'humanitarian_aid',
@@ -6642,19 +6643,25 @@
                 frontmanMask, vipCard, goldenKey, guardMask, goldenDice, crystalBall, anonymousRobbery, nuclearBomb, humanitarianAid, twoFaces, divineShield
             ];
             
-            // Add golden button if not used before
-            const goldenButtonUsed = localStorage.getItem('goldenButtonUsed') === 'true';
-            if (!goldenButtonUsed) {
-                itemsToAdd.push(goldenButton);
-            }
-            console.log('🟡 Golden button available in DAGO code (1 coin per click)');
+            // REMOVED: Golden button completely disabled to prevent farming
+            // const goldenButtonUsed = localStorage.getItem('goldenButtonUsed') === 'true';
+            // if (!goldenButtonUsed) {
+            //     itemsToAdd.push(goldenButton);
+            // }
+            console.log('🟡 Golden button completely REMOVED from DAGO code');
             
             itemsToAdd.forEach(item => {
-              addItemToInventory(item);
+              if (!inventory.find(existingItem => existingItem.id === item.id)) {
+                inventory.push(item);
+                console.log(`🎒 Added ${item.name} to inventory`);
+              }
             });
             
+            // Save updated inventory
+            localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            
             // Show alert to confirm it works
-            let alertMessage = `🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n   • 🛡️ Escudo Divino\n   • 🟡 Botón de Oro (+1 moneda por clic)\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`;
+            let alertMessage = `🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear\n   • 🤝 Ayuda Humanitaria\n   • 🎭 2 Caras\n   • 🛡️ Escudo Divino\n\n⚠️ 🟡 Botón de Oro ELIMINADO (prevención de farming)\n\n¡OBJETOS FUNCIONALES DESBLOQUEADOS!`;
             
             alert(alertMessage);
             
@@ -11088,12 +11095,31 @@
           }
         }
       } else if (reward.type === 'item') {
-        // Add item to inventory using centralized function
-        const itemAdded = addItemToInventory(reward.value);
+        // Add item to inventory
+        const inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+        inventory.push(reward.value);
+        localStorage.setItem('inventory', JSON.stringify(inventory));
         
-        if (!itemAdded) {
-          // If item already exists, show different message
-          showNotification(`⚠️ Ya tienes ${reward.value.name} en tu inventario`, 'warning');
+        // Sync inventory with Firebase
+        if (window.firebase && window.firebase.database) {
+          const db = window.firebase.database();
+          const currentPlayer = localStorage.getItem('soldierName');
+          if (currentPlayer) {
+            const playerRef = db.ref(`players/${currentPlayer}`);
+            playerRef.update({
+              inventory: inventory,
+              lastUpdated: Date.now()
+            }).then(() => {
+              console.log(`✅ Daily surprise box item synced to Firebase: ${reward.value}`);
+            }).catch((error) => {
+              console.error('❌ Error syncing daily surprise box item:', error);
+            });
+          }
+        }
+        
+        // Update inventory display if function exists
+        if (typeof loadInventory === 'function') {
+          loadInventory();
         }
       }
       
@@ -11231,66 +11257,6 @@
           }
         }, 500);
       }
-    }
-
-    // CENTRALIZED INVENTORY MANAGEMENT
-    function addItemToInventory(item) {
-        // Get current inventory using helper function
-        const inventory = getInventory();
-        
-        // Check if item already exists by ID
-        const existingItem = inventory.find(existing => existing.id === item.id);
-        if (existingItem) {
-            console.log(`⚠️ Item ${item.name} (${item.id}) already exists in inventory - skipping`);
-            return false; // Item not added
-        }
-        
-        // Add item to inventory
-        inventory.push(item);
-        localStorage.setItem('playerInventory', JSON.stringify(inventory));
-        
-        console.log(`✅ Added ${item.name} (${item.id}) to inventory`);
-        
-        // Sync with Firebase if available
-        if (window.firebase && window.firebase.database) {
-            const db = window.firebase.database();
-            const currentPlayer = localStorage.getItem('soldierName');
-            if (currentPlayer) {
-                const playerRef = db.ref(`players/${currentPlayer}`);
-                playerRef.update({
-                    inventory: inventory,
-                    lastUpdated: Date.now()
-                }).then(() => {
-                    console.log(`✅ Item ${item.name} synced to Firebase`);
-                }).catch((error) => {
-                    console.error('❌ Error syncing item to Firebase:', error);
-                });
-            }
-        }
-        
-        // Update inventory display if modal is open
-        const inventoryItems = document.getElementById('inventoryItems');
-        if (inventoryItems) {
-            showInventoryModal(); // Reopen modal with updated inventory
-        }
-        
-        return true; // Item added successfully
-    }
-
-    // Helper function to get inventory (handles both localStorage keys)
-    function getInventory() {
-        let inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-        const oldInventory = JSON.parse(localStorage.getItem('inventory') || '[]');
-        
-        // If old inventory exists and new one is empty, migrate it
-        if (oldInventory.length > 0 && inventory.length === 0) {
-            inventory = oldInventory;
-            localStorage.setItem('playerInventory', JSON.stringify(inventory));
-            localStorage.removeItem('inventory'); // Clean up old key
-            console.log('🔄 Migrated inventory from old localStorage key');
-        }
-        
-        return inventory;
     }
 
     // ACHIEVEMENTS SYSTEM
@@ -14286,10 +14252,6 @@
             // Update existing Easter Egg cards with new descriptions
             updateExistingEasterEggCards();
             
-            // Load inventory data using helper function
-            const inventory = getInventory();
-            console.log('📦 Loading inventory for modal:', inventory);
-            
             // Create inventory modal
             const modal = document.createElement('div');
             modal.id = 'inventoryModal';
@@ -14306,6 +14268,9 @@
                 z-index: 10000;
                 animation: fadeIn 0.5s ease-out;
             `;
+            
+            // Load inventory data
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
             
             // Separate items and easter eggs
             const items = inventory.filter(item => item.type !== 'easter_egg');
@@ -14523,22 +14488,10 @@
             }
         }
 
-        // Debug function to check inventory state
-        function debugInventory() {
-            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-            console.log('🔍 DEBUG - Current inventory state:', inventory);
-            console.log('🔍 DEBUG - Inventory length:', inventory.length);
-            console.log('🔍 DEBUG - Inventory items:', inventory.map(item => `${item.name} (${item.id})`));
-            return inventory;
-        }
-
         function useItem(itemId) {
             console.log(`🎒 Using item: ${itemId}`);
             
-            // Get current inventory
             const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-            console.log('📦 Current inventory before use:', inventory);
-            
             const itemIndex = inventory.findIndex(item => item.id === itemId);
             
             if (itemIndex === -1) {
@@ -14547,7 +14500,8 @@
             }
             
             const item = inventory[itemIndex];
-            console.log('🎯 Item to use:', item);
+            console.log(`🎒 Item found: ${item.name} (${item.id})`);
+            console.log(`🎒 Inventory before use: ${inventory.length} items`);
             
             // Apply item effect
             switch (item.id) {
@@ -14612,18 +14566,18 @@
                 case 'crystal_ball':
                     // Activate prediction for next game (3 uses per item)
                     const crystalBallUses = parseInt(localStorage.getItem('crystalBallUses') || '0');
-                    if (crystalBallUses >= 3) {
-                        // Reset uses when activating a new Crystal Ball
-                        localStorage.setItem('crystalBallUses', '0');
-                        console.log('🔮 Resetting Crystal Ball uses for new item');
+                    
+                    // If we already have a crystal ball active, just add uses
+                    if (localStorage.getItem('crystalBallActive') === 'true') {
+                        const newUses = crystalBallUses + 3; // Add 3 more uses
+                        localStorage.setItem('crystalBallUses', newUses.toString());
+                        showNotification(`🔮 ${item.name} activada! +3 usos añadidos (${newUses} usos totales)`, 'success');
+                    } else {
+                        // First time activating crystal ball
+                        localStorage.setItem('crystalBallActive', 'true');
+                        localStorage.setItem('crystalBallUses', '3'); // Start with 3 uses
+                        showNotification(`🔮 ${item.name} activada! Predicción disponible para el próximo juego (3 usos disponibles)`, 'success');
                     }
-                    
-                    const newUses = parseInt(localStorage.getItem('crystalBallUses') || '0') + 1;
-                    localStorage.setItem('crystalBallActive', 'true');
-                    localStorage.setItem('crystalBallUses', newUses.toString());
-                    
-                    // Show notification
-                    showNotification(`🔮 ${item.name} activada! Predicción disponible para el próximo juego (${3 - newUses} usos restantes)`, 'success');
                     break;
                     
                 case 'anonymous_robbery':
@@ -14635,10 +14589,11 @@
                     showNotification(`🕵️‍♂️ ${item.name} activado! Modo de robo anónimo disponible por 24 horas`, 'success');
                     break;
                     
-                case 'golden_button':
-                    // Activate golden button for 1 second (modified to give only 1 coin)
-                    activateGoldenButton();
-                    break;
+                // REMOVED: Golden button case completely disabled
+                // case 'golden_button':
+                //     // Activate golden button for 1 minute
+                //     activateGoldenButton();
+                //     break;
                     
                 case 'nuclear_bomb':
                     // Activate nuclear bomb effect
@@ -14662,18 +14617,16 @@
                     
                 default:
                     showNotification(`❌ Función no implementada para ${item.name}`, 'error');
-                    return;
+                    break;
             }
             
             // Remove item from inventory
             inventory.splice(itemIndex, 1);
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
-            console.log(`✅ Item ${item.name} removed from inventory. Remaining items:`, inventory);
-            
-            // Verify the item was actually removed
-            const updatedInventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-            console.log('🔍 Verification - Updated inventory in localStorage:', updatedInventory);
+            console.log(`✅ Item ${item.name} removed from inventory.`);
+            console.log(`🎒 Inventory after use: ${inventory.length} items`);
+            console.log(`🎒 Remaining items:`, inventory.map(item => `${item.name} (${item.id})`));
             
             // Close current modal and reopen with updated inventory
             closeInventoryModal();
@@ -14889,15 +14842,35 @@
                 return;
             }
             
-            // Use centralized function to add item
-            const itemAdded = addItemToInventory(cardData);
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
             
-            if (itemAdded) {
-                // Show notification
-                showNotification(`🥚 ¡Nueva tarjeta coleccionable: ${cardData.name}!`, 'success');
-            } else {
-                // Show different message if already exists
-                showNotification(`🥚 Ya tienes la tarjeta ${cardData.name}`, 'warning');
+            // Check if card already exists to avoid duplicates
+            const existingCard = inventory.find(item => item.id === cardData.id);
+            if (existingCard) {
+                console.log(`🥚 Easter Egg card already exists: ${easterEggType} - skipping`);
+                return;
+            }
+            
+            // Check if any easter egg card of this type already exists
+            const existingEasterEgg = inventory.find(item => item.type === 'easter_egg' && item.id.includes(easterEggType));
+            if (existingEasterEgg) {
+                console.log(`🥚 Easter Egg card of type ${easterEggType} already exists - skipping`);
+                return;
+            }
+            
+            // Add card to inventory
+            inventory.push(cardData);
+            localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            
+            console.log(`✅ Easter Egg card added to inventory: ${cardData.name}`);
+            
+            // Show notification
+            showNotification(`🥚 ¡Nueva tarjeta coleccionable: ${cardData.name}!`, 'success');
+            
+            // Update inventory display if open
+            const inventoryItems = document.getElementById('inventoryItems');
+            if (inventoryItems) {
+                showInventoryModal(); // Reopen modal with updated inventory
             }
         }
 
@@ -15216,13 +15189,9 @@
                     loadTotalCoins();
                 }
             } else if (reward.type === 'item') {
-                // Use centralized function to add item
-                const itemAdded = addItemToInventory(reward.value);
-                
-                if (!itemAdded) {
-                    // If item already exists, show different message
-                    showNotification(`⚠️ Ya tienes ${reward.value.name} en tu inventario`, 'warning');
-                }
+                const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+                inventory.push(reward.value);
+                localStorage.setItem('playerInventory', JSON.stringify(inventory));
             }
             
             // Sync with Firebase
@@ -15329,7 +15298,7 @@
                     {
                         id: 'golden_button',
                         name: 'Botón de Oro',
-                        description: 'Activa un botón flotante por 1 segundo. +1 moneda por clic',
+                        description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
                         icon: '🟡',
                         value: 3000,
                         rarity: 'legendary'
@@ -15980,478 +15949,81 @@
             document.body.appendChild(modal);
         }
 
-        // GOLDEN BUTTON SYSTEM
-        // MODIFIED: Golden button now gives only 1 coin instead of 50
-        function activateGoldenButton() {
-            console.log('🟡 GOLDEN BUTTON ACTIVATED!');
-            
-            // Mark golden button as used permanently
-            localStorage.setItem('goldenButtonUsed', 'true');
-            
-            // Remove golden button from inventory permanently
-            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-            const updatedInventory = inventory.filter(item => item.id !== 'golden_button');
-            localStorage.setItem('playerInventory', JSON.stringify(updatedInventory));
-            
-            // Show notification
-            showNotification('🟡 ¡Botón de Oro activado! Haz clic en el botón para ganar 1 moneda', 'success');
-            
-            // Create modal overlay
-            const modalOverlay = document.createElement('div');
-            modalOverlay.id = 'goldenButtonModal';
-            modalOverlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.8);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-                animation: fadeIn 0.3s ease-out;
-            `;
-            
-            // Create modal content
-            const modalContent = document.createElement('div');
-            modalContent.style.cssText = `
-                background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-                border: 3px solid #FFD700;
-                border-radius: 20px;
-                padding: 2rem;
-                text-align: center;
-                max-width: 90%;
-                width: 400px;
-                box-shadow: 0 0 50px #FFD700;
-                position: relative;
-            `;
-            
-            // Create golden button
-            const goldenButton = document.createElement('div');
-            goldenButton.id = 'floatingGoldenButton';
-            goldenButton.style.cssText = `
-                width: 150px;
-                height: 150px;
-                background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-                border: 4px solid #FF8C00;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 4rem;
-                cursor: pointer;
-                margin: 0 auto 1rem auto;
-                box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
-                animation: goldenButtonPulse 1s infinite alternate;
-                transition: all 0.3s ease;
-            `;
-            goldenButton.textContent = '🟡';
-            
-            // Create timer display
-            const timerDisplay = document.createElement('div');
-            timerDisplay.id = 'goldenButtonTimer';
-            timerDisplay.style.cssText = `
-                font-size: 1.2rem;
-                color: #FFD700;
-                margin-bottom: 1rem;
-                font-weight: bold;
-            `;
-            timerDisplay.textContent = '⏰ Tiempo restante: 0:01';
-            
-            // Create instructions
-            const instructions = document.createElement('div');
-            instructions.style.cssText = `
-                font-size: 1rem;
-                color: #fff;
-                margin-bottom: 1rem;
-            `;
-            instructions.textContent = '¡Haz clic en el botón dorado para ganar +1 moneda! (Solo 1 segundo disponible)';
-            
-            // Create back button (initially hidden)
-            const backButton = document.createElement('button');
-            backButton.id = 'goldenButtonBackBtn';
-            backButton.style.cssText = `
-                background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
-                color: #fff;
-                border: none;
-                border-radius: 10px;
-                padding: 1rem 2rem;
-                font-size: 1.2rem;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-                display: none;
-            `;
-            backButton.textContent = '🏠 VOLVER';
-            backButton.onclick = () => {
-                if (modalOverlay.parentNode) {
-                    modalOverlay.parentNode.removeChild(modalOverlay);
-                }
-            };
-            
-            // Add click event to golden button
-            goldenButton.addEventListener('click', function() {
-                // Add coins (only 1 coin instead of 50)
-                const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
-                const newCoins = currentCoins + 1;
-                localStorage.setItem('totalOrtizCoins', newCoins.toString());
-                
-                // Update display
-                if (typeof loadTotalCoins === 'function') {
-                    loadTotalCoins();
-                }
-                
-                // Sync with Firebase
-                if (window.firebase && window.firebase.database) {
-                    const db = window.firebase.database();
-                    const currentPlayer = localStorage.getItem('soldierName');
-                    if (currentPlayer) {
-                        const playerRef = db.ref(`players/${currentPlayer}`);
-                        playerRef.update({
-                            coins: newCoins,
-                            lastUpdated: Date.now()
-                        });
-                    }
-                }
-                
-                // Visual feedback
-                this.style.transform = 'scale(1.2)';
-                this.style.boxShadow = '0 0 50px #FFD700, inset 0 0 30px rgba(255, 215, 0, 0.5)';
-                
-                // Show coin animation
-                const coinAnimation = document.createElement('div');
-                coinAnimation.style.cssText = `
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    font-size: 2rem;
-                    color: #FFD700;
-                    pointer-events: none;
-                    z-index: 10001;
-                    animation: coinFloat 1s ease-out forwards;
-                `;
-                coinAnimation.textContent = '+1';
-                modalContent.appendChild(coinAnimation);
-                
-                // Remove coin animation after 1 second
-                setTimeout(() => {
-                    if (coinAnimation.parentNode) {
-                        coinAnimation.parentNode.removeChild(coinAnimation);
-                    }
-                }, 1000);
-                
-                // Reset button style
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                    this.style.boxShadow = '0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3)';
-                }, 200);
-                
-                // Show notification
-                showNotification('💰 +1 moneda!', 'success');
-            });
-            
-            // Add hover effects
-            goldenButton.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.1)';
-                this.style.boxShadow = '0 0 40px #FFD700, inset 0 0 25px rgba(255, 215, 0, 0.4)';
-            });
-            
-            goldenButton.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
-                this.style.boxShadow = '0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3)';
-            });
-            
-            // Assemble modal
-            modalContent.appendChild(timerDisplay);
-            modalContent.appendChild(instructions);
-            modalContent.appendChild(goldenButton);
-            modalContent.appendChild(backButton);
-            modalOverlay.appendChild(modalContent);
-            
-            // Add to page
-            document.body.appendChild(modalOverlay);
-            
-            // Add CSS animations
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes goldenButtonPulse {
-                    0% { 
-                        transform: scale(1);
-                        box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
-                    }
-                    100% { 
-                        transform: scale(1.05);
-                        box-shadow: 0 0 40px #FFD700, inset 0 0 25px rgba(255, 215, 0, 0.4);
-                    }
-                }
-                
-                @keyframes coinFloat {
-                    0% { 
-                        transform: translate(-50%, -50%) scale(1);
-                        opacity: 1;
-                    }
-                    100% { 
-                        transform: translate(-50%, -100px) scale(1.5);
-                        opacity: 0;
-                    }
-                }
-                
-                @keyframes fadeIn {
-                    0% { opacity: 0; }
-                    100% { opacity: 1; }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            // Timer countdown
-            let timeLeft = 1; // 1 second
-            const timerInterval = setInterval(() => {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerDisplay.textContent = `⏰ Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    
-                    // Hide golden button and show back button
-                    goldenButton.style.display = 'none';
-                    instructions.style.display = 'none';
-                    timerDisplay.style.display = 'none';
-                    backButton.style.display = 'block';
-                    
-                    // Show expiration message
-                    const expirationMessage = document.createElement('div');
-                    expirationMessage.style.cssText = `
-                        font-size: 1.5rem;
-                        color: #FFD700;
-                        margin-bottom: 1rem;
-                        font-weight: bold;
-                    `;
-                    expirationMessage.textContent = '⏰ ¡Tiempo agotado!';
-                    modalContent.insertBefore(expirationMessage, backButton);
-                    
-                    showNotification('⏰ El Botón de Oro ha expirado', 'info');
-                }
-            }, 1000);
-        }
-            // 
-            // // Add hover effects
-            // goldenButton.addEventListener('mouseenter', function() {
-            //     this.style.transform = 'scale(1.1)';
-            //     this.style.boxShadow = '0 0 40px #FFD700, inset 0 0 25px rgba(255, 215, 0, 0.4)';
-            // });
-            // 
-            // goldenButton.addEventListener('mouseleave', function() {
-            //     this.style.transform = 'scale(1)';
-            //     this.style.boxShadow = '0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3)';
-            // });
-            // 
-            // // Assemble modal
-            // modalContent.appendChild(timerDisplay);
-            // modalContent.appendChild(instructions);
-            // modalContent.appendChild(goldenButton);
-            // modalContent.appendChild(backButton);
-            // modalOverlay.appendChild(modalContent);
-            // 
-            // // Add to page
-            // document.body.appendChild(modalOverlay);
-            // 
-            // // Add CSS animations
-            // const style = document.createElement('style');
-            // style.textContent = `
-            //     @keyframes goldenButtonPulse {
-            //         0% { 
-            //             transform: scale(1);
-            //             box-shadow: 0 0 30px #FFD700, inset 0 0 20px rgba(255, 215, 0, 0.3);
-            //     }
-            //         100% { 
-            //             transform: scale(1.05);
-            //             box-shadow: 0 0 40px #FFD700, inset 0 0 25px rgba(255, 215, 0, 0.4);
-            //     }
-            // }
-            // 
-            // @keyframes coinFloat {
-            //     0% { 
-            //             transform: translate(-50%, -50%) scale(1);
-            //             opacity: 1;
-            //     }
-            //     100% { 
-            //             transform: translate(-50%, -100px) scale(1.5);
-            //             opacity: 0;
-            //     }
-            // }
-            // 
-            // @keyframes fadeIn {
-            //     0% { opacity: 0; }
-            //     100% { opacity: 1; }
-            // }
-            // `;
-            // document.head.appendChild(style);
-            // 
-            // // Timer countdown
-            // let timeLeft = 1; // 1 second
-            // const timerInterval = setInterval(() => {
-            //     timeLeft--;
-            //     const minutes = Math.floor(timeLeft / 60);
-            //     const seconds = timeLeft % 60;
-            //     timerDisplay.textContent = `⏰ Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-            //     
-            //     if (timeLeft <= 0) {
-            //         clearInterval(timerInterval);
-            //         
-            //         // Hide golden button and show back button
-            //         goldenButton.style.display = 'none';
-            //         instructions.style.display = 'none';
-            //         timerDisplay.style.display = 'none';
-            //         backButton.style.display = 'block';
-            //         
-            //         // Show expiration message
-            //         const expirationMessage = document.createElement('div');
-            //         expirationMessage.style.cssText = `
-            //             font-size: 1.5rem;
-            //             color: #FFD700;
-            //             margin-bottom: 1rem;
-            //             font-weight: bold;
-            //         `;
-            //         expirationMessage.textContent = '⏰ ¡Tiempo agotado!';
-            //         modalContent.insertBefore(expirationMessage, backButton);
-            //         
-            //         showNotification('⏰ El Botón de Oro ha expirado', 'info');
-            //     }
-            // }, 1000);
+        // REMOVED: Golden button system completely disabled
+        // function activateGoldenButton() {
+        //     console.log('🟡 GOLDEN BUTTON ACTIVATED!');
+        //     
+        //     // Mark golden button as used permanently
+        //     localStorage.setItem('goldenButtonUsed', 'true');
+        //     
+        //     // Remove golden button from inventory permanently
+        //     const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+        //     const updatedInventory = inventory.filter(item => item.id !== 'golden_button');
+        //     localStorage.setItem('playerInventory', JSON.stringify(updatedInventory));
+        //     
+        //     // Show notification
+        //     showNotification('🟡 ¡Botón de Oro activado! Haz clic en el botón para ganar monedas', 'success');
+        //     
+        //     // All golden button functionality has been removed to prevent farming
+        //     console.log('🟡 Golden button functionality completely disabled');
         // }
 
-        // GLOBAL GOLDEN BUTTON REMOVAL SYSTEM - DISABLED
-        // (function() {
-        //     const currentVersion = '2024-01-16-v1';
-        //     const storedVersion = localStorage.getItem('appVersion');
-        //     
-        //     // Check if this is a new version
-        //     if (storedVersion !== currentVersion) {
-        //         console.log('🔄 Nueva versión detectada. Eliminando botón dorado de todos los jugadores...');
-        //         
-        //         // Remove golden button from current player's inventory
-        //         removeGoldenButtonFromCurrentPlayer();
-        //         
-        //         // Remove golden button from all players in Firebase
-        //         removeGoldenButtonFromAllPlayers();
-        //         
-        //         // Show notification before refresh
-        //         const refreshModal = document.createElement('div');
-        //         refreshModal.style.cssText = `
-        //             position: fixed;
-        //             top: 0;
-        //             left: 0;
-        //             width: 100%;
-        //             height: 100%;
-        //             background: rgba(0, 0, 0, 0.9);
-        //             display: flex;
-        //             align-items: center;
-        //             justify-content: center;
-        //             z-index: 10002;
-        //             animation: fadeIn 0.3s ease-out;
-        //         `;
-        //         
-        //         refreshModal.innerHTML = `
-        //             <div style="
-        //                 background: linear-gradient(135deg, #e60073 0%, #1a1a1a 100%);
-        //                 border: 3px solid #e60073;
-        //                 border-radius: 20px;
-        //                 padding: 40px;
-        //                 text-align: center;
-        //                 max-width: 90%;
-        //                 width: 400px;
-        //                 box-shadow: 0 0 50px #e60073;
-        //             ">
-        //                 <div style="font-size: 4rem; margin-bottom: 20px;">🟡</div>
-        //                 <div style="font-size: 1.8rem; font-weight: bold; margin-bottom: 15px; color: #fff;">BOTÓN DORADO ELIMINADO</div>
-        //                 <div style="font-size: 1.2rem; margin-bottom: 20px; color: #ccc;">El botón dorado ha sido eliminado del inventario de todos los jugadores para prevenir farming.</div>
-        //                 <div style="font-size: 1rem; color: #999;">Versión: ${currentVersion}</div>
-        //                 </div>
-        //             `;
-        //             
-        //             document.body.appendChild(refreshModal);
-        //             
-        //             // Store new version and refresh after 3 seconds
-        //             setTimeout(() => {
-        //                 localStorage.setItem('appVersion', currentVersion);
-        //                 window.location.reload(true);
-        //             }, 3000);
-        //         } else {
-        //             // Store version if not already stored
-        //             localStorage.setItem('appVersion', currentVersion);
-        //         }
-        //     })();
-
-        // Function to remove golden button from current player's inventory
-        function removeGoldenButtonFromCurrentPlayer() {
-            try {
-                // Remove from playerInventory
-                const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-                const updatedInventory = inventory.filter(item => item.id !== 'golden_button');
-                localStorage.setItem('playerInventory', JSON.stringify(updatedInventory));
-                
-                // Remove from old inventory key too
-                const oldInventory = JSON.parse(localStorage.getItem('inventory') || '[]');
-                const updatedOldInventory = oldInventory.filter(item => item.id !== 'golden_button');
-                localStorage.setItem('inventory', JSON.stringify(updatedOldInventory));
-                
-                // Mark as used to prevent future additions
-                localStorage.setItem('goldenButtonUsed', 'true');
-                
-                console.log('✅ Botón dorado eliminado del inventario local');
-            } catch (error) {
-                console.error('❌ Error eliminando botón dorado del inventario local:', error);
-            }
-        }
-
-        // Function to remove golden button from all players in Firebase
-        function removeGoldenButtonFromAllPlayers() {
-            if (!window.firebase || !window.firebase.database) {
-                console.log('⚠️ Firebase no disponible para eliminar botón dorado globalmente');
-                return;
-            }
-
-            const db = firebase.database();
+        // AUTO-REFRESH SYSTEM TO REMOVE GOLDEN BUTTON
+        (function() {
+            const currentVersion = '2024-01-15-v2';
+            const storedVersion = localStorage.getItem('appVersion');
             
-            // Get all players
-            db.ref('players').once('value')
-                .then((snapshot) => {
-                    const updates = {};
-                    let playersUpdated = 0;
-                    
-                    snapshot.forEach((childSnapshot) => {
-                        const player = childSnapshot.val();
-                        if (player && player.inventory && Array.isArray(player.inventory)) {
-                            // Remove golden button from inventory
-                            const updatedInventory = player.inventory.filter(item => item.id !== 'golden_button');
-                            
-                            if (updatedInventory.length !== player.inventory.length) {
-                                updates[`players/${childSnapshot.key}/inventory`] = updatedInventory;
-                                updates[`players/${childSnapshot.key}/lastUpdated`] = Date.now();
-                                playersUpdated++;
-                                console.log(`🟡 Eliminando botón dorado de: ${childSnapshot.key}`);
-                            }
-                        }
-                    });
-                    
-                    if (Object.keys(updates).length > 0) {
-                        return db.ref().update(updates);
-                    } else {
-                        console.log('✅ No se encontraron botones dorados para eliminar');
-                        return Promise.resolve();
-                    }
-                })
-                .then(() => {
-                    console.log(`✅ Botón dorado eliminado de ${playersUpdated} jugadores en Firebase`);
-                })
-                .catch((error) => {
-                    console.error('❌ Error eliminando botón dorado de Firebase:', error);
-                });
-        }
+            // Check if this is a new version
+            if (storedVersion !== currentVersion) {
+                // Force refresh to remove golden button
+                console.log('🔄 Nueva versión detectada. Recargando página para eliminar botón dorado...');
+                
+                // Show notification before refresh
+                const refreshModal = document.createElement('div');
+                refreshModal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.9);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10002;
+                    animation: fadeIn 0.3s ease-out;
+                `;
+                
+                refreshModal.innerHTML = `
+                    <div style="
+                        background: linear-gradient(135deg, #e60073 0%, #1a1a1a 100%);
+                        border: 3px solid #e60073;
+                        border-radius: 20px;
+                        padding: 40px;
+                        text-align: center;
+                        max-width: 90%;
+                        width: 400px;
+                        box-shadow: 0 0 50px #e60073;
+                    ">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🔄</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; margin-bottom: 15px; color: #fff;">ACTUALIZACIÓN REQUERIDA</div>
+                        <div style="font-size: 1.2rem; margin-bottom: 20px; color: #ccc;">Se han realizado cambios importantes en el juego. La página se recargará automáticamente en 3 segundos.</div>
+                        <div style="font-size: 1rem; color: #999;">Versión: ${currentVersion}</div>
+                    </div>
+                `;
+                
+                document.body.appendChild(refreshModal);
+                
+                // Store new version and refresh after 3 seconds
+                setTimeout(() => {
+                    localStorage.setItem('appVersion', currentVersion);
+                    window.location.reload(true);
+                }, 3000);
+            } else {
+                // Store version if not already stored
+                localStorage.setItem('appVersion', currentVersion);
+            }
+        })();
 
         // 🔄 SISTEMA DE RESPALDO AUTOMÁTICO - Garantiza que nunca se pierdan datos
         function initializeAutoBackupSystem() {

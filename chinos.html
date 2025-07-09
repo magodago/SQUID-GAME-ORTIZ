@@ -309,10 +309,11 @@
                 const isWinner = player.id === winner;
                 const status = isWinner ? 'winner' : 'loser';
                 const icon = isWinner ? '🏆' : '💀';
+                const playerName = player.name || 'Jugador Desconocido';
                 
                 html += `
                     <div class="${status}">
-                        ${icon} ${player.name}: Seleccionó ${player.selectedNumber}, 
+                        ${icon} ${playerName}: Seleccionó ${player.selectedNumber}, 
                         predijo ${player.guess} 
                         ${isWinner ? '(GANADOR!)' : ''}
                     </div>
@@ -337,14 +338,22 @@
                 const playerCard = document.createElement('div');
                 playerCard.className = `player-card ${player.ready ? 'ready' : ''}`;
                 
+                const playerName = player.name || 'Jugador Desconocido';
+                const status = player.online ? '🟢 Online' : '🔴 Offline';
+                const readyStatus = player.ready ? '✅ Listo' : '⏳ Esperando';
+                
                 playerCard.innerHTML = `
-                    <h3>${player.name}</h3>
-                    <p>Estado: ${player.online ? '🟢 Online' : '🔴 Offline'}</p>
-                    <p>Listo: ${player.ready ? '✅' : '⏳'}</p>
+                    <h3>${playerName}</h3>
+                    <p>Estado: ${status}</p>
+                    <p>${readyStatus}</p>
+                    ${player.selectedNumber ? `<p>Número: ${player.selectedNumber}</p>` : ''}
+                    ${player.guess ? `<p>Predicción: ${player.guess}</p>` : ''}
                 `;
                 
                 playersList.appendChild(playerCard);
             });
+            
+            console.log('👥 Lista de jugadores actualizada:', players);
         }
 
         function checkGameStart(players) {
@@ -475,13 +484,14 @@
             updates[`chinos/${gameId}/players/${playerId}/selectedNumber`] = selectedNumber;
             updates[`chinos/${gameId}/players/${playerId}/guess`] = myGuess;
             updates[`chinos/${gameId}/players/${playerId}/ready`] = true;
+            updates[`chinos/${gameId}/players/${playerId}/name`] = playerName; // Mantener el nombre
 
             set(ref(db), updates);
             
             submitBtn.disabled = true;
             submitBtn.textContent = 'Enviado ✓';
             
-            console.log('Elección enviada:', { selectedNumber, guess: myGuess, ready: true });
+            console.log('Elección enviada:', { selectedNumber, guess: myGuess, ready: true, name: playerName });
         });
 
         function addCoins(amount) {

@@ -4910,6 +4910,48 @@
       box-shadow: 0 0 50px #FFFFFF, inset 0 0 30px rgba(255, 255, 255, 0.5);
     }
 
+    .bombaexplosiva-btn {
+      background: linear-gradient(45deg, #FF0000, #DC143C);
+      box-shadow: 0 0 30px #FF0000, inset 0 0 20px rgba(255, 0, 0, 0.3);
+      animation: bombaExplosivaPulse 3s infinite;
+    }
+    
+    .bombaexplosiva-btn:hover {
+      transform: scale(1.1) rotateY(15deg);
+      box-shadow: 0 0 50px #FF0000, inset 0 0 30px rgba(255, 0, 0, 0.5);
+      animation: none;
+    }
+    
+    @keyframes bombaExplosivaPulse {
+      0%, 100% {
+        box-shadow: 0 0 30px #FF0000, inset 0 0 20px rgba(255, 0, 0, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 50px #FF0000, inset 0 0 30px rgba(255, 0, 0, 0.5);
+      }
+    }
+
+    .chinos-btn {
+      background: linear-gradient(45deg, #4B0082, #8A2BE2);
+      box-shadow: 0 0 30px #4B0082, inset 0 0 20px rgba(75, 0, 130, 0.3);
+      animation: chinosGlow 2.5s infinite;
+    }
+    
+    .chinos-btn:hover {
+      transform: scale(1.1) rotateY(-15deg);
+      box-shadow: 0 0 50px #4B0082, inset 0 0 30px rgba(75, 0, 130, 0.5);
+      animation: none;
+    }
+    
+    @keyframes chinosGlow {
+      0%, 100% {
+        box-shadow: 0 0 30px #4B0082, inset 0 0 20px rgba(75, 0, 130, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 50px #8A2BE2, inset 0 0 30px rgba(138, 43, 226, 0.5);
+      }
+    }
+
     .squidpadel-btn {
       background: linear-gradient(45deg, #1e3a8a, #1e40af);
       box-shadow: 0 0 30px #1e3a8a, inset 0 0 20px rgba(30, 58, 138, 0.3);

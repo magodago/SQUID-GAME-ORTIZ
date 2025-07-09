@@ -6649,14 +6649,8 @@
             }
             
             itemsToAdd.forEach(item => {
-              if (!inventory.find(existingItem => existingItem.id === item.id)) {
-                inventory.push(item);
-                console.log(`🎒 Added ${item.name} to inventory`);
-              }
+              addItemToInventory(item);
             });
-            
-            // Save updated inventory
-            localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             // Show alert to confirm it works
             let alertMessage = `🔐 DAGO CODE ACTIVATED!\n\n💰 Monedas añadidas: +50,000\n🎒 Objetos añadidos:\n   • Máscara del Front Man\n   • Tarjeta VIP Dorada\n   • Llave Dorada\n   • Máscara de Guardia\n   • Dado Dorado\n   • Bola de Cristal\n   • 🕵️‍♂️ Roba Anónimo\n   • ☢️ Bomba Nuclear`;
@@ -11099,31 +11093,12 @@
           }
         }
       } else if (reward.type === 'item') {
-        // Add item to inventory
-        const inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
-        inventory.push(reward.value);
-        localStorage.setItem('inventory', JSON.stringify(inventory));
+        // Add item to inventory using centralized function
+        const itemAdded = addItemToInventory(reward.value);
         
-        // Sync inventory with Firebase
-        if (window.firebase && window.firebase.database) {
-          const db = window.firebase.database();
-          const currentPlayer = localStorage.getItem('soldierName');
-          if (currentPlayer) {
-            const playerRef = db.ref(`players/${currentPlayer}`);
-            playerRef.update({
-              inventory: inventory,
-              lastUpdated: Date.now()
-            }).then(() => {
-              console.log(`✅ Daily surprise box item synced to Firebase: ${reward.value}`);
-            }).catch((error) => {
-              console.error('❌ Error syncing daily surprise box item:', error);
-            });
-          }
-        }
-        
-        // Update inventory display if function exists
-        if (typeof loadInventory === 'function') {
-          loadInventory();
+        if (!itemAdded) {
+          // If item already exists, show different message
+          showNotification(`⚠️ Ya tienes ${reward.value.name} en tu inventario`, 'warning');
         }
       }
       
@@ -11261,6 +11236,66 @@
           }
         }, 500);
       }
+    }
+
+    // CENTRALIZED INVENTORY MANAGEMENT
+    function addItemToInventory(item) {
+        // Get current inventory using helper function
+        const inventory = getInventory();
+        
+        // Check if item already exists by ID
+        const existingItem = inventory.find(existing => existing.id === item.id);
+        if (existingItem) {
+            console.log(`⚠️ Item ${item.name} (${item.id}) already exists in inventory - skipping`);
+            return false; // Item not added
+        }
+        
+        // Add item to inventory
+        inventory.push(item);
+        localStorage.setItem('playerInventory', JSON.stringify(inventory));
+        
+        console.log(`✅ Added ${item.name} (${item.id}) to inventory`);
+        
+        // Sync with Firebase if available
+        if (window.firebase && window.firebase.database) {
+            const db = window.firebase.database();
+            const currentPlayer = localStorage.getItem('soldierName');
+            if (currentPlayer) {
+                const playerRef = db.ref(`players/${currentPlayer}`);
+                playerRef.update({
+                    inventory: inventory,
+                    lastUpdated: Date.now()
+                }).then(() => {
+                    console.log(`✅ Item ${item.name} synced to Firebase`);
+                }).catch((error) => {
+                    console.error('❌ Error syncing item to Firebase:', error);
+                });
+            }
+        }
+        
+        // Update inventory display if modal is open
+        const inventoryItems = document.getElementById('inventoryItems');
+        if (inventoryItems) {
+            showInventoryModal(); // Reopen modal with updated inventory
+        }
+        
+        return true; // Item added successfully
+    }
+
+    // Helper function to get inventory (handles both localStorage keys)
+    function getInventory() {
+        let inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+        const oldInventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+        
+        // If old inventory exists and new one is empty, migrate it
+        if (oldInventory.length > 0 && inventory.length === 0) {
+            inventory = oldInventory;
+            localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            localStorage.removeItem('inventory'); // Clean up old key
+            console.log('🔄 Migrated inventory from old localStorage key');
+        }
+        
+        return inventory;
     }
 
     // ACHIEVEMENTS SYSTEM
@@ -14256,6 +14291,10 @@
             // Update existing Easter Egg cards with new descriptions
             updateExistingEasterEggCards();
             
+            // Load inventory data using helper function
+            const inventory = getInventory();
+            console.log('📦 Loading inventory for modal:', inventory);
+            
             // Create inventory modal
             const modal = document.createElement('div');
             modal.id = 'inventoryModal';
@@ -14272,9 +14311,6 @@
                 z-index: 10000;
                 animation: fadeIn 0.5s ease-out;
             `;
-            
-            // Load inventory data
-            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
             
             // Separate items and easter eggs
             const items = inventory.filter(item => item.type !== 'easter_egg');
@@ -14492,10 +14528,22 @@
             }
         }
 
+        // Debug function to check inventory state
+        function debugInventory() {
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            console.log('🔍 DEBUG - Current inventory state:', inventory);
+            console.log('🔍 DEBUG - Inventory length:', inventory.length);
+            console.log('🔍 DEBUG - Inventory items:', inventory.map(item => `${item.name} (${item.id})`));
+            return inventory;
+        }
+
         function useItem(itemId) {
             console.log(`🎒 Using item: ${itemId}`);
             
+            // Get current inventory
             const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            console.log('📦 Current inventory before use:', inventory);
+            
             const itemIndex = inventory.findIndex(item => item.id === itemId);
             
             if (itemIndex === -1) {
@@ -14504,6 +14552,7 @@
             }
             
             const item = inventory[itemIndex];
+            console.log('🎯 Item to use:', item);
             
             // Apply item effect
             switch (item.id) {
@@ -14626,6 +14675,10 @@
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
             console.log(`✅ Item ${item.name} removed from inventory. Remaining items:`, inventory);
+            
+            // Verify the item was actually removed
+            const updatedInventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            console.log('🔍 Verification - Updated inventory in localStorage:', updatedInventory);
             
             // Close current modal and reopen with updated inventory
             closeInventoryModal();
@@ -14841,35 +14894,15 @@
                 return;
             }
             
-            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            // Use centralized function to add item
+            const itemAdded = addItemToInventory(cardData);
             
-            // Check if card already exists to avoid duplicates
-            const existingCard = inventory.find(item => item.id === cardData.id);
-            if (existingCard) {
-                console.log(`🥚 Easter Egg card already exists: ${easterEggType} - skipping`);
-                return;
-            }
-            
-            // Check if any easter egg card of this type already exists
-            const existingEasterEgg = inventory.find(item => item.type === 'easter_egg' && item.id.includes(easterEggType));
-            if (existingEasterEgg) {
-                console.log(`🥚 Easter Egg card of type ${easterEggType} already exists - skipping`);
-                return;
-            }
-            
-            // Add card to inventory
-            inventory.push(cardData);
-            localStorage.setItem('playerInventory', JSON.stringify(inventory));
-            
-            console.log(`✅ Easter Egg card added to inventory: ${cardData.name}`);
-            
-            // Show notification
-            showNotification(`🥚 ¡Nueva tarjeta coleccionable: ${cardData.name}!`, 'success');
-            
-            // Update inventory display if open
-            const inventoryItems = document.getElementById('inventoryItems');
-            if (inventoryItems) {
-                showInventoryModal(); // Reopen modal with updated inventory
+            if (itemAdded) {
+                // Show notification
+                showNotification(`🥚 ¡Nueva tarjeta coleccionable: ${cardData.name}!`, 'success');
+            } else {
+                // Show different message if already exists
+                showNotification(`🥚 Ya tienes la tarjeta ${cardData.name}`, 'warning');
             }
         }
 
@@ -15188,9 +15221,13 @@
                     loadTotalCoins();
                 }
             } else if (reward.type === 'item') {
-                const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-                inventory.push(reward.value);
-                localStorage.setItem('playerInventory', JSON.stringify(inventory));
+                // Use centralized function to add item
+                const itemAdded = addItemToInventory(reward.value);
+                
+                if (!itemAdded) {
+                    // If item already exists, show different message
+                    showNotification(`⚠️ Ya tienes ${reward.value.name} en tu inventario`, 'warning');
+                }
             }
             
             // Sync with Firebase

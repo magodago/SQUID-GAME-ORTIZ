@@ -99,7 +99,6 @@
         }
         
         function addGoldenButton() {
-            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
             const goldenButton = {
                 id: 'golden_button',
                 name: 'Botón de Oro',
@@ -109,12 +108,24 @@
                 rarity: 'legendary'
             };
             
-            if (!inventory.some(item => item.id === 'golden_button')) {
-                inventory.push(goldenButton);
-                localStorage.setItem('playerInventory', JSON.stringify(inventory));
-                log('✅ Botón dorado agregado al inventario');
+            // Use centralized function if available, otherwise fallback
+            if (typeof addItemToInventory === 'function') {
+                const added = addItemToInventory(goldenButton);
+                if (added) {
+                    log('✅ Botón dorado agregado al inventario');
+                } else {
+                    log('⚠️ Botón dorado ya está en el inventario');
+                }
             } else {
-                log('⚠️ Botón dorado ya está en el inventario');
+                // Fallback for test file
+                const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+                if (!inventory.some(item => item.id === 'golden_button')) {
+                    inventory.push(goldenButton);
+                    localStorage.setItem('playerInventory', JSON.stringify(inventory));
+                    log('✅ Botón dorado agregado al inventario');
+                } else {
+                    log('⚠️ Botón dorado ya está en el inventario');
+                }
             }
             checkStatus();
         }

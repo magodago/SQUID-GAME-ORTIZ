@@ -194,6 +194,11 @@
         const playersRef = ref(db, `chinos/${gameId}/players`);
         const gameStateRef = ref(db, `chinos/${gameId}/gameState`);
 
+        // Variables para manejar la creación automática de salas
+        let roomCreationAttempts = 0;
+        const maxRoomCreationAttempts = 3;
+        let roomCreationTimeout = null;
+
         let selectedNumber = null;
         let myGuess = null;
         let countdownInterval = null;
@@ -222,7 +227,26 @@
 
         onValue(gameStateRef, (snapshot) => {
             const gameState = snapshot.val();
-            if (!gameState) return;
+            if (!gameState) {
+                // Si no existe el estado del juego, intentar crear la sala automáticamente
+                if (roomCreationAttempts < maxRoomCreationAttempts) {
+                    roomCreationAttempts++;
+                    console.log(`🔄 Intento ${roomCreationAttempts}/${maxRoomCreationAttempts}: Creando sala de juego Chinos automáticamente`);
+                    
+                    if (roomCreationTimeout) {
+                        clearTimeout(roomCreationTimeout);
+                    }
+                    
+                    roomCreationTimeout = setTimeout(() => {
+                        createGameRoom();
+                    }, 1000 * roomCreationAttempts);
+                } else {
+                    console.log('❌ No se pudo crear la sala de juego después de varios intentos');
+                    alert('Error: No se pudo conectar a la sala de juego. Intenta de nuevo.');
+                    window.location.href = 'index.html';
+                }
+                return;
+            }
 
             console.log('Estado del juego actualizado:', gameState);
 
@@ -456,6 +480,30 @@
             }
         }
 
+        function createGameRoom() {
+            console.log('🏗️ Creando sala de juego Chinos automáticamente');
+            
+            // Crear el estado inicial del juego
+            set(gameStateRef, {
+                phase: 'waiting',
+                countdown: 30,
+                startTime: null,
+                autoCreated: true
+            });
+            
+            // Crear la sala de juego en gameRooms
+            const gameRoomRef = ref(db, `gameRooms/${gameId}`);
+            set(gameRoomRef, {
+                gameId: gameId,
+                status: 'waiting',
+                createdAt: Date.now(),
+                autoCreated: true,
+                game: 'chinos'
+            });
+            
+            console.log('✅ Sala de juego Chinos creada automáticamente');
+        }
+
         window.addEventListener('beforeunload', () => {
             remove(ref(db, `chinos/${gameId}/players/${playerId}`));
         });
@@ -466,10 +514,27 @@
         onValue(gameStateRef, (snapshot) => {
             const gameState = snapshot.val();
             if (!gameState) {
+                console.log('🆕 Inicializando estado del juego Chinos');
                 set(gameStateRef, {
                     phase: 'waiting',
                     countdown: 30,
                     startTime: null
+                });
+            }
+        }, { onlyOnce: true });
+        
+        // Crear sala de juego automáticamente si no existe
+        const gameRoomRef = ref(db, `gameRooms/${gameId}`);
+        onValue(gameRoomRef, (snapshot) => {
+            const gameRoom = snapshot.val();
+            if (!gameRoom) {
+                console.log('🆕 Creando sala de juego Chinos automáticamente');
+                set(gameRoomRef, {
+                    gameId: gameId,
+                    status: 'waiting',
+                    createdAt: Date.now(),
+                    autoCreated: true,
+                    game: 'chinos'
                 });
             }
         }, { onlyOnce: true });

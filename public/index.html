@@ -14583,11 +14583,13 @@
             inventory.splice(itemIndex, 1);
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
-            // Refresh inventory display
-            const inventoryItems = document.getElementById('inventoryItems');
-            if (inventoryItems) {
-                showInventoryModal(); // Reopen modal with updated inventory
-            }
+            console.log(`✅ Item ${item.name} removed from inventory. Remaining items:`, inventory);
+            
+            // Close current modal and reopen with updated inventory
+            closeInventoryModal();
+            setTimeout(() => {
+                showInventoryModal();
+            }, 100);
         }
 
         function sellItem(itemId) {
@@ -14618,14 +14620,16 @@
             inventory.splice(itemIndex, 1);
             localStorage.setItem('playerInventory', JSON.stringify(inventory));
             
+            console.log(`✅ Item ${item.name} sold and removed from inventory. Remaining items:`, inventory);
+            
             // Show notification
             showNotification(`💰 Vendiste ${item.name} por ${sellPrice} monedas`, 'success');
             
-            // Refresh inventory display
-            const inventoryItems = document.getElementById('inventoryItems');
-            if (inventoryItems) {
-                showInventoryModal(); // Reopen modal with updated inventory
-            }
+            // Close current modal and reopen with updated inventory
+            closeInventoryModal();
+            setTimeout(() => {
+                showInventoryModal();
+            }, 100);
         }
 
         function activateNuclearBomb() {

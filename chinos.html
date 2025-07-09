@@ -7,20 +7,31 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         .chinos-container {
-            max-width: 600px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .number-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 20px 0;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .number-buttons {
+                gap: 8px;
+                margin: 10px 0;
+            }
         }
         .number-btn {
-            padding: 20px;
-            font-size: 24px;
+            padding: 15px;
+            font-size: 20px;
             font-weight: bold;
             border: 3px solid #ff6b6b;
             border-radius: 10px;
@@ -28,6 +39,19 @@
             color: white;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+        
+        @media (max-width: 768px) {
+            .number-btn {
+                padding: 12px;
+                font-size: 18px;
+                min-height: 50px;
+            }
         }
         .number-btn:hover {
             transform: translateY(-2px);
@@ -47,7 +71,20 @@
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.9);
             text-align: center;
-            width: 100px;
+            width: 120px;
+            min-height: 50px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        @media (max-width: 768px) {
+            .guess-input input {
+                padding: 12px;
+                font-size: 16px;
+                width: 100px;
+                min-height: 45px;
+            }
         }
         .submit-btn {
             padding: 15px 30px;
@@ -58,6 +95,20 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-height: 50px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        @media (max-width: 768px) {
+            .submit-btn {
+                padding: 12px 25px;
+                font-size: 16px;
+                min-height: 45px;
+                width: 100%;
+                max-width: 200px;
+                margin: 0 auto;
+            }
         }
         .submit-btn:hover {
             transform: translateY(-2px);
@@ -128,6 +179,29 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
         }
+        
+        /* Animaciones para notificaciones */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -168,13 +242,13 @@
         import { getDatabase, ref, set, onValue, push, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         const firebaseConfig = {
-            apiKey: "AIzaSyBxGUOlJvH1_8j0qXqXqXqXqXqXqXqXqXqX",
+            apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
             authDomain: "squid-game-ortiz.firebaseapp.com",
             databaseURL: "https://squid-game-ortiz-default-rtdb.firebaseio.com",
             projectId: "squid-game-ortiz",
-            storageBucket: "squid-game-ortiz.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdefghijklmnop"
+            storageBucket: "squid-game-ortiz.firebasestorage.app",
+            messagingSenderId: "564790427576",
+            appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -183,7 +257,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const gameId = urlParams.get('gameId');
         const playerId = urlParams.get('playerId') || 'player_' + Date.now();
-        const playerName = localStorage.getItem('playerName') || 'Jugador';
+        const playerName = localStorage.getItem('soldierName') || 'Jugador';
 
         if (!gameId) {
             alert('Error: No se encontró el ID del juego');
@@ -211,6 +285,42 @@
         const submitBtn = document.getElementById('submit-choice');
         const guessInput = document.getElementById('guess');
 
+        // Función para mostrar notificaciones
+        function showNotification(message, type = 'info') {
+            console.log(`📢 Notificación [${type}]: ${message}`);
+            
+            // Crear notificación visual
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                z-index: 10000;
+                font-weight: bold;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        }
+
         function initializePlayer() {
             const playerData = {
                 id: playerId,
@@ -221,13 +331,23 @@
                 guess: null
             };
 
-            set(ref(db, `chinos/${gameId}/players/${playerId}`), playerData);
-            console.log('Jugador inicializado:', playerData);
+            console.log('👤 Inicializando jugador:', playerData);
+            
+            set(ref(db, `chinos/${gameId}/players/${playerId}`), playerData)
+                .then(() => {
+                    console.log('✅ Jugador inicializado exitosamente en Firebase');
+                })
+                .catch((error) => {
+                    console.error('❌ Error al inicializar jugador:', error);
+                });
         }
 
         onValue(gameStateRef, (snapshot) => {
             const gameState = snapshot.val();
+            console.log('🎮 Estado del juego recibido:', gameState);
+            
             if (!gameState) {
+                console.log('❌ No hay estado del juego, intentando crear sala...');
                 // Si no existe el estado del juego, intentar crear la sala automáticamente
                 if (roomCreationAttempts < maxRoomCreationAttempts) {
                     roomCreationAttempts++;
@@ -248,7 +368,7 @@
                 return;
             }
 
-            console.log('Estado del juego actualizado:', gameState);
+            console.log('✅ Estado del juego actualizado:', gameState);
 
             switch (gameState.phase) {
                 case 'waiting':
@@ -289,6 +409,7 @@
         }
 
         function showNumberSelection() {
+            console.log('🎯 Mostrando selección de números');
             waitingRoom.style.display = 'none';
             numberSelection.style.display = 'block';
             results.style.display = 'none';
@@ -459,25 +580,129 @@
         }
 
         document.querySelectorAll('.number-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+            // Agregar eventos tanto para click como para touch
+            const handleSelection = () => {
+                console.log('🔢 Número seleccionado:', btn.dataset.number);
                 document.querySelectorAll('.number-btn').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
                 selectedNumber = parseInt(btn.dataset.number);
                 checkSubmitButton();
+                
+                // Feedback táctil
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 150);
+            };
+            
+            btn.addEventListener('click', handleSelection);
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                handleSelection();
             });
         });
 
         guessInput.addEventListener('input', () => {
             myGuess = parseInt(guessInput.value);
+            console.log('📝 Predicción ingresada:', myGuess);
             checkSubmitButton();
+        });
+        
+        // Mejorar experiencia en móvil para el input
+        guessInput.addEventListener('focus', () => {
+            // Scroll suave hacia el input en móvil
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    guessInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
         });
 
         function checkSubmitButton() {
-            submitBtn.disabled = !selectedNumber || !myGuess || myGuess < 2 || myGuess > 16;
+            const isValid = selectedNumber && myGuess && myGuess >= 2 && myGuess <= 16;
+            submitBtn.disabled = !isValid;
+            console.log('🔍 Verificando botón:', { 
+                selectedNumber, 
+                myGuess, 
+                isValid, 
+                buttonDisabled: submitBtn.disabled,
+                buttonText: submitBtn.textContent
+            });
+            
+            // Mostrar estado visual del botón
+            if (isValid) {
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.style.background = 'linear-gradient(135deg, #4ecdc4, #44a08d)';
+                submitBtn.textContent = '✅ CONFIRMAR';
+            } else {
+                submitBtn.style.opacity = '0.5';
+                submitBtn.style.cursor = 'not-allowed';
+                submitBtn.style.background = 'linear-gradient(135deg, #ccc, #999)';
+                submitBtn.textContent = '⏳ Selecciona número y predicción';
+            }
+            
+            // Mostrar indicador de estado en móvil
+            if (window.innerWidth <= 768) {
+                const statusIndicator = document.getElementById('mobile-status') || createMobileStatusIndicator();
+                if (isValid) {
+                    statusIndicator.textContent = '✅ Listo para enviar';
+                    statusIndicator.style.color = '#4ecdc4';
+                } else {
+                    statusIndicator.textContent = '⏳ Completa los datos';
+                    statusIndicator.style.color = '#ff6b6b';
+                }
+            }
+        }
+        
+        function createMobileStatusIndicator() {
+            const indicator = document.createElement('div');
+            indicator.id = 'mobile-status';
+            indicator.style.cssText = `
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 8px 15px;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: bold;
+                z-index: 1000;
+                display: none;
+            `;
+            
+            if (window.innerWidth <= 768) {
+                indicator.style.display = 'block';
+            }
+            
+            document.body.appendChild(indicator);
+            return indicator;
         }
 
-        submitBtn.addEventListener('click', () => {
-            if (!selectedNumber || !myGuess) return;
+        const handleSubmit = () => {
+            console.log('🔘 Botón Confirmar clickeado');
+            console.log('📊 Datos actuales:', { selectedNumber, myGuess, playerId, playerName });
+            console.log('🎮 Estado actual del botón:', { disabled: submitBtn.disabled, text: submitBtn.textContent });
+            
+            if (!selectedNumber || !myGuess) {
+                console.log('❌ Datos faltantes:', { selectedNumber, myGuess });
+                alert('Por favor selecciona un número y ingresa tu predicción');
+                return;
+            }
+
+            if (myGuess < 2 || myGuess > 16) {
+                console.log('❌ Predicción fuera de rango:', myGuess);
+                alert('La predicción debe estar entre 2 y 16');
+                return;
+            }
+
+            console.log('✅ Datos válidos, enviando a Firebase...');
+
+            // Deshabilitar botón inmediatamente para evitar doble clic
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
 
             // Actualizar solo los campos necesarios sin sobrescribir datos existentes
             const updates = {};
@@ -485,34 +710,99 @@
             updates[`chinos/${gameId}/players/${playerId}/guess`] = myGuess;
             updates[`chinos/${gameId}/players/${playerId}/ready`] = true;
             updates[`chinos/${gameId}/players/${playerId}/name`] = playerName; // Mantener el nombre
+            updates[`chinos/${gameId}/players/${playerId}/online`] = true; // Asegurar que esté online
 
-            set(ref(db), updates);
+            console.log('📤 Enviando actualizaciones:', updates);
+
+            // Timeout más largo para móvil
+            const timeoutDuration = window.innerWidth <= 768 ? 15000 : 10000;
             
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Enviado ✓';
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('Timeout')), timeoutDuration);
+            });
+            
+            Promise.race([
+                set(ref(db), updates),
+                timeoutPromise
+            ])
+                .then(() => {
+                    console.log('✅ Datos enviados exitosamente a Firebase');
+                    submitBtn.textContent = 'Enviado ✓';
+                    
+                    // Mostrar confirmación al usuario
+                    showNotification('✅ Elección enviada correctamente', 'success');
+                })
+                .catch((error) => {
+                    console.error('❌ Error al enviar datos:', error);
+                    const errorMessage = error.message === 'Timeout' 
+                        ? 'Tiempo de espera agotado. Verifica tu conexión e intenta de nuevo.'
+                        : 'Error al enviar datos. Intenta de nuevo.';
+                    alert(errorMessage);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '✅ CONFIRMAR';
+                });
             
             console.log('Elección enviada:', { selectedNumber, guess: myGuess, ready: true, name: playerName });
+        };
+        
+        // Agregar eventos tanto para click como para touch
+        submitBtn.addEventListener('click', handleSubmit);
+        submitBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            handleSubmit();
         });
 
         function addCoins(amount) {
-            const currentCoins = parseInt(localStorage.getItem('coins') || '0');
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
             const newCoins = currentCoins + amount;
-            localStorage.setItem('coins', newCoins.toString());
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
             
-            const userId = localStorage.getItem('userId');
-            if (userId) {
-                set(ref(db, `users/${userId}/coins`), newCoins);
+            // Sync with Firebase using PlayerDataManager if available
+            if (window.PlayerDataManager && window.PlayerDataManager.safeAddCoins) {
+                window.PlayerDataManager.safeAddCoins(amount, 'chinos-game-win');
+            } else {
+                // Fallback to direct Firebase update
+                const playerName = localStorage.getItem('soldierName');
+                if (playerName && window.firebase && window.firebase.database) {
+                    const db = window.firebase.database();
+                    const playerRef = db.ref(`players/${playerName}`);
+                    playerRef.update({
+                        coins: newCoins,
+                        lastUpdated: Date.now()
+                    });
+                }
+            }
+            
+            // Update display if function exists
+            if (typeof loadTotalCoins === 'function') {
+                loadTotalCoins();
             }
         }
 
         function subtractCoins(amount) {
-            const currentCoins = parseInt(localStorage.getItem('coins') || '0');
+            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
             const newCoins = Math.max(0, currentCoins - amount);
-            localStorage.setItem('coins', newCoins.toString());
+            localStorage.setItem('totalOrtizCoins', newCoins.toString());
             
-            const userId = localStorage.getItem('userId');
-            if (userId) {
-                set(ref(db, `users/${userId}/coins`), newCoins);
+            // Sync with Firebase using PlayerDataManager if available
+            if (window.PlayerDataManager && window.PlayerDataManager.safeDeductCoins) {
+                window.PlayerDataManager.safeDeductCoins(amount, 'chinos-game-loss');
+            } else {
+                // Fallback to direct Firebase update
+                const playerName = localStorage.getItem('soldierName');
+                if (playerName && window.firebase && window.firebase.database) {
+                    const db = window.firebase.database();
+                    const playerRef = db.ref(`players/${playerName}`);
+                    playerRef.update({
+                        coins: newCoins,
+                        lastUpdated: Date.now()
+                    });
+                }
+            }
+            
+            // Update display if function exists
+            if (typeof loadTotalCoins === 'function') {
+                loadTotalCoins();
             }
         }
 
@@ -545,6 +835,17 @@
         });
 
         initializePlayer();
+        
+        // Verificar estado inicial del botón
+        setTimeout(() => {
+            console.log('🔍 Estado inicial del botón:', {
+                disabled: submitBtn.disabled,
+                text: submitBtn.textContent,
+                selectedNumber,
+                myGuess
+            });
+            checkSubmitButton();
+        }, 1000);
         
         // Inicializar estado del juego si no existe
         onValue(gameStateRef, (snapshot) => {

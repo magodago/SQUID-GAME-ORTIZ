@@ -182,23 +182,135 @@
             appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        // Initialize Firebase with proper waiting
+        let db;
+        let gameRef;
+        let playersRef;
+        let gameId;
+        let playerId;
+        let playerName;
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const gameId = urlParams.get('gameId');
-        const playerId = urlParams.get('playerId') || 'player_' + Date.now();
-        const playerName = localStorage.getItem('soldierName') || 'Jugador';
+        // Wait for Firebase to be available
+        function initializeFirebase() {
+            if (window.firebase && window.firebase.database) {
+                try {
+                    firebase.initializeApp(firebaseConfig);
+                    db = firebase.database();
+                    console.log('✅ Firebase initialized successfully');
+                    
+                    // Initialize game variables
+                    const urlParams = new URLSearchParams(window.location.search);
+                    gameId = urlParams.get('gameId');
+                    playerId = urlParams.get('playerId') || 'player_' + Date.now();
+                    playerName = localStorage.getItem('soldierName') || 'Jugador';
 
-        if (!gameId) {
-            alert('Error: No se encontró el ID del juego');
-            window.location.href = 'index.html';
+                    // Generate game ID if not provided (for direct access from menu)
+                    if (!gameId) {
+                        gameId = 'game_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                        console.log('🎮 Generated new game ID:', gameId);
+                        
+                        // Update URL with the new game ID
+                        const newUrl = new URL(window.location);
+                        newUrl.searchParams.set('gameId', gameId);
+                        window.history.replaceState({}, '', newUrl);
+                    }
+
+                    gameRef = db.ref(`chinos/${gameId}`);
+                    playersRef = db.ref(`chinos/${gameId}/players`);
+                    
+                    console.log('🎮 Game initialized:', { gameId, playerId, playerName });
+                    
+                    // Start the game
+                    initializeGame();
+                    
+                } catch (error) {
+                    console.error('❌ Firebase initialization error:', error);
+                    setTimeout(initializeFirebase, 1000);
+                }
+            } else {
+                console.log('⏳ Waiting for Firebase...');
+                setTimeout(initializeFirebase, 100);
+            }
         }
 
-        const gameRef = db.ref(`chinos/${gameId}`);
-        const playersRef = db.ref(`chinos/${gameId}/players`);
-        const gameStateRef = db.ref(`chinos/${gameId}/gameState`);
+        // Initialize game when Firebase is ready
+        function initializeGame() {
+            console.log('🎮 Starting Chinos game...');
+            
+            // Setup Firebase listeners
+            setupFirebaseListeners();
+            
+            // Initialize player
+            initializePlayer();
+        }
+
+        // Setup Firebase listeners
+        function setupFirebaseListeners() {
+            console.log('🔗 Setting up Firebase listeners...');
+            
+            // Listener de jugadores para juego online
+            playersRef.on('value', (snapshot) => {
+                const players = snapshot.val();
+                console.log('👥 Jugadores recibidos de Firebase:', players);
+                
+                if (!players) {
+                    console.log('⚠️ No hay jugadores en Firebase');
+                    updatePlayersList({});
+                    return;
+                }
+
+                updatePlayersList(players);
+                
+                // Contar jugadores online
+                const onlinePlayers = Object.values(players).filter(p => p.online);
+                const previousTotal = totalPlayers;
+                totalPlayers = onlinePlayers.length;
+                
+                console.log('📊 Estado de jugadores:', { 
+                    total: Object.keys(players).length, 
+                    online: totalPlayers,
+                    collectedData: collectedData
+                });
+                
+                // Log si cambió el número de jugadores
+                if (previousTotal !== totalPlayers) {
+                    console.log(`👥 Cambio en jugadores: ${totalPlayers} jugadores online`);
+                }
+                
+                // Validar límites de jugadores
+                if (totalPlayers < MIN_PLAYERS) {
+                    console.log('⏳ Esperando más jugadores...');
+                    showWaitingRoom();
+                    const waitingMessage = document.getElementById('waiting-message');
+                    if (waitingMessage) {
+                        waitingMessage.textContent = `⏳ Esperando jugadores... (${totalPlayers}/${MIN_PLAYERS})`;
+                    }
+                } else if (totalPlayers > MAX_PLAYERS) {
+                    console.log('⚠️ Demasiados jugadores, esperando que algunos se desconecten...');
+                    showWaitingRoom();
+                    const waitingMessage = document.getElementById('waiting-message');
+                    if (waitingMessage) {
+                        waitingMessage.textContent = `⚠️ Demasiados jugadores (${totalPlayers}/${MAX_PLAYERS}). Esperando que algunos se desconecten...`;
+                    }
+                } else {
+                    // Número correcto de jugadores (entre MIN_PLAYERS y MAX_PLAYERS)
+                    console.log('🎮 Iniciando juego con', totalPlayers, 'jugadores');
+                    if (previousTotal < MIN_PLAYERS || previousTotal > MAX_PLAYERS) {
+                        console.log(`🎮 ¡Juego iniciado! ${totalPlayers} jugadores conectados (mínimo ${MIN_PLAYERS}, máximo ${MAX_PLAYERS})`);
+                    }
+                    showNumberSelection();
+                    
+                    // Revisar si tenemos todos los datos necesarios
+                    checkAndCalculateResults(players);
+                }
+            });
+        }
+
+        // Start Firebase initialization when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Chinos page loaded, initializing Firebase...');
+            initializeFirebase();
+        });
 
         let selectedNumber = null;
         let myGuess = null;
@@ -272,62 +384,7 @@
             console.log('✅ Lista de jugadores actualizada. Total jugadores:', Object.keys(players).length);
         }
 
-        // Listener de jugadores para juego online
-        playersRef.on('value', (snapshot) => {
-            const players = snapshot.val();
-            console.log('👥 Jugadores recibidos de Firebase:', players);
-            
-            if (!players) {
-                console.log('⚠️ No hay jugadores en Firebase');
-                updatePlayersList({});
-                return;
-            }
 
-            updatePlayersList(players);
-            
-            // Contar jugadores online
-            const onlinePlayers = Object.values(players).filter(p => p.online);
-            const previousTotal = totalPlayers;
-            totalPlayers = onlinePlayers.length;
-            
-            console.log('📊 Estado de jugadores:', { 
-                total: Object.keys(players).length, 
-                online: totalPlayers,
-                collectedData: collectedData
-            });
-            
-            // Log si cambió el número de jugadores
-            if (previousTotal !== totalPlayers) {
-                console.log(`👥 Cambio en jugadores: ${totalPlayers} jugadores online`);
-            }
-            
-            // Validar límites de jugadores
-            if (totalPlayers < MIN_PLAYERS) {
-                console.log('⏳ Esperando más jugadores...');
-                showWaitingRoom();
-                const waitingMessage = document.getElementById('waiting-message');
-                if (waitingMessage) {
-                    waitingMessage.textContent = `⏳ Esperando jugadores... (${totalPlayers}/${MIN_PLAYERS})`;
-                }
-            } else if (totalPlayers > MAX_PLAYERS) {
-                console.log('⚠️ Demasiados jugadores, esperando que algunos se desconecten...');
-                showWaitingRoom();
-                const waitingMessage = document.getElementById('waiting-message');
-                if (waitingMessage) {
-                    waitingMessage.textContent = `⚠️ Demasiados jugadores (${totalPlayers}/${MAX_PLAYERS}). Esperando que algunos se desconecten...`;
-                }
-            } else {
-                // Número correcto de jugadores (entre MIN_PLAYERS y MAX_PLAYERS)
-                console.log('🎮 Iniciando juego con', totalPlayers, 'jugadores');
-                if (previousTotal < MIN_PLAYERS || previousTotal > MAX_PLAYERS) {
-                    console.log(`🎮 ¡Juego iniciado! ${totalPlayers} jugadores conectados (mínimo ${MIN_PLAYERS}, máximo ${MAX_PLAYERS})`);
-                }
-                showNumberSelection();
-                
-                // Revisar si tenemos todos los datos necesarios
-                checkAndCalculateResults(players);
-            }
-        });
 
         function showWaitingRoom() {
             waitingRoom.style.display = 'block';

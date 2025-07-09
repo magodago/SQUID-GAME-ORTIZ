@@ -5399,6 +5399,9 @@
           <button class="game-option" data-game="bombaExplosiva">
             💣 BOMBA EXPLOSIVA
           </button>
+          <button class="game-option" data-game="chinos">
+            🎲 CHINOS
+          </button>
         </div>
         <button class="cancel-invitation-btn">❌ CANCELAR</button>
       </div>
@@ -5594,6 +5597,11 @@
       <button class="envelope-btn bombaexplosiva-btn" id="bombaExplosivaBtn">
         <div class="envelope-content">
           <span class="envelope-text">💣 BOMBA EXPLOSIVA</span>
+        </div>
+      </button>
+      <button class="envelope-btn chinos-btn" id="chinosBtn">
+        <div class="envelope-content">
+          <span class="envelope-text">🎲 CHINOS</span>
         </div>
       </button>
 
@@ -7909,6 +7917,101 @@
             messageEl.parentNode.removeChild(messageEl);
           }
           window.location.href = 'bomba-explosiva.html';
+        }, 2000);
+      }, 1000);
+    });
+
+    // CHINOS Button Event Listener
+    const chinosBtn = document.getElementById('chinosBtn');
+    chinosBtn.addEventListener('click', () => {
+      console.log('🎲 CHINOS seleccionado');
+      
+      // Add dramatic effect
+      chinosBtn.style.transform = 'scale(0.9) rotateY(10deg)';
+      chinosBtn.style.boxShadow = '0 0 80px #4ecdc4, inset 0 0 40px rgba(78, 205, 196, 0.7)';
+      
+      // Create dice explosion effect
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        particle.style.background = '#4ecdc4';
+        particle.style.borderRadius = '50%';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '1000';
+        
+        const rect = chinosBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        particle.style.left = centerX + 'px';
+        particle.style.top = centerY + 'px';
+        
+        document.body.appendChild(particle);
+        
+        // Animate particle
+        const angle = (i / 8) * Math.PI * 2;
+        const distance = 50;
+        const targetX = centerX + Math.cos(angle) * distance;
+        const targetY = centerY + Math.sin(angle) * distance;
+        
+        particle.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${targetX - centerX}px, ${targetY - centerY}px) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000,
+          easing: 'ease-out'
+        });
+        
+        // Remove particle after animation
+        setTimeout(() => {
+          if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+          }
+        }, 1000);
+      }
+      
+      // Reset button after animation
+      setTimeout(() => {
+        chinosBtn.style.transform = '';
+        chinosBtn.style.boxShadow = '';
+      }, 1000);
+      
+      // Show message and redirect
+      setTimeout(() => {
+        const messageEl = document.createElement('div');
+        messageEl.textContent = '🎲 CHINOS ACTIVADO';
+        messageEl.style.position = 'fixed';
+        messageEl.style.top = '50%';
+        messageEl.style.left = '50%';
+        messageEl.style.transform = 'translate(-50%, -50%)';
+        messageEl.style.color = '#4ecdc4';
+        messageEl.style.fontSize = '1.5rem';
+        messageEl.style.fontWeight = 'bold';
+        messageEl.style.textShadow = '0 0 20px #4ecdc4';
+        messageEl.style.zIndex = '2000';
+        messageEl.style.pointerEvents = 'none';
+        messageEl.style.fontFamily = 'Orbitron, Arial, sans-serif';
+        
+        document.body.appendChild(messageEl);
+        
+        // Animate message
+        messageEl.animate([
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' },
+          { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(1.2)' }
+        ], {
+          duration: 2000,
+          easing: 'ease-in-out'
+        });
+        
+        // Remove message and redirect
+        setTimeout(() => {
+          if (messageEl.parentNode) {
+            messageEl.parentNode.removeChild(messageEl);
+          }
+          window.location.href = 'chinos.html';
         }, 2000);
       }, 1000);
     });
@@ -16496,6 +16599,7 @@
         let gameName = 'Juego';
         if (game === 'race') gameName = 'Squid Race';
         else if (game === 'bombaExplosiva') gameName = 'Bomba Explosiva';
+        else if (game === 'chinos') gameName = 'Chinos';
         showNotification(`🎮 Invitación enviada a ${currentInvitation.invitedPlayer} para ${gameName}`, 'info');
         
         currentInvitation = null;
@@ -16507,6 +16611,7 @@
         let gameName = 'Juego';
         if (invitation.game === 'race') gameName = 'Squid Race';
         else if (invitation.game === 'bombaExplosiva') gameName = 'Bomba Explosiva';
+        else if (invitation.game === 'chinos') gameName = 'Chinos';
         document.getElementById('invitedGameName').textContent = gameName;
         
         // Store current invitation
@@ -16553,6 +16658,46 @@
                 const invitedGameUrl = `bomba-explosiva.html?gameId=${gameId}&playerId=${invitedPlayerId}&playerName=${encodeURIComponent(currentInvitation.invitedPlayer)}`;
                 
                 console.log('🎮 Creando sala de juego:', { gameId, inviter: currentInvitation.inviterPlayer, invited: currentInvitation.invitedPlayer });
+                
+                // Save game room info in Firebase
+                db.ref(`gameRooms/${gameId}`).set({
+                    gameId: gameId,
+                    inviter: currentInvitation.inviterPlayer,
+                    invited: currentInvitation.invitedPlayer,
+                    inviterPlayerId: inviterPlayerId,
+                    invitedPlayerId: invitedPlayerId,
+                    gameUrl: gameUrl,
+                    invitedGameUrl: invitedGameUrl,
+                    status: 'waiting',
+                    createdAt: Date.now()
+                });
+                
+                // Redirect invited player immediately
+                console.log('🎮 Redirigiendo jugador invitado a:', invitedGameUrl);
+                window.location.href = invitedGameUrl;
+                
+                // Send notification to inviter to join
+                const inviterNotification = {
+                    gameId: gameId,
+                    gameUrl: gameUrl,
+                    invited: currentInvitation.invitedPlayer,
+                    timestamp: Date.now()
+                };
+                
+                console.log('📨 Enviando notificación al invitador:', inviterNotification);
+                db.ref(`gameInvitations/${currentInvitation.inviterPlayer}`).push(inviterNotification);
+            } else if (currentInvitation.game === 'chinos') {
+                // Create game room and redirect both players
+                const gameId = 'chinos_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                
+                // Create URLs with proper encoding
+                const inviterPlayerId = 'inviter_' + currentInvitation.inviterPlayer.replace(/\s+/g, '_');
+                const invitedPlayerId = 'invited_' + currentInvitation.invitedPlayer.replace(/\s+/g, '_');
+                
+                const gameUrl = `chinos.html?gameId=${gameId}&playerId=${inviterPlayerId}&playerName=${encodeURIComponent(currentInvitation.inviterPlayer)}`;
+                const invitedGameUrl = `chinos.html?gameId=${gameId}&playerId=${invitedPlayerId}&playerName=${encodeURIComponent(currentInvitation.invitedPlayer)}`;
+                
+                console.log('🎮 Creando sala de juego Chinos:', { gameId, inviter: currentInvitation.inviterPlayer, invited: currentInvitation.invitedPlayer });
                 
                 // Save game room info in Firebase
                 db.ref(`gameRooms/${gameId}`).set({
@@ -16632,8 +16777,8 @@
                     if (invitation.accepted) {
                         showNotification(`✅ ${invitation.invitedPlayer} aceptó tu invitación para ${getGameName(invitation.game)}`, 'success');
                         
-                        // If it's a bomb game, redirect to the game room
-                        if (invitation.game === 'bombaExplosiva') {
+                        // If it's a bomb game or chinos game, redirect to the game room
+                        if (invitation.game === 'bombaExplosiva' || invitation.game === 'chinos') {
                             setTimeout(() => {
                                 // Listen for game invitation notification
                                 const db = firebase.database();
@@ -16664,6 +16809,7 @@
         function getGameName(game) {
             if (game === 'race') return 'Squid Race';
             if (game === 'bombaExplosiva') return 'Bomba Explosiva';
+            if (game === 'chinos') return 'Chinos';
             return 'Juego';
         }
 

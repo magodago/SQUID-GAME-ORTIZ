@@ -473,6 +473,22 @@
                 });
             }
         }, { onlyOnce: true });
+        
+        // Crear sala de juego automáticamente si no existe
+        const gameRoomRef = ref(db, `gameRooms/${gameId}`);
+        onValue(gameRoomRef, (snapshot) => {
+            const gameRoom = snapshot.val();
+            if (!gameRoom) {
+                console.log('🆕 Creando sala de juego Chinos automáticamente');
+                set(gameRoomRef, {
+                    gameId: gameId,
+                    status: 'waiting',
+                    createdAt: Date.now(),
+                    autoCreated: true,
+                    game: 'chinos'
+                });
+            }
+        }, { onlyOnce: true });
     </script>
 </body>
 </html> 

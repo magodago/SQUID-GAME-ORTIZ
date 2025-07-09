@@ -502,21 +502,39 @@
                             verifyAndJoinGameWithRetry(retryCount + 1);
                         }, 2000);
                     } else {
-                        console.error('❌ Sala de juego no encontrada después de múltiples intentos:', gameId);
-                        alert('Error: No se pudo conectar a la sala de juego. Vuelve al menú principal.');
-                        window.location.href = 'index.html';
+                        console.log('🆕 Creando nueva sala de juego automáticamente');
+                        // Create game room automatically if it doesn't exist
+                        const newGameRoom = {
+                            gameId: gameId,
+                            status: 'waiting',
+                            createdAt: Date.now(),
+                            autoCreated: true
+                        };
+                        
+                        database.ref(`gameRooms/${gameId}`).set(newGameRoom).then(() => {
+                            console.log('✅ Sala de juego creada automáticamente');
+                            joinGame();
+                        }).catch((error) => {
+                            console.error('❌ Error al crear sala de juego:', error);
+                            alert('Error: No se pudo crear la sala de juego. Vuelve al menú principal.');
+                            window.location.href = 'index.html';
+                        });
                     }
                     return;
                 }
                 
                 console.log('✅ Sala de juego verificada:', gameRoom);
-                
-                // Add player to game
-                const playerData = {
-                    name: playerName,
-                    joinedAt: Date.now(),
-                    isOnline: true
-                };
+                joinGame();
+            });
+        }
+
+        function joinGame() {
+            // Add player to game
+            const playerData = {
+                name: playerName,
+                joinedAt: Date.now(),
+                isOnline: true
+            };
                 
                 console.log('👤 Agregando jugador al juego:', { playerId, playerData });
                 
@@ -594,7 +612,6 @@
                 setTimeout(() => {
                     checkAndStartGame();
                 }, 2000); // Increased delay to ensure player is fully connected
-            });
         }
 
         function checkAndStartGame() {

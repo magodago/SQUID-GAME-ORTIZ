@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Botón Dorado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        button {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #00ff00; color: #000; }
+        .error { background: #ff0000; color: #fff; }
+        .info { background: #0066cc; color: #fff; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Botón Dorado</h1>
+    
+    <div class="test-section">
+        <h2>Estado Actual</h2>
+        <div id="currentStatus"></div>
+        <button onclick="checkStatus()">🔄 Verificar Estado</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Simular Inventario</h2>
+        <button onclick="addGoldenButton()">➕ Agregar Botón Dorado</button>
+        <button onclick="removeGoldenButton()">➖ Remover Botón Dorado</button>
+        <button onclick="resetGoldenButton()">🔄 Resetear Estado</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Probar Funcionalidad</h2>
+        <button onclick="testUseGoldenButton()">🟡 Usar Botón Dorado</button>
+        <button onclick="showInventory()">🎒 Ver Inventario</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Logs</h2>
+        <div id="logs" style="background: #000; padding: 10px; border-radius: 5px; font-family: monospace; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.innerHTML += `[${timestamp}] ${message}<br>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function checkStatus() {
+            const goldenButtonUsed = localStorage.getItem('goldenButtonUsed') === 'true';
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            const hasGoldenButton = inventory.some(item => item.id === 'golden_button');
+            
+            const status = document.getElementById('currentStatus');
+            status.innerHTML = `
+                <div class="status ${goldenButtonUsed ? 'error' : 'success'}">
+                    Botón Dorado Usado: ${goldenButtonUsed ? 'SÍ' : 'NO'}
+                </div>
+                <div class="status ${hasGoldenButton ? 'success' : 'info'}">
+                    En Inventario: ${hasGoldenButton ? 'SÍ' : 'NO'}
+                </div>
+                <div class="status info">
+                    Total Items: ${inventory.length}
+                </div>
+            `;
+            
+            log(`Estado verificado - Usado: ${goldenButtonUsed}, En inventario: ${hasGoldenButton}`);
+        }
+        
+        function addGoldenButton() {
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            const goldenButton = {
+                id: 'golden_button',
+                name: 'Botón de Oro',
+                description: 'Activa un botón flotante por 1 minuto. +50 monedas por clic',
+                icon: '🟡',
+                value: 3000,
+                rarity: 'legendary'
+            };
+            
+            if (!inventory.some(item => item.id === 'golden_button')) {
+                inventory.push(goldenButton);
+                localStorage.setItem('playerInventory', JSON.stringify(inventory));
+                log('✅ Botón dorado agregado al inventario');
+            } else {
+                log('⚠️ Botón dorado ya está en el inventario');
+            }
+            checkStatus();
+        }
+        
+        function removeGoldenButton() {
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            const updatedInventory = inventory.filter(item => item.id !== 'golden_button');
+            localStorage.setItem('playerInventory', JSON.stringify(updatedInventory));
+            log('✅ Botón dorado removido del inventario');
+            checkStatus();
+        }
+        
+        function resetGoldenButton() {
+            localStorage.removeItem('goldenButtonUsed');
+            removeGoldenButton();
+            log('🔄 Estado del botón dorado reseteado');
+            checkStatus();
+        }
+        
+        function testUseGoldenButton() {
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            const goldenButtonIndex = inventory.findIndex(item => item.id === 'golden_button');
+            
+            if (goldenButtonIndex === -1) {
+                log('❌ No hay botón dorado en el inventario');
+                return;
+            }
+            
+            // Simular uso del botón dorado
+            log('🟡 Activando botón dorado...');
+            
+            // Marcar como usado
+            localStorage.setItem('goldenButtonUsed', 'true');
+            
+            // Remover del inventario
+            inventory.splice(goldenButtonIndex, 1);
+            localStorage.setItem('playerInventory', JSON.stringify(inventory));
+            
+            log('✅ Botón dorado usado y removido del inventario');
+            checkStatus();
+            
+            // Simular la activación (sin mostrar el modal real)
+            log('🎯 Modal del botón dorado se mostraría aquí');
+        }
+        
+        function showInventory() {
+            const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
+            log('🎒 Inventario actual:');
+            inventory.forEach(item => {
+                log(`  - ${item.icon} ${item.name} (${item.id})`);
+            });
+        }
+        
+        // Verificar estado al cargar
+        window.onload = function() {
+            log('🚀 Test iniciado');
+            checkStatus();
+        };
+    </script>
+</body>
+</html> 

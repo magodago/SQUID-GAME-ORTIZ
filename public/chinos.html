@@ -281,6 +281,7 @@
                 if (totalPlayers < MIN_PLAYERS) {
                     console.log('⏳ Esperando más jugadores...');
                     showWaitingRoom();
+                    stopWaitingTimer();
                     const waitingMessage = document.getElementById('waiting-message');
                     if (waitingMessage) {
                         waitingMessage.textContent = `⏳ Esperando jugadores... (${totalPlayers}/${MIN_PLAYERS})`;
@@ -288,17 +289,17 @@
                 } else if (totalPlayers > MAX_PLAYERS) {
                     console.log('⚠️ Demasiados jugadores, esperando que algunos se desconecten...');
                     showWaitingRoom();
+                    stopWaitingTimer();
                     const waitingMessage = document.getElementById('waiting-message');
                     if (waitingMessage) {
                         waitingMessage.textContent = `⚠️ Demasiados jugadores (${totalPlayers}/${MAX_PLAYERS}). Esperando que algunos se desconecten...`;
                     }
                 } else {
                     // Número correcto de jugadores (entre MIN_PLAYERS y MAX_PLAYERS)
-                    console.log('🎮 Iniciando juego con', totalPlayers, 'jugadores');
-                    if (previousTotal < MIN_PLAYERS || previousTotal > MAX_PLAYERS) {
-                        console.log(`🎮 ¡Juego iniciado! ${totalPlayers} jugadores conectados (mínimo ${MIN_PLAYERS}, máximo ${MAX_PLAYERS})`);
+                    if (!gameStarted) {
+                        console.log('🎮 Jugadores suficientes, iniciando temporizador de espera...');
+                        startWaitingTimer();
                     }
-                    showNumberSelection();
                     
                     // Revisar si tenemos todos los datos necesarios
                     checkAndCalculateResults(players);
@@ -318,9 +319,13 @@
         let playersData = {}; // Para almacenar los datos de cada jugador
         let totalPlayers = 0; // Total de jugadores en la sala
         let collectedData = 0; // Contador de datos recopilados
+        let waitingTimer = null; // Timer para la sala de espera
+        let waitingTimeLeft = 30; // Tiempo restante en segundos
+        let gameStarted = false; // Si el juego ya comenzó
         const MIN_PLAYERS = 2;
         const MAX_PLAYERS = 6;
         const ALLOWED_NUMBERS = [0, 1, 2, 3];
+        const WAITING_TIME = 30; // Tiempo de espera en segundos
 
         const waitingRoom = document.getElementById('waiting-room');
         const numberSelection = document.getElementById('number-selection');
@@ -382,6 +387,45 @@
             });
             
             console.log('✅ Lista de jugadores actualizada. Total jugadores:', Object.keys(players).length);
+        }
+
+        // Función para iniciar el temporizador de espera
+        function startWaitingTimer() {
+            if (waitingTimer) {
+                clearInterval(waitingTimer);
+            }
+            
+            waitingTimeLeft = WAITING_TIME;
+            gameStarted = false;
+            
+            console.log('⏰ Iniciando temporizador de espera de', WAITING_TIME, 'segundos');
+            
+            waitingTimer = setInterval(() => {
+                waitingTimeLeft--;
+                
+                const waitingMessage = document.getElementById('waiting-message');
+                if (waitingMessage) {
+                    waitingMessage.textContent = `⏳ Esperando más jugadores... (${totalPlayers}/${MIN_PLAYERS}) - Iniciando en ${waitingTimeLeft}s`;
+                }
+                
+                console.log(`⏰ Tiempo restante: ${waitingTimeLeft} segundos`);
+                
+                if (waitingTimeLeft <= 0) {
+                    console.log('🎮 ¡Tiempo de espera terminado! Iniciando juego...');
+                    stopWaitingTimer();
+                    gameStarted = true;
+                    showNumberSelection();
+                }
+            }, 1000);
+        }
+
+        // Función para detener el temporizador de espera
+        function stopWaitingTimer() {
+            if (waitingTimer) {
+                clearInterval(waitingTimer);
+                waitingTimer = null;
+                console.log('⏰ Temporizador de espera detenido');
+            }
         }
 
 

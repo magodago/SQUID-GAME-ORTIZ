@@ -7,31 +7,20 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         .chinos-container {
-            max-width: 100%;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
         .number-buttons {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        @media (max-width: 768px) {
-            .number-buttons {
-                gap: 8px;
-                margin: 10px 0;
-            }
+            gap: 15px;
+            margin: 20px 0;
         }
         .number-btn {
-            padding: 15px;
-            font-size: 20px;
+            padding: 20px;
+            font-size: 24px;
             font-weight: bold;
             border: 3px solid #ff6b6b;
             border-radius: 10px;
@@ -39,19 +28,6 @@
             color: white;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
-        }
-        
-        @media (max-width: 768px) {
-            .number-btn {
-                padding: 12px;
-                font-size: 18px;
-                min-height: 50px;
-            }
         }
         .number-btn:hover {
             transform: translateY(-2px);
@@ -71,20 +47,7 @@
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.9);
             text-align: center;
-            width: 120px;
-            min-height: 50px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-        
-        @media (max-width: 768px) {
-            .guess-input input {
-                padding: 12px;
-                font-size: 16px;
-                width: 100px;
-                min-height: 45px;
-            }
+            width: 100px;
         }
         .submit-btn {
             padding: 15px 30px;
@@ -95,20 +58,6 @@
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-height: 50px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        @media (max-width: 768px) {
-            .submit-btn {
-                padding: 12px 25px;
-                font-size: 16px;
-                min-height: 45px;
-                width: 100%;
-                max-width: 200px;
-                margin: 0 auto;
-            }
         }
         .submit-btn:hover {
             transform: translateY(-2px);
@@ -179,29 +128,6 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
         }
-        
-        /* Animaciones para notificaciones */
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
     </style>
 </head>
 <body>
@@ -211,22 +137,25 @@
 
         <div id="waiting-room" class="game-phase">
             <h2>Sala de Espera</h2>
+            <p id="waiting-message">⏳ Esperando jugadores para iniciar el juego...</p>
             <div id="players-list" class="players-status"></div>
             <div id="countdown" class="countdown"></div>
         </div>
 
         <div id="number-selection" class="game-phase" style="display: none;">
             <h2>Selecciona tu número</h2>
+            <p id="game-status">🎮 Selecciona tu número y predicción</p>
             <div class="number-buttons">
+                <button class="number-btn" data-number="0">0</button>
                 <button class="number-btn" data-number="1">1</button>
                 <button class="number-btn" data-number="2">2</button>
                 <button class="number-btn" data-number="3">3</button>
-                <button class="number-btn" data-number="4">4</button>
             </div>
             <div class="guess-input">
-                <label for="guess">Tu predicción de la suma total:</label><br>
-                <input type="number" id="guess" min="2" max="16" placeholder="Ej: 5">
+                <label for="guess">Tu predicción de la suma total (0-18):</label><br>
+                <input type="number" id="guess" min="0" max="18" placeholder="Ej: 5" inputmode="numeric" pattern="[0-9]*">
             </div>
+            <div id="mobile-error" style="color: #ff6b6b; font-weight: bold; margin: 10px 0; display: none;"></div>
             <button id="submit-choice" class="submit-btn" disabled>Confirmar</button>
         </div>
 
@@ -237,10 +166,12 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, onValue, push, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBZTHdGwNjqBy6TZmpMJTKoac9GIPIObp0",
             authDomain: "squid-game-ortiz.firebaseapp.com",
@@ -251,8 +182,9 @@
             appId: "1:564790427576:web:585ed1ec3d9dea792a594d"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
         const urlParams = new URLSearchParams(window.location.search);
         const gameId = urlParams.get('gameId');
@@ -264,18 +196,19 @@
             window.location.href = 'index.html';
         }
 
-        const gameRef = ref(db, `chinos/${gameId}`);
-        const playersRef = ref(db, `chinos/${gameId}/players`);
-        const gameStateRef = ref(db, `chinos/${gameId}/gameState`);
-
-        // Variables para manejar la creación automática de salas
-        let roomCreationAttempts = 0;
-        const maxRoomCreationAttempts = 3;
-        let roomCreationTimeout = null;
+        const gameRef = db.ref(`chinos/${gameId}`);
+        const playersRef = db.ref(`chinos/${gameId}/players`);
+        const gameStateRef = db.ref(`chinos/${gameId}/gameState`);
 
         let selectedNumber = null;
         let myGuess = null;
         let countdownInterval = null;
+        let playersData = {}; // Para almacenar los datos de cada jugador
+        let totalPlayers = 0; // Total de jugadores en la sala
+        let collectedData = 0; // Contador de datos recopilados
+        const MIN_PLAYERS = 2;
+        const MAX_PLAYERS = 6;
+        const ALLOWED_NUMBERS = [0, 1, 2, 3];
 
         const waitingRoom = document.getElementById('waiting-room');
         const numberSelection = document.getElementById('number-selection');
@@ -285,177 +218,39 @@
         const submitBtn = document.getElementById('submit-choice');
         const guessInput = document.getElementById('guess');
 
-        // Función para mostrar notificaciones
-        function showNotification(message, type = 'info') {
-            console.log(`📢 Notificación [${type}]: ${message}`);
-            
-            // Crear notificación visual
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#2196F3'};
-                color: white;
-                padding: 15px 20px;
-                border-radius: 5px;
-                z-index: 10000;
-                font-weight: bold;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-                animation: slideIn 0.3s ease-out;
-            `;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            // Remover después de 3 segundos
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.style.animation = 'slideOut 0.3s ease-out';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                }
-            }, 3000);
-        }
-
         function initializePlayer() {
+            console.log('👤 Inicializando jugador...');
+            console.log('📋 Datos del jugador:', { playerId, playerName, gameId });
+            
             const playerData = {
                 id: playerId,
                 name: playerName,
                 online: true,
-                ready: false,
                 selectedNumber: null,
                 guess: null
             };
 
-            console.log('👤 Inicializando jugador:', playerData);
-            
-            set(ref(db, `chinos/${gameId}/players/${playerId}`), playerData)
+            db.ref(`chinos/${gameId}/players/${playerId}`).set(playerData)
                 .then(() => {
-                    console.log('✅ Jugador inicializado exitosamente en Firebase');
+                    console.log('✅ Jugador inicializado exitosamente:', playerData);
                 })
                 .catch((error) => {
                     console.error('❌ Error al inicializar jugador:', error);
                 });
         }
 
-        onValue(gameStateRef, (snapshot) => {
-            const gameState = snapshot.val();
-            console.log('🎮 Estado del juego recibido:', gameState);
-            
-            if (!gameState) {
-                console.log('❌ No hay estado del juego, intentando crear sala...');
-                // Si no existe el estado del juego, intentar crear la sala automáticamente
-                if (roomCreationAttempts < maxRoomCreationAttempts) {
-                    roomCreationAttempts++;
-                    console.log(`🔄 Intento ${roomCreationAttempts}/${maxRoomCreationAttempts}: Creando sala de juego Chinos automáticamente`);
-                    
-                    if (roomCreationTimeout) {
-                        clearTimeout(roomCreationTimeout);
-                    }
-                    
-                    roomCreationTimeout = setTimeout(() => {
-                        createGameRoom();
-                    }, 1000 * roomCreationAttempts);
-                } else {
-                    console.log('❌ No se pudo crear la sala de juego después de varios intentos');
-                    alert('Error: No se pudo conectar a la sala de juego. Intenta de nuevo.');
-                    window.location.href = 'index.html';
-                }
-                return;
-            }
-
-            console.log('✅ Estado del juego actualizado:', gameState);
-
-            switch (gameState.phase) {
-                case 'waiting':
-                    showWaitingRoom();
-                    startCountdown(gameState.countdown);
-                    break;
-                case 'playing':
-                    showNumberSelection();
-                    break;
-                case 'results':
-                    showResults(gameState);
-                    break;
-            }
-        });
-
-        onValue(playersRef, (snapshot) => {
-            const players = snapshot.val();
-            if (!players) return;
-
-            updatePlayersList(players);
-            checkGameStart(players);
-            
-            // Verificar si todos los jugadores están listos para calcular resultados
-            const onlinePlayers = Object.values(players).filter(p => p.online);
-            const readyPlayers = onlinePlayers.filter(p => p.ready && p.selectedNumber && p.guess);
-            
-            if (onlinePlayers.length >= 2 && readyPlayers.length === onlinePlayers.length) {
-                // Todos los jugadores están listos, calcular resultados
-                console.log('🎯 Todos los jugadores están listos, calculando resultados...');
-                calculateResults();
-            }
-        });
-
-        function showWaitingRoom() {
-            waitingRoom.style.display = 'block';
-            numberSelection.style.display = 'none';
-            results.style.display = 'none';
-        }
-
-        function showNumberSelection() {
-            console.log('🎯 Mostrando selección de números');
-            waitingRoom.style.display = 'none';
-            numberSelection.style.display = 'block';
-            results.style.display = 'none';
-        }
-
-        function showResults(gameState) {
-            waitingRoom.style.display = 'none';
-            numberSelection.style.display = 'none';
-            results.style.display = 'block';
-
-            const resultsContent = document.getElementById('results-content');
-            const totalSum = gameState.totalSum;
-            const winner = gameState.winner;
-
-            let html = `<div class="total-sum">Suma Total: ${totalSum}</div>`;
-            
-            Object.values(gameState.players).forEach(player => {
-                const isWinner = player.id === winner;
-                const status = isWinner ? 'winner' : 'loser';
-                const icon = isWinner ? '🏆' : '💀';
-                const playerName = player.name || 'Jugador Desconocido';
-                
-                html += `
-                    <div class="${status}">
-                        ${icon} ${playerName}: Seleccionó ${player.selectedNumber}, 
-                        predijo ${player.guess} 
-                        ${isWinner ? '(GANADOR!)' : ''}
-                    </div>
-                `;
-            });
-
-            resultsContent.innerHTML = html;
-
-            if (winner === playerId) {
-                addCoins(1000);
-                console.log('¡Ganaste! +1000 monedas');
-            } else {
-                subtractCoins(500);
-                console.log('Perdiste -500 monedas');
-            }
-        }
-
         function updatePlayersList(players) {
+            console.log('🔄 Actualizando lista de jugadores:', players);
             playersList.innerHTML = '';
             
+            if (!players || Object.keys(players).length === 0) {
+                console.log('⚠️ No hay jugadores en la lista');
+                playersList.innerHTML = '<div class="player-card"><h3>⏳ Esperando jugadores...</h3><p>Nadie conectado aún</p></div>';
+                return;
+            }
+            
             Object.values(players).forEach(player => {
+                console.log('👤 Procesando jugador:', player);
                 const playerCard = document.createElement('div');
                 playerCard.className = `player-card ${player.ready ? 'ready' : ''}`;
                 
@@ -474,407 +269,416 @@
                 playersList.appendChild(playerCard);
             });
             
-            console.log('👥 Lista de jugadores actualizada:', players);
+            console.log('✅ Lista de jugadores actualizada. Total jugadores:', Object.keys(players).length);
         }
 
-        function checkGameStart(players) {
+        // Listener de jugadores para juego online
+        playersRef.on('value', (snapshot) => {
+            const players = snapshot.val();
+            console.log('👥 Jugadores recibidos de Firebase:', players);
+            
+            if (!players) {
+                console.log('⚠️ No hay jugadores en Firebase');
+                updatePlayersList({});
+                return;
+            }
+
+            updatePlayersList(players);
+            
+            // Contar jugadores online
             const onlinePlayers = Object.values(players).filter(p => p.online);
-            const readyPlayers = onlinePlayers.filter(p => p.ready);
-
-            if (onlinePlayers.length >= 2 && readyPlayers.length === onlinePlayers.length) {
-                if (!countdownInterval) {
-                    startGameCountdown();
-                }
-            }
-        }
-
-        function startCountdown(initialCountdown) {
-            let countdown = initialCountdown || 30;
+            const previousTotal = totalPlayers;
+            totalPlayers = onlinePlayers.length;
             
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
-            
-            countdownInterval = setInterval(() => {
-                countdownElement.textContent = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    countdownInterval = null;
-                    startGame();
-                }
-                
-                countdown--;
-            }, 1000);
-        }
-
-        function startGameCountdown() {
-            let countdown = 30;
-            
-            countdownInterval = setInterval(() => {
-                countdownElement.textContent = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    countdownInterval = null;
-                    startGame();
-                }
-                
-                countdown--;
-            }, 1000);
-        }
-
-        function startGame() {
-            set(gameStateRef, {
-                phase: 'playing',
-                startTime: Date.now()
+            console.log('📊 Estado de jugadores:', { 
+                total: Object.keys(players).length, 
+                online: totalPlayers,
+                collectedData: collectedData
             });
             
-            // Verificar resultados inmediatamente y también después de 60 segundos como respaldo
-            calculateResults();
-            setTimeout(() => {
+            // Log si cambió el número de jugadores
+            if (previousTotal !== totalPlayers) {
+                console.log(`👥 Cambio en jugadores: ${totalPlayers} jugadores online`);
+            }
+            
+            // Validar límites de jugadores
+            if (totalPlayers < MIN_PLAYERS) {
+                console.log('⏳ Esperando más jugadores...');
+                showWaitingRoom();
+                const waitingMessage = document.getElementById('waiting-message');
+                if (waitingMessage) {
+                    waitingMessage.textContent = `⏳ Esperando jugadores... (${totalPlayers}/${MIN_PLAYERS})`;
+                }
+            } else if (totalPlayers > MAX_PLAYERS) {
+                console.log('⚠️ Demasiados jugadores, esperando que algunos se desconecten...');
+                showWaitingRoom();
+                const waitingMessage = document.getElementById('waiting-message');
+                if (waitingMessage) {
+                    waitingMessage.textContent = `⚠️ Demasiados jugadores (${totalPlayers}/${MAX_PLAYERS}). Esperando que algunos se desconecten...`;
+                }
+            } else {
+                // Número correcto de jugadores (entre MIN_PLAYERS y MAX_PLAYERS)
+                console.log('🎮 Iniciando juego con', totalPlayers, 'jugadores');
+                if (previousTotal < MIN_PLAYERS || previousTotal > MAX_PLAYERS) {
+                    console.log(`🎮 ¡Juego iniciado! ${totalPlayers} jugadores conectados (mínimo ${MIN_PLAYERS}, máximo ${MAX_PLAYERS})`);
+                }
+                showNumberSelection();
+                
+                // Revisar si tenemos todos los datos necesarios
+                checkAndCalculateResults(players);
+            }
+        });
+
+        function showWaitingRoom() {
+            waitingRoom.style.display = 'block';
+            numberSelection.style.display = 'none';
+            results.style.display = 'none';
+        }
+
+        function showNumberSelection() {
+            waitingRoom.style.display = 'none';
+            numberSelection.style.display = 'block';
+            results.style.display = 'none';
+            console.log('🎮 Pantalla de selección de números mostrada');
+        }
+
+        function showResults(gameState) {
+            console.log('🏁 Mostrando resultados:', gameState);
+            
+            waitingRoom.style.display = 'none';
+            numberSelection.style.display = 'none';
+            results.style.display = 'block';
+
+            const resultsContent = document.getElementById('results-content');
+            const totalSum = gameState.totalSum;
+            const winner = gameState.winner;
+
+            let html = `<div class="total-sum">Suma Total: ${totalSum}</div>`;
+            
+            // Convertir players de objeto a array si es necesario
+            let playersArray = [];
+            if (Array.isArray(gameState.players)) {
+                playersArray = gameState.players;
+            } else if (gameState.players && typeof gameState.players === 'object') {
+                playersArray = Object.values(gameState.players);
+            }
+            
+            console.log('👥 Jugadores para mostrar:', playersArray);
+            
+            // Mostrar resultados de cada jugador
+            playersArray.forEach(player => {
+                const isWinner = player.name === winner || player.id === winner;
+                const status = isWinner ? 'winner' : 'loser';
+                const icon = isWinner ? '🏆' : '💀';
+                const playerName = player.name || 'Jugador Desconocido';
+                
+                html += `
+                    <div class="${status}">
+                        ${icon} ${playerName}: Seleccionó ${player.selectedNumber}, 
+                        predijo ${player.guess} 
+                        ${isWinner ? '(GANADOR!)' : ''}
+                    </div>
+                `;
+            });
+
+            // Mostrar mensaje final
+            if (winner) {
+                const winnerPlayer = playersArray.find(p => p.name === winner || p.id === winner);
+                const winnerName = winnerPlayer ? winnerPlayer.name : winner;
+                html += `<div class="winner">🎉 ¡${winnerName} ha ganado! 🎉</div>`;
+            } else {
+                html += `<div class="loser">😔 Nadie acertó la suma total. ¡Mejor suerte la próxima vez!</div>`;
+            }
+
+            resultsContent.innerHTML = html;
+
+            // Asignar monedas
+            const currentPlayerName = localStorage.getItem('soldierName') || playerName;
+            if (winner === currentPlayerName || winner === playerId) {
+                addCoins(1000);
+                console.log('¡Ganaste! +1000 monedas');
+            } else {
+                subtractCoins(500);
+                console.log('Perdiste -500 monedas');
+            }
+        }
+
+        function checkAndCalculateResults(players) {
+            console.log('🔍 Revisando datos de jugadores...');
+            
+            // Limpiar datos anteriores
+            playersData = {};
+            collectedData = 0;
+            
+            // Revisar cada jugador online
+            Object.values(players).forEach(player => {
+                if (player.online && player.selectedNumber && player.guess) {
+                    console.log(`✅ Datos completos de ${player.name}: Número=${player.selectedNumber}, Predicción=${player.guess}`);
+                    playersData[player.id] = {
+                        id: player.id,
+                        name: player.name,
+                        selectedNumber: player.selectedNumber,
+                        guess: player.guess
+                    };
+                    collectedData++;
+                } else if (player.online) {
+                    console.log(`⏳ ${player.name} aún no ha enviado datos completos`);
+                }
+            });
+            
+            console.log(`📊 Datos recopilados: ${collectedData}/${totalPlayers}`);
+            
+            // Log de progreso
+            if (collectedData > 0) {
+                console.log(`📊 Progreso: ${collectedData}/${totalPlayers} jugadores han enviado datos`);
+            }
+            
+            // Si tenemos todos los datos, calcular resultados
+            if (collectedData === totalPlayers && totalPlayers >= MIN_PLAYERS && totalPlayers <= MAX_PLAYERS) {
+                console.log('🎯 Todos los datos recopilados, calculando resultados...');
                 calculateResults();
-            }, 60000);
+            }
         }
 
         function calculateResults() {
-            onValue(playersRef, (snapshot) => {
-                const players = snapshot.val();
-                if (!players) {
-                    console.log('❌ No hay jugadores para calcular resultados');
-                    return;
-                }
+            console.log('🎯 Iniciando cálculo de resultados...');
+            alert('🎯 Iniciando cálculo de resultados...');
+            console.log('👥 Datos de jugadores:', playersData);
+            
+            if (Object.keys(playersData).length < MIN_PLAYERS) {
+                console.log('❌ No hay suficientes datos para calcular resultados');
+                return;
+            }
+            
+            if (Object.keys(playersData).length > MAX_PLAYERS) {
+                console.log('❌ Demasiados jugadores para el juego');
+                return;
+            }
 
-                const onlinePlayers = Object.values(players).filter(p => p.online && p.ready && p.selectedNumber && p.guess);
-                console.log('👥 Jugadores online y listos:', onlinePlayers);
-                
-                if (onlinePlayers.length < 2) {
-                    console.log('❌ No hay suficientes jugadores para calcular resultados');
-                    return;
-                }
+            // Calcular suma total
+            const totalSum = Object.values(playersData).reduce((sum, player) => sum + player.selectedNumber, 0);
+            console.log('🔢 Suma total de números seleccionados:', totalSum);
+            
+            // Mostrar las elecciones de cada jugador
+            Object.values(playersData).forEach(player => {
+                console.log(`👤 ${player.name}: Número=${player.selectedNumber}, Predicción=${player.guess}`);
+            });
+            
+            // Encontrar ganador (el que predijo correctamente la suma)
+            const winner = Object.values(playersData).find(player => player.guess === totalSum);
+            console.log('🏆 Ganador:', winner ? winner.name : 'Ninguno');
+            
+            const gameState = {
+                phase: 'results',
+                totalSum: totalSum,
+                winner: winner ? winner.name : null,
+                players: Object.values(playersData), // Convertir a array
+                endTime: Date.now()
+            };
 
-                // Calcular suma total
-                const totalSum = onlinePlayers.reduce((sum, player) => sum + player.selectedNumber, 0);
-                console.log('🔢 Suma total de números seleccionados:', totalSum);
-                
-                // Mostrar las elecciones de cada jugador
-                onlinePlayers.forEach(player => {
-                    console.log(`👤 ${player.name}: Número=${player.selectedNumber}, Predicción=${player.guess}`);
+            console.log('💾 Guardando resultados en Firebase...');
+            gameStateRef.set(gameState)
+                .then(() => {
+                    console.log('✅ Resultados calculados y guardados:', gameState);
+                    // Mostrar resultados inmediatamente
+                    showResults(gameState);
+                })
+                .catch((error) => {
+                    console.error('❌ Error al guardar resultados:', error);
                 });
-                
-                // Encontrar ganador (el que predijo correctamente la suma)
-                const winner = onlinePlayers.find(player => player.guess === totalSum);
-                console.log('🏆 Ganador:', winner ? winner.name : 'Ninguno');
-                
-                const gameState = {
-                    phase: 'results',
-                    totalSum: totalSum,
-                    winner: winner ? winner.id : null,
-                    players: players,
-                    endTime: Date.now()
-                };
-
-                set(gameStateRef, gameState);
-                console.log('✅ Resultados calculados y guardados:', gameState);
-            }, { onlyOnce: true });
         }
 
         document.querySelectorAll('.number-btn').forEach(btn => {
-            // Agregar eventos tanto para click como para touch
-            const handleSelection = () => {
+            btn.addEventListener('click', () => {
                 console.log('🔢 Número seleccionado:', btn.dataset.number);
                 document.querySelectorAll('.number-btn').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
                 selectedNumber = parseInt(btn.dataset.number);
+                console.log('✅ Número guardado:', selectedNumber);
                 checkSubmitButton();
-                
-                // Feedback táctil
-                btn.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    btn.style.transform = 'scale(1)';
-                }, 150);
-            };
-            
-            btn.addEventListener('click', handleSelection);
-            btn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                handleSelection();
             });
         });
 
         guessInput.addEventListener('input', () => {
             myGuess = parseInt(guessInput.value);
-            console.log('📝 Predicción ingresada:', myGuess);
+            console.log('🎯 Predicción ingresada:', myGuess);
             checkSubmitButton();
-        });
-        
-        // Mejorar experiencia en móvil para el input
-        guessInput.addEventListener('focus', () => {
-            // Scroll suave hacia el input en móvil
-            if (window.innerWidth <= 768) {
-                setTimeout(() => {
-                    guessInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 300);
-            }
         });
 
         function checkSubmitButton() {
-            const isValid = selectedNumber && myGuess && myGuess >= 2 && myGuess <= 16;
+            // Validación robusta para móvil y escritorio
+            let guessValue = guessInput.value;
+            if (typeof guessValue === 'string') guessValue = guessValue.trim();
+            const parsedGuess = parseInt(guessValue);
+            const isValid = selectedNumber !== null && parsedGuess !== null && !isNaN(parsedGuess) && 
+                           ALLOWED_NUMBERS.includes(selectedNumber) && parsedGuess >= 0 && parsedGuess <= 18;
             submitBtn.disabled = !isValid;
-            console.log('🔍 Verificando botón:', { 
-                selectedNumber, 
-                myGuess, 
-                isValid, 
-                buttonDisabled: submitBtn.disabled,
-                buttonText: submitBtn.textContent
-            });
-            
-            // Mostrar estado visual del botón
-            if (isValid) {
-                submitBtn.style.opacity = '1';
-                submitBtn.style.cursor = 'pointer';
-                submitBtn.style.background = 'linear-gradient(135deg, #4ecdc4, #44a08d)';
-                submitBtn.textContent = '✅ CONFIRMAR';
+            myGuess = isValid ? parsedGuess : null;
+            // Feedback visual
+            const errorDiv = document.getElementById('mobile-error');
+            if (selectedNumber === null) {
+                errorDiv.textContent = 'Selecciona un número (0, 1, 2 o 3).';
+                errorDiv.style.display = 'block';
+            } else if (!parsedGuess || isNaN(parsedGuess)) {
+                errorDiv.textContent = 'Introduce una predicción válida.';
+                errorDiv.style.display = 'block';
+            } else if (parsedGuess < 0 || parsedGuess > 18) {
+                errorDiv.textContent = 'La predicción debe ser entre 0 y 18.';
+                errorDiv.style.display = 'block';
             } else {
-                submitBtn.style.opacity = '0.5';
-                submitBtn.style.cursor = 'not-allowed';
-                submitBtn.style.background = 'linear-gradient(135deg, #ccc, #999)';
-                submitBtn.textContent = '⏳ Selecciona número y predicción';
-            }
-            
-            // Mostrar indicador de estado en móvil
-            if (window.innerWidth <= 768) {
-                const statusIndicator = document.getElementById('mobile-status') || createMobileStatusIndicator();
-                if (isValid) {
-                    statusIndicator.textContent = '✅ Listo para enviar';
-                    statusIndicator.style.color = '#4ecdc4';
-                } else {
-                    statusIndicator.textContent = '⏳ Completa los datos';
-                    statusIndicator.style.color = '#ff6b6b';
-                }
+                errorDiv.textContent = '';
+                errorDiv.style.display = 'none';
             }
         }
-        
-        function createMobileStatusIndicator() {
-            const indicator = document.createElement('div');
-            indicator.id = 'mobile-status';
-            indicator.style.cssText = `
-                position: fixed;
-                top: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(0,0,0,0.8);
-                color: white;
-                padding: 8px 15px;
-                border-radius: 20px;
-                font-size: 14px;
-                font-weight: bold;
-                z-index: 1000;
-                display: none;
-            `;
+
+        // Evento click del botón submit
+        submitBtn.addEventListener('click', () => {
+            console.log('🔘 Botón enviar clickeado');
             
-            if (window.innerWidth <= 768) {
-                indicator.style.display = 'block';
-            }
-            
-            document.body.appendChild(indicator);
-            return indicator;
-        }
-
-        const handleSubmit = () => {
-            console.log('🔘 Botón Confirmar clickeado');
-            console.log('📊 Datos actuales:', { selectedNumber, myGuess, playerId, playerName });
-            console.log('🎮 Estado actual del botón:', { disabled: submitBtn.disabled, text: submitBtn.textContent });
-            
-            if (!selectedNumber || !myGuess) {
-                console.log('❌ Datos faltantes:', { selectedNumber, myGuess });
-                alert('Por favor selecciona un número y ingresa tu predicción');
-                return;
-            }
-
-            if (myGuess < 2 || myGuess > 16) {
-                console.log('❌ Predicción fuera de rango:', myGuess);
-                alert('La predicción debe estar entre 2 y 16');
-                return;
-            }
-
-            console.log('✅ Datos válidos, enviando a Firebase...');
-
-            // Deshabilitar botón inmediatamente para evitar doble clic
-            submitBtn.disabled = true;
+            // Mostrar feedback visual inmediato
             submitBtn.textContent = 'Enviando...';
+            submitBtn.disabled = true;
+            
+            const errorDiv = document.getElementById('mobile-error');
+            if (selectedNumber === null || !ALLOWED_NUMBERS.includes(selectedNumber)) {
+                errorDiv.textContent = 'Selecciona un número válido (0, 1, 2 o 3).';
+                errorDiv.style.display = 'block';
+                submitBtn.textContent = 'Confirmar';
+                submitBtn.disabled = false;
+                return;
+            }
+            if (!myGuess || isNaN(myGuess)) {
+                errorDiv.textContent = 'Introduce una predicción válida.';
+                errorDiv.style.display = 'block';
+                submitBtn.textContent = 'Confirmar';
+                submitBtn.disabled = false;
+                return;
+            }
+            if (myGuess < 0 || myGuess > 18) {
+                errorDiv.textContent = 'La predicción debe ser entre 0 y 18.';
+                errorDiv.style.display = 'block';
+                submitBtn.textContent = 'Confirmar';
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            errorDiv.textContent = '';
+            errorDiv.style.display = 'none';
+            
+            console.log('📊 Datos actuales:', { selectedNumber, myGuess, playerName, gameId, playerId });
 
-            // Actualizar solo los campos necesarios sin sobrescribir datos existentes
+            // Enviar datos a Firebase para juego online
             const updates = {};
             updates[`chinos/${gameId}/players/${playerId}/selectedNumber`] = selectedNumber;
             updates[`chinos/${gameId}/players/${playerId}/guess`] = myGuess;
-            updates[`chinos/${gameId}/players/${playerId}/ready`] = true;
-            updates[`chinos/${gameId}/players/${playerId}/name`] = playerName; // Mantener el nombre
-            updates[`chinos/${gameId}/players/${playerId}/online`] = true; // Asegurar que esté online
-
-            console.log('📤 Enviando actualizaciones:', updates);
-
-            // Timeout más largo para móvil
-            const timeoutDuration = window.innerWidth <= 768 ? 15000 : 10000;
+            updates[`chinos/${gameId}/players/${playerId}/name`] = playerName;
+            updates[`chinos/${gameId}/players/${playerId}/online`] = true;
             
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Timeout')), timeoutDuration);
-            });
-            
-            Promise.race([
-                set(ref(db), updates),
-                timeoutPromise
-            ])
+            console.log('📤 Datos a enviar:', updates);
+            console.log('🎯 Ruta completa:', `chinos/${gameId}/players/${playerId}`);
+
+            console.log('🔥 Enviando a Firebase:', updates);
+            console.log('🌐 Firebase config:', firebaseConfig);
+            console.log('🔗 Database URL:', firebaseConfig.databaseURL);
+
+            // Timeout de seguridad (15 segundos para móvil)
+            const timeoutId = setTimeout(() => {
+                console.error('⏰ TIMEOUT alcanzado - Firebase no responde');
+                submitBtn.textContent = 'Confirmar';
+                submitBtn.disabled = false;
+            }, 15000);
+
+            db.ref().update(updates)
                 .then(() => {
+                    clearTimeout(timeoutId); // Limpiar timeout
                     console.log('✅ Datos enviados exitosamente a Firebase');
                     submitBtn.textContent = 'Enviado ✓';
                     
-                    // Mostrar confirmación al usuario
-                    showNotification('✅ Elección enviada correctamente', 'success');
+                    // Mostrar mensaje de éxito
+                    errorDiv.textContent = '¡Datos enviados! Esperando resultados...';
+                    errorDiv.style.color = '#4ecdc4';
+                    errorDiv.style.display = 'block';
+                    
+                    // Cambiar a modo de espera
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Enviado ✓';
                 })
                 .catch((error) => {
-                    console.error('❌ Error al enviar datos:', error);
-                    const errorMessage = error.message === 'Timeout' 
-                        ? 'Tiempo de espera agotado. Verifica tu conexión e intenta de nuevo.'
-                        : 'Error al enviar datos. Intenta de nuevo.';
-                    alert(errorMessage);
+                    clearTimeout(timeoutId); // Limpiar timeout
+                    console.error('❌ Error al enviar datos a Firebase:', error);
+                    submitBtn.textContent = 'Confirmar';
                     submitBtn.disabled = false;
-                    submitBtn.textContent = '✅ CONFIRMAR';
+                    
+                    if (error.code === 'PERMISSION_DENIED') {
+                        errorDiv.textContent = 'Error de permisos en Firebase. Las reglas de seguridad están bloqueando la escritura.';
+                    } else if (error.code === 'UNAVAILABLE') {
+                        errorDiv.textContent = 'Firebase no está disponible. Verifica tu conexión a internet.';
+                    } else {
+                        errorDiv.textContent = 'Error al enviar datos: ' + error.message;
+                    }
+                    errorDiv.style.color = '#ff6b6b';
+                    errorDiv.style.display = 'block';
                 });
             
-            console.log('Elección enviada:', { selectedNumber, guess: myGuess, ready: true, name: playerName });
-        };
-        
-        // Agregar eventos tanto para click como para touch
-        submitBtn.addEventListener('click', handleSubmit);
-        submitBtn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            handleSubmit();
+            console.log('📤 Enviando elección:', { selectedNumber, guess: myGuess, name: playerName });
         });
 
         function addCoins(amount) {
-            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const currentCoins = parseInt(localStorage.getItem('coins') || '0');
             const newCoins = currentCoins + amount;
-            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            localStorage.setItem('coins', newCoins.toString());
             
-            // Sync with Firebase using PlayerDataManager if available
-            if (window.PlayerDataManager && window.PlayerDataManager.safeAddCoins) {
-                window.PlayerDataManager.safeAddCoins(amount, 'chinos-game-win');
-            } else {
-                // Fallback to direct Firebase update
-                const playerName = localStorage.getItem('soldierName');
-                if (playerName && window.firebase && window.firebase.database) {
-                    const db = window.firebase.database();
-                    const playerRef = db.ref(`players/${playerName}`);
-                    playerRef.update({
-                        coins: newCoins,
-                        lastUpdated: Date.now()
-                    });
-                }
-            }
-            
-            // Update display if function exists
-            if (typeof loadTotalCoins === 'function') {
-                loadTotalCoins();
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                db.ref(`users/${userId}/coins`).set(newCoins);
             }
         }
 
         function subtractCoins(amount) {
-            const currentCoins = parseInt(localStorage.getItem('totalOrtizCoins') || '0');
+            const currentCoins = parseInt(localStorage.getItem('coins') || '0');
             const newCoins = Math.max(0, currentCoins - amount);
-            localStorage.setItem('totalOrtizCoins', newCoins.toString());
+            localStorage.setItem('coins', newCoins.toString());
             
-            // Sync with Firebase using PlayerDataManager if available
-            if (window.PlayerDataManager && window.PlayerDataManager.safeDeductCoins) {
-                window.PlayerDataManager.safeDeductCoins(amount, 'chinos-game-loss');
-            } else {
-                // Fallback to direct Firebase update
-                const playerName = localStorage.getItem('soldierName');
-                if (playerName && window.firebase && window.firebase.database) {
-                    const db = window.firebase.database();
-                    const playerRef = db.ref(`players/${playerName}`);
-                    playerRef.update({
-                        coins: newCoins,
-                        lastUpdated: Date.now()
-                    });
-                }
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                db.ref(`users/${userId}/coins`).set(newCoins);
             }
-            
-            // Update display if function exists
-            if (typeof loadTotalCoins === 'function') {
-                loadTotalCoins();
-            }
-        }
-
-        function createGameRoom() {
-            console.log('🏗️ Creando sala de juego Chinos automáticamente');
-            
-            // Crear el estado inicial del juego
-            set(gameStateRef, {
-                phase: 'waiting',
-                countdown: 30,
-                startTime: null,
-                autoCreated: true
-            });
-            
-            // Crear la sala de juego en gameRooms
-            const gameRoomRef = ref(db, `gameRooms/${gameId}`);
-            set(gameRoomRef, {
-                gameId: gameId,
-                status: 'waiting',
-                createdAt: Date.now(),
-                autoCreated: true,
-                game: 'chinos'
-            });
-            
-            console.log('✅ Sala de juego Chinos creada automáticamente');
         }
 
         window.addEventListener('beforeunload', () => {
-            remove(ref(db, `chinos/${gameId}/players/${playerId}`));
+            db.ref(`chinos/${gameId}/players/${playerId}`).remove();
         });
 
+        // Función para probar conectividad con Firebase
+        function testFirebaseConnection() {
+            console.log('🔍 Probando conectividad con Firebase...');
+            db.ref('test-connection').set({ timestamp: Date.now(), test: true })
+                .then(() => {
+                    console.log('✅ Conexión con Firebase OK');
+                })
+                .catch((error) => {
+                    console.error(`❌ Error de conectividad: ${error.code} - ${error.message}`);
+                });
+        }
+
+        // Inicializar jugador y estado del juego
         initializePlayer();
         
-        // Verificar estado inicial del botón
-        setTimeout(() => {
-            console.log('🔍 Estado inicial del botón:', {
-                disabled: submitBtn.disabled,
-                text: submitBtn.textContent,
-                selectedNumber,
-                myGuess
-            });
-            checkSubmitButton();
-        }, 1000);
-        
         // Inicializar estado del juego si no existe
-        onValue(gameStateRef, (snapshot) => {
+        gameStateRef.on('value', (snapshot) => {
             const gameState = snapshot.val();
             if (!gameState) {
                 console.log('🆕 Inicializando estado del juego Chinos');
-                set(gameStateRef, {
+                gameStateRef.set({
                     phase: 'waiting',
-                    countdown: 30,
+                    countdown: 10,
                     startTime: null
                 });
+            } else if (gameState.phase === 'results') {
+                console.log('🏁 Mostrando resultados del juego');
+                showResults(gameState);
             }
-        }, { onlyOnce: true });
-        
-        // Crear sala de juego automáticamente si no existe
-        const gameRoomRef = ref(db, `gameRooms/${gameId}`);
-        onValue(gameRoomRef, (snapshot) => {
-            const gameRoom = snapshot.val();
-            if (!gameRoom) {
-                console.log('🆕 Creando sala de juego Chinos automáticamente');
-                set(gameRoomRef, {
-                    gameId: gameId,
-                    status: 'waiting',
-                    createdAt: Date.now(),
-                    autoCreated: true,
-                    game: 'chinos'
-                });
-            }
-        }, { onlyOnce: true });
+        });
     </script>
 </body>
 </html> 

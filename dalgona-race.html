@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>🏃‍♂️ DALGONA RACE - Squid Game Ortiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .game-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .game-header {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 0 20px #FFD700;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .game-subtitle {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Loading Screen */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #FFD700;
+            z-index: 10000;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Lobby */
+        .lobby-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100%;
+            padding: 1rem;
+            padding-top: 2rem;
+        }
+
+        .lobby-title {
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px #FFD700;
+        }
+
+        .lobby-rules {
+            font-size: 1.2rem;
+            color: #FFD700;
+            margin-bottom: 1rem;
+            text-align: center;
+            text-shadow: 0 0 10px #FFD700;
+        }
+
+        .players-list {
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            border: 2px solid #fff;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            min-width: 300px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .player-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            background: rgba(255,215,0,0.1);
+            border-radius: 8px;
+            border: 1px solid #FFD700;
+        }
+
+        .player-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 1rem;
+        }
+
+        .player-status.online {
+            background: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
+            color: #fff;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: auto;
+            margin-bottom: 2rem;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #FF6B35;
+        }
+
+        /* Countdown Styles */
+        .countdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .countdown-container {
+            text-align: center;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 0 50px #FFD700;
+        }
+
+        .countdown-title {
+            font-size: 2rem;
+            color: #000;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+        }
+
+        .countdown-number {
+            font-size: 8rem;
+            color: #000;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(255,255,255,0.5);
+            animation: countdownPulse 1s ease-in-out;
+        }
+
+        @keyframes countdownPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .countdown-message {
+            font-size: 1.5rem;
+            color: #000;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        /* Race Track */
+        .race-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .race-track {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #228B22 0%, #32CD32 50%, #228B22 100%);
+        }
+
+        /* Lane Lines */
+        .lane-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #fff;
+            opacity: 0.5;
+        }
+
+        .lane-line:nth-child(1) { top: 20%; }
+        .lane-line:nth-child(2) { top: 40%; }
+        .lane-line:nth-child(3) { top: 60%; }
+        .lane-line:nth-child(4) { top: 80%; }
+
+        /* Players */
+        .player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            transition: all 0.1s linear;
+            z-index: 10;
+        }
+
+        .player.player1 { background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%); }
+        .player.player2 { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); }
+        .player.player3 { background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); }
+        .player.player4 { background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%); }
+        .player.player5 { background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); }
+        .player.player6 { background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%); }
+
+        .player.eliminated {
+            opacity: 0.3;
+            filter: grayscale(100%);
+        }
+
+        /* Obstacles */
+        .obstacle {
+            position: absolute;
+            border-radius: 5px;
+            z-index: 5;
+        }
+
+        .obstacle.spike {
+            background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .obstacle.wall {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+        }
+
+        .obstacle.hole {
+            background: #000;
+            border: 2px solid #333;
+        }
+
+        .obstacle.electric {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            animation: electricPulse 0.5s infinite;
+        }
+
+        @keyframes electricPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            height: 30px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 15px;
+            border: 2px solid #FFD700;
+            z-index: 20;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 13px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Controls */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 20;
+        }
+
+        .control-btn {
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            border: 2px solid #FFD700;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(255,215,0,0.2);
+        }
+
+        /* Winner Banner */
+        .winner-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .winner-content {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 0 50px #FFD700;
+            animation: bannerPulse 2s infinite;
+        }
+
+        @keyframes bannerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .winner-title {
+            font-size: 3rem;
+            color: #000;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+        }
+
+        .winner-name {
+            font-size: 2rem;
+            color: #000;
+            margin-bottom: 1rem;
+        }
+
+        .winner-reward {
+            font-size: 1.5rem;
+            color: #000;
+            margin-bottom: 2rem;
+        }
+
+        .winner-button {
+            background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
+            color: #fff;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .winner-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #FF6B35;
+        }
+
+        /* Game Info */
+        .game-info {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            padding: 1rem;
+            z-index: 20;
+        }
+
+        .game-info h3 {
+            color: #FFD700;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-info p {
+            color: #fff;
+            margin: 0.2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Loading Screen -->
+        <div class="loading" id="loadingScreen">
+            Cargando DALGONA RACE
+        </div>
+
+        <!-- Lobby Screen -->
+        <div class="lobby-screen" id="lobbyScreen">
+            <div class="game-header">
+                <div class="game-title">🏃‍♂️ DALGONA RACE</div>
+                <div class="game-subtitle">¡La carrera más intensa de Squid Game!</div>
+            </div>
+            
+            <div class="lobby-title">🏃‍♂️ SALA DE ESPERA</div>
+            <div class="lobby-rules">¡Último en llegar a la meta será eliminado!</div>
+            
+            <div class="players-list" id="playersList">
+                <div style="text-align: center; color: #FFD700; margin-bottom: 0.5rem;">
+                    Esperando...
+                </div>
+            </div>
+            
+            <button class="back-button" id="backButton">
+                🏠 VOLVER A LA PÁGINA PRINCIPAL
+            </button>
+        </div>
+
+        <!-- Race Screen -->
+        <div class="race-screen" id="raceScreen">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <!-- Game Info -->
+            <div class="game-info">
+                <h3>🏃‍♂️ CARRERA</h3>
+                <p>Jugadores: <span id="activePlayers">0</span></p>
+                <p>Meta: <span id="finishLine">100%</span></p>
+                <p>Tiempo: <span id="raceTime">00:00</span></p>
+            </div>
+
+            <!-- Race Track -->
+            <div class="race-track" id="raceTrack">
+                <!-- Lane Lines -->
+                <div class="lane-line"></div>
+                <div class="lane-line"></div>
+                <div class="lane-line"></div>
+                <div class="lane-line"></div>
+                
+                <!-- Players will be added here -->
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="control-btn" id="jumpBtn">SALTAR</button>
+                <button class="control-btn" id="duckBtn">AGACHARSE</button>
+                <button class="control-btn back-btn" onclick="goBack()">🏠 VOLVER</button>
+            </div>
+        </div>
+
+        <!-- Winner Banner -->
+        <div class="winner-banner" id="winnerBanner">
+            <div class="winner-content">
+                <div class="winner-title">🏆 ¡GANADOR!</div>
+                <div class="winner-name" id="winnerName">¡FELICIDADES!</div>
+                <div class="winner-reward">💰 +3,000 MONEDAS</div>
+                <button class="winner-button" onclick="closeBanner()">¡GENIAL!</button>
+            </div>
+        </div>
+
+        <!-- Countdown Overlay -->
+        <div class="countdown-overlay" id="countdownOverlay">
+            <div class="countdown-container">
+                <div class="countdown-title">🏃‍♂️ ¡LA CARRERA VA A COMENZAR!</div>
+                <div class="countdown-number" id="countdownNumber">10</div>
+                <div class="countdown-message">Preparando la pista...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    
+    <script>
+        // Variables globales
+        let currentPlayer = '';
+        let gameState = 'lobby';
+        let onlinePlayers = {};
+        let database = null;
+        let countdownInterval = null;
+        let countdownActive = false;
+        let countdownStarted = false;
+        let raceStarted = false;
+        let raceTime = 0;
+        let raceTimer = null;
+
+        // Race variables
+        let players = {};
+        let obstacles = [];
+        let finishLine = 100;
+        let gameRunning = false;
+
+        // DOM elements
+        const loadingScreen = document.getElementById('loadingScreen');
+        const lobbyScreen = document.getElementById('lobbyScreen');
+        const raceScreen = document.getElementById('raceScreen');
+        const playersList = document.getElementById('playersList');
+        const backButton = document.getElementById('backButton');
+        const countdownOverlay = document.getElementById('countdownOverlay');
+        const countdownNumber = document.getElementById('countdownNumber');
+        const raceTrack = document.getElementById('raceTrack');
+        const progressBar = document.getElementById('progressBar');
+        const activePlayersEl = document.getElementById('activePlayers');
+        const finishLineEl = document.getElementById('finishLine');
+        const raceTimeEl = document.getElementById('raceTime');
+        const jumpBtn = document.getElementById('jumpBtn');
+        const duckBtn = document.getElementById('duckBtn');
+
+        // Initialize game
+        function initGame() {
+            console.log('🏃‍♂️ Inicializando Dalgona Race...');
+            
+            // Get player name
+            currentPlayer = localStorage.getItem('soldierName') || 'Jugador';
+            console.log('🏃‍♂️ Jugador actual:', currentPlayer);
+            
+            // Hide loading screen
+            loadingScreen.style.display = 'none';
+            lobbyScreen.style.display = 'flex';
+            
+            // Setup Firebase
+            setupFirebase();
+        }
+
+        // Setup Firebase
+        function setupFirebase() {
+            console.log('🏃‍♂️ Configurando Firebase...');
+            
+            if (window.firebase && window.firebase.database) {
+                database = firebase.database();
+                console.log('🏃‍♂️ Firebase listo');
+                
+                // Setup listeners
+                setupFirebaseListeners();
+                
+                // Join lobby
+                joinLobby();
+            } else {
+                console.log('🏃‍♂️ Firebase no está listo, esperando...');
+                setTimeout(setupFirebase, 1000);
+            }
+        }
+
+        // Setup Firebase listeners
+        function setupFirebaseListeners() {
+            console.log('🏃‍♂️ Configurando listeners de Firebase...');
+            
+            // Listen for online players
+            database.ref('players').on('value', (snapshot) => {
+                console.log('🏃‍♂️ Jugadores actualizados:', snapshot.val());
+                const allPlayers = snapshot.val() || {};
+                
+                // Filter only players with dalgonaRace data
+                onlinePlayers = {};
+                Object.keys(allPlayers).forEach(playerName => {
+                    if (allPlayers[playerName].dalgonaRace) {
+                        onlinePlayers[playerName] = allPlayers[playerName].dalgonaRace;
+                    }
+                });
+                
+                console.log('🏃‍♂️ onlinePlayers después del listener:', onlinePlayers);
+                console.log('🏃‍♂️ Número de jugadores:', Object.keys(onlinePlayers).length);
+                updatePlayersList();
+            }, (error) => {
+                console.error('❌ Error en listener de jugadores online:', error);
+            });
+
+            // Listen for race state
+            database.ref('dalgonaRace/gameState').on('value', (snapshot) => {
+                const state = snapshot.val();
+                if (state && state.status === 'racing' && !raceStarted) {
+                    console.log('🏃‍♂️ ¡Carrera iniciada!');
+                    startRace();
+                }
+            });
+        }
+
+        // Join lobby
+        function joinLobby() {
+            console.log('🏃‍♂️ Intentando unirse al lobby como:', currentPlayer);
+            
+            if (!database) {
+                console.error('❌ Database no disponible en joinLobby');
+                return;
+            }
+            
+            // Check current players before joining
+            database.ref('players').once('value').then((snapshot) => {
+                const allPlayers = snapshot.val() || {};
+                const dalgonaRacePlayers = Object.keys(allPlayers).filter(playerName => 
+                    allPlayers[playerName].dalgonaRace
+                );
+                
+                console.log('🏃‍♂️ Jugadores actuales en Dalgona Race:', dalgonaRacePlayers.length);
+                
+                // Check if lobby is full (6 players max)
+                if (dalgonaRacePlayers.length >= 6 && !dalgonaRacePlayers.includes(currentPlayer)) {
+                    console.log('🏃‍♂️ Lobby lleno, no se puede unir');
+                    showLobbyFullMessage();
+                    return;
+                }
+                
+                // Join lobby if there's space or if player is already in
+                const playerRef = database.ref(`players/${currentPlayer}/dalgonaRace`);
+                
+                const playerData = {
+                    name: currentPlayer,
+                    joinedAt: Date.now(),
+                    status: 'online',
+                    position: 0,
+                    lane: Math.floor(Math.random() * 4) + 1
+                };
+                
+                playerRef.set(playerData).then(() => {
+                    console.log('🏃‍♂️ Unido al lobby exitosamente');
+                    updatePlayersList();
+                }).catch((error) => {
+                    console.error('❌ Error al unirse al lobby:', error);
+                });
+
+                // Set up disconnect handler
+                playerRef.onDisconnect().remove();
+            });
+        }
+
+        // Update players list
+        function updatePlayersList() {
+            const players = Object.keys(onlinePlayers);
+            
+            if (players.length === 0) {
+                playersList.innerHTML = '<div style="text-align: center; color: #FFD700;">Esperando...</div>';
+                stopCountdown();
+                return;
+            }
+
+            let html = '';
+            players.forEach(playerName => {
+                const player = onlinePlayers[playerName];
+                const isCurrentPlayer = playerName === currentPlayer;
+                html += `
+                    <div class="player-item ${isCurrentPlayer ? 'current-player' : ''}">
+                        <div class="player-status online"></div>
+                        <div class="player-name">${playerName} ${isCurrentPlayer ? '(Tú)' : ''}</div>
+                    </div>
+                `;
+            });
+
+            playersList.innerHTML = html;
+
+            // Check if we have enough players and start countdown
+            if (players.length >= 2 && !countdownActive && !countdownStarted) {
+                console.log('🏃‍♂️ ¡2+ jugadores detectados! Iniciando contador...');
+                countdownStarted = true;
+                startCountdown();
+            } else if (players.length < 2 && countdownActive) {
+                console.log('🏃‍♂️ Jugadores insuficientes, deteniendo contador...');
+                stopCountdown();
+            }
+        }
+
+        // Start countdown
+        function startCountdown() {
+            if (countdownActive) return;
+            
+            countdownActive = true;
+            let countdown = 10;
+            
+            console.log('🏃‍♂️ Iniciando contador de 10 segundos...');
+            
+            // Show countdown overlay
+            countdownOverlay.style.display = 'flex';
+            countdownNumber.textContent = countdown;
+            
+            countdownInterval = setInterval(() => {
+                countdown--;
+                countdownNumber.textContent = countdown;
+                
+                console.log(`🏃‍♂️ Contador: ${countdown}`);
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                    countdownActive = false;
+                    
+                    console.log('🏃‍♂️ ¡Contador terminado! Iniciando carrera...');
+                    
+                    // Hide countdown and start race
+                    countdownOverlay.style.display = 'none';
+                    startRace();
+                }
+            }, 1000);
+        }
+
+        // Stop countdown
+        function stopCountdown() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            countdownActive = false;
+            countdownOverlay.style.display = 'none';
+            console.log('🏃‍♂️ Contador detenido');
+        }
+
+        // Start race
+        function startRace() {
+            console.log('🏃‍♂️ Iniciando carrera de Dalgona Race...');
+            
+            // Hide lobby and show race
+            lobbyScreen.style.display = 'none';
+            raceScreen.style.display = 'flex';
+            
+            // Update game state
+            gameState = 'racing';
+            raceStarted = true;
+            
+            // Initialize race mechanics
+            initRaceMechanics();
+            
+            // Update Firebase race state
+            if (database) {
+                database.ref('dalgonaRace/gameState').set({
+                    status: 'racing',
+                    startTime: Date.now()
+                });
+            }
+        }
+
+        // Initialize race mechanics
+        function initRaceMechanics() {
+            console.log('🏃‍♂️ Inicializando mecánicas de la carrera...');
+            
+            // Initialize players
+            initializePlayers();
+            
+            // Generate obstacles
+            generateObstacles();
+            
+            // Setup controls
+            setupControls();
+            
+            // Start race timer
+            startRaceTimer();
+            
+            // Start game loop
+            gameRunning = true;
+            gameLoop();
+        }
+
+        // Initialize players
+        function initializePlayers() {
+            const playerNames = Object.keys(onlinePlayers);
+            players = {};
+            
+            playerNames.forEach((playerName, index) => {
+                const player = onlinePlayers[playerName];
+                players[playerName] = {
+                    name: playerName,
+                    position: 0,
+                    lane: player.lane || (index % 4) + 1,
+                    eliminated: false,
+                    element: null
+                };
+                
+                // Create player element
+                createPlayerElement(playerName, players[playerName]);
+            });
+            
+            updateActivePlayers();
+        }
+
+        // Create player element
+        function createPlayerElement(playerName, playerData) {
+            const playerEl = document.createElement('div');
+            playerEl.className = `player player${playerData.lane}`;
+            playerEl.id = `player-${playerName}`;
+            playerEl.textContent = playerName.charAt(0).toUpperCase();
+            playerEl.style.left = '10px';
+            playerEl.style.top = `${(playerData.lane * 20) - 10}%`;
+            
+            raceTrack.appendChild(playerEl);
+            playerData.element = playerEl;
+        }
+
+        // Generate obstacles
+        function generateObstacles() {
+            obstacles = [];
+            
+            // Generate random obstacles along the track
+            for (let i = 0; i < 15; i++) {
+                const obstacle = {
+                    x: 20 + (i * 5) + Math.random() * 3,
+                    lane: Math.floor(Math.random() * 4) + 1,
+                    type: ['spike', 'wall', 'hole', 'electric'][Math.floor(Math.random() * 4)],
+                    width: 30 + Math.random() * 20,
+                    height: 20 + Math.random() * 10
+                };
+                
+                obstacles.push(obstacle);
+                createObstacleElement(obstacle);
+            }
+        }
+
+        // Create obstacle element
+        function createObstacleElement(obstacle) {
+            const obstacleEl = document.createElement('div');
+            obstacleEl.className = `obstacle ${obstacle.type}`;
+            obstacleEl.style.left = `${obstacle.x}%`;
+            obstacleEl.style.top = `${(obstacle.lane * 20) - 10}%`;
+            obstacleEl.style.width = `${obstacle.width}px`;
+            obstacleEl.style.height = `${obstacle.height}px`;
+            
+            raceTrack.appendChild(obstacleEl);
+        }
+
+        // Setup controls
+        function setupControls() {
+            jumpBtn.onclick = () => {
+                console.log('🏃‍♂️ Botón saltar clickeado');
+                if (gameRunning && players[currentPlayer]) {
+                    jumpPlayer(currentPlayer);
+                }
+            };
+            
+            duckBtn.onclick = () => {
+                console.log('🏃‍♂️ Botón agacharse clickeado');
+                if (gameRunning && players[currentPlayer]) {
+                    duckPlayer(currentPlayer);
+                }
+            };
+        }
+
+        // Jump player
+        function jumpPlayer(playerName) {
+            const player = players[playerName];
+            if (player && !player.eliminated) {
+                const playerEl = player.element;
+                playerEl.style.transform = 'translateY(-20px)';
+                
+                setTimeout(() => {
+                    playerEl.style.transform = 'translateY(0)';
+                }, 300);
+                
+                // Update position
+                player.position += 2;
+                updatePlayerPosition(playerName);
+            }
+        }
+
+        // Duck player
+        function duckPlayer(playerName) {
+            const player = players[playerName];
+            if (player && !player.eliminated) {
+                const playerEl = player.element;
+                playerEl.style.transform = 'scaleY(0.5)';
+                
+                setTimeout(() => {
+                    playerEl.style.transform = 'scaleY(1)';
+                }, 300);
+                
+                // Update position
+                player.position += 1;
+                updatePlayerPosition(playerName);
+            }
+        }
+
+        // Update player position
+        function updatePlayerPosition(playerName) {
+            const player = players[playerName];
+            if (player && player.element) {
+                const newX = Math.min(90, 10 + player.position);
+                player.element.style.left = `${newX}%`;
+                
+                // Check for finish
+                if (newX >= 90) {
+                    playerFinished(playerName);
+                }
+                
+                // Check for obstacles
+                checkObstacleCollision(playerName);
+            }
+        }
+
+        // Check obstacle collision
+        function checkObstacleCollision(playerName) {
+            const player = players[playerName];
+            if (!player || player.eliminated) return;
+            
+            obstacles.forEach(obstacle => {
+                const playerX = 10 + player.position;
+                const playerLane = player.lane;
+                
+                if (Math.abs(playerX - obstacle.x) < 5 && playerLane === obstacle.lane) {
+                    console.log(`🏃‍♂️ ${playerName} chocó con obstáculo!`);
+                    eliminatePlayer(playerName);
+                }
+            });
+        }
+
+        // Eliminate player
+        function eliminatePlayer(playerName) {
+            const player = players[playerName];
+            if (player && !player.eliminated) {
+                player.eliminated = true;
+                player.element.classList.add('eliminated');
+                
+                console.log(`🏃‍♂️ ${playerName} eliminado!`);
+                updateActivePlayers();
+                
+                // Check if only one player remains
+                const activePlayers = Object.values(players).filter(p => !p.eliminated);
+                if (activePlayers.length === 1) {
+                    endRace(activePlayers[0].name);
+                }
+            }
+        }
+
+        // Player finished
+        function playerFinished(playerName) {
+            console.log(`🏃‍♂️ ${playerName} llegó a la meta!`);
+            endRace(playerName);
+        }
+
+        // End race
+        function endRace(winnerName) {
+            gameRunning = false;
+            console.log(`🏃‍♂️ Carrera terminada. Ganador: ${winnerName}`);
+            
+            // Stop race timer
+            if (raceTimer) {
+                clearInterval(raceTimer);
+                raceTimer = null;
+            }
+            
+            // Show winner banner
+            const winnerNameEl = document.getElementById('winnerName');
+            if (winnerNameEl) {
+                winnerNameEl.textContent = winnerName;
+            }
+            
+            const winnerBanner = document.getElementById('winnerBanner');
+            if (winnerBanner) {
+                winnerBanner.style.display = 'flex';
+            }
+        }
+
+        // Start race timer
+        function startRaceTimer() {
+            raceTime = 0;
+            raceTimer = setInterval(() => {
+                raceTime++;
+                const minutes = Math.floor(raceTime / 60);
+                const seconds = raceTime % 60;
+                raceTimeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Update active players
+        function updateActivePlayers() {
+            const activePlayers = Object.values(players).filter(p => !p.eliminated);
+            activePlayersEl.textContent = activePlayers.length;
+        }
+
+        // Game loop
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            // Update progress bar
+            const maxPosition = Math.max(...Object.values(players).map(p => p.position));
+            const progress = (maxPosition / 80) * 100;
+            progressBar.style.width = `${Math.min(100, progress)}%`;
+            
+            // Continue game loop
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Close banner
+        function closeBanner() {
+            document.getElementById('winnerBanner').style.display = 'none';
+        }
+
+        // Back button function
+        function goBack() {
+            console.log('🏃‍♂️ Botón volver clickeado');
+            
+            // Leave lobby
+            if (database) {
+                database.ref(`players/${currentPlayer}/dalgonaRace`).remove();
+            }
+            
+            console.log('🏃‍♂️ Redirigiendo a index.html');
+            window.location.href = 'index.html';
+        }
+
+        // Set up back button
+        backButton.onclick = goBack;
+
+        // Initialize game when page loads
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html> 

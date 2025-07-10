@@ -518,6 +518,7 @@
             align-items: center;
             justify-content: center;
             z-index: 2000;
+            padding: 1rem;
         }
 
         .tutorial-container {
@@ -528,6 +529,8 @@
             text-align: center;
             max-width: 400px;
             margin: 1rem;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .tutorial-title {
@@ -555,14 +558,110 @@
             background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
             color: #fff;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 1rem 2rem;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-width: 150px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
         .tutorial-btn:hover {
             transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        /* Race Start Countdown */
+        .race-start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+        }
+
+        .race-start-container {
+            text-align: center;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 0 50px #FFD700;
+        }
+
+        .race-start-title {
+            font-size: 2rem;
+            color: #000;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+        }
+
+        .race-start-number {
+            font-size: 6rem;
+            color: #000;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(255,255,255,0.5);
+            animation: raceStartPulse 1s ease-in-out;
+        }
+
+        @keyframes raceStartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .race-start-message {
+            font-size: 1.5rem;
+            color: #000;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        /* Mobile Responsive for Tutorial */
+        @media (max-width: 768px) {
+            .tutorial-container {
+                padding: 1.5rem;
+                margin: 0.5rem;
+                max-width: 95%;
+            }
+            
+            .tutorial-title {
+                font-size: 1.3rem;
+            }
+            
+            .tutorial-text {
+                font-size: 0.9rem;
+            }
+            
+            .tutorial-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+                min-width: 120px;
+            }
+            
+            .race-start-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .race-start-title {
+                font-size: 1.5rem;
+            }
+            
+            .race-start-number {
+                font-size: 4rem;
+            }
+            
+            .race-start-message {
+                font-size: 1.2rem;
+            }
         }
 
         /* Obstacle Labels */
@@ -720,6 +819,15 @@
                 </div>
             </div>
         </div>
+
+        <!-- Race Start Countdown -->
+        <div class="race-start-overlay" id="raceStartOverlay">
+            <div class="race-start-container">
+                <div class="race-start-title">🏃‍♂️ ¡LA CARRERA VA A COMENZAR!</div>
+                <div class="race-start-number" id="raceStartNumber">10</div>
+                <div class="race-start-message">Preparando la pista...</div>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase -->
@@ -762,6 +870,8 @@
         const jumpBtn = document.getElementById('jumpBtn');
         const duckBtn = document.getElementById('duckBtn');
         const tutorialOverlay = document.getElementById('tutorialOverlay');
+        const raceStartOverlay = document.getElementById('raceStartOverlay');
+        const raceStartNumber = document.getElementById('raceStartNumber');
 
         // Initialize game
         function initGame() {
@@ -1284,7 +1394,41 @@
             
             // Initialize race mechanics
             initRaceMechanics();
+            
+            // Start race start countdown after a short delay
+            setTimeout(() => {
+                startRaceStartCountdown();
+            }, 500);
         }
+
+        // Race start countdown
+        function startRaceStartCountdown() {
+            let countdown = 10;
+            raceStartOverlay.style.display = 'flex';
+            raceStartNumber.textContent = countdown;
+
+            const interval = setInterval(() => {
+                countdown--;
+                raceStartNumber.textContent = countdown;
+
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    raceStartOverlay.style.display = 'none';
+                    // Start the actual game
+                    startGameAutomatically();
+                }
+            }, 1000);
+        }
+
+        // Race start countdown interval
+        let raceStartCountdownInterval = null;
+
+        // Start race start countdown on tutorial close
+        tutorialOverlay.addEventListener('transitionend', () => {
+            if (tutorialOverlay.style.display === 'none') {
+                startRaceStartCountdown();
+            }
+        });
     </script>
 </body>
 </html> 

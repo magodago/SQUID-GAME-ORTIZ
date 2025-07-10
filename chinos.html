@@ -140,17 +140,6 @@
             <p id="waiting-message">⏳ Esperando jugadores para iniciar el juego...</p>
             <div id="players-list" class="players-status"></div>
             <div id="countdown" class="countdown"></div>
-            
-            <!-- Sistema de invitaciones múltiples -->
-            <div id="invitations-section" style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px;">
-                <h3>👥 Agregar Jugadores Online</h3>
-                <div id="online-players-list" style="margin: 10px 0;">
-                    <p>⏳ Cargando jugadores online...</p>
-                </div>
-                <button id="invite-selected-btn" class="submit-btn" style="margin-top: 10px;" disabled>
-                    🎮 Agregar a la Sala
-                </button>
-            </div>
         </div>
 
         <div id="number-selection" class="game-phase" style="display: none;">
@@ -217,16 +206,14 @@
                     // Use player name as ID to ensure visibility
                     playerId = playerName.replace(/[^a-zA-Z0-9]/g, '_');
 
-                    // Generate game ID if not provided (for direct access from menu)
-                    if (!gameId) {
-                        gameId = 'game_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                        console.log('🎮 Generated new game ID:', gameId);
-                        
-                        // Update URL with the new game ID
-                        const newUrl = new URL(window.location);
-                        newUrl.searchParams.set('gameId', gameId);
-                        window.history.replaceState({}, '', newUrl);
-                    }
+                    // Always use the main room for chinos game
+                    gameId = 'main';
+                    console.log('🎮 Using main room for chinos game:', gameId);
+                    
+                    // Update URL with the main game ID
+                    const newUrl = new URL(window.location);
+                    newUrl.searchParams.set('gameId', gameId);
+                    window.history.replaceState({}, '', newUrl);
 
                     gameRef = db.ref(`chinos/${gameId}`);
                     playersRef = db.ref(`chinos/${gameId}/players`);
@@ -252,9 +239,6 @@
             
             // Setup Firebase listeners
             setupFirebaseListeners();
-            
-            // Load online players for invitations
-            loadOnlinePlayers();
             
             // Initialize player
             initializePlayer();
@@ -344,8 +328,6 @@
         let waitingTimer = null; // Timer para la sala de espera
         let waitingTimeLeft = 30; // Tiempo restante en segundos
         let gameStarted = false; // Si el juego ya comenzó
-        let onlinePlayers = []; // Lista de jugadores online para invitaciones
-        let selectedPlayers = []; // Jugadores seleccionados para invitar
         const MIN_PLAYERS = 2;
         const MAX_PLAYERS = 6;
         const ALLOWED_NUMBERS = [0, 1, 2, 3];
@@ -452,124 +434,7 @@
             }
         }
 
-        // Cargar jugadores online para invitaciones
-        function loadOnlinePlayers() {
-            if (!window.firebase || !window.firebase.database) {
-                console.log('⚠️ Firebase no disponible para cargar jugadores online');
-                return;
-            }
 
-            const db = firebase.database();
-            const onlineRef = db.ref('onlinePlayers');
-            
-            onlineRef.on('value', (snapshot) => {
-                const players = snapshot.val();
-                onlinePlayers = [];
-                
-                if (players) {
-                    Object.keys(players).forEach(playerName => {
-                        const player = players[playerName];
-                        if (player.online && playerName !== playerId) { // No incluir al jugador actual
-                            onlinePlayers.push({
-                                name: playerName,
-                                lastSeen: player.lastSeen
-                            });
-                        }
-                    });
-                }
-                
-                updateOnlinePlayersList();
-            });
-        }
-
-        // Actualizar lista de jugadores online en la UI
-        function updateOnlinePlayersList() {
-            const container = document.getElementById('online-players-list');
-            const inviteBtn = document.getElementById('invite-selected-btn');
-            
-            if (!container) return;
-            
-            if (onlinePlayers.length === 0) {
-                container.innerHTML = '<p>😔 No hay jugadores online para invitar</p>';
-                if (inviteBtn) inviteBtn.disabled = true;
-                return;
-            }
-            
-            let html = '<div style="max-height: 200px; overflow-y: auto;">';
-            onlinePlayers.forEach(player => {
-                const isSelected = selectedPlayers.includes(player.name);
-                html += `
-                    <div style="display: flex; align-items: center; margin: 5px 0; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px;">
-                        <input type="checkbox" id="player-${player.name}" 
-                               ${isSelected ? 'checked' : ''} 
-                               onchange="togglePlayerSelection('${player.name}')" 
-                               style="margin-right: 10px;">
-                        <label for="player-${player.name}" style="flex: 1; cursor: pointer;">
-                            👤 ${player.name}
-                        </label>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            
-            container.innerHTML = html;
-            
-            if (inviteBtn) {
-                inviteBtn.disabled = selectedPlayers.length === 0;
-            }
-        }
-
-        // Alternar selección de jugador
-        function togglePlayerSelection(playerName) {
-            const index = selectedPlayers.indexOf(playerName);
-            if (index > -1) {
-                selectedPlayers.splice(index, 1);
-            } else {
-                selectedPlayers.push(playerName);
-            }
-            
-            const inviteBtn = document.getElementById('invite-selected-btn');
-            if (inviteBtn) {
-                inviteBtn.disabled = selectedPlayers.length === 0;
-            }
-        }
-
-        // Crear invitación para jugadores seleccionados
-        function createInvitation() {
-            if (selectedPlayers.length === 0) {
-                alert('Selecciona al menos un jugador para invitar');
-                return;
-            }
-            
-            console.log('📤 Invitando jugadores a la sala:', selectedPlayers);
-            
-            // Agregar cada jugador seleccionado a la sala actual
-            selectedPlayers.forEach(playerName => {
-                const playerData = {
-                    id: playerName.replace(/[^a-zA-Z0-9]/g, '_'),
-                    name: playerName,
-                    online: true,
-                    selectedNumber: null,
-                    guess: null,
-                    invited: true // Marcar como invitado
-                };
-                
-                db.ref(`chinos/${gameId}/players/${playerData.id}`).set(playerData)
-                    .then(() => {
-                        console.log(`✅ ${playerName} agregado a la sala`);
-                    })
-                    .catch((error) => {
-                        console.error(`❌ Error al agregar ${playerName}:`, error);
-                    });
-            });
-            
-            // Mostrar mensaje de confirmación
-            alert(`🎮 ¡${selectedPlayers.length} jugador(es) invitado(s) a la sala!\n\nLos jugadores aparecerán automáticamente cuando entren al juego.`);
-            
-            // Limpiar selección
-            selectedPlayers = [];
-            updateOnlinePlayersList();
-        }
 
         function showWaitingRoom() {
             waitingRoom.style.display = 'block';

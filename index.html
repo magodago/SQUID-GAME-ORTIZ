@@ -16562,8 +16562,8 @@
                 console.log('📨 Enviando notificación al invitador:', inviterNotification);
                 db.ref(`gameInvitations/${currentInvitation.inviterPlayer}`).push(inviterNotification);
             } else if (currentInvitation.game === 'chinos') {
-                // Create game room and redirect both players
-                const gameId = 'chinos_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                // Always use the main room for chinos game
+                const gameId = 'main';
                 
                 // Create URLs with proper encoding
                 const inviterPlayerId = 'inviter_' + currentInvitation.inviterPlayer.replace(/\s+/g, '_');
@@ -16572,7 +16572,7 @@
                 const gameUrl = `chinos.html?gameId=${gameId}&playerId=${inviterPlayerId}&playerName=${encodeURIComponent(currentInvitation.inviterPlayer)}`;
                 const invitedGameUrl = `chinos.html?gameId=${gameId}&playerId=${invitedPlayerId}&playerName=${encodeURIComponent(currentInvitation.invitedPlayer)}`;
                 
-                console.log('🎮 Creando sala de juego Chinos:', { gameId, inviter: currentInvitation.inviterPlayer, invited: currentInvitation.invitedPlayer });
+                console.log('🎮 Using main room for chinos game:', { gameId, inviter: currentInvitation.inviterPlayer, invited: currentInvitation.invitedPlayer });
                 
                 // Save game room info in Firebase
                 db.ref(`gameRooms/${gameId}`).set({

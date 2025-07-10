@@ -311,12 +311,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Chinos page loaded, initializing Firebase...');
             initializeFirebase();
-            
-            // Setup invitation button
-            const inviteBtn = document.getElementById('invite-selected-btn');
-            if (inviteBtn) {
-                inviteBtn.addEventListener('click', createInvitation);
-            }
+            // Eliminado: invitaciones y botón de agregar jugadores
         });
 
         let selectedNumber = null;

@@ -83,23 +83,6 @@
             box-shadow: 0 0 20px #ffae42;
         }
 
-        .debug-button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .debug-button:hover {
-            background: #45a049;
-            transform: scale(1.05);
-        }
-
         .battle-section {
             background: rgba(255, 127, 80, 0.08);
             border: 2px solid #ffae42;
@@ -215,29 +198,6 @@
 
         .rob-button:disabled {
             background: #666666;
-        }
-
-        .anonymous-rob-button {
-            background: #8B0000;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 0.75rem;
-            width: 100%;
-            margin-top: 4px;
-        }
-
-                .anonymous-rob-button:hover {
-            background: #DC143C;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .rob-button:disabled {
             cursor: not-allowed;
             transform: none;
         }
@@ -519,8 +479,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🦹‍♂️ SISTEMA DE ROBO PvP</h1>
-            <p>Desafia a otros jugadores y roba sus monedas</p>
+            <h1>🦹‍♂️ SISTEMA DE ROBO</h1>
+            <p>Desafía a otros jugadores y roba sus monedas</p>
         </div>
 
         <div class="player-info">
@@ -615,34 +575,16 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Inicializando página de robo...');
-            console.log('🔍 Firebase disponible:', !!window.firebase);
-            console.log('🔍 Firebase database disponible:', !!(window.firebase && window.firebase.database));
-            
-            // Verificar que el jugador esté logueado
-            const playerName = localStorage.getItem('soldierName');
-            console.log('👤 Jugador actual:', playerName);
-            
-            if (!playerName) {
-                console.error('❌ No hay jugador logueado, redirigiendo...');
-                window.location.href = 'index.html';
-                return;
-            }
-            
             loadPlayerInfo();
             loadPlayers();
             loadChallenges();
             loadHistory();
             startAutoSync();
             
-            // Clean up undefined players on page load - DESACTIVADO TEMPORALMENTE
-            // setTimeout(() => {
-            //     cleanupUndefinedPlayers();
-            // }, 2000);
-            console.log('⚠️ Limpieza automática de jugadores DESACTIVADA para evitar pérdida de datos');
-            
-            // Add debug button for player analysis
-            // addDebugButton(); // Eliminado el bloque de función addDebugButton y referencias a debug-button
+            // Clean up undefined players on page load
+            setTimeout(() => {
+                cleanupUndefinedPlayers();
+            }, 2000);
         });
 
         // Auto-sync player data with Firebase every 30 seconds
@@ -709,7 +651,7 @@
             
             console.log(`✅ Player info loaded from localStorage: ${currentPlayer} - ${currentCoins} coins`);
             
-            // Only sync with Firebase if there's a significant difference (more than 1000 coins)
+            // Sync with Firebase to get the latest data
             if (window.firebase && window.firebase.database) {
                 const db = window.firebase.database();
                 const playerRef = db.ref(`players/${currentPlayer}`);
@@ -719,12 +661,12 @@
                         const playerData = snapshot.val() || {};
                         const firebaseCoins = playerData.coins || 0;
                         
-                        // Only sync if difference is significant (more than 1000 coins)
-                        if (Math.abs(firebaseCoins - localCoins) > 1000) {
+                        // Only update if Firebase has more coins (indicating a win)
+                        if (firebaseCoins > localCoins) {
                             localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
                             currentCoins = firebaseCoins;
                             document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
-                            console.log(`🔄 Synced coins from Firebase: ${localCoins} -> ${firebaseCoins}`);
+                            console.log(`🔄 Synced coins from Firebase (WIN): ${localCoins} -> ${firebaseCoins}`);
                         }
                         
                         // Also sync other data if available
@@ -808,68 +750,35 @@
                     .then((snapshot) => {
                         players = [];
                         let html = '';
-                        let totalPlayers = 0;
-                        let filteredPlayers = 0;
-                        let testPlayersFiltered = 0;
-                        let currentPlayerFiltered = 0;
-                        let invalidPlayers = 0;
-                        
-                        console.log('🔍 CARGANDO JUGADORES DESDE FIREBASE:');
                         
                         snapshot.forEach((childSnapshot) => {
                             const player = childSnapshot.val();
-                            totalPlayers++;
-                            
-                            // Log all players for debugging
-                            console.log(`👤 Player ${totalPlayers}: ${childSnapshot.key} - name: "${player?.name}" - coins: ${player?.coins || 0}`);
                             
                             // Validate player data - only show players with valid names
-                            if (player && player.name && player.name !== 'undefined' && player.name !== 'null') {
-                                // Check if it's the current player
-                                if (player.name === currentPlayer) {
-                                    currentPlayerFiltered++;
-                                    console.log(`🚫 Filtrado (jugador actual): ${player.name}`);
-                                    return;
-                                }
-                                
-                                // Check if it's a test player
+                            if (player && player.name && player.name !== 'undefined' && player.name !== currentPlayer) {
+                                // Ocultar jugadores de prueba
                                 const testPlayers = ['yo', 'prueba', 'prueba 2'];
-                                if (testPlayers.includes(player.name.toLowerCase())) {
-                                    testPlayersFiltered++;
-                                    console.log(`🚫 Filtrado (jugador de prueba): ${player.name}`);
-                                    return;
+                                if (!testPlayers.includes(player.name.toLowerCase())) {
+                                    players.push(player);
+                                    const maxRobAmount = Math.min(player.coins || 0, currentCoins);
+                                    html += `
+                                        <div class="player-item">
+                                            <div class="player-details">
+                                                <div class="player-name-display">${player.name}</div>
+                                                <div class="player-coins-display">${player.coins ? player.coins.toLocaleString() : 0} monedas</div>
+                                            </div>
+                                            <div class="player-controls">
+                                                <input type="number" class="bet-input" placeholder="Cantidad a robar" min="1" max="${maxRobAmount}">
+                                                ${isAnonymousRobberyActive() ? `<button class="rob-button" onclick="challengePlayerAnonymous('${player.name}', this.previousElementSibling.value)">🕵️‍♂️ ROBAR ANÓNIMO</button>` : ''}
+                                                <button class="rob-button" onclick="challengePlayer('${player.name}', this.previousElementSibling.value)">
+                                                    🦹‍♂️ ROBAR
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `;
                                 }
-                                
-                                // Valid player - add to list
-                                players.push(player);
-                                filteredPlayers++;
-                                const maxRobAmount = Math.min(player.coins || 0, currentCoins);
-                                html += `
-                                    <div class="player-item">
-                                        <div class="player-details">
-                                            <div class="player-name-display">${player.name}</div>
-                                            <div class="player-coins-display">${player.coins ? player.coins.toLocaleString() : 0} monedas</div>
-                                        </div>
-                                        <div class="player-controls">
-                                            <input type="number" class="bet-input" placeholder="Cantidad a robar" min="1" max="${maxRobAmount}">
-                                            <button class="rob-button" onclick="challengePlayer('${player.name}', this.previousElementSibling.value)">
-                                                🦹‍♂️ ROBAR
-                                            </button>
-                                            ${isAnonymousRobberyActive() ? `
-                                            <button class="anonymous-rob-button" onclick="challengePlayerAnonymous('${player.name}', this.previousElementSibling.previousElementSibling.value)">
-                                                🕵️‍♂️ ROBAR ANÓNIMO
-                                            </button>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-                                `;
-                            } else {
-                                invalidPlayers++;
-                                console.log(`❌ Jugador inválido: ${childSnapshot.key} - name: "${player?.name}"`);
                             }
                         });
-                        
-                        console.log(`📊 RESUMEN FILTROS: Total: ${totalPlayers}, Mostrados: ${filteredPlayers}, Filtrados por ser actual: ${currentPlayerFiltered}, Filtrados por ser prueba: ${testPlayersFiltered}, Inválidos: ${invalidPlayers}`);
                         
                         if (html === '') {
                             html = '<div class="loading">No hay otros jugadores disponibles</div>';
@@ -884,33 +793,6 @@
                     });
             } else {
                 playersList.innerHTML = '<div class="loading">Firebase no disponible</div>';
-            }
-        }
-
-        // Check if anonymous robbery is active
-        function isAnonymousRobberyActive() {
-            const isActive = localStorage.getItem('anonymousRobberyActive') === 'true';
-            const expiry = parseInt(localStorage.getItem('anonymousRobberyExpiry') || '0');
-            
-            // Debug logging
-            console.log('🔍 Anonymous Robbery Check:');
-            console.log('  - isActive:', isActive);
-            console.log('  - expiry:', expiry);
-            console.log('  - current time:', Date.now());
-            console.log('  - time remaining:', expiry - Date.now());
-            
-            if (isActive && Date.now() < expiry) {
-                console.log('✅ Anonymous robbery is ACTIVE');
-                return true;
-            } else {
-                // Clear expired status
-                if (isActive) {
-                    console.log('⏰ Anonymous robbery EXPIRED - clearing status');
-                    localStorage.removeItem('anonymousRobberyActive');
-                    localStorage.removeItem('anonymousRobberyExpiry');
-                }
-                console.log('❌ Anonymous robbery is INACTIVE');
-                return false;
             }
         }
 
@@ -1005,15 +887,9 @@
             startRobbery(currentPlayer, targetPlayer, betAmount);
         }
 
-        // Rob a player anonymously
+        // Rob a player anonymously (automatic, no notifications)
         function challengePlayerAnonymous(targetPlayer, betAmount) {
             betAmount = parseInt(betAmount);
-            
-            // Check if player has enough coins to use anonymous robbery
-            if (currentCoins < 15000) {
-                alert('🕵️‍♂️ El robo anónimo requiere al menos 15,000 monedas para usarlo.');
-                return;
-            }
             
             if (!betAmount || betAmount <= 0) {
                 alert('Por favor ingresa una cantidad válida para robar');
@@ -1062,15 +938,15 @@
                         coins: 0,
                         lastUpdated: Date.now(),
                         lastPunishment: {
-                            reason: 'Trying to rob someone poorer (anonymous)',
+                            reason: 'Trying to rob someone poorer',
                             target: targetPlayer,
                             amountLost: allMoney,
                             timestamp: Date.now()
                         }
                     }).then(() => {
-                        console.log(`💀 Anonymous punishment applied to ${currentPlayer}: lost all ${allMoney} coins for trying to rob ${targetPlayer}`);
+                        console.log(`💀 Punishment applied to ${currentPlayer}: lost all ${allMoney} coins for trying to rob ${targetPlayer}`);
                     }).catch((error) => {
-                        console.error('❌ Error applying anonymous punishment:', error);
+                        console.error('❌ Error applying punishment:', error);
                     });
                 }
                 
@@ -1092,168 +968,14 @@
                     coins: currentCoins,
                     lastUpdated: Date.now()
                 }).then(() => {
-                    console.log(`💰 Anonymous bet deducted from ${currentPlayer}: ${betAmount} coins`);
+                    console.log(`💰 Bet deducted from ${currentPlayer}: ${betAmount} coins`);
                 }).catch((error) => {
-                    console.error('❌ Error deducting anonymous bet:', error);
+                    console.error('❌ Error deducting bet:', error);
                 });
             }
             
-            // Start anonymous robbery
-            startAnonymousRobbery(currentPlayer, targetPlayer, betAmount);
-        }
-
-        // Start anonymous robbery
-        function startAnonymousRobbery(attacker, target, betAmount) {
-            console.log(`🕵️‍♂️ STARTING ANONYMOUS ROBBERY: ??? vs ${target} for ${betAmount} coins`);
-            
-            // Start robbery UI with anonymous attacker
-            startAnonymousRobberyUI(attacker, target, betAmount);
-        }
-        
-        // Start anonymous robbery UI
-        function startAnonymousRobberyUI(attacker, target, betAmount) {
-            const battleModal = document.getElementById('battleModal');
-            const battleGameArea = document.getElementById('battleGameArea');
-            const battleStatus = document.getElementById('battleStatus');
-            const progressBar = document.getElementById('progressBar');
-            const battleTimer = document.getElementById('battleTimer');
-            
-            // Reset game area with anonymous attacker
-            battleGameArea.innerHTML = `
-                <div class="battle-status" id="battleStatus">🕵️‍♂️ INICIANDO ROBO ANÓNIMO...</div>
-                <div style="display: flex; justify-content: space-between; margin: 15px 0; font-weight: bold; color: #000000;">
-                    <div style="text-align: center; flex: 1;">
-                        <div style="font-size: 1.1rem; margin-bottom: 5px;">🕵️‍♂️ ???</div>
-                        <div style="font-size: 0.9rem; color: #8B0000;">ATACANDO ANÓNIMAMENTE</div>
-                    </div>
-                    <div style="text-align: center; flex: 1;">
-                        <div style="font-size: 1.1rem; margin-bottom: 5px;">🛡️ ${target}</div>
-                        <div style="font-size: 0.9rem; color: #ffae42;">DEFENDIENDO</div>
-                    </div>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="progressBar" style="width: 50%;">50%</div>
-                </div>
-            `;
-            
-            // Hide result section
-            document.getElementById('battleResult').style.display = 'none';
-            
-            // Show modal
-            battleModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Start countdown
-            let countdown = 3;
-            battleTimer.textContent = countdown;
-            
-            const countdownInterval = setInterval(() => {
-                countdown--;
-                battleTimer.textContent = countdown;
-                
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    startAnonymousRobberyGameplay(attacker, target, betAmount);
-                }
-            }, 1000);
-        }
-
-        // Anonymous robbery gameplay
-        function startAnonymousRobberyGameplay(attacker, target, betAmount) {
-            const battleStatus = document.getElementById('battleStatus');
-            const progressBar = document.getElementById('progressBar');
-            const battleTimer = document.getElementById('battleTimer');
-            
-            let gameTime = 8;
-            let progress = 50;
-            let winner = null;
-            
-            battleTimer.textContent = gameTime;
-            
-            const gameInterval = setInterval(() => {
-                gameTime--;
-                battleTimer.textContent = gameTime;
-                
-                if (gameTime <= 0) {
-                    clearInterval(gameInterval);
-                    clearInterval(progressInterval);
-                    
-                    // Determine winner based on final progress
-                    if (progress > 50) {
-                        winner = attacker;
-                        endAnonymousRobbery(attacker, target, betAmount, true);
-                    } else {
-                        winner = target;
-                        endAnonymousRobbery(attacker, target, betAmount, false);
-                    }
-                }
-            }, 1000);
-            
-            const progressInterval = setInterval(() => {
-                if (gameTime <= 0) {
-                    clearInterval(progressInterval);
-                    return;
-                }
-                
-                // Random movement towards one side or the other
-                const randomMove = (Math.random() - 0.5) * 8;
-                progress += randomMove;
-                progress = Math.max(0, Math.min(100, progress));
-                
-                progressBar.style.width = progress + '%';
-                progressBar.textContent = Math.round(progress) + '%';
-                
-                if (progress > 60) {
-                    battleStatus.textContent = `🕵️‍♂️ ??? DOMINANDO EL ROBO ANÓNIMO`;
-                } else if (progress < 40) {
-                    battleStatus.textContent = `🛡️ ${target} DEFENDIENDO EXITOSAMENTE`;
-                } else {
-                    battleStatus.textContent = '⚔️ ROBO ANÓNIMO EN CURSO - BATALLA EQUILIBRADA';
-                }
-            }, 300);
-        }
-
-        // End anonymous robbery
-        function endAnonymousRobbery(attacker, target, betAmount, attackerWins) {
-            console.log(`🏁 ENDING ANONYMOUS ROBBERY: ??? vs ${target}, ${attackerWins ? 'ATTACKER WINS' : 'DEFENDER WINS'}`);
-            
-            const resultElement = document.getElementById('battleResult');
-            const winnerElement = document.getElementById('winnerAnnouncement');
-            const coinsElement = document.getElementById('coinsWon');
-            
-            if (attackerWins) {
-                // Anonymous attacker wins - rob successful
-                winnerElement.textContent = `🕵️‍♂️ ¡ROBO ANÓNIMO EXITOSO!`;
-                coinsElement.textContent = `💰 Un atacante anónimo robó ${betAmount.toLocaleString()} monedas de ${target}`;
-                
-                console.log(`🎯 ANONYMOUS ATTACKER WINS: ??? gets ${betAmount} coins from ${target}`);
-                
-                // Update Firebase for both players
-                // Attacker gets the stolen coins from target
-                updatePlayerCoinsInFirebase(attacker, betAmount, true);
-                // Target loses the stolen coins
-                updatePlayerCoinsInFirebase(target, betAmount, false);
-                
-            } else {
-                // Target wins - rob failed
-                winnerElement.textContent = `🛡️ ¡ROBO ANÓNIMO FRACASADO!`;
-                coinsElement.textContent = `💰 ${target} defendió exitosamente contra el atacante anónimo`;
-                
-                console.log(`🛡️ DEFENDER WINS: ${target} gets ${betAmount} coins from anonymous attacker`);
-                
-                // Update Firebase for both players
-                // Attacker already lost bet at start, no additional loss needed
-                // Target gets the attacker's bet as reward for defending
-                updatePlayerCoinsInFirebase(target, betAmount, true);
-            }
-            
-            // Show result
-            resultElement.style.display = 'block';
-            
-            // Reload players list after a delay
-            setTimeout(() => {
-                loadPlayers();
-            }, 2000);
+            // Start robbery immediately
+            startRobbery(currentPlayer, targetPlayer, betAmount);
         }
 
         // Load challenges
@@ -1565,10 +1287,31 @@
                 
                 console.log(`🎯 ATTACKER WINS: ${player1} gets ${betAmount} coins from ${player2} + recovers his bet`);
                 
-                // Update Firebase for both players
-                // Player 1 (attacker) gets the stolen coins from player 2 + recovers his original bet
-                updatePlayerCoinsInFirebase(player1, betAmount, true);
-                // Player 2 (target) loses the stolen coins
+                // EXACTLY THE SAME LOGIC AS WHEN LOSING, BUT ADDING COINS
+                if (player1 === currentPlayer) {
+                    // Add coins immediately (same as subtracting when losing)
+                    currentCoins += (betAmount * 2);
+                    localStorage.setItem('totalOrtizCoins', currentCoins.toString());
+                    
+                    // Update display immediately
+                    document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
+                    
+                    // Update Firebase immediately
+                    if (window.firebase && window.firebase.database) {
+                        const db = window.firebase.database();
+                        const playerRef = db.ref(`players/${currentPlayer}`);
+                        playerRef.update({
+                            coins: currentCoins,
+                            lastUpdated: Date.now()
+                        }).then(() => {
+                            console.log(`💰 Coins added to ${currentPlayer}: ${betAmount * 2} coins`);
+                        }).catch((error) => {
+                            console.error('❌ Error adding coins:', error);
+                        });
+                    }
+                }
+                
+                // Update Firebase for other player (target loses coins)
                 updatePlayerCoinsInFirebase(player2, betAmount, false);
                 
             } else {
@@ -1586,9 +1329,8 @@
             
             // Update local display and reload players list after Firebase update
             setTimeout(() => {
-                // DON'T call loadPlayerInfo() here as it overwrites local changes
                 // Just reload the players list to show updated coins
-                loadPlayers(); // Reload the players list to show updated coins
+                loadPlayers();
             }, 1500);
             
             // Save to history
@@ -1735,30 +1477,14 @@
                     .then((snapshot) => {
                         const updates = {};
                         let cleanedCount = 0;
-                        let totalPlayers = 0;
-                        let validPlayers = 0;
-                        let invalidPlayers = 0;
-                        
-                        console.log('🔍 ANALIZANDO JUGADORES EN FIREBASE:');
                         
                         snapshot.forEach((childSnapshot) => {
                             const player = childSnapshot.val();
-                            totalPlayers++;
-                            
-                            if (player && player.name && player.name !== 'undefined' && player.name !== 'null') {
-                                validPlayers++;
-                                console.log(`✅ Jugador válido: ${player.name} (${player.coins || 0} monedas)`);
-                            } else {
-                                invalidPlayers++;
-                                console.log(`❌ Jugador inválido: ${childSnapshot.key} - name: "${player?.name}"`);
-                                if (player && (!player.name || player.name === 'undefined' || player.name === 'null')) {
-                                    updates[childSnapshot.key] = null; // Remove invalid player
-                                    cleanedCount++;
-                                }
+                            if (player && (!player.name || player.name === 'undefined' || player.name === 'null')) {
+                                updates[childSnapshot.key] = null; // Remove invalid player
+                                cleanedCount++;
                             }
                         });
-                        
-                        console.log(`📊 RESUMEN: Total: ${totalPlayers}, Válidos: ${validPlayers}, Inválidos: ${invalidPlayers}, A limpiar: ${cleanedCount}`);
                         
                         if (cleanedCount > 0) {
                             playersRef.update(updates)
@@ -1769,8 +1495,6 @@
                                 .catch((error) => {
                                     console.error('❌ Error cleaning up players:', error);
                                 });
-                        } else {
-                            console.log('✅ No hay jugadores inválidos para limpiar');
                         }
                     })
                     .catch((error) => {
@@ -1779,95 +1503,30 @@
             }
         }
 
-        // 🔍 FUNCIÓN DE DEBUG - Mostrar todos los jugadores sin filtros
-        function showAllPlayersDebug() {
-            if (!window.firebase || !window.firebase.database) {
-                alert('❌ Firebase no disponible');
-                return;
+        // Agregar función para comprobar si el robo anónimo está activo
+        function isAnonymousRobberyActive() {
+            const isActive = localStorage.getItem('anonymousRobberyActive') === 'true';
+            const expiry = parseInt(localStorage.getItem('anonymousRobberyExpiry') || '0');
+            // Debug logging
+            console.log('🔍 Anonymous Robbery Check:');
+            console.log('  - isActive:', isActive);
+            console.log('  - expiry:', expiry);
+            console.log('  - current time:', Date.now());
+            console.log('  - time remaining:', expiry - Date.now());
+            if (isActive && Date.now() < expiry) {
+                console.log('✅ Anonymous robbery is ACTIVE');
+                return true;
+            } else {
+                // Clear expired status
+                if (isActive) {
+                    console.log('⏰ Anonymous robbery EXPIRED - clearing status');
+                    localStorage.removeItem('anonymousRobberyActive');
+                    localStorage.removeItem('anonymousRobberyExpiry');
+                }
+                console.log('❌ Anonymous robbery is INACTIVE');
+                return false;
             }
-
-            const db = window.firebase.database();
-            const playersRef = db.ref('players');
-            
-            console.log('🔍 DEBUG: Cargando TODOS los jugadores de Firebase...');
-            
-            playersRef.once('value')
-                .then((snapshot) => {
-                    let allPlayers = [];
-                    let totalPlayers = 0;
-                    let validPlayers = 0;
-                    let invalidPlayers = 0;
-                    let testPlayers = 0;
-                    let currentPlayerCount = 0;
-                    let playersToClean = [];
-                    
-                    console.log('🔍 DEBUG: ANÁLISIS COMPLETO DE JUGADORES:');
-                    console.log('==========================================');
-                    
-                    snapshot.forEach((childSnapshot) => {
-                        const player = childSnapshot.val();
-                        const playerKey = childSnapshot.key;
-                        totalPlayers++;
-                        
-                        if (player) {
-                            if (player.name && player.name !== 'undefined' && player.name !== 'null') {
-                                validPlayers++;
-                                
-                                // Check if it's current player
-                                if (player.name === currentPlayer) {
-                                    currentPlayerCount++;
-                                    console.log(`👤 ${totalPlayers}. [ACTUAL] ${playerKey} → "${player.name}" (${player.coins || 0} monedas)`);
-                                }
-                                // Check if it's a test player
-                                else if (['yo', 'prueba', 'prueba 2'].includes(player.name.toLowerCase())) {
-                                    testPlayers++;
-                                    console.log(`🧪 ${totalPlayers}. [TEST] ${playerKey} → "${player.name}" (${player.coins || 0} monedas)`);
-                                }
-                                // Regular player
-                                else {
-                                    console.log(`✅ ${totalPlayers}. [VÁLIDO] ${playerKey} → "${player.name}" (${player.coins || 0} monedas)`);
-                                    allPlayers.push({
-                                        key: playerKey,
-                                        name: player.name,
-                                        coins: player.coins || 0,
-                                        lastUpdated: player.lastUpdated
-                                    });
-                                }
-                            } else {
-                                invalidPlayers++;
-                                playersToClean.push({key: playerKey, name: player.name});
-                                console.log(`❌ Jugador inválido: ${childSnapshot.key} - name: "${player?.name}"`);
-                            }
-                        });
-                        
-                        console.log(`📊 RESUMEN FILTROS: Total: ${totalPlayers}, Mostrados: ${validPlayers}, Filtrados por ser actual: ${currentPlayerCount}, Filtrados por ser prueba: ${testPlayers}, Inválidos: ${invalidPlayers}`);
-                        
-                        if (playersToClean.length > 0) {
-                            console.log('🧹 LIMPIANDO JUGADORES INVÁLIDOS EN FIREBASE:');
-                            console.log('==========================================');
-                            playersToClean.forEach(invalid => {
-                                console.log(`🧹 ${invalid.key} → "${invalid.name}"`);
-                            });
-                            const updates = {};
-                            playersToClean.forEach(invalid => {
-                                updates[invalid.key] = null;
-                            });
-                            playersRef.update(updates)
-                                .then(() => {
-                                    console.log(`✅ Cleaned up ${playersToClean.length} invalid players from Firebase`);
-                                    loadPlayers(); // Reload the list
-                                })
-                                .catch((error) => {
-                                    console.error('❌ Error cleaning up players:', error);
-                                });
-                        } else {
-                            console.log('✅ No hay jugadores inválidos para limpiar');
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('❌ Error reading players for debug:', error);
-                    });
         }
     </script>
 </body>
-</html>
+</html> 

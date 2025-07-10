@@ -238,14 +238,13 @@
         }
 
         .lane-line:nth-child(1) { left: 25%; }
-        .lane-line:nth-child(2) { left: 50%; }
-        .lane-line:nth-child(3) { left: 75%; }
+        .lane-line:nth-child(2) { left: 75%; }
 
         /* Players - Vertical Movement */
         .player {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -264,15 +263,7 @@
         }
         .player.player2 { 
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            left: 37.5%;
-        }
-        .player.player3 { 
-            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
             left: 62.5%;
-        }
-        .player.player4 { 
-            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
-            left: 87.5%;
         }
 
         .player.eliminated {
@@ -280,13 +271,13 @@
             filter: grayscale(100%);
         }
 
-        /* Obstacles - Vertical Layout */
+        /* Obstacles - Simplified */
         .obstacle {
             position: absolute;
-            border-radius: 5px;
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
             z-index: 5;
-            width: 60px;
-            height: 60px;
         }
 
         .obstacle.spike {
@@ -300,7 +291,7 @@
 
         .obstacle.hole {
             background: #000;
-            border: 2px solid #333;
+            border: 3px solid #333;
         }
 
         .obstacle.electric {
@@ -313,13 +304,13 @@
             50% { opacity: 0.5; }
         }
 
-        /* Progress Bars - All Players */
+        /* Progress Bars - 2 Players Only */
         .progress-container {
             position: absolute;
             top: 10px;
             left: 10px;
             right: 10px;
-            height: 120px;
+            height: 80px;
             background: rgba(0,0,0,0.7);
             border-radius: 15px;
             border: 2px solid #FFD700;
@@ -331,65 +322,66 @@
             display: flex;
             align-items: center;
             margin-bottom: 8px;
-            height: 20px;
+            height: 25px;
         }
 
         .progress-label {
-            width: 80px;
-            font-size: 0.8rem;
+            width: 100px;
+            font-size: 1rem;
             color: #FFD700;
             font-weight: bold;
         }
 
         .progress-bar-container {
             flex: 1;
-            height: 15px;
+            height: 20px;
             background: rgba(255,255,255,0.2);
-            border-radius: 8px;
+            border-radius: 10px;
             margin: 0 10px;
             overflow: hidden;
         }
 
         .progress-bar {
             height: 100%;
-            border-radius: 8px;
+            border-radius: 10px;
             width: 0%;
             transition: width 0.3s ease;
         }
 
         .progress-bar.player1 { background: linear-gradient(90deg, #FF6B35 0%, #FF4500 100%); }
         .progress-bar.player2 { background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%); }
-        .progress-bar.player3 { background: linear-gradient(90deg, #2196F3 0%, #1976D2 100%); }
-        .progress-bar.player4 { background: linear-gradient(90deg, #9C27B0 0%, #7B1FA2 100%); }
 
         .progress-percentage {
-            width: 40px;
-            font-size: 0.7rem;
+            width: 50px;
+            font-size: 1rem;
             color: #FFD700;
             text-align: right;
+            font-weight: bold;
         }
 
-        /* Controls */
+        /* Controls - Mobile Optimized */
         .controls {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 1rem;
+            gap: 2rem;
             z-index: 20;
         }
 
         .control-btn {
             background: rgba(0,0,0,0.8);
             color: #fff;
-            border: 2px solid #FFD700;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
+            border: 3px solid #FFD700;
+            padding: 1.5rem 2rem;
+            border-radius: 15px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.5rem;
             font-weight: bold;
             transition: all 0.3s;
+            min-width: 120px;
+            text-align: center;
         }
 
         .control-btn:hover {
@@ -469,7 +461,7 @@
         /* Game Info */
         .game-info {
             position: absolute;
-            top: 140px;
+            top: 100px;
             left: 10px;
             background: rgba(0,0,0,0.8);
             border: 2px solid #FFD700;
@@ -495,9 +487,9 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 20px;
+            height: 30px;
             background: linear-gradient(90deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
-            border: 2px solid #fff;
+            border: 3px solid #fff;
             z-index: 15;
             display: flex;
             align-items: center;
@@ -505,6 +497,7 @@
             font-weight: bold;
             color: #000;
             text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+            font-size: 1.2rem;
         }
 
         /* Responsive Design */
@@ -526,35 +519,40 @@
             }
             
             .progress-container {
-                height: 100px;
+                height: 70px;
+                padding: 8px;
             }
             
             .progress-label {
-                width: 60px;
-                font-size: 0.7rem;
+                width: 80px;
+                font-size: 0.9rem;
             }
             
             .progress-percentage {
-                width: 30px;
-                font-size: 0.6rem;
+                width: 40px;
+                font-size: 0.9rem;
             }
             
             .control-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
+                padding: 1.2rem 1.5rem;
+                font-size: 1.2rem;
+                min-width: 100px;
             }
-        }
-
-        /* Obstacle Labels */
-        .obstacle-label {
-            position: absolute;
-            background: rgba(0,0,0,0.8);
-            color: #fff;
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-            font-size: 0.7rem;
-            white-space: nowrap;
-            z-index: 25;
+            
+            .controls {
+                gap: 1.5rem;
+                bottom: 15px;
+            }
+            
+            .player {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .obstacle {
+                width: 60px;
+                height: 60px;
+            }
         }
     </style>
 </head>
@@ -569,32 +567,33 @@
         <div class="lobby-screen" id="lobbyScreen">
             <div class="game-header">
                 <div class="game-title">🏃‍♂️ DALGONA RACE</div>
-                <div class="game-subtitle">¡La carrera vertical más intensa de Squid Game!</div>
+                <div class="game-subtitle">¡Carrera vertical para 2 jugadores!</div>
             </div>
             
             <div class="lobby-title">🏃‍♂️ SALA DE ESPERA</div>
             <div class="lobby-rules">
-                <p><strong>🏃‍♂️ DALGONA RACE - CARRERA VERTICAL</strong></p>
-                <p>¡Carrera multijugador en tiempo real hacia arriba!</p>
+                <p><strong>🏃‍♂️ DALGONA RACE - 2 JUGADORES</strong></p>
+                <p>¡Carrera vertical automática hacia arriba!</p>
                 <br>
                 <p><strong>🎮 CONTROLES:</strong></p>
-                <p>• <strong>SALTAR</strong>: Salta sobre obstáculos bajos (picos, agujeros)</p>
-                <p>• <strong>AGACHARSE</strong>: Pasa por debajo de muros</p>
+                <p>• <strong>IZQUIERDA</strong>: Mover hacia la izquierda</p>
+                <p>• <strong>DERECHA</strong>: Mover hacia la derecha</p>
+                <p>• <strong>AVANCE AUTOMÁTICO</strong>: Subes automáticamente</p>
                 <br>
                 <p><strong>🎯 OBJETIVO:</strong></p>
-                <p>• Llega a la meta (arriba) antes que los demás</p>
+                <p>• Llega a la meta (arriba) antes que el otro jugador</p>
                 <p>• ¡El último será eliminado!</p>
                 <br>
                 <p><strong>⚠️ OBSTÁCULOS:</strong></p>
-                <p>• 🔺 PIQUE: Salta para evitarlo</p>
-                <p>• 🧱 MURO: Agáchate para pasar</p>
-                <p>• 🕳️ AGUJERO: Salta para no caer</p>
-                <p>• ⚡ ELÉCTRICO: Evítalo completamente</p>
+                <p>• 🔺 PIQUE: Evítalo moviéndote</p>
+                <p>• 🧱 MURO: Evítalo moviéndote</p>
+                <p>• 🕳️ AGUJERO: Evítalo moviéndote</p>
+                <p>• ⚡ ELÉCTRICO: Evítalo moviéndote</p>
                 <br>
                 <p><strong>💡 CONSEJOS:</strong></p>
                 <p>• Mantén la vista en tu carril</p>
                 <p>• Reacciona rápido a los obstáculos</p>
-                <p>• Observa el progreso de todos los jugadores</p>
+                <p>• Observa el progreso de ambos jugadores</p>
             </div>
             
             <div class="players-list" id="playersList">
@@ -626,20 +625,6 @@
                     </div>
                     <div class="progress-percentage" id="percent2">0%</div>
                 </div>
-                <div class="progress-row">
-                    <div class="progress-label">Jugador 3</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar player3" id="progress3"></div>
-                    </div>
-                    <div class="progress-percentage" id="percent3">0%</div>
-                </div>
-                <div class="progress-row">
-                    <div class="progress-label">Jugador 4</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar player4" id="progress4"></div>
-                    </div>
-                    <div class="progress-percentage" id="percent4">0%</div>
-                </div>
             </div>
 
             <!-- Game Info -->
@@ -660,15 +645,14 @@
                 <!-- Lane Lines -->
                 <div class="lane-line"></div>
                 <div class="lane-line"></div>
-                <div class="lane-line"></div>
                 
                 <!-- Players will be added here -->
             </div>
 
             <!-- Controls -->
             <div class="controls">
-                <button class="control-btn" id="jumpBtn">SALTAR</button>
-                <button class="control-btn" id="duckBtn">AGACHARSE</button>
+                <button class="control-btn" id="leftBtn">⬅️ IZQUIERDA</button>
+                <button class="control-btn" id="rightBtn">DERECHA ➡️</button>
                 <button class="control-btn back-btn" onclick="goBack()">🏠 VOLVER</button>
             </div>
         </div>
@@ -713,6 +697,7 @@
         let gameRunning = false;
         let players = {};
         let obstacles = [];
+        let autoMoveInterval = null;
 
         // DOM elements
         const loadingScreen = document.getElementById('loadingScreen');
@@ -722,8 +707,8 @@
         const backButton = document.getElementById('backButton');
         const countdownOverlay = document.getElementById('countdownOverlay');
         const countdownNumber = document.getElementById('countdownNumber');
-        const jumpBtn = document.getElementById('jumpBtn');
-        const duckBtn = document.getElementById('duckBtn');
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
         const raceTrack = document.getElementById('raceTrack');
         const activePlayersEl = document.getElementById('activePlayers');
         const raceTimeEl = document.getElementById('raceTime');
@@ -806,8 +791,8 @@
                 
                 console.log('🏃‍♂️ Jugadores actuales en Dalgona Race:', dalgonaRacePlayers.length);
                 
-                // Check if lobby is full (4 players max)
-                if (dalgonaRacePlayers.length >= 4 && !dalgonaRacePlayers.includes(currentPlayer)) {
+                // Check if lobby is full (2 players max)
+                if (dalgonaRacePlayers.length >= 2 && !dalgonaRacePlayers.includes(currentPlayer)) {
                     console.log('🏃‍♂️ Lobby lleno, no se puede unir');
                     return;
                 }
@@ -858,11 +843,11 @@
             playersList.innerHTML = html;
 
             // Check if we have exactly 2 players and start countdown
-            if (players.length >= 2 && !countdownActive && !countdownStarted) {
-                console.log('🏃‍♂️ ¡2+ jugadores detectados! Iniciando contador...');
+            if (players.length === 2 && !countdownActive && !countdownStarted) {
+                console.log('🏃‍♂️ ¡2 jugadores detectados! Iniciando contador...');
                 countdownStarted = true;
                 startCountdown();
-            } else if (players.length < 2 && countdownActive) {
+            } else if (players.length !== 2 && countdownActive) {
                 console.log('🏃‍♂️ Jugadores insuficientes, deteniendo contador...');
                 stopCountdown();
             }
@@ -944,6 +929,9 @@
             // Start race timer
             startRaceTimer();
             
+            // Start auto movement
+            startAutoMovement();
+            
             // Start game loop
             gameRunning = true;
             gameLoop();
@@ -959,7 +947,7 @@
                 players[playerName] = {
                     name: playerName,
                     position: 0, // Start from bottom (0)
-                    lane: player.lane || (index % 4) + 1,
+                    lane: player.lane || (index + 1), // 1 or 2
                     eliminated: false,
                     element: null
                 };
@@ -983,18 +971,18 @@
             playerData.element = playerEl;
         }
 
-        // Generate obstacles
+        // Generate obstacles - Simplified
         function generateObstacles() {
             obstacles = [];
             
-            // Generate random obstacles along the track (vertical)
-            for (let i = 0; i < 20; i++) {
+            // Generate only 8 obstacles for simplicity
+            for (let i = 0; i < 8; i++) {
                 const obstacle = {
-                    y: 20 + (i * 4) + Math.random() * 2, // Vertical position
-                    lane: Math.floor(Math.random() * 4) + 1,
+                    y: 20 + (i * 10) + Math.random() * 5, // Vertical position
+                    lane: Math.floor(Math.random() * 2) + 1, // Only 2 lanes
                     type: ['spike', 'wall', 'hole', 'electric'][Math.floor(Math.random() * 4)],
-                    width: 60,
-                    height: 60
+                    width: 80,
+                    height: 80
                 };
                 
                 obstacles.push(obstacle);
@@ -1007,81 +995,58 @@
             const obstacleEl = document.createElement('div');
             obstacleEl.className = `obstacle ${obstacle.type}`;
             obstacleEl.style.bottom = `${obstacle.y}%`; // Position from bottom
-            obstacleEl.style.left = `${(obstacle.lane * 25) - 12.5}%`; // Lane position
+            obstacleEl.style.left = `${(obstacle.lane * 50) - 25}%`; // Lane position (25% or 75%)
             obstacleEl.style.width = `${obstacle.width}px`;
             obstacleEl.style.height = `${obstacle.height}px`;
             
-            // Add label to obstacle
-            const label = document.createElement('div');
-            label.className = 'obstacle-label';
-            label.textContent = getObstacleLabel(obstacle.type);
-            label.style.bottom = `${obstacle.y + 5}%`;
-            label.style.left = `${(obstacle.lane * 25) - 12.5}%`;
-            
             raceTrack.appendChild(obstacleEl);
-            raceTrack.appendChild(label);
-        }
-
-        // Get obstacle label
-        function getObstacleLabel(type) {
-            switch(type) {
-                case 'spike': return '🔺 PIQUE';
-                case 'wall': return '🧱 MURO';
-                case 'hole': return '🕳️ AGUJERO';
-                case 'electric': return '⚡ ELÉCTRICO';
-                default: return 'OBSTÁCULO';
-            }
         }
 
         // Setup controls
         function setupControls() {
-            jumpBtn.onclick = () => {
-                console.log('🏃‍♂️ Botón saltar clickeado');
+            leftBtn.onclick = () => {
+                console.log('🏃‍♂️ Botón izquierda clickeado');
                 if (gameRunning && players[currentPlayer]) {
-                    jumpPlayer(currentPlayer);
+                    movePlayer(currentPlayer, 'left');
                 }
             };
             
-            duckBtn.onclick = () => {
-                console.log('🏃‍♂️ Botón agacharse clickeado');
+            rightBtn.onclick = () => {
+                console.log('🏃‍♂️ Botón derecha clickeado');
                 if (gameRunning && players[currentPlayer]) {
-                    duckPlayer(currentPlayer);
+                    movePlayer(currentPlayer, 'right');
                 }
             };
         }
 
-        // Jump player
-        function jumpPlayer(playerName) {
+        // Move player
+        function movePlayer(playerName, direction) {
             const player = players[playerName];
             if (player && !player.eliminated) {
-                const playerEl = player.element;
-                playerEl.style.transform = 'translateY(-20px)';
+                if (direction === 'left' && player.lane > 1) {
+                    player.lane = 1;
+                } else if (direction === 'right' && player.lane < 2) {
+                    player.lane = 2;
+                }
                 
-                setTimeout(() => {
-                    playerEl.style.transform = 'translateY(0)';
-                }, 300);
-                
-                // Update position (move up)
-                player.position += 2;
                 updatePlayerPosition(playerName);
             }
         }
 
-        // Duck player
-        function duckPlayer(playerName) {
-            const player = players[playerName];
-            if (player && !player.eliminated) {
-                const playerEl = player.element;
-                playerEl.style.transform = 'scaleY(0.5)';
-                
-                setTimeout(() => {
-                    playerEl.style.transform = 'scaleY(1)';
-                }, 300);
-                
-                // Update position (move up)
-                player.position += 1;
-                updatePlayerPosition(playerName);
-            }
+        // Start auto movement
+        function startAutoMovement() {
+            autoMoveInterval = setInterval(() => {
+                if (gameRunning) {
+                    Object.keys(players).forEach(playerName => {
+                        const player = players[playerName];
+                        if (player && !player.eliminated) {
+                            // Auto move up
+                            player.position += 0.5;
+                            updatePlayerPosition(playerName);
+                        }
+                    });
+                }
+            }, 100); // Move every 100ms
         }
 
         // Update player position
@@ -1090,6 +1055,13 @@
             if (player && player.element) {
                 const newY = Math.min(90, player.position); // Max 90% from bottom
                 player.element.style.bottom = `${newY}%`;
+                
+                // Update lane position
+                if (player.lane === 1) {
+                    player.element.style.left = '12.5%';
+                } else {
+                    player.element.style.left = '62.5%';
+                }
                 
                 // Update progress bar
                 updateProgressBar(playerName, newY);
@@ -1106,6 +1078,7 @@
 
         // Update progress bar
         function updateProgressBar(playerName, position) {
+            const player = players[playerName];
             const progress = (position / 90) * 100; // 90% is finish line
             const progressBar = document.getElementById(`progress${player.lane}`);
             const percentEl = document.getElementById(`percent${player.lane}`);
@@ -1163,6 +1136,12 @@
             gameRunning = false;
             console.log(`🏃‍♂️ Carrera terminada. Ganador: ${winnerName}`);
             
+            // Stop auto movement
+            if (autoMoveInterval) {
+                clearInterval(autoMoveInterval);
+                autoMoveInterval = null;
+            }
+            
             // Stop race timer
             if (raceTimer) {
                 clearInterval(raceTimer);
@@ -1214,6 +1193,12 @@
         // Back button function
         function goBack() {
             console.log('🏃‍♂️ Botón volver clickeado');
+            
+            // Stop auto movement
+            if (autoMoveInterval) {
+                clearInterval(autoMoveInterval);
+                autoMoveInterval = null;
+            }
             
             // Leave lobby
             if (database) {

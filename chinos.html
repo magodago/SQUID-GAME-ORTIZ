@@ -654,7 +654,22 @@
             
             // Revisar cada jugador online
             Object.values(players).forEach(player => {
-                if (player.online && player.selectedNumber && player.guess) {
+                console.log(`🔍 Revisando jugador ${player.name}:`, {
+                    online: player.online,
+                    selectedNumber: player.selectedNumber,
+                    guess: player.guess,
+                    hasValidData: player.online && 
+                                 player.selectedNumber !== null && 
+                                 player.selectedNumber !== undefined && 
+                                 player.guess !== null && 
+                                 player.guess !== undefined
+                });
+                
+                if (player.online && 
+                    player.selectedNumber !== null && 
+                    player.selectedNumber !== undefined && 
+                    player.guess !== null && 
+                    player.guess !== undefined) {
                     console.log(`✅ Datos completos de ${player.name}: Número=${player.selectedNumber}, Predicción=${player.guess}`);
                     playersData[player.id] = {
                         id: player.id,
@@ -665,6 +680,8 @@
                     collectedData++;
                 } else if (player.online) {
                     console.log(`⏳ ${player.name} aún no ha enviado datos completos`);
+                    if (!player.selectedNumber) console.log(`  - Falta número seleccionado`);
+                    if (!player.guess) console.log(`  - Falta predicción`);
                 }
             });
             

@@ -189,6 +189,7 @@
         let gameId;
         let playerId;
         let playerName;
+        let gameStateRef = null;
 
         // Wait for Firebase to be available
         function initializeFirebase() {
@@ -217,6 +218,7 @@
 
                     gameRef = db.ref(`chinos/${gameId}`);
                     playersRef = db.ref(`chinos/${gameId}/players`);
+                    gameStateRef = db.ref(`chinos/${gameId}/gameState`);
                     
                     console.log('🎮 Game initialized:', { gameId, playerId, playerName });
                     

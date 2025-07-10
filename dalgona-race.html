@@ -210,7 +210,7 @@
             font-weight: bold;
         }
 
-        /* Race Track - Vertical Design */
+        /* Race Track - Single Lane View */
         .race-screen {
             display: none;
             flex-direction: column;
@@ -220,7 +220,7 @@
             overflow: hidden;
         }
 
-        /* Vertical Race Track */
+        /* Single Lane Track */
         .race-track {
             position: relative;
             width: 100%;
@@ -228,23 +228,23 @@
             background: linear-gradient(180deg, #228B22 0%, #32CD32 50%, #228B22 100%);
         }
 
-        /* Lane Lines - Vertical */
-        .lane-line {
+        /* Lane Border */
+        .lane-border {
             position: absolute;
             height: 100%;
-            width: 2px;
+            width: 4px;
             background: #fff;
-            opacity: 0.5;
+            opacity: 0.8;
         }
 
-        .lane-line:nth-child(1) { left: 25%; }
-        .lane-line:nth-child(2) { left: 75%; }
+        .lane-border.left { left: 20%; }
+        .lane-border.right { right: 20%; }
 
-        /* Players - Vertical Movement */
+        /* Player - Single Lane */
         .player {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -255,15 +255,15 @@
             transition: all 0.1s linear;
             z-index: 10;
             bottom: 10px; /* Start from bottom */
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .player.player1 { 
             background: linear-gradient(135deg, #FF6B35 0%, #FF4500 100%);
-            left: 12.5%;
         }
         .player.player2 { 
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-            left: 62.5%;
         }
 
         .player.eliminated {
@@ -271,13 +271,15 @@
             filter: grayscale(100%);
         }
 
-        /* Obstacles - Simplified */
+        /* Obstacles - Small and Simple */
         .obstacle {
             position: absolute;
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
             z-index: 5;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .obstacle.spike {
@@ -291,7 +293,7 @@
 
         .obstacle.hole {
             background: #000;
-            border: 3px solid #333;
+            border: 2px solid #333;
         }
 
         .obstacle.electric {
@@ -545,13 +547,13 @@
             }
             
             .player {
-                width: 40px;
-                height: 40px;
+                width: 35px;
+                height: 35px;
             }
             
             .obstacle {
-                width: 60px;
-                height: 60px;
+                width: 25px;
+                height: 25px;
             }
         }
     </style>
@@ -642,9 +644,9 @@
 
             <!-- Race Track -->
             <div class="race-track" id="raceTrack">
-                <!-- Lane Lines -->
-                <div class="lane-line"></div>
-                <div class="lane-line"></div>
+                <!-- Lane Borders -->
+                <div class="lane-border left"></div>
+                <div class="lane-border right"></div>
                 
                 <!-- Players will be added here -->
             </div>
@@ -698,6 +700,7 @@
         let players = {};
         let obstacles = [];
         let autoMoveInterval = null;
+        let currentPlayerLane = 1; // 1 = left, 2 = right
 
         // DOM elements
         const loadingScreen = document.getElementById('loadingScreen');
@@ -971,18 +974,17 @@
             playerData.element = playerEl;
         }
 
-        // Generate obstacles - Simplified
+        // Generate obstacles - Small and Simple
         function generateObstacles() {
             obstacles = [];
             
-            // Generate only 8 obstacles for simplicity
-            for (let i = 0; i < 8; i++) {
+            // Generate only 6 obstacles for simplicity
+            for (let i = 0; i < 6; i++) {
                 const obstacle = {
-                    y: 20 + (i * 10) + Math.random() * 5, // Vertical position
-                    lane: Math.floor(Math.random() * 2) + 1, // Only 2 lanes
+                    y: 15 + (i * 15) + Math.random() * 10, // Vertical position
                     type: ['spike', 'wall', 'hole', 'electric'][Math.floor(Math.random() * 4)],
-                    width: 80,
-                    height: 80
+                    width: 30,
+                    height: 30
                 };
                 
                 obstacles.push(obstacle);
@@ -995,7 +997,6 @@
             const obstacleEl = document.createElement('div');
             obstacleEl.className = `obstacle ${obstacle.type}`;
             obstacleEl.style.bottom = `${obstacle.y}%`; // Position from bottom
-            obstacleEl.style.left = `${(obstacle.lane * 50) - 25}%`; // Lane position (25% or 75%)
             obstacleEl.style.width = `${obstacle.width}px`;
             obstacleEl.style.height = `${obstacle.height}px`;
             
@@ -1025,8 +1026,10 @@
             if (player && !player.eliminated) {
                 if (direction === 'left' && player.lane > 1) {
                     player.lane = 1;
+                    currentPlayerLane = 1;
                 } else if (direction === 'right' && player.lane < 2) {
                     player.lane = 2;
+                    currentPlayerLane = 2;
                 }
                 
                 updatePlayerPosition(playerName);
@@ -1040,8 +1043,8 @@
                     Object.keys(players).forEach(playerName => {
                         const player = players[playerName];
                         if (player && !player.eliminated) {
-                            // Auto move up
-                            player.position += 0.5;
+                            // Auto move up slowly
+                            player.position += 0.3;
                             updatePlayerPosition(playerName);
                         }
                     });
@@ -1058,16 +1061,16 @@
                 
                 // Update lane position
                 if (player.lane === 1) {
-                    player.element.style.left = '12.5%';
+                    player.element.style.left = '25%';
                 } else {
-                    player.element.style.left = '62.5%';
+                    player.element.style.left = '75%';
                 }
                 
-                // Update progress bar
+                // Update progress bar - sync with actual position
                 updateProgressBar(playerName, newY);
                 
-                // Check for finish
-                if (newY >= 90) {
+                // Check for finish - only when actually near finish
+                if (newY >= 85) {
                     playerFinished(playerName);
                 }
                 
@@ -1076,10 +1079,10 @@
             }
         }
 
-        // Update progress bar
+        // Update progress bar - sync with actual position
         function updateProgressBar(playerName, position) {
             const player = players[playerName];
-            const progress = (position / 90) * 100; // 90% is finish line
+            const progress = (position / 85) * 100; // 85% is finish line
             const progressBar = document.getElementById(`progress${player.lane}`);
             const percentEl = document.getElementById(`percent${player.lane}`);
             
@@ -1091,7 +1094,7 @@
             }
         }
 
-        // Check obstacle collision
+        // Check obstacle collision - improved
         function checkObstacleCollision(playerName) {
             const player = players[playerName];
             if (!player || player.eliminated) return;
@@ -1100,8 +1103,9 @@
                 const playerY = player.position;
                 const playerLane = player.lane;
                 
-                if (Math.abs(playerY - obstacle.y) < 5 && playerLane === obstacle.lane) {
-                    console.log(`🏃‍♂️ ${playerName} chocó con obstáculo!`);
+                // Check if player is close to obstacle vertically
+                if (Math.abs(playerY - obstacle.y) < 8) {
+                    console.log(`🏃‍♂️ ${playerName} cerca de obstáculo en Y: ${playerY}, obstáculo Y: ${obstacle.y}`);
                     eliminatePlayer(playerName);
                 }
             });

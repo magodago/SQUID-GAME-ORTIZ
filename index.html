@@ -11096,9 +11096,9 @@
         }
       } else if (reward.type === 'item') {
         // Add item to inventory
-        const inventory = JSON.parse(localStorage.getItem('inventory') || '[]');
+        const inventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
         inventory.push(reward.value);
-        localStorage.setItem('inventory', JSON.stringify(inventory));
+        localStorage.setItem('playerInventory', JSON.stringify(inventory));
         
         // Sync inventory with Firebase
         if (window.firebase && window.firebase.database) {

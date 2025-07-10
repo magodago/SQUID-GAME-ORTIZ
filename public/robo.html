@@ -693,8 +693,6 @@
             document.getElementById('currentPlayerName').textContent = currentPlayer;
             document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
             
-            console.log(`✅ Player info loaded from localStorage: ${currentPlayer} - ${currentCoins} coins`);
-            
             // Only sync with Firebase if there's a significant difference (more than 1000 coins)
             if (window.firebase && window.firebase.database) {
                 const db = window.firebase.database();
@@ -710,7 +708,6 @@
                             localStorage.setItem('totalOrtizCoins', firebaseCoins.toString());
                             currentCoins = firebaseCoins;
                             document.getElementById('currentPlayerCoins').textContent = currentCoins.toLocaleString() + ' monedas';
-                            console.log(`🔄 Synced coins from Firebase: ${localCoins} -> ${firebaseCoins}`);
                         }
                         
                         // Also sync other data if available
@@ -723,8 +720,6 @@
                         if (playerData.cluesFound !== undefined) {
                             localStorage.setItem('cluesFound', playerData.cluesFound.toString());
                         }
-                        
-                        console.log(`✅ Player info synced from Firebase: ${currentPlayer} - ${currentCoins} coins`);
                     })
                     .catch((error) => {
                         console.error('❌ Error loading player info from Firebase:', error);
@@ -794,41 +789,25 @@
                     .then((snapshot) => {
                         players = [];
                         let html = '';
-                        let totalPlayers = 0;
-                        let filteredPlayers = 0;
-                        let testPlayersFiltered = 0;
-                        let currentPlayerFiltered = 0;
-                        let invalidPlayers = 0;
-                        
-                        console.log('🔍 CARGANDO JUGADORES DESDE FIREBASE:');
                         
                         snapshot.forEach((childSnapshot) => {
                             const player = childSnapshot.val();
-                            totalPlayers++;
-                            
-                            // Log all players for debugging
-                            console.log(`👤 Player ${totalPlayers}: ${childSnapshot.key} - name: "${player?.name}" - coins: ${player?.coins || 0}`);
                             
                             // Validate player data - only show players with valid names
                             if (player && player.name && player.name !== 'undefined' && player.name !== 'null') {
                                 // Check if it's the current player
                                 if (player.name === currentPlayer) {
-                                    currentPlayerFiltered++;
-                                    console.log(`🚫 Filtrado (jugador actual): ${player.name}`);
                                     return;
                                 }
                                 
                                 // Check if it's a test player
                                 const testPlayers = ['yo', 'prueba', 'prueba 2'];
                                 if (testPlayers.includes(player.name.toLowerCase())) {
-                                    testPlayersFiltered++;
-                                    console.log(`🚫 Filtrado (jugador de prueba): ${player.name}`);
                                     return;
                                 }
                                 
                                 // Valid player - add to list
                                 players.push(player);
-                                filteredPlayers++;
                                 const maxRobAmount = Math.min(player.coins || 0, currentCoins);
                                 html += `
                                     <div class="player-item">
@@ -849,20 +828,14 @@
                                         </div>
                                     </div>
                                 `;
-                            } else {
-                                invalidPlayers++;
-                                console.log(`❌ Jugador inválido: ${childSnapshot.key} - name: "${player?.name}"`);
                             }
                         });
-                        
-                        console.log(`📊 RESUMEN FILTROS: Total: ${totalPlayers}, Mostrados: ${filteredPlayers}, Filtrados por ser actual: ${currentPlayerFiltered}, Filtrados por ser prueba: ${testPlayersFiltered}, Inválidos: ${invalidPlayers}`);
                         
                         if (html === '') {
                             html = '<div class="loading">No hay otros jugadores disponibles</div>';
                         }
                         
                         playersList.innerHTML = html;
-                        console.log(`✅ Loaded ${players.length} valid players from Firebase`);
                     })
                     .catch((error) => {
                         console.error('Error loading players:', error);
@@ -1611,10 +1584,8 @@
                         let newCoins;
                         if (isWin) {
                             newCoins = currentCoins + amount;
-                            console.log(`🎯 WIN: ${playerName} gets +${amount} coins (${currentCoins} -> ${newCoins})`);
                         } else {
                             newCoins = Math.max(0, currentCoins - amount);
-                            console.log(`💀 LOSS: ${playerName} loses -${amount} coins (${currentCoins} -> ${newCoins})`);
                         }
                         
                         // Get current robbery stats
@@ -1628,7 +1599,6 @@
                             const coinsDisplay = document.getElementById('currentPlayerCoins');
                             if (coinsDisplay) {
                                 coinsDisplay.textContent = newCoins.toLocaleString() + ' monedas';
-                                console.log(`📊 Updated display for current player: ${newCoins.toLocaleString()} monedas`);
                             }
                         }
                         
@@ -1646,9 +1616,6 @@
                         }
                         
                         playerRef.update(updateData).then(() => {
-                            console.log(`✅ SUCCESS: Updated ${playerName} coins: ${currentCoins} -> ${newCoins} (${isWin ? 'WIN' : 'LOSS'})`);
-                            console.log(`✅ SUCCESS: Updated ${playerName} robbery stats: ${isWin ? 'WON' : 'LOST'}`);
-                            
                             // Show immediate notification for current player
                             if (playerName === currentPlayer) {
                                 const message = isWin ? 

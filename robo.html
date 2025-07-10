@@ -1289,7 +1289,7 @@
                 
                 // Update Firebase for both players
                 // Player 1 (attacker) gets the stolen coins from player 2 + recovers his original bet
-                updatePlayerCoinsInFirebase(player1, betAmount * 2, true);
+                updatePlayerCoinsInFirebase(player1, betAmount, true);
                 // Player 2 (target) loses the stolen coins
                 updatePlayerCoinsInFirebase(player2, betAmount, false);
                 

@@ -16707,11 +16707,11 @@
                 }
             }
             
-            // Restaurar inventario
+            // Restaurar inventario SOLO si el local está vacío
             if (firebaseData.inventory && Array.isArray(firebaseData.inventory)) {
                 const localInventory = JSON.parse(localStorage.getItem('playerInventory') || '[]');
-                if (firebaseData.inventory.length > localInventory.length) {
-                    console.log('🎒 Restaurando inventario desde Firebase');
+                if (localInventory.length === 0 && firebaseData.inventory.length > 0) {
+                    console.log('🎒 Restaurando inventario desde Firebase (local vacío)');
                     localStorage.setItem('playerInventory', JSON.stringify(firebaseData.inventory));
                 }
             }

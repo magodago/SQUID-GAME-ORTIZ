@@ -369,27 +369,32 @@
                 return;
             }
             
-            Object.values(players).forEach(player => {
-                console.log('👤 Procesando jugador:', player);
+            // Filtrar solo jugadores online
+            const onlinePlayers = Object.values(players).filter(player => player.online);
+            console.log('👥 Jugadores online:', onlinePlayers.length);
+            
+            onlinePlayers.forEach(player => {
+                console.log('👤 Procesando jugador online:', player);
                 const playerCard = document.createElement('div');
                 playerCard.className = `player-card ${player.ready ? 'ready' : ''}`;
                 
                 const playerName = player.name || 'Jugador Desconocido';
-                const status = player.online ? '🟢 Online' : '🔴 Offline';
-                const readyStatus = player.ready ? '✅ Listo' : '⏳ Esperando';
+                const status = '🟢 Online';
+                const readyStatus = (player.selectedNumber !== null && player.selectedNumber !== undefined && 
+                                   player.guess !== null && player.guess !== undefined) ? '✅ Listo' : '⏳ Esperando';
                 
                 playerCard.innerHTML = `
                     <h3>${playerName}</h3>
                     <p>Estado: ${status}</p>
                     <p>${readyStatus}</p>
-                    ${player.selectedNumber ? `<p>Número: ${player.selectedNumber}</p>` : ''}
-                    ${player.guess ? `<p>Predicción: ${player.guess}</p>` : ''}
+                    ${player.selectedNumber !== null && player.selectedNumber !== undefined ? `<p>Número: ${player.selectedNumber}</p>` : ''}
+                    ${player.guess !== null && player.guess !== undefined ? `<p>Predicción: ${player.guess}</p>` : ''}
                 `;
                 
                 playersList.appendChild(playerCard);
             });
             
-            console.log('✅ Lista de jugadores actualizada. Total jugadores:', Object.keys(players).length);
+            console.log('✅ Lista de jugadores actualizada. Total jugadores online:', onlinePlayers.length);
         }
 
         // Función para iniciar el temporizador de espera
@@ -521,17 +526,14 @@
                     selectedNumber: player.selectedNumber,
                     guess: player.guess,
                     hasValidData: player.online && 
-                                 player.selectedNumber !== null && 
-                                 player.selectedNumber !== undefined && 
-                                 player.guess !== null && 
-                                 player.guess !== undefined
+                                 (player.selectedNumber === 0 || player.selectedNumber) && 
+                                 (player.guess === 0 || player.guess)
                 });
                 
+                // Validación más flexible: aceptar 0 como valor válido
                 if (player.online && 
-                    player.selectedNumber !== null && 
-                    player.selectedNumber !== undefined && 
-                    player.guess !== null && 
-                    player.guess !== undefined) {
+                    (player.selectedNumber === 0 || player.selectedNumber) && 
+                    (player.guess === 0 || player.guess)) {
                     console.log(`✅ Datos completos de ${player.name}: Número=${player.selectedNumber}, Predicción=${player.guess}`);
                     playersData[player.id] = {
                         id: player.id,
@@ -542,8 +544,8 @@
                     collectedData++;
                 } else if (player.online) {
                     console.log(`⏳ ${player.name} aún no ha enviado datos completos`);
-                    if (!player.selectedNumber) console.log(`  - Falta número seleccionado`);
-                    if (!player.guess) console.log(`  - Falta predicción`);
+                    if (player.selectedNumber !== 0 && !player.selectedNumber) console.log(`  - Falta número seleccionado`);
+                    if (player.guess !== 0 && !player.guess) console.log(`  - Falta predicción`);
                 }
             });
             
@@ -563,7 +565,6 @@
 
         function calculateResults() {
             console.log('🎯 Iniciando cálculo de resultados...');
-            alert('🎯 Iniciando cálculo de resultados...');
             console.log('👥 Datos de jugadores:', playersData);
             
             if (Object.keys(playersData).length < MIN_PLAYERS) {
@@ -788,6 +789,8 @@
         // Inicializar estado del juego si no existe
         gameStateRef.on('value', (snapshot) => {
             const gameState = snapshot.val();
+            console.log('🎮 Estado del juego recibido:', gameState);
+            
             if (!gameState) {
                 console.log('🆕 Inicializando estado del juego Chinos');
                 gameStateRef.set({
@@ -798,6 +801,9 @@
             } else if (gameState.phase === 'results') {
                 console.log('🏁 Mostrando resultados del juego');
                 showResults(gameState);
+            } else if (gameState.phase === 'playing') {
+                console.log('🎮 Juego en progreso, mostrando pantalla de selección');
+                showNumberSelection();
             }
         });
     </script>

@@ -325,8 +325,16 @@
                         console.log('⏰ Timer ya está activo, continuando...');
                     }
                     
-                    // Revisar si tenemos todos los datos necesarios
-                    checkAndCalculateResults(players);
+                    // Solo revisar resultados si el juego está en fase 'playing'
+                    gameStateRef.once('value').then((gameSnapshot) => {
+                        const gameState = gameSnapshot.val();
+                        if (gameState && gameState.phase === 'playing') {
+                            console.log('🎮 Juego en progreso, revisando datos...');
+                            checkAndCalculateResults(players);
+                        } else {
+                            console.log('⏳ Juego no está en progreso, esperando...');
+                        }
+                    });
                 }
             });
 
@@ -418,6 +426,27 @@
             db.ref(`chinos/${gameId}/players/${playerId}`).set(playerData)
                 .then(() => {
                     console.log('✅ Jugador inicializado exitosamente:', playerData);
+                    
+                    // Si es el primer jugador, resetear el estado del juego
+                    return db.ref(`chinos/${gameId}/players`).once('value');
+                })
+                .then((snapshot) => {
+                    const players = snapshot.val();
+                    if (players && Object.keys(players).length === 1) {
+                        console.log('🔄 Primer jugador conectado, reseteando estado del juego...');
+                        return gameStateRef.set({
+                            phase: 'waiting',
+                            countdown: 10,
+                            startTime: null,
+                            currentRound: 1,
+                            playerScores: {},
+                            gameWinner: null,
+                            totalSum: null,
+                            winner: null,
+                            players: {},
+                            endTime: null
+                        });
+                    }
                 })
                 .catch((error) => {
                     console.error('❌ Error al inicializar jugador:', error);

@@ -540,11 +540,11 @@
             // Asignar monedas
             const currentPlayerName = localStorage.getItem('soldierName') || playerName;
             if (winner === currentPlayerName || winner === playerId) {
-                addCoins(1000);
-                console.log('¡Ganaste! +1000 monedas');
+                addCoins(2000);
+                console.log('🏆 ¡Ganaste! +2000 monedas');
             } else {
                 subtractCoins(500);
-                console.log('Perdiste -500 monedas');
+                console.log('💀 Perdiste -500 monedas');
             }
         }
 

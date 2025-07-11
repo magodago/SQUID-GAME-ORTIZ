@@ -1095,6 +1095,8 @@
         // Inicializar estado del juego si no existe
         gameStateRef.on('value', (snapshot) => {
             const gameState = snapshot.val();
+            console.log('🔄 Estado del juego actualizado:', gameState);
+            
             if (!gameState) {
                 gameStateRef.set({
                     phase: 'waiting',
@@ -1106,13 +1108,22 @@
                 });
                 return;
             }
+            
             // Sincronizar estado local
             currentRound = gameState.currentRound || 1;
             playerScores = gameState.playerScores || {};
             gameWinner = gameState.gameWinner || null;
+            
             // Mostrar pantalla según phase
             if (gameState.phase === 'playing') {
+                console.log('🎮 Cambiando a pantalla de selección de números');
                 showNumberSelection();
+            } else if (gameState.phase === 'results') {
+                console.log('🏁 Mostrando resultados de la ronda');
+                showResults(gameState);
+            } else if (gameState.phase === 'finished') {
+                console.log('🏆 Juego terminado, mostrando resultados finales');
+                showFinalResults();
             }
         });
     </script>

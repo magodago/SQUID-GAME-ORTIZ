@@ -298,9 +298,11 @@
                     }
                 } else {
                     // Número correcto de jugadores (entre MIN_PLAYERS y MAX_PLAYERS)
-                    if (!gameStarted) {
+                    if (!gameStarted && !waitingTimerActive) {
                         console.log('🎮 Jugadores suficientes, iniciando temporizador de espera...');
                         startWaitingTimer();
+                    } else if (waitingTimerActive) {
+                        console.log('⏰ Timer ya está activo, continuando...');
                     }
                     
                     // Revisar si tenemos todos los datos necesarios
@@ -331,6 +333,7 @@
         let waitingTimer = null; // Timer para la sala de espera
         let waitingTimeLeft = 30; // Tiempo restante en segundos
         let gameStarted = false; // Si el juego ya comenzó
+        let waitingTimerActive = false; // Si el timer ya está activo
         const MIN_PLAYERS = 2;
         const MAX_PLAYERS = 6;
         const ALLOWED_NUMBERS = [0, 1, 2, 3];
@@ -436,6 +439,7 @@
             
             waitingTimeLeft = WAITING_TIME;
             gameStarted = false;
+            waitingTimerActive = true;
             
             console.log('⏰ Iniciando temporizador de espera de', WAITING_TIME, 'segundos');
             
@@ -463,6 +467,7 @@
             if (waitingTimer) {
                 clearInterval(waitingTimer);
                 waitingTimer = null;
+                waitingTimerActive = false;
                 console.log('⏰ Temporizador de espera detenido');
             }
         }

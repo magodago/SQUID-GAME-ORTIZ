@@ -541,7 +541,21 @@
                     console.log('🎮 ¡Tiempo de espera terminado! Iniciando juego...');
                     stopWaitingTimer();
                     gameStarted = true;
-                    showNumberSelection();
+                    
+                    // Actualizar estado global a 'playing'
+                    gameStateRef.set({
+                        phase: 'playing',
+                        currentRound: currentRound,
+                        playerScores: playerScores,
+                        gameWinner: gameWinner,
+                        totalSum: null,
+                        winner: null,
+                        players: {},
+                        endTime: null
+                    }).then(() => {
+                        console.log('✅ Estado del juego actualizado a playing');
+                        showNumberSelection();
+                    });
                 }
             }, 1000);
         }

@@ -313,7 +313,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 Chinos page loaded, initializing Firebase...');
             initializeFirebase();
-            // Eliminado: invitaciones y botón de agregar jugadores
+            
+            // Heartbeat para mantener al jugador activo
+            setInterval(() => {
+                if (db && playerId) {
+                    db.ref(`chinos/${gameId}/players/${playerId}/lastSeen`).set(Date.now());
+                }
+            }, 10000); // Actualizar cada 10 segundos
         });
 
         let selectedNumber = null;
@@ -347,7 +353,8 @@
                 name: playerName,
                 online: true,
                 selectedNumber: null,
-                guess: null
+                guess: null,
+                lastSeen: Date.now()
             };
 
             db.ref(`chinos/${gameId}/players/${playerId}`).set(playerData)
@@ -369,9 +376,33 @@
                 return;
             }
             
-            // Filtrar solo jugadores online
-            const onlinePlayers = Object.values(players).filter(player => player.online);
-            console.log('👥 Jugadores online:', onlinePlayers.length);
+            // Limpiar jugadores offline (más de 30 segundos sin actividad)
+            const now = Date.now();
+            const activePlayers = {};
+            let cleanedCount = 0;
+            
+            Object.keys(players).forEach(playerId => {
+                const player = players[playerId];
+                const timeSinceLastSeen = now - (player.lastSeen || 0);
+                
+                // Si el jugador no ha estado activo en 30 segundos, marcarlo como offline
+                if (timeSinceLastSeen > 30000) { // 30 segundos
+                    console.log(`🧹 Limpiando jugador inactivo: ${player.name} (última actividad: ${Math.round(timeSinceLastSeen/1000)}s)`);
+                    db.ref(`chinos/${gameId}/players/${playerId}`).remove();
+                    cleanedCount++;
+                } else if (player.online) {
+                    activePlayers[playerId] = player;
+                }
+            });
+            
+            if (cleanedCount > 0) {
+                console.log(`🧹 Limpiados ${cleanedCount} jugadores inactivos`);
+                return; // La lista se actualizará automáticamente cuando Firebase procese los cambios
+            }
+            
+            // Filtrar solo jugadores realmente online
+            const onlinePlayers = Object.values(activePlayers).filter(player => player.online);
+            console.log('👥 Jugadores realmente online:', onlinePlayers.length);
             
             onlinePlayers.forEach(player => {
                 console.log('👤 Procesando jugador online:', player);
@@ -768,7 +799,18 @@
         }
 
         window.addEventListener('beforeunload', () => {
-            db.ref(`chinos/${gameId}/players/${playerId}`).remove();
+            if (db && playerId) {
+                console.log('👋 Jugador saliendo, limpiando datos...');
+                db.ref(`chinos/${gameId}/players/${playerId}`).remove();
+            }
+        });
+
+        // También limpiar cuando se cierra la pestaña o se navega
+        window.addEventListener('pagehide', () => {
+            if (db && playerId) {
+                console.log('👋 Página cerrada, limpiando datos...');
+                db.ref(`chinos/${gameId}/players/${playerId}`).remove();
+            }
         });
 
         // Función para probar conectividad con Firebase

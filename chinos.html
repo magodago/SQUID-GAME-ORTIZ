@@ -132,7 +132,7 @@
 </head>
 <body>
     <div class="chinos-container">
-        <h1>🎲 Chinos</h1>
+        <h1>🤲 Chinos</h1>
         <p>Selecciona un número y adivina la suma total</p>
 
         <div id="waiting-room" class="game-phase">
@@ -143,6 +143,15 @@
         </div>
 
         <div id="number-selection" class="game-phase" style="display: none;">
+            <div id="score-display" style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 2px solid #ff6b6b;">
+                <h3 style="color: #ffd93d; margin-bottom: 10px;">🏆 PUNTUACIÓN</h3>
+                <div id="players-score" style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;">
+                    <!-- Los puntajes se mostrarán aquí dinámicamente -->
+                </div>
+                <div style="text-align: center; margin-top: 10px; color: #4ecdc4; font-weight: bold;">
+                    <span id="current-round">Ronda 1</span> de 3
+                </div>
+            </div>
             <h2>Selecciona tu número</h2>
             <p id="game-status">🎮 Selecciona tu número y predicción</p>
             <div class="number-buttons">
@@ -160,9 +169,12 @@
         </div>
 
         <div id="results" class="game-phase" style="display: none;">
-            <h2>Resultados</h2>
+            <h2>Resultados de la Ronda</h2>
             <div id="results-content"></div>
-            <button class="back-btn" onclick="window.location.href='index.html'">Volver al Menú</button>
+            <div id="round-buttons" style="margin-top: 20px;">
+                <button id="next-round-btn" class="submit-btn" style="margin-right: 10px; display: none;">Siguiente Ronda</button>
+                <button id="finish-game-btn" class="back-btn" style="display: none;">Finalizar Juego</button>
+            </div>
         </div>
     </div>
 
@@ -190,6 +202,13 @@
         let playerId;
         let playerName;
         let gameStateRef = null;
+        
+        // Game state variables
+        let currentRound = 1;
+        let maxRounds = 3;
+        let playerScores = {};
+        let gameWinner = null;
+        let roundResults = [];
 
         // Wait for Firebase to be available
         function initializeFirebase() {
@@ -485,10 +504,15 @@
             numberSelection.style.display = 'block';
             results.style.display = 'none';
             console.log('🎮 Pantalla de selección de números mostrada');
+            
+            // Actualizar display de puntuaciones si ya hay datos
+            if (Object.keys(playerScores).length > 0) {
+                updateScoreDisplay();
+            }
         }
 
         function showResults(gameState) {
-            console.log('🏁 Mostrando resultados:', gameState);
+            console.log('🏁 Mostrando resultados de la ronda:', gameState);
             
             waitingRoom.style.display = 'none';
             numberSelection.style.display = 'none';
@@ -521,30 +545,66 @@
                     <div class="${status}">
                         ${icon} ${playerName}: Seleccionó ${player.selectedNumber}, 
                         predijo ${player.guess} 
-                        ${isWinner ? '(GANADOR!)' : ''}
+                        ${isWinner ? '(GANADOR DE LA RONDA!)' : ''}
                     </div>
                 `;
             });
 
-            // Mostrar mensaje final
+            // Mostrar mensaje de la ronda
             if (winner) {
                 const winnerPlayer = playersArray.find(p => p.name === winner || p.id === winner);
                 const winnerName = winnerPlayer ? winnerPlayer.name : winner;
-                html += `<div class="winner">🎉 ¡${winnerName} ha ganado! 🎉</div>`;
+                html += `<div class="winner">🎉 ¡${winnerName} ha ganado la ronda ${currentRound}! 🎉</div>`;
             } else {
-                html += `<div class="loser">😔 Nadie acertó la suma total. ¡Mejor suerte la próxima vez!</div>`;
+                html += `<div class="loser">😔 Nadie acertó la suma total en la ronda ${currentRound}.</div>`;
             }
+
+            // Actualizar puntuaciones
+            updatePlayerScores(winner, playersArray);
+            
+            // Guardar resultado de la ronda
+            roundResults.push({
+                round: currentRound,
+                totalSum: totalSum,
+                winner: winner,
+                players: playersArray
+            });
 
             resultsContent.innerHTML = html;
 
-            // Asignar monedas
-            const currentPlayerName = localStorage.getItem('soldierName') || playerName;
-            if (winner === currentPlayerName || winner === playerId) {
-                addCoins(2000);
-                console.log('🏆 ¡Ganaste! +2000 monedas');
+            // Mostrar botones según el estado del juego
+            const nextRoundBtn = document.getElementById('next-round-btn');
+            const finishGameBtn = document.getElementById('finish-game-btn');
+            
+            if (currentRound < maxRounds && !gameWinner) {
+                // Mostrar botón de siguiente ronda
+                nextRoundBtn.style.display = 'inline-block';
+                finishGameBtn.style.display = 'none';
+                
+                nextRoundBtn.onclick = () => {
+                    currentRound++;
+                    startNextRound();
+                };
             } else {
-                subtractCoins(500);
-                console.log('💀 Perdiste -500 monedas');
+                // Juego terminado, mostrar botón de finalizar
+                nextRoundBtn.style.display = 'none';
+                finishGameBtn.style.display = 'inline-block';
+                
+                finishGameBtn.onclick = () => {
+                    showFinalResults();
+                };
+            }
+
+            // Asignar monedas solo al final del juego completo
+            if (gameWinner) {
+                const currentPlayerName = localStorage.getItem('soldierName') || playerName;
+                if (gameWinner === currentPlayerName || gameWinner === playerId) {
+                    addCoins(2000);
+                    console.log('🏆 ¡Ganaste el juego completo! +2000 monedas');
+                } else {
+                    subtractCoins(500);
+                    console.log('💀 Perdiste el juego completo -500 monedas');
+                }
             }
         }
 
@@ -870,6 +930,169 @@
                 .catch((error) => {
                     console.error(`❌ Error de conectividad: ${error.code} - ${error.message}`);
                 });
+        }
+
+        // Funciones para el sistema de rondas
+        function updatePlayerScores(winner, playersArray) {
+            console.log('📊 Actualizando puntuaciones...');
+            
+            // Inicializar puntuaciones si no existen
+            if (Object.keys(playerScores).length === 0) {
+                playersArray.forEach(player => {
+                    playerScores[player.name] = 0;
+                });
+            }
+            
+            // Sumar punto al ganador de la ronda
+            if (winner) {
+                playerScores[winner] = (playerScores[winner] || 0) + 1;
+                console.log(`🏆 ${winner} gana 1 punto. Total: ${playerScores[winner]}`);
+            }
+            
+            // Verificar si hay un ganador del juego (3 puntos)
+            Object.keys(playerScores).forEach(playerName => {
+                if (playerScores[playerName] >= 3) {
+                    gameWinner = playerName;
+                    console.log(`🎉 ¡${playerName} ha ganado el juego completo con ${playerScores[playerName]} puntos!`);
+                }
+            });
+            
+            // Actualizar display de puntuaciones
+            updateScoreDisplay();
+        }
+        
+        function updateScoreDisplay() {
+            const playersScoreDiv = document.getElementById('players-score');
+            const currentRoundSpan = document.getElementById('current-round');
+            
+            if (playersScoreDiv) {
+                let scoreHtml = '';
+                Object.keys(playerScores).forEach(playerName => {
+                    const score = playerScores[playerName] || 0;
+                    const isCurrentPlayer = playerName === localStorage.getItem('soldierName');
+                    const playerClass = isCurrentPlayer ? 'current-player' : '';
+                    scoreHtml += `
+                        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; border: 2px solid ${isCurrentPlayer ? '#4ecdc4' : '#ff6b6b'};">
+                            <div style="font-weight: bold; color: ${isCurrentPlayer ? '#4ecdc4' : '#ff6b6b'};">
+                                ${playerName} ${isCurrentPlayer ? '(Tú)' : ''}
+                            </div>
+                            <div style="font-size: 1.5em; color: #ffd93d;">
+                                ${score} ${score === 1 ? 'punto' : 'puntos'}
+                            </div>
+                        </div>
+                    `;
+                });
+                playersScoreDiv.innerHTML = scoreHtml;
+            }
+            
+            if (currentRoundSpan) {
+                currentRoundSpan.textContent = `Ronda ${currentRound}`;
+            }
+        }
+        
+        function startNextRound() {
+            console.log(`🔄 Iniciando ronda ${currentRound}...`);
+            
+            // Limpiar datos de la ronda anterior
+            selectedNumber = null;
+            myGuess = null;
+            playersData = {};
+            collectedData = 0;
+            
+            // Limpiar selecciones de botones
+            document.querySelectorAll('.number-btn').forEach(b => b.classList.remove('selected'));
+            
+            // Limpiar input
+            const guessInput = document.getElementById('guess');
+            if (guessInput) guessInput.value = '';
+            
+            // Resetear botón submit
+            const submitBtn = document.getElementById('submit-choice');
+            if (submitBtn) {
+                submitBtn.textContent = 'Confirmar';
+                submitBtn.disabled = true;
+            }
+            
+            // Limpiar mensajes de error
+            const errorDiv = document.getElementById('mobile-error');
+            if (errorDiv) {
+                errorDiv.textContent = '';
+                errorDiv.style.display = 'none';
+            }
+            
+            // Limpiar datos de Firebase para la nueva ronda
+            if (db && gameId) {
+                const updates = {};
+                Object.keys(playerScores).forEach(playerName => {
+                    const playerId = playerName.replace(/[^a-zA-Z0-9]/g, '_');
+                    updates[`chinos/${gameId}/players/${playerId}/selectedNumber`] = null;
+                    updates[`chinos/${gameId}/players/${playerId}/guess`] = null;
+                });
+                
+                db.ref().update(updates).then(() => {
+                    console.log('✅ Datos de Firebase limpiados para nueva ronda');
+                }).catch((error) => {
+                    console.error('❌ Error limpiando datos de Firebase:', error);
+                });
+            }
+            
+            // Mostrar pantalla de selección
+            showNumberSelection();
+            
+            // Actualizar display de puntuaciones
+            updateScoreDisplay();
+        }
+        
+        function showFinalResults() {
+            console.log('🏁 Mostrando resultados finales del juego');
+            
+            waitingRoom.style.display = 'none';
+            numberSelection.style.display = 'none';
+            results.style.display = 'block';
+            
+            const resultsContent = document.getElementById('results-content');
+            const nextRoundBtn = document.getElementById('next-round-btn');
+            const finishGameBtn = document.getElementById('finish-game-btn');
+            
+            // Ocultar botones de ronda
+            nextRoundBtn.style.display = 'none';
+            finishGameBtn.style.display = 'none';
+            
+            let html = `<div class="total-sum">🏆 RESULTADOS FINALES</div>`;
+            
+            // Mostrar puntuaciones finales
+            const sortedPlayers = Object.keys(playerScores).sort((a, b) => playerScores[b] - playerScores[a]);
+            
+            sortedPlayers.forEach((playerName, index) => {
+                const score = playerScores[playerName];
+                const isWinner = playerName === gameWinner;
+                const isCurrentPlayer = playerName === localStorage.getItem('soldierName');
+                const icon = isWinner ? '👑' : index === 1 ? '🥈' : index === 2 ? '🥉' : '💀';
+                const color = isWinner ? '#ffd93d' : isCurrentPlayer ? '#4ecdc4' : '#ff6b6b';
+                
+                html += `
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 10px 0; border: 2px solid ${color};">
+                        <div style="font-size: 1.5em; color: ${color}; font-weight: bold;">
+                            ${icon} ${playerName} ${isCurrentPlayer ? '(Tú)' : ''}
+                        </div>
+                        <div style="font-size: 1.2em; color: #fff;">
+                            ${score} ${score === 1 ? 'punto' : 'puntos'}
+                        </div>
+                        ${isWinner ? '<div style="color: #ffd93d; font-weight: bold; margin-top: 5px;">¡GANADOR DEL JUEGO!</div>' : ''}
+                    </div>
+                `;
+            });
+            
+            // Agregar botón de volver al menú
+            html += `
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="back-btn" onclick="window.location.href='index.html'">
+                        🏠 Volver al Menú Principal
+                    </button>
+                </div>
+            `;
+            
+            resultsContent.innerHTML = html;
         }
 
         // Inicializar jugador y estado del juego

@@ -209,6 +209,7 @@
         let playerScores = {};
         let gameWinner = null;
         let roundResults = [];
+        let gamePhase = 'waiting'; // waiting, playing, roundResults, gameFinished
 
         // Wait for Firebase to be available
         function initializeFirebase() {
@@ -521,89 +522,71 @@
             const resultsContent = document.getElementById('results-content');
             const totalSum = gameState.totalSum;
             const winner = gameState.winner;
+            const roundNumber = gameState.currentRound || currentRound;
+            const scores = gameState.playerScores || playerScores;
+            const winnerName = gameState.gameWinner || null;
 
             let html = `<div class="total-sum">Suma Total: ${totalSum}</div>`;
-            
-            // Convertir players de objeto a array si es necesario
-            let playersArray = [];
-            if (Array.isArray(gameState.players)) {
-                playersArray = gameState.players;
-            } else if (gameState.players && typeof gameState.players === 'object') {
-                playersArray = Object.values(gameState.players);
-            }
-            
-            console.log('👥 Jugadores para mostrar:', playersArray);
-            
-            // Mostrar resultados de cada jugador
+            let playersArray = Array.isArray(gameState.players) ? gameState.players : Object.values(gameState.players || {});
             playersArray.forEach(player => {
                 const isWinner = player.name === winner || player.id === winner;
                 const status = isWinner ? 'winner' : 'loser';
                 const icon = isWinner ? '🏆' : '💀';
-                const playerName = player.name || 'Jugador Desconocido';
-                
                 html += `
                     <div class="${status}">
-                        ${icon} ${playerName}: Seleccionó ${player.selectedNumber}, 
-                        predijo ${player.guess} 
-                        ${isWinner ? '(GANADOR DE LA RONDA!)' : ''}
+                        ${icon} ${player.name}: Seleccionó ${player.selectedNumber}, predijo ${player.guess} ${isWinner ? '(GANADOR DE LA RONDA!)' : ''}
                     </div>
                 `;
             });
-
-            // Mostrar mensaje de la ronda
             if (winner) {
-                const winnerPlayer = playersArray.find(p => p.name === winner || p.id === winner);
-                const winnerName = winnerPlayer ? winnerPlayer.name : winner;
-                html += `<div class="winner">🎉 ¡${winnerName} ha ganado la ronda ${currentRound}! 🎉</div>`;
+                html += `<div class="winner">🎉 ¡${winner} ha ganado la ronda ${roundNumber}! 🎉</div>`;
             } else {
-                html += `<div class="loser">😔 Nadie acertó la suma total en la ronda ${currentRound}.</div>`;
+                html += `<div class="loser">😔 Nadie acertó la suma total en la ronda ${roundNumber}.</div>`;
             }
-
-            // Actualizar puntuaciones
-            updatePlayerScores(winner, playersArray);
-            
-            // Guardar resultado de la ronda
-            roundResults.push({
-                round: currentRound,
-                totalSum: totalSum,
-                winner: winner,
-                players: playersArray
-            });
-
             resultsContent.innerHTML = html;
+            updateScoreDisplay();
 
-            // Mostrar botones según el estado del juego
+            // Botones de avance
             const nextRoundBtn = document.getElementById('next-round-btn');
             const finishGameBtn = document.getElementById('finish-game-btn');
-            
-            if (currentRound < maxRounds && !gameWinner) {
-                // Mostrar botón de siguiente ronda
+            if (!winnerName) {
                 nextRoundBtn.style.display = 'inline-block';
                 finishGameBtn.style.display = 'none';
-                
                 nextRoundBtn.onclick = () => {
-                    currentRound++;
-                    startNextRound();
+                    // Solo el primero que pulse actualiza el estado global
+                    db.ref(`chinos/${gameId}/gameState`).transaction(state => {
+                        if (state && state.phase === 'results' && !state.gameWinner) {
+                            return {
+                                ...state,
+                                phase: 'playing',
+                                currentRound: (state.currentRound || 1) + 1,
+                                totalSum: null,
+                                winner: null,
+                                players: {},
+                                endTime: null
+                            };
+                        }
+                        return state;
+                    });
+                    // Limpiar datos de la ronda anterior para todos los jugadores
+                    Object.keys(scores).forEach(playerName => {
+                        const pid = playerName.replace(/[^a-zA-Z0-9]/g, '_');
+                        db.ref(`chinos/${gameId}/players/${pid}/selectedNumber`).set(null);
+                        db.ref(`chinos/${gameId}/players/${pid}/guess`).set(null);
+                    });
                 };
             } else {
-                // Juego terminado, mostrar botón de finalizar
                 nextRoundBtn.style.display = 'none';
                 finishGameBtn.style.display = 'inline-block';
-                
-                finishGameBtn.onclick = () => {
-                    showFinalResults();
-                };
+                finishGameBtn.onclick = showFinalResults;
             }
-
-            // Asignar monedas solo al final del juego completo
-            if (gameWinner) {
+            // Recompensas solo al final
+            if (gameState.phase === 'finished' && winnerName) {
                 const currentPlayerName = localStorage.getItem('soldierName') || playerName;
-                if (gameWinner === currentPlayerName || gameWinner === playerId) {
+                if (winnerName === currentPlayerName || winnerName === playerId) {
                     addCoins(2000);
-                    console.log('🏆 ¡Ganaste el juego completo! +2000 monedas');
                 } else {
                     subtractCoins(500);
-                    console.log('💀 Perdiste el juego completo -500 monedas');
                 }
             }
         }
@@ -686,24 +669,27 @@
             const winner = Object.values(playersData).find(player => player.guess === totalSum);
             console.log('🏆 Ganador:', winner ? winner.name : 'Ninguno');
             
-            const gameState = {
-                phase: 'results',
+            // Sumar punto al ganador
+            if (winner) {
+                playerScores[winner.name] = (playerScores[winner.name] || 0) + 1;
+            }
+            // ¿Hay ganador global?
+            let gameWinnerNow = null;
+            Object.keys(playerScores).forEach(playerName => {
+                if (playerScores[playerName] >= 3) gameWinnerNow = playerName;
+            });
+            // Actualizar estado global
+            const newState = {
+                phase: gameWinnerNow ? 'finished' : 'results',
                 totalSum: totalSum,
                 winner: winner ? winner.name : null,
-                players: Object.values(playersData), // Convertir a array
-                endTime: Date.now()
+                players: Object.values(playersData),
+                endTime: Date.now(),
+                currentRound: currentRound,
+                playerScores: playerScores,
+                gameWinner: gameWinnerNow
             };
-
-            console.log('💾 Guardando resultados en Firebase...');
-            gameStateRef.set(gameState)
-                .then(() => {
-                    console.log('✅ Resultados calculados y guardados:', gameState);
-                    // Mostrar resultados inmediatamente
-                    showResults(gameState);
-                })
-                .catch((error) => {
-                    console.error('❌ Error al guardar resultados:', error);
-                });
+            gameStateRef.set(newState);
         }
 
         document.querySelectorAll('.number-btn').forEach(btn => {
@@ -1029,6 +1015,14 @@
                     updates[`chinos/${gameId}/players/${playerId}/guess`] = null;
                 });
                 
+                // También limpiar el estado del juego para indicar nueva ronda
+                updates[`chinos/${gameId}/gameState`] = {
+                    phase: 'playing',
+                    currentRound: currentRound,
+                    playerScores: playerScores,
+                    gameWinner: gameWinner
+                };
+                
                 db.ref().update(updates).then(() => {
                     console.log('✅ Datos de Firebase limpiados para nueva ronda');
                 }).catch((error) => {
@@ -1101,20 +1095,23 @@
         // Inicializar estado del juego si no existe
         gameStateRef.on('value', (snapshot) => {
             const gameState = snapshot.val();
-            console.log('🎮 Estado del juego recibido:', gameState);
-            
             if (!gameState) {
-                console.log('🆕 Inicializando estado del juego Chinos');
                 gameStateRef.set({
                     phase: 'waiting',
                     countdown: 10,
-                    startTime: null
+                    startTime: null,
+                    currentRound: 1,
+                    playerScores: {},
+                    gameWinner: null
                 });
-            } else if (gameState.phase === 'results') {
-                console.log('🏁 Mostrando resultados del juego');
-                showResults(gameState);
-            } else if (gameState.phase === 'playing') {
-                console.log('🎮 Juego en progreso, mostrando pantalla de selección');
+                return;
+            }
+            // Sincronizar estado local
+            currentRound = gameState.currentRound || 1;
+            playerScores = gameState.playerScores || {};
+            gameWinner = gameState.gameWinner || null;
+            // Mostrar pantalla según phase
+            if (gameState.phase === 'playing') {
                 showNumberSelection();
             }
         });

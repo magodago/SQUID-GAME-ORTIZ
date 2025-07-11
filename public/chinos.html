@@ -658,15 +658,7 @@
                 finishGameBtn.style.display = 'inline-block';
                 finishGameBtn.onclick = showFinalResults;
             }
-            // Recompensas solo al final
-            if (gameState.phase === 'finished' && winnerName) {
-                const currentPlayerName = localStorage.getItem('soldierName') || playerName;
-                if (winnerName === currentPlayerName || winnerName === playerId) {
-                    addCoins(2000);
-                } else {
-                    subtractCoins(500);
-                }
-            }
+            // Las recompensas se aplicarán en showFinalResults cuando el juego termine completamente
         }
 
         function checkAndCalculateResults(players) {
@@ -1154,6 +1146,24 @@
                     </div>
                 `;
             });
+            
+            // Aplicar recompensas solo una vez cuando se muestran los resultados finales
+            if (gameWinner) {
+                const currentPlayerName = localStorage.getItem('soldierName') || playerName;
+                console.log('💰 Aplicando recompensas finales...');
+                console.log('🏆 Ganador del juego:', gameWinner);
+                console.log('👤 Jugador actual:', currentPlayerName);
+                
+                if (gameWinner === currentPlayerName) {
+                    console.log('🎉 ¡Eres el ganador! +2000 monedas');
+                    addCoins(2000);
+                    html += `<div style="color: #4ecdc4; font-weight: bold; margin-top: 20px; font-size: 1.2em;">💰 ¡GANASTE 2000 MONEDAS!</div>`;
+                } else {
+                    console.log('💀 Perdiste el juego -500 monedas');
+                    subtractCoins(500);
+                    html += `<div style="color: #ff6b6b; font-weight: bold; margin-top: 20px; font-size: 1.2em;">💸 PERDISTE 500 MONEDAS</div>`;
+                }
+            }
             
             // Agregar botón de volver al menú
             html += `
